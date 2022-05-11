@@ -1,0 +1,51 @@
+{
+  "common": {
+    "appTitle": "BEEP base",
+    "error": "Error",
+    "btnOk": "OK",
+    "btnCancel": "Cancel",
+    "btnStart": "Start",
+    "btnNext": "Next",
+    "btnFinish": "Finish"
+  },
+  "wizard": {
+    "screenTitle": "Configuration",
+    "welcome": {
+    },
+    "bluetooth": {
+    },
+    "pair": {
+      "description": "Connect to BEEP base"
+    },
+    "paired": {
+      "description": "Connected: sampling sensors"
+    }
+  },
+  "home": {
+    "screenTitle": "My BEEP bases",
+    "introduction": "Below you find a list of BEEP bases that are currently associated with your account.",
+    "startWizard": "Configure new BEEP base"
+  },
+  "about": {
+    "screenTitle": "About",
+    "versionJS": "App version {{version}}"
+  },
+  "peripheralDetail": {
+    "screenTitle": "Base detail",
+    "bleName": "Name: {{name}}",
+    "bleStatus": "Bluetooth status: {{status}}",
+    "bleConnection": {
+      "true": "Connected",
+      "false": "Disconnected"
+    },
+    "bleRSSI": "Signal strength: {{rssi}} dBm",
+  },
+  "ble": {
+    "scanning": "Searching for BEEP base...",
+    "noResult": "No devices found.",
+    "select": "Select a device",
+    "connecting": "Connecting...",
+    "keypadTitle": "Enter pin code",
+    "retry": "Retry scan"
+  }
+}
