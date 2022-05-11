@@ -10,6 +10,7 @@ import { store } from '../App';
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { LogFileSizeModel } from '../Models/LogFileSizeModel';
 import { LogFileFrameModel } from '../Models/LogFileFrameModel';
+import { FirmwareVersionParser } from '../Models/FirmwareVersionModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -199,7 +200,13 @@ export default class BleHelpers {
       const buffer: Buffer = Buffer.from(value)
       const command = buffer.readInt8()
       const data: Buffer = buffer.subarray(1)
+      let model
       switch (command) {
+        case COMMANDS.READ_FIRMWARE_VERSION:
+          model = new FirmwareVersionParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setFirmwareVersion(model))
+          break
+
         case COMMANDS.READ_DS18B20_CONVERSION:
           const models = new TemperatureParser({ data }).parse()
           store.dispatch(BeepBaseActions.setTemperatures(models))
@@ -210,7 +217,7 @@ export default class BleHelpers {
           break
 
         case COMMANDS.SIZE_MX_FLASH:
-          const model = LogFileSizeModel.parse(data)
+          model = LogFileSizeModel.parse(data)
           store.dispatch(BeepBaseActions.setLogFileSize(model))
           break
       }

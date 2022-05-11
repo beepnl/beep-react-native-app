@@ -22,6 +22,8 @@ import { getLogFileSize } from 'App/Stores/BeepBase/Selectors'
 import { LogFileSizeModel } from '../../Models/LogFileSizeModel';
 import { getCombinedLogFileFrames } from 'App/Stores/BeepBase/Selectors'
 import { getLogFileProgress } from 'App/Stores/BeepBase/Selectors'
+import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
+import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 
 // Components
 import { Text, View, Button, TextInput } from 'react-native';
@@ -40,6 +42,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const navigation = useNavigation();
   // const [peripheral, setPeripheral] = useState<PairedPeripheralModel>(navigation.state.params?.peripheral)
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const logFileSize: LogFileSizeModel = useTypedSelector<LogFileSizeModel>(getLogFileSize)
   const logFileProgress: number = useTypedSelector<number>(getLogFileProgress)
   const [rssi, setRssi] = useState(0)
@@ -53,9 +56,12 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   // }, 5000);
       
   useEffect(() => {
-    // BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+    BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
     // BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
   }, []);
+
+  const onInstallFirmwarePress = () => {
+  }
 
   const onGetLogFileSizePress = () => {
     if (peripheral) {
@@ -82,6 +88,11 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         {/* <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleRSSI", { rssi })}</Text> */}
         <View style={[styles.spacer, styles.separator]} />
 
+        <View style={styles.spacerDouble} />
+
+        <Button title={"Install firmware"} onPress={onInstallFirmwarePress}></Button>
+        <View style={styles.spacer} />
+        <Text style={[styles.text]}>{`Firmware version: ${firmwareVersion?.toString()}`}</Text>
         <View style={styles.spacerDouble} />
 
         <Button title={"Get log file size"} onPress={onGetLogFileSizePress}></Button>

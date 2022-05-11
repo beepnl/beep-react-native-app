@@ -5,6 +5,10 @@ export const getPairedPeripheral = (state: AppState) => {
   return state.beepBase.pairedPeripheral
 }
 
+export const getFirmwareVersion = (state: AppState) => {
+  return state.beepBase.firmwareVersion
+}
+
 export const getTemperatures = (state: AppState) => {
   return state.beepBase.temperatures
 }
