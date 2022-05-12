@@ -8,6 +8,9 @@
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
+    <!-- DFU -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    
     <queries>
       <intent>
         <action android:name="android.intent.action.SENDTO" />

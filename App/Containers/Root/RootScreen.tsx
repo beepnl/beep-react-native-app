@@ -80,7 +80,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     });
 
     const BleManagerDisconnectPeripheralSubscription = bleManagerEmitter.addListener("BleManagerDisconnectPeripheral", (args) => {
-      dispatch(BeepBaseActions.clearPairedPeripheral())
+      // dispatch(BeepBaseActions.clearPairedPeripheral())
     });
 
     BleHelpers.init(pairedPeripherals)

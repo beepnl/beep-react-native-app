@@ -13,6 +13,8 @@ import styles from './PeripheralDetailScreenStyle'
 // Utils
 import Images from 'App/Assets/Images'
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+import { NordicDFU, DFUEmitter } from "react-native-nordic-dfu";
+import RNFS from 'react-native-fs'
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
@@ -26,7 +28,7 @@ import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 
 // Components
-import { Text, View, Button, TextInput } from 'react-native';
+import { Text, View, Button, TextInput, PermissionsAndroid } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -47,7 +49,9 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const logFileProgress: number = useTypedSelector<number>(getLogFileProgress)
   const [rssi, setRssi] = useState(0)
   const combinedLogFileFrames: Buffer = useTypedSelector<Buffer>(getCombinedLogFileFrames)
-
+  const [dfuProgress, setDfuProgress] = useState(0)
+  const [dfuState, setDfuState] = useState("")
+  const [dfuTransferResult, setDfuTransferResult] = useState("")
   
   // useInterval(() => {
   //   BleHelpers.readRSSI(peripheral.id).then(rssi => {
@@ -58,9 +62,78 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
     // BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
+
+    DFUEmitter.addListener(
+      "DFUProgress",
+      ({ percent, currentPart, partsTotal, avgSpeed, speed }) => {
+        // console.log("DFU progress: " + percent + "%");
+        if (percent != undefined) {
+          setDfuProgress(percent)
+        }
+      }
+    );
+    
+    DFUEmitter.addListener("DFUStateChanged", ({ state }) => {
+      // console.log("DFU State:", state);
+      if (state != undefined) {
+        setDfuState(state)
+      }
+    });
+
   }, []);
 
-  const onInstallFirmwarePress = () => {
+  const requestExternalStoreageRead = async() => {
+    try {
+      const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          'title': 'Cool App ...',
+          'message': 'App needs access to external storage',
+          buttonPositive: "ok"
+        }
+      );
+      return granted == PermissionsAndroid.RESULTS.GRANTED
+    } 
+    catch (err) {
+      return false;
+    }
+  }
+
+  const delay = (ms: number) => new Promise(res=>setTimeout(res, ms));
+
+  const onInstallFirmwarePress = async () => {
+    const destination = RNFS.CachesDirectoryPath + "/firmware.zip"
+    RNFS.downloadFile({ 
+      fromUrl: "https://assets.beep.nl/firmware/basev3/1.5.11/Beepbase_sd_boot_app.zip",
+      toFile: destination
+    }).promise.then(result => {
+      const peripheralId = peripheral.id
+      NordicDFU.startDFU({
+        deviceAddress: peripheral.id,
+        filePath: destination
+      })
+      .then(async (res: any) => {
+        //upload successful
+        setDfuTransferResult(res.deviceAddress)
+        let retry = 10
+        while (retry > 0) {
+          const isConnected = await BleHelpers.isConnected(peripheralId)
+            if (isConnected) {
+              //reconnect successful
+              retry = -1
+              BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+            } else {
+              setDfuProgress(retry)
+              await BleHelpers.connectPeripheral(peripheralId)
+            }
+            retry -= 1
+            await delay(1000)
+        }
+      })
+      .catch((error) => {
+        setDfuTransferResult(error)
+      })
+    })
   }
 
   const onGetLogFileSizePress = () => {
@@ -83,8 +156,8 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       <ScrollView style={styles.container} >
         <View style={styles.spacer} />
 
-        <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleName", { name: peripheral.name })}</Text>
-        <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleStatus", { status: t(`peripheralDetail.bleConnection.${peripheral.isConnected}`)})}</Text>
+        <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleName", { name: peripheral ? peripheral.name : "" })}</Text>
+        <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleStatus", { status: t(`peripheralDetail.bleConnection.${peripheral ? peripheral.isConnected : false}`)})}</Text>
         {/* <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleRSSI", { rssi })}</Text> */}
         <View style={[styles.spacer, styles.separator]} />
 
@@ -93,6 +166,10 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         <Button title={"Install firmware"} onPress={onInstallFirmwarePress}></Button>
         <View style={styles.spacer} />
         <Text style={[styles.text]}>{`Firmware version: ${firmwareVersion?.toString()}`}</Text>
+        <View style={styles.spacer} />
+        <Text style={[styles.text]}>{`Progress: ${dfuProgress} %`}</Text>
+        <Text style={[styles.text]}>{`State: ${dfuState}`}</Text>
+        <Text style={[styles.text]}>{`Transfer result: ${dfuTransferResult}`}</Text>
         <View style={styles.spacerDouble} />
 
         <Button title={"Get log file size"} onPress={onGetLogFileSizePress}></Button>

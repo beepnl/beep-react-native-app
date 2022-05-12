@@ -261,7 +261,7 @@ export default class BleHelpers {
   }
 
   static isConnected(peripheralId: string) {
-    return BleManager.isPeripheralConnected(peripheralId, [])
+    return BleManager.isPeripheralConnected(peripheralId, [BEEP_SERVICE])
   }
 
   static readRSSI(peripheralId: string) {
