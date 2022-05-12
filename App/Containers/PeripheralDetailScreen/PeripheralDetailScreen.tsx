@@ -174,7 +174,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
         <Button title={"Get log file size"} onPress={onGetLogFileSizePress}></Button>
         <View style={styles.spacer} />
-        <Text style={[styles.text]}>{`Log file size: ${logFileSize.toString()}`}</Text>
+        <Text style={[styles.text]}>{`Log file size: ${logFileSize?.toString()}`}</Text>
 
         <View style={styles.spacerDouble} />
 

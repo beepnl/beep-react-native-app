@@ -45,7 +45,7 @@ export const setLogFileProgress = (state: BeepBaseState, payload: any) => {
 }
 
 export const addLogFileFrame = (state: BeepBaseState, payload: any) => {
-  const logFileSize = state.logFileSize.value() || 1
+  const logFileSize = state.logFileSize?.value() || 1
   const frameCount = state.logFileFrames.length
   let frameSize = 0
   if (frameCount) {
