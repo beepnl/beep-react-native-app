@@ -71,22 +71,27 @@ const FirmwareScreen: FunctionComponent<Props> = ({
   const delay = (ms: number) => new Promise(res=>setTimeout(res, ms));
 
   const onInstallFirmwarePress = async () => {
+    console.log("onInstallFirmwarePress")
     setBusy(true)
     setDfuTransferResult("")
     setDfuReconnectRetry(0)
     const destination = RNFS.CachesDirectoryPath + "/firmware.zip"
+    console.log("destination", destination)
     RNFS.downloadFile({ 
       fromUrl: "https://assets.beep.nl/firmware/basev3/1.5.11/Beepbase_sd_boot_app.zip",
       toFile: destination
     }).promise.then(result => {
       const peripheralId = peripheral.id
+      console.log("download successful")
       BleHelpers.disconnectPeripheral(peripheral)?.then(() => {
+        console.log("disconnect successful")
 
         NordicDFU.startDFU({
           deviceAddress: peripheral.id,
           filePath: destination
         })
         .then(async (res: any) => {
+          console.log("upload successful")
           //upload successful
           setDfuTransferResult(res.deviceAddress)
           const RETRY_COUNT = 10
@@ -106,12 +111,15 @@ const FirmwareScreen: FunctionComponent<Props> = ({
           }
         })
         .catch((error) => {
+          console.log("error in startDFU", error)
           setDfuTransferResult(error)
         })
         .finally(() => {
           setBusy(false)
         })
       })
+    }).catch((error) => {
+      console.log("error in downloadFile", error)
     })
   }
 
