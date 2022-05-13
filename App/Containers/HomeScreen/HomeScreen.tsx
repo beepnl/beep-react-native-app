@@ -11,6 +11,7 @@ import styles from './HomeScreenStyle'
 import { Metrics } from '../../Theme';
 
 // Utils
+const nodePackage = require('../../../package.json')   //including node package config for app version
 
 // Data
 import SettingsActions from 'App/Stores/Settings/Actions'
@@ -31,6 +32,7 @@ const HomeScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const jsVersion =  nodePackage.version
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
 
   const onStartWizardPress = () => {
@@ -61,6 +63,10 @@ const HomeScreen: FunctionComponent<Props> = ({
         { pairedPeripheral &&
           <Button title={pairedPeripheral.name} onPress={onPeripheralPress}></Button>
         }
+
+        <View style={styles.spacerDouble} />
+        <View style={styles.spacerDouble} />
+        <Text style={styles.text}>{t('about.versionJS', { version: jsVersion + (__DEV__ ? " DEV" : "") })}</Text>
 
       </View>
     </SafeAreaView>
