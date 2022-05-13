@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import ApplicationStyles from 'App/Theme/ApplicationStyles'
-import { Metrics, Colors } from '../../Theme';
+import { Metrics, Colors, Fonts } from '../../Theme';
 
 export default StyleSheet.create({
   ...ApplicationStyles,
@@ -14,29 +14,16 @@ export default StyleSheet.create({
     justifyContent: "space-between",
   },
 
-  orientationButton: {
-    flexDirection: "row",
+  menuItem: {
+    width: "100%",
     height: Metrics.buttonHeight,
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: Metrics.baseMargin,
-    color: Colors.white,
+    justifyContent: "center",
+    borderBottomColor: Colors.grey, 
+    borderBottomWidth: 1,
   },
 
-  orientationButtonButton: {
-    width: 100,
-    height: (110 / 240) * 100,
-  },
-
-  orientationButtonLabel: {
-    flex: 1,
-    paddingHorizontal: Metrics.doubleBaseMargin,
-    textAlign: "center",
-    color: Colors.white,
-  },
-
-  orientationButtonRadioIcon: {
-    color: Colors.white,
+  menuItemTitle: {
+    ...Fonts.style.button
   },
 
 })

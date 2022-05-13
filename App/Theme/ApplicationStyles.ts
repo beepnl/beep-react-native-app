@@ -129,7 +129,7 @@ const ApplicationStyles = {
 
   separator: {
     width: "100%",
-    borderBottomColor: Colors.green, 
+    borderBottomColor: Colors.grey, 
     borderBottomWidth: 1,
   },
 

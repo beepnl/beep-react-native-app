@@ -5,6 +5,8 @@ import { createStackNavigator } from 'react-navigation-stack'
 // Screens
 import HomeScreen from 'App/Containers/HomeScreen/HomeScreen';
 import PeripheralDetailScreen from 'App/Containers/PeripheralDetailScreen/PeripheralDetailScreen';
+import LogFileScreen from 'App/Containers/LogFileScreen/LogFileScreen';
+import FirmwareScreen from 'App/Containers/FirmwareScreen/FirmwareScreen';
 import BleScreen from 'App/Containers/BleScreen/BleScreen';
 import AboutScreen from 'App/Containers/AboutScreen/AboutScreen';
 import WizardWelcomeScreen from 'App/Containers/Wizard/WizardWelcomeScreen';
@@ -33,11 +35,14 @@ const AppStack = createStackNavigator(
     HomeScreen,
     Wizard: WizardStack,
     PeripheralDetailScreen,
+    LogFileScreen,
+    FirmwareScreen,
     // BleScreen,
     // AboutScreen,
   },
   {
     initialRouteName: 'HomeScreen',
+    // initialRouteName: 'PeripheralDetailScreen',
     navigationOptions: ({ navigation, navigationOptions }) => ({
     }),
     headerMode: 'none',

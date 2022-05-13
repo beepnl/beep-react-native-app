@@ -117,7 +117,7 @@ export default class BleHelpers {
     return "off"
   }
 
-  static init(pairedPeripherals: Array<PairedPeripheralModel>) {
+  static init(peripheral: PairedPeripheralModel) {
     console.log("BleManager start");
     return BleManager.start({
       showAlert: true,
@@ -135,7 +135,8 @@ export default class BleHelpers {
             PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
               if (result) {
                 console.log("User accepted permission");
-                BleHelpers.connectPairedPeripherals(pairedPeripherals)
+                // DISABLED RECONNECT
+                // BleHelpers.connectPairedPeripherals(pairedPeripherals)
               } else {
                 console.log("User refused permission");
               }
@@ -143,7 +144,8 @@ export default class BleHelpers {
           }
         });
       } else {
-        BleHelpers.connectPairedPeripherals(pairedPeripherals)
+        // DISABLED RECONNECT
+        // BleHelpers.connectPairedPeripherals(pairedPeripherals)
       }    
     })
   }
@@ -281,13 +283,7 @@ export default class BleHelpers {
     BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription.remove()
 
     if (peripheral) {
-      if (Platform.OS == "android") {
-        // return BleManager.removeBond(peripheral.id).finally(() => {
-          return BleManager.disconnect(peripheral.id, true)
-        // })
-      } else if (Platform.OS == "ios") {
-        return BleManager.disconnect(peripheral.id, true)
-      }
+      return BleManager.disconnect(peripheral.id, true)
     }
   }
 

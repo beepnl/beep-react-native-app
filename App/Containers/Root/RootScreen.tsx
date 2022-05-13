@@ -21,7 +21,7 @@ import moment from 'moment'
 import StartupActions from 'App/Stores/Startup/Actions'
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { getError } from 'App/Stores/Api/Selectors';
-import { getPairedPeripherals } from 'App/Stores/Settings/Selectors'
+import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { PairedPeripheralModel } from 'App/Models/PairedPeripheral';
 import { getLanguageCode } from 'App/Stores/Settings/Selectors';
 
@@ -43,80 +43,67 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   const [isScanning, setIsScanning] = useState(false)
   const dropDownAlert = useRef<DropdownAlert>(null);
   const error = useSelector(getError)
-  const pairedPeripherals: Array<PairedPeripheralModel> = useTypedSelector<Array<PairedPeripheralModel>>(getPairedPeripherals)
+  const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  // const pairedPeripherals: Array<PairedPeripheralModel> = useTypedSelector<Array<PairedPeripheralModel>>(getPairedPeripherals)
   const { appState } = useAppState();
 
   useEffect(() => {
     dispatch(StartupActions.startup())
 
-    const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: Peripheral) => {
-      console.log('Found BLE peripheral', peripheral.id, peripheral.name);
-      if (pairedPeripherals) {
-        const pairedPeripheral = pairedPeripherals.find(p => p.id == peripheral.id)
-        if (pairedPeripheral) {
-          //found paired peripheral
-          BleManager.stopScan().then(() => {
-            setIsScanning(false)
-              // DISABLED RECONNECT
-            // BleHelpers.connectPeripheral(pairedPeripheral.id)
-          })
-        }
-      }
-    });
-
     const BleManagerConnectPeripheralSubscription = bleManagerEmitter.addListener("BleManagerConnectPeripheral", (args) => {
       const peripheralId: string = args?.peripheral
-      // Platform.OS == "android" && ToastAndroid.show("BleManagerConnectPeripheral " + peripheralId, ToastAndroid.SHORT);
-      if (pairedPeripherals) {
-        const peripheral = pairedPeripherals.find(p => p.id == peripheralId)
-        if (peripheral) {
-          const updated = {
-            ...peripheral,
-            isConnected: true,
-          }
-          dispatch(BeepBaseActions.setPairedPeripheral(updated))
+      if (peripheral && peripheral.id == peripheralId) {
+        const updated = {
+          ...peripheral,
+          isConnected: true,
         }
+        dispatch(BeepBaseActions.setPairedPeripheral(updated))
       }
     });
 
     const BleManagerDisconnectPeripheralSubscription = bleManagerEmitter.addListener("BleManagerDisconnectPeripheral", (args) => {
-      // dispatch(BeepBaseActions.clearPairedPeripheral())
+      const peripheralId: string = args?.peripheral
+      if (peripheral && peripheral.id == peripheralId) {
+        const updated = {
+          ...peripheral,
+          isConnected: true,
+        }
+        dispatch(BeepBaseActions.setPairedPeripheral(updated))
+      }
     });
 
-    BleHelpers.init(pairedPeripherals)
+    BleHelpers.init(peripheral)
     
     return (() => {
-      BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
+      // BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
       BleManagerConnectPeripheralSubscription && BleManagerConnectPeripheralSubscription.remove()
       BleManagerDisconnectPeripheralSubscription && BleManagerDisconnectPeripheralSubscription.remove()
     })
   }, [])
   
   useEffect(() => {
-    if (pairedPeripherals && appState == "active") {
+    if (peripheral && appState == "active") {
       let scanning = false    //also need a local flag because useState setter is async
-      pairedPeripherals.forEach((peripheral: PairedPeripheralModel) => {
-        BleHelpers.isConnected(peripheral.id).then((isConnected : boolean) => {
-          if (peripheral.isConnected != isConnected) {
-            const updated = {
-              ...peripheral,
-              isConnected,
-            }
-            dispatch(BeepBaseActions.setPairedPeripheral(updated))
-  
-            if (!isConnected && !isScanning && !scanning) {
-              // DISABLED RECONNECT
-              //reconnect by scanning
-              // scanning = true
-              // BleManager.scan([], 10, false).then(() => {
-              //   setIsScanning(true)
-              // })
-            }
+      BleHelpers.isConnected(peripheral.id).then((isConnected : boolean) => {
+        if (peripheral.isConnected != isConnected) {
+          const updated = {
+            ...peripheral,
+            isConnected,
           }
-        })
+          dispatch(BeepBaseActions.setPairedPeripheral(updated))
+
+          if (!isConnected && !isScanning && !scanning) {
+            // DISABLED RECONNECT
+            //reconnect by scanning
+            // scanning = true
+            // BleManager.scan([], 10, false).then(() => {
+            //   setIsScanning(true)
+            // })
+          }
+        }
       })
     }
-  }, [pairedPeripherals, appState])
+  }, [peripheral, appState])
 
   useEffect(() => {
     i18n.changeLanguage(languageCode)
