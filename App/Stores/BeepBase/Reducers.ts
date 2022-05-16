@@ -45,12 +45,14 @@ export const setLogFileProgress = (state: BeepBaseState, payload: any) => {
 }
 
 export const addLogFileFrame = (state: BeepBaseState, payload: any) => {
-  const logFileFrames = [...state.logFileFrames, payload.frame]
+  // const logFileFrames = [...state.logFileFrames, payload.frame]
+  const logFileFrames = [payload.frame] //only keep last frame for UI. TODO: write to temp file
   const logFileSize = state.logFileSize?.value() || 1
-  const downloadedSize = logFileFrames.reduce((acc, current) => acc + current.size, 0)
+  // const downloadedSize = logFileFrames.reduce((acc, current) => acc + current.size, 0)
   return {
     ...state,
-    logFileProgress: downloadedSize / logFileSize,
+    // logFileProgress: downloadedSize / logFileSize,
+    logFileProgress: state.logFileProgress + logFileFrames[0]?.size,
     logFileFrames
   }
 }
