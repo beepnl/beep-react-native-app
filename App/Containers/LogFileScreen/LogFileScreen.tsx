@@ -96,7 +96,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
 
         <Button title={"Download log file"} onPress={onDownloadLogFilePress} disabled={logFileSize == undefined || logFileSize.value() == 0}></Button>
         <View style={styles.spacer} />
-        <Text style={[styles.text]}>{`Progress: ${Math.round(logFileProgress / logFileSize.value() * 100)} %`}</Text>
+        <Text style={[styles.text]}>{`Progress: ${Math.round(logFileProgress / logFileSize?.value() * 100)} %`}</Text>
         <View style={styles.spacer} />
         <TextInput 
           style={[styles.text, { height: 300, borderWidth: 1, borderColor: Colors.yellow }]} 
