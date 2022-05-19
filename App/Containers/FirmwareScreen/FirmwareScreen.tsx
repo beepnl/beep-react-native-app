@@ -85,37 +85,42 @@ const FirmwareScreen: FunctionComponent<Props> = ({
       console.log("download successful")
       BleHelpers.disconnectPeripheral(peripheral)?.then(() => {
         console.log("disconnect successful")
-
-        NordicDFU.startDFU({
-          deviceAddress: peripheral.id,
-          filePath: destination
-        })
-        .then(async (res: any) => {
-          console.log("upload successful")
-          //upload successful
-          setDfuTransferResult(res.deviceAddress)
-          const RETRY_COUNT = 10
-          let retry = 1
-          while (retry < RETRY_COUNT) {
-            setDfuReconnectRetry(retry)
-            const isConnected = await BleHelpers.isConnected(peripheralId)
-            if (isConnected) {
-              //reconnect successful
-              retry = RETRY_COUNT
-              BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
-            } else {
-              await BleHelpers.connectPeripheral(peripheralId)
+        delay(500).then(() => {
+          NordicDFU.startDFU({
+            deviceAddress: peripheral.id,
+            filePath: destination,
+            options: {
+              retries: 3,
+              mtu: 247
             }
-            retry += 1
-            await delay(1000)
-          }
-        })
-        .catch((error) => {
-          console.log("error in startDFU", error)
-          setDfuTransferResult(error)
-        })
-        .finally(() => {
-          setBusy(false)
+          })
+          .then(async (res: any) => {
+            console.log("upload successful")
+            //upload successful
+            setDfuTransferResult(res.deviceAddress)
+            const RETRY_COUNT = 10
+            let retry = 1
+            while (retry < RETRY_COUNT) {
+              setDfuReconnectRetry(retry)
+              const isConnected = await BleHelpers.isConnected(peripheralId)
+              if (isConnected) {
+                //reconnect successful
+                retry = RETRY_COUNT
+                BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+              } else {
+                await BleHelpers.connectPeripheral(peripheralId)
+              }
+              retry += 1
+              await delay(1000)
+            }
+          })
+          .catch((error) => {
+            console.log("error in startDFU", error)
+            setDfuTransferResult(error)
+          })
+          .finally(() => {
+            setBusy(false)
+          })
         })
       })
     }).catch((error) => {
