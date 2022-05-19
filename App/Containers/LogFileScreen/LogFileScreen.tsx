@@ -25,7 +25,7 @@ import { getCombinedLogFileFrames } from 'App/Stores/BeepBase/Selectors'
 import { getLogFileProgress } from 'App/Stores/BeepBase/Selectors'
 
 // Components
-import { Text, View, Button, TextInput } from 'react-native';
+import { Text, View, Button, TextInput, PermissionsAndroid } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -44,27 +44,19 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const combinedLogFileFrames: Buffer = useTypedSelector<Buffer>(getCombinedLogFileFrames)
         
   useEffect(() => {
+    dispatch(BeepBaseActions.setLogFileProgress(0))
     if (peripheral) {
       BleHelpers.write(peripheral.id, COMMANDS.SIZE_MX_FLASH)
     }  
   }, []);
 
-  // const requestExternalStoreageRead = async() => {
-  //   try {
-  //     const granted = await PermissionsAndroid.request(
-  //     PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-  //       {
-  //         'title': 'Cool App ...',
-  //         'message': 'App needs access to external storage',
-  //         buttonPositive: "ok"
-  //       }
-  //     );
-  //     return granted == PermissionsAndroid.RESULTS.GRANTED
-  //   } 
-  //   catch (err) {
-  //     return false;
-  //   }
-  // }
+  useEffect(() => {
+    if (logFileProgress > 0 && logFileProgress === logFileSize?.value()) {
+      //download finished, copy to SD card
+      BleHelpers.exportLogFile()
+      dispatch(BeepBaseActions.setLogFileProgress(0))
+    }
+  }, [logFileProgress]);
 
   const onGetLogFileSizePress = () => {
     if (peripheral) {
@@ -72,12 +64,29 @@ const LogFileScreen: FunctionComponent<Props> = ({
     }
   }
 
-  const onDownloadLogFilePress = () => {
+  const onDownloadLogFilePress = async () => {
     if (logFileSize) {
-      dispatch(BeepBaseActions.clearLogFileFrames())
-      if (peripheral) {
-        BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
-      }
+      PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE).then(async (granted: boolean) => {
+        let requested
+        if (!granted) {
+          requested = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+              title: "BEEP Base",
+              message: "Please grant access to write to storage",
+              buttonNegative: "Cancel",
+              buttonPositive: "OK"
+            }
+          );
+        }
+        if (granted || requested === PermissionsAndroid.RESULTS.GRANTED) {
+          dispatch(BeepBaseActions.clearLogFileFrames())
+          if (peripheral) {
+            BleHelpers.initLogFile()
+            BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
+          }
+        }
+      })
     }
   }
 

@@ -34,6 +34,7 @@
     "react-native": "0.68.2",
     "react-native-ble-manager": "^8.0.1",
     "react-native-dropdownalert": "^4.2.1",
+    "react-native-file-access": "^2.4.1",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.4",

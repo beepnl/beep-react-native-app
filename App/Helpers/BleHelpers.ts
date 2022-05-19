@@ -11,6 +11,8 @@ import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { LogFileSizeModel } from '../Models/LogFileSizeModel';
 import { LogFileFrameModel } from '../Models/LogFileFrameModel';
 import { FirmwareVersionParser } from '../Models/FirmwareVersionModel';
+import RNFS from 'react-native-fs';
+import { FileSystem } from 'react-native-file-access';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -71,6 +73,9 @@ export const COMMANDS = {
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const LOG_FILE_NAME = "BeepBaseLogFile.txt"
+const LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + LOG_FILE_NAME
+
 export type BluetoothState = 
 "off" |                 // Bluetooth is turned off
 "pairedConnected" |     // Bluetooth is on and all paired peripherals are connected
@@ -81,6 +86,7 @@ export const BEEP_SERVICE = "be4768a1-719f-4bad-5040-c6ebc5f8c31b"
 export const CONTROL_POINT_CHARACTERISTIC = "000068b0-0000-1000-8000-00805f9b34fb"
 // export const LOG_FILE_CHARACTERISTIC = "000068a3-0000-1000-8000-00805f9b34fb"
 export const LOG_FILE_CHARACTERISTIC = "be4768a3-719f-4bad-5040-c6ebc5f8c31b"
+
 export default class BleHelpers {
 
   static BleManagerDidUpdateValueForControlPointCharacteristicSubscription: EmitterSubscription
@@ -226,15 +232,40 @@ export default class BleHelpers {
     }
   }
 
+  static initLogFile() {
+    //delete old log file
+    RNFS.exists(LOG_FILE_PATH).then((exists: boolean) => {
+      if (exists) {
+        RNFS.unlink(LOG_FILE_PATH)
+        .then(() => {
+          console.log("Existing log file deleted");
+        })
+        .catch((err) => {
+          console.log("Error initLogFile.unlink", err.message);
+        });
+      }
+    })
+    .catch((err) => {
+      console.log("Error initLogFile.exists", err.message);
+    });
+  }
+
+  static exportLogFile() {
+    FileSystem.cpExternal(LOG_FILE_PATH, LOG_FILE_NAME, "downloads").catch(error => {
+      console.log("Error copying to SD card", error)
+    })
+  }
+
   static onValueForLogFileCharacteristic({ value, peripheral, characteristic, service }) {
     if (characteristic.toLowerCase() == LOG_FILE_CHARACTERISTIC) {
       const buffer: Buffer = Buffer.from(value)
       const model = LogFileFrameModel.parse(buffer)
       if (model) {
         store.dispatch(BeepBaseActions.addLogFileFrame(model))
-      } else {
-        //TODO: does not seem to work. How to know when transfer is ready?
-        store.dispatch(BeepBaseActions.setLogFileProgress(1))
+        RNFS.appendFile(LOG_FILE_PATH, model.data.toString("ascii"), "ascii")
+        .catch((err) => {
+          console.log("Error writing log file frame", err);
+        });
       }
     }
   }
