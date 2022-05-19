@@ -6,18 +6,24 @@
     <!-- Request legacy Bluetooth permissions on older devices. -->
     <uses-permission android:name="android.permission.BLUETOOTH"
                      android:maxSdkVersion="30" />
+    <!-- Most apps need this permission solely for the ability to discover local Bluetooth devices -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
                      android:maxSdkVersion="30" />
 
     <!-- Needed only if your app looks for Bluetooth devices. -->
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" 
+                     android:usesPermissionFlags="neverForLocation" />
 
     <!-- Needed only if your app communicates with already-paired Bluetooth devices. -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
-    <!-- Needed only if your app uses Bluetooth scan results to derive physical location. -->
+    <!-- is necessary because on Android 11 and lower a Bluetooth scan could potentially be used to gather information about the location of the user. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- If your app targets Android 9 (API level 28) or lower, you can declare the ACCESS_COARSE_LOCATION permission instead of the ACCESS_FINE_LOCATION permission. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <!-- If Bluetooth is a critical piece of your app, you can add flags to your manifest file indicating this requirement. -->
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
     <!-- DFU -->
