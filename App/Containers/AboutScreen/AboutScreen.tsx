@@ -18,7 +18,6 @@ const nodePackage = require('../../../package.json')   //including node package 
 // Components
 import { ScrollView, Text, View } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
-import Logo from 'App/Assets/Images/ArmonLogo'
 import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
 
 interface Props {
@@ -37,13 +36,9 @@ const AboutScreen: FunctionComponent<Props> = ({
   }, [])
 
   const onPhonePress = () => {
-    const url = OpenExternalHelpers.addTelScheme("+31104714187")
-    OpenExternalHelpers.openUrl(url)
   }
   
   const onEmailPress = () => {
-    const url = OpenExternalHelpers.addMailtoScheme("info@armonproducts.com?subject=App")
-    OpenExternalHelpers.openUrl(url)
   }
   
   return (
@@ -54,7 +49,6 @@ const AboutScreen: FunctionComponent<Props> = ({
         <View style={styles.spacer} />
         
         <View style={styles.itemContainer}>
-          <Logo width={logoWidth} height={logoHeight} horizontal={true} />
         </View>
 
         <View style={styles.spacer} />

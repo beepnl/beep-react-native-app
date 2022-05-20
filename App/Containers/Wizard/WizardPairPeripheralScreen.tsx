@@ -18,7 +18,6 @@ import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 
 // Components
 import { ScrollView, Text, View, SafeAreaView, TouchableOpacity } from 'react-native';
-import Logo from 'App/Assets/Images/ArmonLogo'
 import Button from '../../Components/Button';
 import BleScreen from '../BleScreen/BleScreen'
 import ScreenHeader from '../../Components/ScreenHeader';

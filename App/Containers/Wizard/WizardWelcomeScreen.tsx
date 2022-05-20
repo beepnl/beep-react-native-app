@@ -23,7 +23,6 @@ import { LanguageModel } from '../../Models/LanguageModel';
 // Components
 import { SafeAreaView, StatusBar } from "react-native";
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
-import Logo from 'App/Assets/Images/ArmonLogo'
 import Button from '../../Components/Button';
 import * as Progress from 'react-native-progress';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -71,9 +70,6 @@ const WizardWelcomeScreen: FunctionComponent<Props> = ({
     dispatch(SettingsActions.setLanguageCode(language.code))
     hideLanguagePicker()
   }
-
-  const logoWidth = Metrics.clientWidth / 1.5
-  const logoHeight = logoWidth * (38/170)
 
   return (
     <SafeAreaView style={styles.mainContainer}>

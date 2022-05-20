@@ -21,7 +21,6 @@ import { getPairedPeripherals } from 'App/Stores/Settings/Selectors'
 
 // Components
 import { ScrollView, Text, View } from 'react-native';
-import Logo from 'App/Assets/Images/ArmonLogo'
 import BluetoothLogo from 'App/Assets/Images/BluetoothLogo'
 import Button from '../../Components/Button';
 
@@ -72,9 +71,6 @@ const WizardBluetoothScreen: FunctionComponent<Props> = ({
     }
   }
 
-  const logoWidth = Metrics.clientWidth / 1.5
-  const logoHeight = logoWidth * (38/170)
-
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ScrollView>
@@ -82,7 +78,6 @@ const WizardBluetoothScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
 
         <View style={styles.itemContainer}>
-          <Logo width={logoWidth} height={logoHeight} horizontal={true} />
         </View>
 
         <View style={styles.spacer} />
