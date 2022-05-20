@@ -4,7 +4,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTypedSelector } from 'App/Stores';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 import { useInterval } from '../../Helpers/useInterval';
 
 // Styles
@@ -12,6 +12,7 @@ import styles from './PeripheralDetailScreenStyle'
 
 // Utils
 import Images from 'App/Assets/Images'
+import BleHelpers from '../../Helpers/BleHelpers';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
@@ -19,11 +20,10 @@ import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 
 // Components
-import { Text, View, Button, TextInput, PermissionsAndroid } from 'react-native';
+import { Text, View, Button, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import BleHelpers from '../../Helpers/BleHelpers';
+import { ScrollView } from 'react-native-gesture-handler';
 
 type MenuItem = { title: string, icon: string, screen: string }
 

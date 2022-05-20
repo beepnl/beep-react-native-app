@@ -1,14 +1,13 @@
 import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
 
 // Hooks
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 // Styles
 import { Metrics, Colors, Fonts } from '../Theme';
 
 // Utils
-import NavigationService from '../Services/NavigationService';
 
 // Redux
 

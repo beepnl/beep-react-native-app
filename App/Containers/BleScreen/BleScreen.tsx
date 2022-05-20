@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from 'react-navigation-hooks';
+import { useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -43,9 +43,9 @@ const BleScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  if (navigation.state.params?.onPaired) {
-    onPaired = navigation.state.params?.onPaired
-  }
+  // if (navigation.state.params?.onPaired) {
+  //   onPaired = navigation.state.params?.onPaired
+  // }
   const [isScanning, setIsScanning] = useState(false);
   const peripherals = new Map<string, Peripheral>();
   const [list, setList] = useState([]);
