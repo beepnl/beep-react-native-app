@@ -10,7 +10,8 @@ import useAppState from '../../Helpers/useAppState';
 import styles from './RootScreenStyle'
 
 // Utils
-import NavigationService from 'App/Services/NavigationService'
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthStack, AppStack } from './AppNavigation';
 import AppNavigator from 'App/Navigators/AppNavigator'
 import { NativeModules, NativeEventEmitter, ToastAndroid, Platform } from "react-native";
 import BleManager, { Peripheral } from 'react-native-ble-manager'
@@ -120,12 +121,10 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
 
   return (
     <View style={styles.mainContainer}>
-      <AppNavigator
-        // Initialize the NavigationService (see https://reactnavigation.org/docs/en/navigating-without-navigation-prop.html)
-        ref={(navigatorRef) => {
-          NavigationService.setTopLevelNavigator(navigatorRef)
-        }}
-      />
+      <NavigationContainer>
+        {/* <AuthStack /> */}
+        <AppStack />
+      </NavigationContainer>
       <DropdownAlert ref={dropDownAlert} />
     </View>
   )
