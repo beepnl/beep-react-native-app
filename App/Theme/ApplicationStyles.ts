@@ -45,10 +45,11 @@ const ApplicationStyles = {
   },
 
   input: {
-    height: Metrics.buttonHeight,
+    ...Fonts.style.regular,
+    height: Metrics.inputHeight,
     paddingHorizontal: Metrics.baseMargin,
     borderWidth: 1,
-    borderColor: Colors.blue,
+    borderColor: Colors.grey,
     borderRadius: Metrics.buttonRadius,
     color: Colors.text,
   },

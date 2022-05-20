@@ -8,6 +8,13 @@
     "btnNext": "Next",
     "btnFinish": "Finish"
   },
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "login": "Sign in",
+    "forgotPassword": "I forgot my password",
+    "signUp": "Create an account"
+  },
   "wizard": {
     "screenTitle": "Configuration",
     "welcome": {
@@ -39,6 +46,14 @@
       "false": "Disconnected"
     },
     "bleRSSI": "Signal strength: {{rssi}} dBm",
+  },
+  "dfu": {
+    "ENABLING_DFU_MODE": "Initializing BEEP base for firmware upload",
+    "CONNECTING": "Reconnecting for upload",
+    "DEVICE_DISCONNECTING": "Disconnecting",
+    "DFU_PROCESS_STARTING": "Uploading firmware...",
+    "DFU_COMPLETED": "Upload completed",
+    "DFU_FAILED": "Failed uploading firmware"
   },
   "ble": {
     "scanning": "Searching for BEEP base...",

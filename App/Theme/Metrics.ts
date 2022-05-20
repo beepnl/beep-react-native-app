@@ -20,6 +20,7 @@ const metrics = {
   isSmallScreen: screenWidth < 350,
   isBigScreen: screenWidth >= 350,
   navBarHeight: 54,
+  inputHeight: 60,
   buttonHeight: 80,
   buttonRadius: 6,
   cardRadius: 12,
