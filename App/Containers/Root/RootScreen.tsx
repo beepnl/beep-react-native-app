@@ -12,18 +12,19 @@ import styles from './RootScreenStyle'
 // Utils
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthStack, AppStack } from './AppNavigation';
-import AppNavigator from 'App/Navigators/AppNavigator'
+import { navigationRef } from '../../Services/NavigationService';
 import { NativeModules, NativeEventEmitter, ToastAndroid, Platform } from "react-native";
 import BleManager, { Peripheral } from 'react-native-ble-manager'
 import BleHelpers from '../../Helpers/BleHelpers';
 import moment from 'moment'
 
-// Redux
+// Data
 import StartupActions from 'App/Stores/Startup/Actions'
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { getError } from 'App/Stores/Api/Selectors';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { PairedPeripheralModel } from 'App/Models/PairedPeripheral';
+import { getToken } from 'App/Stores/Settings/Selectors';
 import { getLanguageCode } from 'App/Stores/Settings/Selectors';
 
 // Components
@@ -44,6 +45,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   const [isScanning, setIsScanning] = useState(false)
   const dropDownAlert = useRef<DropdownAlert>(null);
   const error = useSelector(getError)
+  const token: string = useTypedSelector<string>(getToken)
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   // const pairedPeripherals: Array<PairedPeripheralModel> = useTypedSelector<Array<PairedPeripheralModel>>(getPairedPeripherals)
   const { appState } = useAppState();
@@ -121,9 +123,9 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
 
   return (
     <View style={styles.mainContainer}>
-      <NavigationContainer>
-        {/* <AuthStack /> */}
-        <AppStack />
+      <NavigationContainer ref={navigationRef}>
+        { !token && <AuthStack /> }
+        { !!token && <AppStack /> }
       </NavigationContainer>
       <DropdownAlert ref={dropDownAlert} />
     </View>

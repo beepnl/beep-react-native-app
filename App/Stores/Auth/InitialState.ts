@@ -1,11 +1,9 @@
 export interface AuthState {
   user: any,
-  userIsLoading: boolean;
-  userErrorMessage?: string;
+  error: string | undefined,
 }
 
 export const AUTH_INITIAL_STATE: AuthState = {
   user: null,
-  userIsLoading: false,
-  userErrorMessage: undefined,
+  error: undefined,
 }

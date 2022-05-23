@@ -13,6 +13,8 @@ import { Images, Metrics } from '../../Theme';
 // Utils
 
 // Data
+import AuthActions from 'App/Stores/Auth/Actions'
+import { getError } from 'App/Stores/Auth/Selectors';
 
 // Components
 import { Text, View, TouchableOpacity, Button, TextInput, Image } from 'react-native';
@@ -27,14 +29,16 @@ const LoginScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const [userName, setUserName] = useState("")
+  const error = useSelector(getError)
+
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
-  const inputUserNameRef = useRef<TextInput>(null)
+  const inputUsernameRef = useRef<TextInput>(null)
   const inputPasswordRef = useRef<TextInput>(null)
 
   const onLoginPress = () => {
-    
+    dispatch(AuthActions.login(username, password))
   }
 
   return (
@@ -47,11 +51,13 @@ const LoginScreen: FunctionComponent<Props> = ({
         <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 300, margin: Metrics.baseMargin }} source={Images.beepLogo} resizeMode="contain" />
 
         <TextInput
-          ref={inputUserNameRef}
+          ref={inputUsernameRef}
           style={styles.input}
           placeholder={t("login.username")}
-          onChangeText={setUserName}
-          value={userName}
+          onChangeText={setUsername}
+          value={username}
+          autoCapitalize={"none"}
+          autoCorrect={false}
           returnKeyType="next"
           blurOnSubmit={false}
           onSubmitEditing={() => inputPasswordRef?.current?.focus()}
@@ -70,7 +76,12 @@ const LoginScreen: FunctionComponent<Props> = ({
         />
 
         <View style={styles.spacerDouble} />
-                
+
+        { !!error && <>
+          <Text style={styles.error}>{error}</Text>
+          <View style={styles.spacerDouble} />
+        </>}
+
         <TouchableOpacity onPress={onLoginPress}>
           <Text style={styles.textButton}>{t("login.login")}</Text>
         </TouchableOpacity>
