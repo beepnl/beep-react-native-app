@@ -8,12 +8,21 @@ import { useTranslation } from 'react-i18next';
 import { Metrics, Colors, Fonts } from '../Theme';
 
 // Utils
+import AnimateDown from 'App/Helpers/MenuRenderer'
 
 // Redux
 
 // Components
-import { StyleSheet, StatusBar, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
+import { StyleSheet, StatusBar, Text, View, TouchableOpacity } from 'react-native';
 import Back from 'App/Assets/Images/Back'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ScreenHeaderProps {
   title: string,
@@ -35,17 +44,29 @@ const ScreenHeader: FunctionComponent<ScreenHeaderProps> = ({
   }
 
   return (
-    <SafeAreaView style={styles.container} >
+    <SafeAreaView style={{ backgroundColor: Colors.yellow }} edges={["top"]}>
+      <View style={styles.container}>
       <StatusBar backgroundColor={Colors.statusBar} barStyle="light-content"/>
 
-      { !!back &&
-        <TouchableOpacity style={styles.back} onPress={onBackPressInternal}>
+      <TouchableOpacity style={styles.back} onPress={onBackPressInternal}>
+        { !!back &&
           <Back />
-        </TouchableOpacity>
-      }
+        }
+      </TouchableOpacity>
 
       <Text style={styles.title}>{title}</Text>
 
+      <Menu renderer={AnimateDown} >
+        <MenuTrigger style={styles.menuTrigger}>
+          <Icon name="dots-vertical" size={30} color={Colors.black} />
+        </MenuTrigger>
+        <MenuOptions style={{ }}>
+          <MenuOption customStyles={{ optionWrapper: styles.menuItemWrapper }} onSelect={() => {  }} >
+            <Text style={styles.menuItem}>{t("menu.itemSettings")}</Text>
+          </MenuOption>
+        </MenuOptions>
+      </Menu>
+        </View>
     </SafeAreaView>
   )
 }
@@ -53,18 +74,15 @@ const ScreenHeader: FunctionComponent<ScreenHeaderProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignSelf: "stretch",
+    width: "100%",
     height: Metrics.navBarHeight,
-    // justifyContent: 'space-between',
-    justifyContent: "center",
-    paddingLeft: Metrics.doubleBaseMargin,
+    alignSelf: "stretch",
+    alignItems: "center",
+    justifyContent: 'space-between',
     backgroundColor: Colors.yellow,
   },
 
   back: {
-    position: "absolute",
-    left: 0,
-    bottom: Metrics.baseMargin,
     paddingHorizontal: Metrics.doubleBaseMargin,
     paddingVertical: Metrics.baseMargin,
   },
@@ -75,6 +93,26 @@ const styles = StyleSheet.create({
     paddingTop: 3,
     marginBottom: 7,
     color: Colors.text
+  },
+
+  menuTrigger: { 
+    width: Metrics.navBarHeight, 
+    height: Metrics.navBarHeight, 
+    alignItems: "center",
+    justifyContent: "center" 
+  },
+
+  menuItemWrapper: {
+    height: Metrics.buttonHeight,
+    alignItems: "flex-end",
+    justifyContent: "center",
+    backgroundColor: Colors.yellow,
+  },
+
+  menuItem: {
+    ...Fonts.style.big,
+    marginHorizontal: Metrics.doubleBaseMargin,
+    color: Colors.text,
   },
 
 })

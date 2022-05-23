@@ -8,6 +8,9 @@
     "btnNext": "Next",
     "btnFinish": "Finish"
   },
+  "menu": {
+    "itemSettings": "Settings"
+  },
   "login": {
     "username": "Username",
     "password": "Password",

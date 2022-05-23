@@ -39,35 +39,31 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     navigation.navigate("WizardPairedScreen")
   }
 
-  return (
-    <SafeAreaView style={styles.mainContainer}>
+  return (<>
+    <ScreenHeader title={t("wizard.screenTitle")} back />
 
-      <ScreenHeader title={t("wizard.screenTitle")} back />
+    <View style={styles.spacerDouble} />
 
-      <View style={styles.spacerDouble} />
+    <View style={styles.container}>
 
-      <View style={styles.container}>
-
-        <View style={styles.itemContainer}>
-          <Text style={styles.itemText}>{t("wizard.pair.description")}</Text>
-        </View>
-
-        <View style={styles.spacer} />
-
-        {/* <BleScreen showScreenHeader={false} onPaired={() => { navigation.navigate("WizardPairedScreen") }} /> */}
-        <BleScreen showScreenHeader={false} />
-
-        <View style={styles.spacer} />
-
-        { !!peripheral && 
-          <TouchableOpacity onPress={onNextPress}>
-            <Text style={[styles.textButton, { alignSelf: "flex-end" }]}>{t("common.btnNext")}</Text>
-          </TouchableOpacity>
-        }
+      <View style={styles.itemContainer}>
+        <Text style={styles.itemText}>{t("wizard.pair.description")}</Text>
       </View>
 
-    </SafeAreaView>
-  )
+      <View style={styles.spacer} />
+
+      {/* <BleScreen showScreenHeader={false} onPaired={() => { navigation.navigate("WizardPairedScreen") }} /> */}
+      <BleScreen showScreenHeader={false} />
+
+      <View style={styles.spacer} />
+
+      { !!peripheral && 
+        <TouchableOpacity onPress={onNextPress}>
+          <Text style={[styles.textButton, { alignSelf: "flex-end" }]}>{t("common.btnNext")}</Text>
+        </TouchableOpacity>
+      }
+    </View>
+  </>)
 }
 
 export default WizardPairPeripheralScreen

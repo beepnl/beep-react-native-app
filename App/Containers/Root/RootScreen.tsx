@@ -17,6 +17,7 @@ import { NativeModules, NativeEventEmitter, ToastAndroid, Platform } from "react
 import BleManager, { Peripheral } from 'react-native-ble-manager'
 import BleHelpers from '../../Helpers/BleHelpers';
 import moment from 'moment'
+import i18n from '../../Localization';
 
 // Data
 import StartupActions from 'App/Stores/Startup/Actions'
@@ -30,7 +31,6 @@ import { getLanguageCode } from 'App/Stores/Settings/Selectors';
 // Components
 import { View } from 'react-native'
 import DropdownAlert from 'react-native-dropdownalert';
-import i18n from '../../Localization';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 

@@ -88,29 +88,27 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
     )
   }
 
-  return (
-    <View style={styles.mainContainer}>
-      <ScreenHeader title={t("peripheralDetail.screenTitle")} back />
+  return (<>
+    <ScreenHeader title={t("peripheralDetail.screenTitle")} back />
 
-      <ScrollView style={styles.container} >
-        <View style={styles.spacer} />
+    <ScrollView style={styles.container} >
+      <View style={styles.spacer} />
 
-        <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleName", { name: peripheral ? peripheral.name : "" })}</Text>
-        <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleStatus", { status: t(`peripheralDetail.bleConnection.${peripheral ? peripheral.isConnected : false}`)})}</Text>
+      <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleName", { name: peripheral ? peripheral.name : "" })}</Text>
+      <Text style={[styles.centeredText, styles.text]}>{t("peripheralDetail.bleStatus", { status: t(`peripheralDetail.bleConnection.${peripheral ? peripheral.isConnected : false}`)})}</Text>
 
-        <View style={styles.spacer} />
-        
-        <Button onPress={onToggleConnectionPress} title={"Toggle connection"}></Button>
+      <View style={styles.spacer} />
+      
+      <Button onPress={onToggleConnectionPress} title={"Toggle connection"}></Button>
 
-        <View style={styles.spacerDouble} />
+      <View style={styles.spacerDouble} />
 
-        { MENU_ITEMS.map((item: MenuItem, index: number) => renderMenuItem(item, index.toString()))}
+      { MENU_ITEMS.map((item: MenuItem, index: number) => renderMenuItem(item, index.toString()))}
 
-        <View style={styles.spacer} />
+      <View style={styles.spacer} />
 
-      </ScrollView>
-    </View>
-  )
+    </ScrollView>
+  </>)
 }
 
 export default PeripheralDetailScreen

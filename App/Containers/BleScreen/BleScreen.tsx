@@ -22,11 +22,9 @@ import { getPairedPeripherals } from 'App/Stores/Settings/Selectors'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 
 // Components
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Button from '../../Components/Button';
-import Modal from 'react-native-modal';
-import Keypad from '../../Components/Keypad';
 import * as Progress from 'react-native-progress';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
@@ -271,13 +269,11 @@ const BleScreen: FunctionComponent<Props> = ({
     }
   }
 
-  return (
-    <View style={styles.mainContainer}>
+  return (<>
 
-      {showScreenHeader && <>
+      {showScreenHeader &&
         <ScreenHeader title={t("ble.screenTitle")} back />
-        <View style={styles.spacer} />
-      </>}
+      }
 
       <View style={styles.messageContainer}>
         <Text style={[styles.text, { textAlign: "center" }]}>{message}</Text>
@@ -309,24 +305,7 @@ const BleScreen: FunctionComponent<Props> = ({
         renderItem={({ item }) => renderItem(item, tryConnectPeripheral) }
         keyExtractor={item => item.id}
       />
-
-      <Modal
-        isVisible={isKeypadModalVisible}
-        onBackdropPress={hideKeypad}
-        onBackButtonPress={hideKeypad}
-        useNativeDriver={true}
-        backdropOpacity={0.3}
-      >
-        <View style={ApplicationStyles.modalContainer}>
-          <Keypad
-            title={t("ble.keypadTitle")}
-            onOkPress={onKeypadOk}
-          />
-        </View>
-      </Modal>
-
-    </View>
-  )
+  </>)
 }
 
 export default BleScreen

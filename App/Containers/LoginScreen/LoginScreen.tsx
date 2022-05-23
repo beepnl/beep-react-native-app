@@ -42,7 +42,6 @@ const LoginScreen: FunctionComponent<Props> = ({
   }
 
   return (
-    <SafeAreaProvider>
     <SafeAreaView style={styles.mainContainer}>
 
       <View style={styles.container}>
@@ -90,7 +89,6 @@ const LoginScreen: FunctionComponent<Props> = ({
 
       </View>
     </SafeAreaView>
-    </SafeAreaProvider>
   )
 }
 

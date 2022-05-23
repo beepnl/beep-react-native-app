@@ -1,5 +1,7 @@
 import React from 'react';
 import { I18nManager, Animated, Easing, StyleSheet, PixelRatio } from 'react-native';
+import { Metrics } from '../Theme';
+import { withSafeAreaInsets } from 'react-native-safe-area-context';
 
 const OPEN_ANIM_DURATION = 300;
 const CLOSE_ANIM_DURATION = 200;
@@ -72,7 +74,7 @@ export const computePosition = (layouts, isRTL) => {
   return fitPositionIntoSafeArea(position, layouts);
 };
 
-export default class AnimateDown extends React.Component {
+class AnimateDown extends React.Component {
 
   constructor(props) {
     super(props);
@@ -115,14 +117,17 @@ export default class AnimateDown extends React.Component {
       opacity: this.state.slideAnim
     };
     const position = computePosition(layouts, I18nManager.isRTL);
+
     return (
-      <Animated.View {...other} style={[styles.options, style, animation, position]}>
+      <Animated.View {...other} style={[styles.options, { marginTop: Metrics.navBarHeight - this.props.insets.top }, style, animation, position]}>
         {children}
       </Animated.View>
     );
   }
 
 }
+
+export default withSafeAreaInsets(AnimateDown)
 
 // public exports
 AnimateDown.computePosition = computePosition;

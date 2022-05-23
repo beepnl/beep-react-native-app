@@ -23,7 +23,7 @@ import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 
 // Components
-import { ScrollView, Text, View, SafeAreaView, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 
 interface Props {
@@ -62,36 +62,32 @@ const WizardPairedPeripheralScreen: FunctionComponent<Props> = ({
     navigation.navigate("HomeScreen")
   }
 
-  return (
-    <SafeAreaView style={styles.mainContainer}>
+  return (<>
+    <ScreenHeader title={t("wizard.screenTitle")} />
 
-      <ScreenHeader title={t("wizard.screenTitle")} />
+    <View style={styles.container}>
+      <View style={styles.spacer} />
 
-      <View style={styles.container}>
-        <View style={styles.spacer} />
-
-        <View style={styles.itemContainer}>
-          <Text style={styles.itemText}>{t("wizard.paired.description")}</Text>
-        </View>
-
-        <View style={styles.spacer} />
-
-        <Text style={styles.text}>{ `Temperature sensor count: ${temperatures.length}` }</Text>
-
-        { temperatures.map((temperatureModel, index) => <View key={index} style={{ flexDirection: "row" }}>
-            <Text style={styles.text}>{ `Sensor ${index + 1}: ${temperatureModel.toString()}` }</Text>
-          </View>
-        )}
-
-        <View style={styles.spacer} />
-
-        <TouchableOpacity onPress={onNextPress}>
-          <Text style={[styles.textButton, { alignSelf: "flex-end" }]}>{t("common.btnFinish")}</Text>
-        </TouchableOpacity>
+      <View style={styles.itemContainer}>
+        <Text style={styles.itemText}>{t("wizard.paired.description")}</Text>
       </View>
 
-    </SafeAreaView>
-  )
+      <View style={styles.spacer} />
+
+      <Text style={styles.text}>{ `Temperature sensor count: ${temperatures.length}` }</Text>
+
+      { temperatures.map((temperatureModel, index) => <View key={index} style={{ flexDirection: "row" }}>
+          <Text style={styles.text}>{ `Sensor ${index + 1}: ${temperatureModel.toString()}` }</Text>
+        </View>
+      )}
+
+      <View style={styles.spacer} />
+
+      <TouchableOpacity onPress={onNextPress}>
+        <Text style={[styles.textButton, { alignSelf: "flex-end" }]}>{t("common.btnFinish")}</Text>
+      </TouchableOpacity>
+    </View>
+  </>)
 }
 
 export default WizardPairedPeripheralScreen

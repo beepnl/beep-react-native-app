@@ -21,7 +21,6 @@ import { getLanguageCode } from '../../Stores/Settings/Selectors';
 import { LanguageModel } from '../../Models/LanguageModel';
 
 // Components
-import { SafeAreaView, StatusBar } from "react-native";
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import Button from '../../Components/Button';
 import * as Progress from 'react-native-progress';
@@ -71,72 +70,68 @@ const WizardWelcomeScreen: FunctionComponent<Props> = ({
     hideLanguagePicker()
   }
 
-  return (
-    <SafeAreaView style={styles.mainContainer}>
-      <StatusBar backgroundColor={Colors.statusBar} barStyle="light-content"/>
-      <ScrollView>
+  return (<>
+    <ScrollView>
 
-        <View style={styles.itemContainer}>
-          { pairedPeripherals?.length == 0 && <Text style={styles.itemText}>{t("wizard.welcome.welcome") + t("wizard.welcome.description") + t("wizard.welcome.start")}</Text> }
-          { pairedPeripherals?.length > 0 && <Text style={styles.itemText}>{t("wizard.welcome.restoringConnections")}</Text> }
-        </View>
+      <View style={styles.itemContainer}>
+        { pairedPeripherals?.length == 0 && <Text style={styles.itemText}>{t("wizard.welcome.welcome") + t("wizard.welcome.description") + t("wizard.welcome.start")}</Text> }
+        { pairedPeripherals?.length > 0 && <Text style={styles.itemText}>{t("wizard.welcome.restoringConnections")}</Text> }
+      </View>
 
-        <View style={styles.spacerDouble} />
+      <View style={styles.spacerDouble} />
 
-        { !!pairedPeripherals && pairedPeripherals.length > 0 &&
-          <Progress.CircleSnail style={{alignSelf: "center"}} color={Colors.yellow} />
-        }
+      { !!pairedPeripherals && pairedPeripherals.length > 0 &&
+        <Progress.CircleSnail style={{alignSelf: "center"}} color={Colors.yellow} />
+      }
 
-        { (!pairedPeripherals || pairedPeripherals.length == 0) &&
-          <Button 
-            size="small" 
-            shadow={false}
-            title={t("common.btnStart")}
-            onPress={onNextPress} 
-          />
-        }
+      { (!pairedPeripherals || pairedPeripherals.length == 0) &&
+        <Button 
+          size="small" 
+          shadow={false}
+          title={t("common.btnStart")}
+          onPress={onNextPress} 
+        />
+      }
 
-        <View style={styles.spacerDouble} />
+      <View style={styles.spacerDouble} />
 
-        {/* Language button */}
-        <TouchableOpacity onPress={showLanguagePicker} style={{ position: "absolute", top: -10, left: Metrics.baseMargin, flexDirection: "row", alignItems: "center" }}>
-          <LanguageItem languageCode={languageCode} onSelect={showLanguagePicker} showIcon={false} showLabel={true} color={Colors.green} />
-          <IconMaterialCommunityIcons name={"chevron-down"} size={30} color={Colors.green} />
-        </TouchableOpacity>
+      {/* Language button */}
+      <TouchableOpacity onPress={showLanguagePicker} style={{ position: "absolute", top: -10, left: Metrics.baseMargin, flexDirection: "row", alignItems: "center" }}>
+        <LanguageItem languageCode={languageCode} onSelect={showLanguagePicker} showIcon={false} showLabel={true} color={Colors.green} />
+        <IconMaterialCommunityIcons name={"chevron-down"} size={30} color={Colors.green} />
+      </TouchableOpacity>
 
-        {/* Close wizard button */}
-        <TouchableOpacity
-          style={[styles.text, { 
-            position: "absolute",
-            top: 0,
-            right: Metrics.baseMargin,
-            padding: 2,
-          }]}
-          onPress={() => navigation.navigate("App")}
-        >
-          <Icon 
-            name="close-thick"
-            size={30} 
-            style={{ color: Colors.green }}
-          />
-        </TouchableOpacity>
-
-      </ScrollView>
-
-      <Modal
-        isVisible={isLanguagePickerVisible}
-        onBackdropPress={hideLanguagePicker}
-        onBackButtonPress={hideLanguagePicker}
-        useNativeDriver={true}
-        backdropOpacity={0.3}
+      {/* Close wizard button */}
+      <TouchableOpacity
+        style={[styles.text, { 
+          position: "absolute",
+          top: 0,
+          right: Metrics.baseMargin,
+          padding: 2,
+        }]}
+        onPress={() => navigation.navigate("App")}
       >
-        <View style={ApplicationStyles.modalContainer}>
-          <LanguagePicker onSelect={onLanguageSelect} showIcon={false} showLabel={true} />
-        </View>
-      </Modal>
+        <Icon 
+          name="close-thick"
+          size={30} 
+          style={{ color: Colors.green }}
+        />
+      </TouchableOpacity>
 
-    </SafeAreaView>
-  )
+    </ScrollView>
+
+    <Modal
+      isVisible={isLanguagePickerVisible}
+      onBackdropPress={hideLanguagePicker}
+      onBackButtonPress={hideLanguagePicker}
+      useNativeDriver={true}
+      backdropOpacity={0.3}
+    >
+      <View style={ApplicationStyles.modalContainer}>
+        <LanguagePicker onSelect={onLanguageSelect} showIcon={false} showLabel={true} />
+      </View>
+    </Modal>
+  </>)
 }
 
 export default WizardWelcomeScreen

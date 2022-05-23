@@ -8,12 +8,13 @@ import { PersistGate } from 'redux-persist/lib/integration/react'
 import i18n from './Localization';
 import { I18nextProvider } from 'react-i18next';
 import { MenuProvider } from 'react-native-popup-menu';
+import RootScreen from './Containers/Root/RootScreen'
 
 // Redux
 import { Provider } from 'react-redux'
 
 // Components
-import RootScreen from './Containers/Root/RootScreen'
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export const { store, persistor } = createStore()
 
@@ -36,9 +37,11 @@ const App: FunctionComponent<Props> = () => {
        */}
       <PersistGate loading={null} persistor={persistor}>
         <I18nextProvider i18n={i18n}>
-          <MenuProvider>
-            <RootScreen />
-          </MenuProvider>
+          <SafeAreaProvider>
+            <MenuProvider>
+              <RootScreen />
+            </MenuProvider>
+          </SafeAreaProvider>
         </I18nextProvider>
       </PersistGate>
     </Provider>

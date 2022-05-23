@@ -90,36 +90,34 @@ const LogFileScreen: FunctionComponent<Props> = ({
     }
   }
 
-  return (
-    <View style={styles.mainContainer}>
-      <ScreenHeader title={t("peripheralDetail.screenTitle")} back />
+  return (<>
+    <ScreenHeader title={t("peripheralDetail.screenTitle")} back />
 
-      <ScrollView style={styles.container} >
-        <View style={styles.spacer} />
+    <ScrollView style={styles.container} >
+      <View style={styles.spacer} />
 
-        <Button title={"Get log file size"} onPress={onGetLogFileSizePress}></Button>
-        <View style={styles.spacer} />
-        <Text style={[styles.text]}>{`Log file size: ${logFileSize?.toString()}`}</Text>
+      <Button title={"Get log file size"} onPress={onGetLogFileSizePress}></Button>
+      <View style={styles.spacer} />
+      <Text style={[styles.text]}>{`Log file size: ${logFileSize?.toString()}`}</Text>
 
-        <View style={styles.spacerDouble} />
+      <View style={styles.spacerDouble} />
 
-        <Button title={"Download log file"} onPress={onDownloadLogFilePress} disabled={logFileSize == undefined || logFileSize.value() == 0}></Button>
-        <View style={styles.spacer} />
-        <Text style={[styles.text]}>{`Progress: ${Math.round(logFileProgress / logFileSize?.value() * 100)} %`}</Text>
-        <View style={styles.spacer} />
-        <TextInput 
-          style={[styles.text, { height: 300, borderWidth: 1, borderColor: Colors.yellow }]} 
-          multiline={true} 
-          editable={false}
-          scrollEnabled={true}
-          value={combinedLogFileFrames.toString("hex")}
-        />
+      <Button title={"Download log file"} onPress={onDownloadLogFilePress} disabled={logFileSize == undefined || logFileSize.value() == 0}></Button>
+      <View style={styles.spacer} />
+      <Text style={[styles.text]}>{`Progress: ${Math.round(logFileProgress / logFileSize?.value() * 100)} %`}</Text>
+      <View style={styles.spacer} />
+      <TextInput 
+        style={[styles.text, { height: 300, borderWidth: 1, borderColor: Colors.yellow }]} 
+        multiline={true} 
+        editable={false}
+        scrollEnabled={true}
+        value={combinedLogFileFrames.toString("hex")}
+      />
 
-        <View style={styles.spacer} />
+      <View style={styles.spacer} />
 
-      </ScrollView>
-    </View>
-  )
+    </ScrollView>
+  </>)
 }
 
 export default LogFileScreen

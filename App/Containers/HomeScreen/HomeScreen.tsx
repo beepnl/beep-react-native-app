@@ -45,33 +45,28 @@ const HomeScreen: FunctionComponent<Props> = ({
     }
   }
 
-  return (
-    <SafeAreaProvider>
-    <SafeAreaView style={styles.mainContainer}>
+  return (<>
+    <ScreenHeader title={t("home.screenTitle")} />
 
-      <ScreenHeader title={t("home.screenTitle")} />
+    <View style={styles.container}>
+      <Text style={styles.text}>{t("home.introduction")}</Text>
 
-      <View style={styles.container}>
-        <Text style={styles.text}>{t("home.introduction")}</Text>
+      <View style={styles.spacerDouble} />
+      
+      <TouchableOpacity onPress={onStartWizardPress}>
+        <Text style={styles.textButton}>{t("home.startWizard")}</Text>
+      </TouchableOpacity>
 
-        <View style={styles.spacerDouble} />
-        
-        <TouchableOpacity onPress={onStartWizardPress}>
-          <Text style={styles.textButton}>{t("home.startWizard")}</Text>
-        </TouchableOpacity>
+      { pairedPeripheral &&
+        <Button title={pairedPeripheral.name} onPress={onPeripheralPress}></Button>
+      }
 
-        { pairedPeripheral &&
-          <Button title={pairedPeripheral.name} onPress={onPeripheralPress}></Button>
-        }
+      <View style={styles.spacerDouble} />
+      <View style={styles.spacerDouble} />
+      <Text style={styles.text}>{t('about.versionJS', { version: jsVersion + (__DEV__ ? " DEV" : "") })}</Text>
 
-        <View style={styles.spacerDouble} />
-        <View style={styles.spacerDouble} />
-        <Text style={styles.text}>{t('about.versionJS', { version: jsVersion + (__DEV__ ? " DEV" : "") })}</Text>
-
-      </View>
-    </SafeAreaView>
-    </SafeAreaProvider>
-  )
+    </View>
+  </>)
 }
 
 export default HomeScreen
