@@ -16,11 +16,13 @@ import Images from 'App/Assets/Images'
 // Data
 import AuthActions from 'App/Stores/Auth/Actions'
 import { getToken } from 'App/Stores/Settings/Selectors';
+import { getUser } from 'App/Stores/Settings/Selectors';
 
 // Components
 import { Text, View, Button } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import { ScrollView } from 'react-native-gesture-handler';
+import { UserModel } from '../../Models/UserModel';
 
 interface Props {
 }
@@ -31,6 +33,7 @@ const SettingsScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const token: string = useTypedSelector<string>(getToken)
+  const user: UserModel = useTypedSelector<UserModel>(getUser)
         
   useEffect(() => {
   }, []);
@@ -43,6 +46,7 @@ const SettingsScreen: FunctionComponent<Props> = ({
     <ScreenHeader title={t("peripheralDetail.screenTitle")} back />
 
     <ScrollView style={styles.container} >
+      <Text>{user?.email}</Text>
       <Button title={t("settings.logout")} onPress={onLogOutPress} disabled={!token} />
     </ScrollView>
   </>)
