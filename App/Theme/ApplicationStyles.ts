@@ -113,6 +113,17 @@ const ApplicationStyles = {
     backgroundColor: Colors.white,
   },
 
+  navigationButton: {
+    flexDirection: "row",
+    width: "100%",
+    height: Metrics.buttonHeight,
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: Metrics.baseMargin,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.lightGrey,
+  },
+
   spacer: {
     width: Metrics.doubleBaseMargin,
     height: Metrics.doubleBaseMargin

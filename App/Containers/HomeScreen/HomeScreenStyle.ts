@@ -6,4 +6,14 @@ import { Metrics, Colors } from '../../Theme';
 export default StyleSheet.create({
   ...ApplicationStyles,
 
+  container: {
+    ...ApplicationStyles.container,
+    alignItems: "center",
+  },
+
+  devicesContainer: {
+    ...ApplicationStyles.container,
+    width: "100%",
+  }
+
 })

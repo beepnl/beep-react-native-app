@@ -20,7 +20,7 @@ import { getDevices } from 'App/Stores/User/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
-import { Text, View, TouchableOpacity, Button } from 'react-native';
+import { Text, View, TouchableOpacity, Button, ScrollView } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 
 interface Props {
@@ -45,6 +45,10 @@ const HomeScreen: FunctionComponent<Props> = ({
     }
   }
 
+  const onDevicePress = () => {
+    navigation.navigate("PeripheralDetailScreen")
+  }
+
   return (<>
     <ScreenHeader title={t("home.screenTitle")} />
 
@@ -61,15 +65,20 @@ const HomeScreen: FunctionComponent<Props> = ({
         <Button title={pairedPeripheral.name} onPress={onPeripheralPress}></Button>
       }
 
-      { devices.map((device: DeviceModel) => {
-        return <Text style={styles.text}>{device.id + " " + device.hardwareId + " " + device.name}</Text>
-      })
+      <ScrollView style={styles.devicesContainer}>
+        { devices.map((device: DeviceModel) => {
+          return (
+            <TouchableOpacity style={styles.navigationButton} onPress={() => onDevicePress(device)}>
+              <Text style={styles.text}>{device.name}</Text>
+              <Text style={styles.text}>&gt;</Text>
+            </TouchableOpacity>
+          )
+        })}
+      </ScrollView>
 
-      }
-
-      <View style={styles.spacerDouble} />
       <View style={styles.spacerDouble} />
       <Text style={styles.text}>{t('about.versionJS', { version: jsVersion + (__DEV__ ? " DEV" : "") })}</Text>
+      <View style={styles.spacerDouble} />
 
     </View>
   </>)
