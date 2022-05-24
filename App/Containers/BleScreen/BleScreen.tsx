@@ -47,7 +47,6 @@ const BleScreen: FunctionComponent<Props> = ({
   const [isScanning, setIsScanning] = useState(false);
   const peripherals = new Map<string, Peripheral>();
   const [list, setList] = useState([]);
-  const [isKeypadModalVisible, setKeypadModalVisible] = useState(false)
   const [connectingPeripheral, setConnectingPeripheral] = useState<Peripheral | null>(null)
   const [connectedPeripheral, setConnectedPeripheral] = useState<Peripheral | null>(null)
   const [error, setError] = useState("")
@@ -105,14 +104,6 @@ const BleScreen: FunctionComponent<Props> = ({
  
   }
 
-  const showKeypad = () => {
-    setKeypadModalVisible(true)
-  }
-
-  const hideKeypad = () => {
-    setKeypadModalVisible(false)
-  }
-
   const handleStopScan = () => {
     console.log('Scan is stopped');
     setIsScanning(false);
@@ -139,22 +130,12 @@ const BleScreen: FunctionComponent<Props> = ({
     console.log("tryConnectPeripheral", peripheral)
     setConnectingPeripheral(peripheral)
     if (Platform.OS == "android") {
-      // showKeypad()
       connectPeripheral(peripheral, "123456")
     } else if (Platform.OS == "ios") {
       connectPeripheral(peripheral)
     }
   }
   
-  const onKeypadOk = (pinCode: string) => {
-    console.log("onKeypadOk", connectingPeripheral, pinCode)
-    hideKeypad()
-    // if (connectingPeripheral && pinCode) { //DO NOT COMMIT
-    if (connectingPeripheral) {
-      connectPeripheral(connectingPeripheral, pinCode)
-    }
-  }
-
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const connectPeripheral = (peripheral: Peripheral, pinCode?: string) => {
