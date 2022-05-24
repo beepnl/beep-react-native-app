@@ -46,7 +46,7 @@ const ScreenHeader: FunctionComponent<ScreenHeaderProps> = ({
   return (
     <SafeAreaView style={{ backgroundColor: Colors.yellow }} edges={["top"]}>
       <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.statusBar} barStyle="light-content"/>
+      <StatusBar backgroundColor={Colors.statusBar} barStyle="dark-content"/>
 
       <TouchableOpacity style={styles.back} onPress={onBackPressInternal}>
         { !!back &&
