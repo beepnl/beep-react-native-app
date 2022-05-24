@@ -4,6 +4,10 @@ export const getToken = (state: AppState) => {
   return state.settings.token
 }
 
+export const getUser = (state: AppState) => {
+  return state.settings.user
+}
+
 export const getLanguageCode = (state: AppState) => {
   return state.settings.languageCode
 }

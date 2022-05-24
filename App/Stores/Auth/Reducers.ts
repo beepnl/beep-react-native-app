@@ -4,7 +4,6 @@ import { AuthTypes } from './Actions'
 
 export const loginSuccess = (state: AuthState, payload: any) => ({
   ...state,
-  user: payload.user,
   error: undefined,
 })
 
@@ -13,14 +12,12 @@ export const loginFailure = (state: AuthState, payload: any) => {
   const { message } = response?.data
   return {
     ...state,
-    user: undefined,
     error: message,
   }
 }
 
 export const logout = (state: AuthState, payload: any) => ({
   ...state,
-  user: undefined,
   error: undefined,
 })
 
