@@ -8,7 +8,6 @@ import { useTypedSelector } from 'App/Stores';
 
 // Styles
 import styles from './HomeScreenStyle'
-import { Metrics } from '../../Theme';
 
 // Utils
 const nodePackage = require('../../../package.json')   //including node package config for app version
@@ -16,13 +15,13 @@ const nodePackage = require('../../../package.json')   //including node package 
 // Data
 import SettingsActions from 'App/Stores/Settings/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripherals } from 'App/Stores/Settings/Selectors'
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { getDevices } from 'App/Stores/User/Selectors'
+import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
 import { Text, View, TouchableOpacity, Button } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
 }
@@ -34,6 +33,7 @@ const HomeScreen: FunctionComponent<Props> = ({
   const navigation = useNavigation();
   const jsVersion =  nodePackage.version
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const devices: Array<DeviceModel> = useTypedSelector<Array<DeviceModel>>(getDevices)
 
   const onStartWizardPress = () => {
     navigation.navigate("Wizard")
@@ -59,6 +59,12 @@ const HomeScreen: FunctionComponent<Props> = ({
 
       { pairedPeripheral &&
         <Button title={pairedPeripheral.name} onPress={onPeripheralPress}></Button>
+      }
+
+      { devices.map((device: DeviceModel) => {
+        return <Text style={styles.text}>{device.id + " " + device.hardwareId + " " + device.name}</Text>
+      })
+
       }
 
       <View style={styles.spacerDouble} />

@@ -4,6 +4,7 @@ import SettingsActions from 'App/Stores/Settings/Actions'
 import UserActions from 'App/Stores/User/Actions'
 import api from 'App/Services/ApiService'
 import { UserModel } from '../Models/UserModel'
+import { getDevices } from './ApiSaga'
 
 export function* login(action: any) {
   const { username, password } = action
@@ -13,9 +14,15 @@ export function* login(action: any) {
     const { api_token } = response.data
     //setting token will switch navigation in root screen
     if (api_token) {
+      //set token for authentication
+      yield call(api.setToken, api_token)
+      //persist token for future app runs
       yield put(UserActions.setToken(api_token))
+      //store user details
+      yield put(UserActions.setUser(new UserModel(response.data)))
+      //refresh registered devices linked to user account
+      yield call(getDevices, null)
     }
-    yield put(UserActions.setUser(new UserModel(response.data)))
   } else {
     yield put(AuthActions.loginFailure(response))
   }

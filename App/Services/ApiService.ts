@@ -12,16 +12,21 @@ const api = create({
   timeout: 10000,
 })
 
-let key: string = ""
-function setKey(value: string) {
-  key = value
+function setToken(value: string) {
+  api.headers['Authorization'] = `Bearer ${value}`
 }
 
 function login(email: string, password: string) {
   return api.post("login", { email, password }, { headers: { Authorization: "" } })
 }
 
+function getDevices() {
+  return api.get("devices")
+}
+
 export default {
-  setKey,
+  setToken,
   login,
+
+  getDevices,
 }

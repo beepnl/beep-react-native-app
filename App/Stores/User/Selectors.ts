@@ -8,9 +8,6 @@ export const getUser = (state: AppState) => {
   return state.user.user
 }
 
-export const getUserDevices = (state: AppState) => {
-  if (state.user.user) {
-    return state.user.devices
-  }
-  return []
+export const getDevices = (state: AppState) => {
+  return state.user.devices
 }
