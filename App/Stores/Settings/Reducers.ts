@@ -2,22 +2,6 @@ import { INITIAL_STATE, SettingsState } from './InitialState'
 import { createReducer } from 'reduxsauce'
 import { SettingsTypes } from './Actions'
 
-export const setToken = (state: SettingsState, payload: any) => {
-  const { token } = payload  
-  return {
-    ...state,
-    token
-  }
-}
-
-export const setUser = (state: SettingsState, payload: any) => {
-  const { user } = payload  
-  return {
-    ...state,
-    user
-  }
-}
-
 export const setLanguageCode = (state: SettingsState, payload: any) => {
   const { languageCode } = payload  
   return {
@@ -69,8 +53,6 @@ export const removePairedPeripheral = (state: SettingsState, payload: any) => {
 }
 
 export const reducer = createReducer(INITIAL_STATE, {
-  [SettingsTypes.SET_TOKEN]: setToken,
-  [SettingsTypes.SET_USER]: setUser,
   [SettingsTypes.SET_LANGUAGE_CODE]: setLanguageCode,
   [SettingsTypes.ADD_PAIRED_PERIPHERAL]: addPairedPeripheral,
   [SettingsTypes.UPDATE_PAIRED_PERIPHERAL]: updatePairedPeripheral,

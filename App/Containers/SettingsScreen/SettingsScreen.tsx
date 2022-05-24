@@ -15,8 +15,8 @@ import Images from 'App/Assets/Images'
 
 // Data
 import AuthActions from 'App/Stores/Auth/Actions'
-import { getToken } from 'App/Stores/Settings/Selectors';
-import { getUser } from 'App/Stores/Settings/Selectors';
+import { getToken } from 'App/Stores/User/Selectors';
+import { getUser } from 'App/Stores/User/Selectors';
 
 // Components
 import { Text, View, Button } from 'react-native';

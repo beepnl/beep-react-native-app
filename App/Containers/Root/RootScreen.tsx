@@ -25,7 +25,7 @@ import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { getError } from 'App/Stores/Api/Selectors';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { PairedPeripheralModel } from 'App/Models/PairedPeripheral';
-import { getToken } from 'App/Stores/Settings/Selectors';
+import { getToken } from 'App/Stores/User/Selectors';
 import { getLanguageCode } from 'App/Stores/Settings/Selectors';
 
 // Components
