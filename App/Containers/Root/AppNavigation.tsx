@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from 'App/Containers/LoginScreen/LoginScreen';
 import HomeScreen from 'App/Containers/HomeScreen/HomeScreen';
+import SettingsScreen from 'App/Containers/SettingsScreen/SettingsScreen';
 import PeripheralDetailScreen from 'App/Containers/PeripheralDetailScreen/PeripheralDetailScreen';
 import LogFileScreen from 'App/Containers/LogFileScreen/LogFileScreen';
 import FirmwareScreen from 'App/Containers/FirmwareScreen/FirmwareScreen';
@@ -36,6 +37,7 @@ export const AppStack = () => {
   return (
     <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
       <Stack.Screen name="PeripheralDetailScreen" component={PeripheralDetailScreen} />
       <Stack.Screen name="LogFileScreen" component={LogFileScreen} />
       <Stack.Screen name="FirmwareScreen" component={FirmwareScreen} />

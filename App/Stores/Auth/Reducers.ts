@@ -13,12 +13,19 @@ export const loginFailure = (state: AuthState, payload: any) => {
   const { message } = response?.data
   return {
     ...state,
-    user: null,
+    user: undefined,
     error: message,
   }
 }
 
+export const logout = (state: AuthState, payload: any) => ({
+  ...state,
+  user: undefined,
+  error: undefined,
+})
+
 export const reducer = createReducer(AUTH_INITIAL_STATE, {
   [AuthTypes.LOGIN_SUCCESS]: loginSuccess,
   [AuthTypes.LOGIN_FAILURE]: loginFailure,
+  [AuthTypes.LOGOUT]: logout,
 })

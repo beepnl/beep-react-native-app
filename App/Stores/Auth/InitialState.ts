@@ -4,6 +4,6 @@ export interface AuthState {
 }
 
 export const AUTH_INITIAL_STATE: AuthState = {
-  user: null,
+  user: undefined,
   error: undefined,
 }

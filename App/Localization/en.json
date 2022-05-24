@@ -36,6 +36,9 @@
     "introduction": "Below you find a list of BEEP bases that are currently associated with your account.",
     "startWizard": "Configure new BEEP base"
   },
+  "settings": {
+    "logout": "Sign out"
+  },
   "about": {
     "screenTitle": "About",
     "versionJS": "App version {{version}}"
