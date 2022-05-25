@@ -73,7 +73,6 @@
     "noResult": "No devices found.",
     "select": "Select a device",
     "connecting": "Connecting...",
-    "keypadTitle": "Enter pin code",
     "retry": "Retry scan"
   }
 }
