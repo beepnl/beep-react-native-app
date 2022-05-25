@@ -21,18 +21,21 @@ import {
   MenuOptions,
   MenuOption,
   MenuTrigger,
+  renderers,
 } from 'react-native-popup-menu';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ScreenHeaderProps {
   title: string,
   back?: boolean,
+  menu?: boolean,
   onBackPress?: () => void,
 }
 
 const ScreenHeader: FunctionComponent<ScreenHeaderProps> = ({
   title,
   back,
+  menu,
   onBackPress,
 }) => {
   const { t } = useTranslation();
@@ -46,27 +49,25 @@ const ScreenHeader: FunctionComponent<ScreenHeaderProps> = ({
   return (
     <SafeAreaView style={{ backgroundColor: Colors.yellow }} edges={["top"]}>
       <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.statusBar} barStyle="dark-content"/>
+        <StatusBar backgroundColor={Colors.statusBar} barStyle="dark-content"/>
 
-      <TouchableOpacity style={styles.back} onPress={onBackPressInternal}>
-        { !!back &&
-          <Back />
-        }
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.back} onPress={onBackPressInternal} disabled={!back} >
+          <Icon name="chevron-left" size={30} color={back ? Colors.black : Colors.transparent} />
+        </TouchableOpacity>
 
-      <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{title}</Text>
 
-      <Menu renderer={AnimateDown} >
-        <MenuTrigger style={styles.menuTrigger}>
-          <Icon name="dots-vertical" size={30} color={Colors.black} />
-        </MenuTrigger>
-        <MenuOptions style={{ }}>
-          <MenuOption customStyles={{ optionWrapper: styles.menuItemWrapper }} onSelect={() => {  }} >
-            <Text style={styles.menuItem}>{t("menu.itemSettings")}</Text>
-          </MenuOption>
-        </MenuOptions>
-      </Menu>
-        </View>
+        <Menu renderer={AnimateDown} >
+          <MenuTrigger style={[styles.menuTrigger, !menu && { opacity: 0 }]} disabled={!menu} >
+            <Icon name="dots-vertical" size={30} color={Colors.black} />
+          </MenuTrigger>
+          <MenuOptions style={{ }}>
+            <MenuOption customStyles={{ optionWrapper: styles.menuItemWrapper }} onSelect={() => { navigation.navigate("SettingsScreen") }} >
+              <Text style={styles.menuItem}>{t("menu.itemSettings")}</Text>
+            </MenuOption>
+          </MenuOptions>
+        </Menu>
+      </View>
     </SafeAreaView>
   )
 }

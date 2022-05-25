@@ -50,7 +50,7 @@ const HomeScreen: FunctionComponent<Props> = ({
   }
 
   return (<>
-    <ScreenHeader title={t("home.screenTitle")} />
+    <ScreenHeader title={t("home.screenTitle")} menu />
 
     <View style={styles.container}>
       <View style={styles.spacer} />
