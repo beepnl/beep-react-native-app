@@ -202,7 +202,10 @@ export default class BleHelpers {
   }
 
   static scanPeripheralByName(startsWith: string): Promise<Peripheral> {
-    return new Promise<Peripheral>((resolve) => {
+    const TIME_OUT = 10   //seconds
+    let isScanning = false
+
+    return new Promise<Peripheral>((resolve, reject) => {
       const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: Peripheral) => {
         console.log('Found BLE peripheral', peripheral.id, peripheral.name);
         if (peripheral.advertising?.isConnectable) {
@@ -217,11 +220,22 @@ export default class BleHelpers {
         }
       })
 
+      const BleManagerStopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', () => {
+        BleManagerStopScanSubscription && BleManagerStopScanSubscription.remove()
+        if (isScanning) {
+          //if still scanning at this point no device matching filter was found
+          reject()
+        }
+        isScanning = false
+      })
+
       BleManager.enableBluetooth().then(() => {
         console.log("The bluetooth is already enabled or the user confirmed");
-        BleManager.scan([/*BEEP_SERVICE*/], 10, false).then((results) => {
+        isScanning = true
+        BleManager.scan([/*BEEP_SERVICE*/], TIME_OUT, false).then((results) => {
           console.log('Scanning...')
         }).catch(err => {
+          isScanning = false
           console.error(err)
         })
       })
