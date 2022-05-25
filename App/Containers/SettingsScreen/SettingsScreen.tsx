@@ -19,7 +19,7 @@ import { getToken } from 'App/Stores/User/Selectors';
 import { getUser } from 'App/Stores/User/Selectors';
 
 // Components
-import { Text, View, Button } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import { ScrollView } from 'react-native-gesture-handler';
 import { UserModel } from '../../Models/UserModel';
@@ -46,8 +46,13 @@ const SettingsScreen: FunctionComponent<Props> = ({
     <ScreenHeader title={t("peripheralDetail.screenTitle")} back />
 
     <ScrollView style={styles.container} >
-      <Text>{user?.email}</Text>
-      <Button title={t("settings.logout")} onPress={onLogOutPress} disabled={!token} />
+      <Text style={styles.label}>{t("settings.username")}<Text style={styles.text}>{user?.name}</Text></Text>
+
+      <View style={styles.spacerDouble} />
+
+      <TouchableOpacity style={styles.button} onPress={onLogOutPress} disabled={!token}>
+        <Text style={styles.text}>{t("settings.logout")}</Text>
+      </TouchableOpacity>
     </ScrollView>
   </>)
 }

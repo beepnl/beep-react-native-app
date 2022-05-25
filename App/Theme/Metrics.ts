@@ -21,7 +21,7 @@ const metrics = {
   isBigScreen: screenWidth >= 350,
   navBarHeight: 54,
   inputHeight: 60,
-  buttonHeight: 60,
+  buttonHeight: 50,
   buttonRadius: 6,
   cardRadius: 12,
   checkboxHeight: 30,

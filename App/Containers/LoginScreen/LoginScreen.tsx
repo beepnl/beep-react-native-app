@@ -81,8 +81,8 @@ const LoginScreen: FunctionComponent<Props> = ({
           <View style={styles.spacerDouble} />
         </>}
 
-        <TouchableOpacity onPress={onLoginPress}>
-          <Text style={styles.textButton}>{t("login.login")}</Text>
+        <TouchableOpacity style={styles.button} onPress={onLoginPress}>
+          <Text style={styles.text}>{t("login.login")}</Text>
         </TouchableOpacity>
 
         <View style={styles.spacerDouble} />

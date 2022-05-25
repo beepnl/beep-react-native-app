@@ -37,6 +37,7 @@
     "startWizard": "Configure new BEEP base"
   },
   "settings": {
+    "username": "E-mail: ",
     "logout": "Sign out"
   },
   "about": {
