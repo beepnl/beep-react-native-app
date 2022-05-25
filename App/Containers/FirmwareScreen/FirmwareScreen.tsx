@@ -9,9 +9,9 @@ import { useInterval } from '../../Helpers/useInterval';
 
 // Styles
 import styles from './FirmwareScreenStyle'
+import { Colors, Metrics } from '../../Theme';
 
 // Utils
-import Images from 'App/Assets/Images'
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import { NordicDFU, DFUEmitter } from "react-native-nordic-dfu";
 import RNFS from 'react-native-fs'
@@ -24,13 +24,13 @@ import { getFirmwaresStable } from 'App/Stores/Api/Selectors'
 import { getFirmwaresTest } from 'App/Stores/Api/Selectors'
 import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
+import { FirmwareModel } from '../../Models/FirmwareModel';
 
 // Components
 import { Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ScrollView } from 'react-native-gesture-handler';
-import { FirmwareModel } from '../../Models/FirmwareModel';
 
 interface Props {
 }
@@ -137,6 +137,18 @@ const FirmwareScreen: FunctionComponent<Props> = ({
     })
   }
 
+  const renderFirmwareItem = (firmware: FirmwareModel, key: number) => {
+    return (
+      <TouchableOpacity key={key} style={styles.navigationButton} onPress={() => { }}>
+        <View style={{ paddingVertical: 0 }}>
+          <Text style={styles.text}>{`BEEP base ${firmware.version}`}</Text>
+          <Text style={styles.instructions}>{firmware.size}</Text>
+        </View>
+        <Icon name="chevron-right" size={30} color={Colors.lightGrey} />
+      </TouchableOpacity>
+    )
+  }
+
   return (
     <View style={styles.mainContainer}>
       <ScreenHeader title={t("firmware.screenTitle")} back />
@@ -161,21 +173,18 @@ const FirmwareScreen: FunctionComponent<Props> = ({
 
         <View style={styles.spacer} />
 
-        { firmwaresStable.map((firmware: FirmwareModel, index: number) => {
-          return (
-            <View key={index}>
-              <Text>{firmware.version}</Text>
-            </View>
-          )
-        })}
+        <Text style={styles.label}>{t("firmware.current")}</Text>
         <View style={styles.spacer} />
-        { firmwaresTest.map((firmware: FirmwareModel, index: number) => {
-          return (
-            <View key={index}>
-              <Text>{firmware.version}</Text>
-            </View>
-          )
-        })}
+        { renderFirmwareItem({ version: firmwareVersion?.toString(), size: t("firmware.currentDescription") })}
+        <View style={styles.spacerDouble} />
+        <Text style={styles.label}>{t("firmware.other")}</Text>
+        <View style={styles.spacer} />
+        { firmwaresStable.map((firmware: FirmwareModel, index: number) => renderFirmwareItem(firmware, index)) }
+        <View style={styles.spacerDouble} />
+        <Text style={styles.label}>{t("firmware.test")}</Text>
+        <View style={styles.spacer} />
+        { firmwaresTest.map((firmware: FirmwareModel, index: number) => renderFirmwareItem(firmware, index)) }
+
       </ScrollView>
     </View>
   )

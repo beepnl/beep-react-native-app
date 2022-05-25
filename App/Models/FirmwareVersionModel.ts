@@ -13,7 +13,7 @@ export class FirmwareVersionModel {
   }
 
   toString() {
-    return `${this.major}.${this.minor}.${this.revision}  Timestamp: ${DateTimeHelper.formatTime(this.timestamp)}`
+    return `${this.major}.${this.minor}.${this.revision}`
   }
 }
 

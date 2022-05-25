@@ -73,6 +73,10 @@
   },
   "firmware": {
     "screenTitle": "Firmware",
+    "current": "Current version",
+    "currentDescription": "You have the latest version",
+    "other": "Other versions",
+    "test": "Test versions",
     "install": "Download and install",
     "ENABLING_DFU_MODE": "Initializing BEEP base for firmware upload",
     "CONNECTING": "Reconnecting for upload",

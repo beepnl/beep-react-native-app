@@ -1,3 +1,5 @@
+import FormatHelpers from "../Helpers/FormatHelpers"
+
 /*
 {
     "version": "1.5.11",
@@ -12,14 +14,14 @@ export class FirmwareModel {
   version: string
   releaseNotes: string
   stability: "stable" | "test"
-  size: number
+  size: string
   url: string
 
   constructor(props: any) {
     this.version = props.version
     this.releaseNotes = props.release_notes
     this.stability = props.stability
-    this.size = props.size
+    this.size = `${FormatHelpers.formatSizeAsHumanReadable(props.size)}`
     this.url = props.download_url
   }
 

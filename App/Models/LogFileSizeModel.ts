@@ -1,4 +1,5 @@
 import DateTimeHelper from "../Helpers/DateTimeHelpers"
+import FormatHelpers from "../Helpers/FormatHelpers"
 
 export class LogFileSizeModel {
   data: number = 0
@@ -8,13 +9,8 @@ export class LogFileSizeModel {
     this.data = Number(props.data)
   }
 
-  private humanReadableFileSize(bytes: number): `${number} ${'B' | 'KB' | 'MB' | 'GB' | 'TB'}` {
-    const index = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${Number((bytes / Math.pow(1024, index)).toFixed(2)) * 1} ${(['B', 'KB', 'MB', 'GB', 'TB'] as const)[index]}`;
-  };
-
   toString() {
-    return `${this.humanReadableFileSize(this.data)}  Timestamp: ${DateTimeHelper.formatTime(this.timestamp)}`
+    return `${FormatHelpers.formatSizeAsHumanReadable(this.data)}  Timestamp: ${DateTimeHelper.formatTime(this.timestamp)}`
   }
 
   value() {

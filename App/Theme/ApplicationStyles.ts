@@ -119,7 +119,7 @@ const ApplicationStyles = {
   navigationButton: {
     flexDirection: "row",
     width: "100%",
-    height: Metrics.buttonHeight,
+    // height: Metrics.buttonHeight,
     alignItems: "center",
     justifyContent: "space-between",
     padding: Metrics.baseMargin,
