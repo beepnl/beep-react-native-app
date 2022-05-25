@@ -69,7 +69,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       if (peripheral && peripheral.id == peripheralId) {
         const updated = {
           ...peripheral,
-          isConnected: true,
+          isConnected: false,
         }
         dispatch(BeepBaseActions.setPairedPeripheral(updated))
       }
