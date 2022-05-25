@@ -21,7 +21,7 @@ import { getPairedPeripherals } from 'App/Stores/Settings/Selectors'
 
 // Components
 import { ScrollView, Text, View } from 'react-native';
-import BluetoothLogo from 'App/Assets/Images/BluetoothLogo'
+// import BluetoothLogo from 'App/Assets/Images/BluetoothLogo'
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -95,7 +95,7 @@ const WizardBluetoothScreen: FunctionComponent<Props> = ({
 
         <View style={styles.centeredContainer}>
           <View style={styles.spacer} />
-          <BluetoothLogo backgroundColor={BleHelpers.getBluetoothColor(bluetoothState)} />
+          {/* <BluetoothLogo backgroundColor={BleHelpers.getBluetoothColor(bluetoothState)} /> */}
           <View style={styles.spacer} />
         </View>
 
