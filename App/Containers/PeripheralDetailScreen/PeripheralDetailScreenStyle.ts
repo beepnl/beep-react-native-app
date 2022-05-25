@@ -14,13 +14,6 @@ export default StyleSheet.create({
     justifyContent: "space-between",
   },
 
-  menuItem: {
-    width: "100%",
-    height: Metrics.buttonHeight,
-    justifyContent: "center",
-    borderBottomColor: Colors.grey, 
-    borderBottomWidth: 1,
-  },
 
   menuItemTitle: {
     ...Fonts.style.button

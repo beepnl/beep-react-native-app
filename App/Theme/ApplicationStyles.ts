@@ -109,8 +109,11 @@ const ApplicationStyles = {
 
   button: {
     height: Metrics.buttonHeight,
-    borderRadius: Metrics.buttonHeight / 2,
-    backgroundColor: Colors.white,
+    paddingHorizontal: Metrics.doubleBaseMargin,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: Metrics.buttonRadius,
+    backgroundColor: Colors.yellow,
   },
 
   navigationButton: {
@@ -167,6 +170,17 @@ const ApplicationStyles = {
   text: {
     ...Fonts.style.regular,
     color: Colors.text,
+  },
+
+  instructions: {
+    ...Fonts.style.small,
+    fontStyle: "italic",
+    color: Colors.darkGrey,
+  },
+
+  label: {
+    ...Fonts.style.regular,
+    color: Colors.darkGrey,
   },
 
   textButton: {

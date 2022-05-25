@@ -25,6 +25,11 @@ const style = {
     fontSize: 18,
   },
 
+  small: {
+    // fontFamily: type.regular,
+    fontSize: 15,
+  },
+
   big: {
     // fontFamily: type.regular,
     fontSize: 22,

@@ -1,5 +1,5 @@
 // Utils
-import BleManager from 'react-native-ble-manager'
+import BleManager, { Peripheral } from 'react-native-ble-manager'
 import { EmitterSubscription, Linking, PermissionsAndroid, Platform } from "react-native";
 import { stringToBytes, bytesToString } from "convert-string";
 import { PairedPeripheralModel } from '../Models/PairedPeripheralModel';
@@ -84,7 +84,6 @@ export type BluetoothState =
 
 export const BEEP_SERVICE = "be4768a1-719f-4bad-5040-c6ebc5f8c31b"
 export const CONTROL_POINT_CHARACTERISTIC = "000068b0-0000-1000-8000-00805f9b34fb"
-// export const LOG_FILE_CHARACTERISTIC = "000068a3-0000-1000-8000-00805f9b34fb"
 export const LOG_FILE_CHARACTERISTIC = "be4768a3-719f-4bad-5040-c6ebc5f8c31b"
 
 export default class BleHelpers {
@@ -199,6 +198,36 @@ export default class BleHelpers {
     })
     .catch((error) => {
       console.log(error);
+    })
+  }
+
+  static scanPeripheralByName(startsWith: string): Promise<Peripheral> {
+    return new Promise<Peripheral>((resolve) => {
+      const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: Peripheral) => {
+        console.log('Found BLE peripheral', peripheral.id, peripheral.name);
+        if (peripheral.advertising?.isConnectable) {
+          if (!peripheral.name) {
+            peripheral.name = peripheral.advertising?.localName
+          }
+          if (peripheral.name?.startsWith(startsWith)) {
+            BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
+            BleManager.stopScan()
+            resolve(peripheral)
+          }
+        }
+      })
+
+      BleManager.enableBluetooth().then(() => {
+        console.log("The bluetooth is already enabled or the user confirmed");
+        BleManager.scan([/*BEEP_SERVICE*/], 10, false).then((results) => {
+          console.log('Scanning...')
+        }).catch(err => {
+          console.error(err)
+        })
+      })
+      .catch((error) => {
+        console.log("The user refuse to enable bluetooth", error);
+      });
     })
   }
 

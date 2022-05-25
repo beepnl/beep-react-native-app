@@ -45,30 +45,33 @@ const HomeScreen: FunctionComponent<Props> = ({
     }
   }
 
-  const onDevicePress = () => {
-    navigation.navigate("PeripheralDetailScreen")
+  const onDevicePress = (device: DeviceModel) => {
+    navigation.navigate("PeripheralDetailScreen", { device })
   }
 
   return (<>
     <ScreenHeader title={t("home.screenTitle")} />
 
     <View style={styles.container}>
+      <View style={styles.spacer} />
       <Text style={styles.text}>{t("home.introduction")}</Text>
 
       <View style={styles.spacerDouble} />
       
-      <TouchableOpacity onPress={onStartWizardPress}>
-        <Text style={styles.textButton}>{t("home.startWizard")}</Text>
+      <TouchableOpacity style={styles.button} onPress={onStartWizardPress}>
+        <Text style={styles.text}>{t("home.startWizard")}</Text>
       </TouchableOpacity>
 
-      { pairedPeripheral &&
+      {/* { pairedPeripheral &&
         <Button title={pairedPeripheral.name} onPress={onPeripheralPress}></Button>
-      }
+      } */}
+
+      <View style={styles.spacer} />
 
       <ScrollView style={styles.devicesContainer}>
-        { devices.map((device: DeviceModel) => {
+        { devices.map((device: DeviceModel, index: number) => {
           return (
-            <TouchableOpacity style={styles.navigationButton} onPress={() => onDevicePress(device)}>
+            <TouchableOpacity key={index} style={styles.navigationButton} onPress={() => onDevicePress(device)}>
               <Text style={styles.text}>{device.name}</Text>
               <Text style={styles.text}>&gt;</Text>
             </TouchableOpacity>

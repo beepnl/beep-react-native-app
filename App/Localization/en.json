@@ -45,13 +45,19 @@
   },
   "peripheralDetail": {
     "screenTitle": "Base detail",
-    "bleName": "Name: {{name}}",
-    "bleStatus": "Bluetooth status: {{status}}",
-    "bleConnection": {
+    "bleName": "Device name: ",
+    "bleStatus": "Bluetooth: ",
+    "bleConnectionStatus": {
       "true": "Connected",
       "false": "Disconnected"
     },
+    "bleConnect": {
+      "true": "Connect",
+      "false": "Disconnect"
+    },
+    "instructions": "Wake up your BEEP base by pressing the button shortly (v3.3 and newer) or by holding the magnet next to the microphone plug (older versions). Then press the Connect above to read out the device details and change several settings. Settings can also be changed using ‘Configure new BEEP base’.",
     "bleRSSI": "Signal strength: {{rssi}} dBm",
+    "details": "Device details"
   },
   "dfu": {
     "ENABLING_DFU_MODE": "Initializing BEEP base for firmware upload",
