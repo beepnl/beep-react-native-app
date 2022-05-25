@@ -34,7 +34,7 @@ const MENU_ITEMS: Array<MenuItem> = [
   {
     title: "Temperature",
     icon: "",
-    screen: "",
+    screen: "TemperatureScreen",
   },
   {
     title: "Download data",

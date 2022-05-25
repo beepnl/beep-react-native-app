@@ -4,6 +4,7 @@ import LoginScreen from 'App/Containers/LoginScreen/LoginScreen';
 import HomeScreen from 'App/Containers/HomeScreen/HomeScreen';
 import SettingsScreen from 'App/Containers/SettingsScreen/SettingsScreen';
 import PeripheralDetailScreen from 'App/Containers/PeripheralDetailScreen/PeripheralDetailScreen';
+import TemperatureScreen from 'App/Containers/Sensor/TemperatureScreen';
 import LogFileScreen from 'App/Containers/LogFileScreen/LogFileScreen';
 import FirmwareScreen from 'App/Containers/FirmwareScreen/FirmwareScreen';
 import WizardWelcomeScreen from 'App/Containers/Wizard/WizardWelcomeScreen';
@@ -39,6 +40,7 @@ export const AppStack = () => {
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
       <Stack.Screen name="PeripheralDetailScreen" component={PeripheralDetailScreen} />
+      <Stack.Screen name="TemperatureScreen" component={TemperatureScreen} />
       <Stack.Screen name="LogFileScreen" component={LogFileScreen} />
       <Stack.Screen name="FirmwareScreen" component={FirmwareScreen} />
       <Stack.Screen name="Wizard" component={WizardStack} />
