@@ -10,7 +10,8 @@ import {
   logout,
 } from './AuthSaga'
 
-import { 
+import {
+  getFirmwares,
 } from './ApiSaga'
 
 export default function* root() {
@@ -19,5 +20,7 @@ export default function* root() {
 
     takeLatest(AuthTypes.LOGIN, login),
     takeLatest(AuthTypes.LOGOUT, logout),
+
+    takeLatest(ApiTypes.GET_FIRMWARES, getFirmwares),
   ])
 }

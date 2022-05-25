@@ -1,7 +1,11 @@
+import { FirmwareModel } from "../../Models/FirmwareModel";
+
 export interface ApiState {
-  error?: any;
+  firmwares: Array<FirmwareModel>
+  error?: any
 }
 
 export const API_INITIAL_STATE: ApiState = {
+  firmwares: [],
   error: undefined,
 }
