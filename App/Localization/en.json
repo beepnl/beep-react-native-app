@@ -74,7 +74,8 @@
   "firmware": {
     "screenTitle": "Firmware",
     "current": "Current version",
-    "currentDescription": "You have the latest version",
+    "latestInstalledDescription": "You have the latest version",
+    "newerAvailableDescription": "There is a newer version available",
     "other": "Other versions",
     "test": "Test versions",
     "install": "Download and install",

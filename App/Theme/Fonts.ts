@@ -6,16 +6,6 @@ const type = {
     ios: "Roboto",
     android: "Roboto"
   }),
-
-  bold: Platform.select({
-    ios: "Roboto",
-    android: "Roboto"
-  }),
-
-  heading: Platform.select({
-    ios: "7th Service",
-    android: "7th"
-  }),
 }
 
 //style per font/size combination
@@ -36,7 +26,7 @@ const style = {
   },
 
   bold: {
-    // fontFamily: type.bold,
+    fontWeight: "bold",
     fontSize: 16,
   },
 
@@ -47,8 +37,8 @@ const style = {
   },
 
   heading: {
-    // fontFamily: type.heading,
-    fontSize: 24,
+    fontWeight: "bold",
+    fontSize: 18,
   },
 
   headingSmall: {

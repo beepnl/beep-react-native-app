@@ -7,6 +7,7 @@ import PeripheralDetailScreen from 'App/Containers/PeripheralDetailScreen/Periph
 import TemperatureScreen from 'App/Containers/Sensor/TemperatureScreen';
 import LogFileScreen from 'App/Containers/LogFileScreen/LogFileScreen';
 import FirmwareScreen from 'App/Containers/FirmwareScreen/FirmwareScreen';
+import FirmwareDetailScreen from 'App/Containers//FirmwareScreen/FirmwareDetailScreen';
 import WizardWelcomeScreen from 'App/Containers/Wizard/WizardWelcomeScreen';
 import WizardBluetoothScreen from 'App/Containers/Wizard/WizardBluetoothScreen';
 import WizardPairPeripheralScreen from 'App/Containers/Wizard/WizardPairPeripheralScreen';
@@ -43,6 +44,7 @@ export const AppStack = () => {
       <Stack.Screen name="TemperatureScreen" component={TemperatureScreen} />
       <Stack.Screen name="LogFileScreen" component={LogFileScreen} />
       <Stack.Screen name="FirmwareScreen" component={FirmwareScreen} />
+      <Stack.Screen name="FirmwareDetailScreen" component={FirmwareDetailScreen} />
       <Stack.Screen name="Wizard" component={WizardStack} />
     </Stack.Navigator>
   );
