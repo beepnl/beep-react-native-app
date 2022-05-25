@@ -60,7 +60,20 @@
     "bleRSSI": "Signal strength: {{rssi}} dBm",
     "details": "Device details"
   },
-  "dfu": {
+  "sensor": {
+    "sampling": "Sampling data...",
+    "temperature": {
+      "screenTitle": "Temperature",
+    }
+  },
+  "logFile": {
+    "screenTitle": "Download data",
+    "logFileSize": "Log size: ",
+    "downloadLogFile": "Download all data"
+  },
+  "firmware": {
+    "screenTitle": "Firmware",
+    "install": "Download and install",
     "ENABLING_DFU_MODE": "Initializing BEEP base for firmware upload",
     "CONNECTING": "Reconnecting for upload",
     "DEVICE_DISCONNECTING": "Disconnecting",

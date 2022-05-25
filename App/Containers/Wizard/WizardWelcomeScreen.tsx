@@ -22,7 +22,6 @@ import { LanguageModel } from '../../Models/LanguageModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
-import Button from '../../Components/Button';
 import * as Progress from 'react-native-progress';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LanguagePicker, { LanguageItem } from '../../Components/LanguagePicker';
@@ -84,14 +83,14 @@ const WizardWelcomeScreen: FunctionComponent<Props> = ({
         <Progress.CircleSnail style={{alignSelf: "center"}} color={Colors.yellow} />
       }
 
-      { (!pairedPeripherals || pairedPeripherals.length == 0) &&
+      {/* { (!pairedPeripherals || pairedPeripherals.length == 0) &&
         <Button 
           size="small" 
           shadow={false}
           title={t("common.btnStart")}
           onPress={onNextPress} 
         />
-      }
+      } */}
 
       <View style={styles.spacerDouble} />
 

@@ -17,8 +17,7 @@ import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/v
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 
 // Components
-import { ScrollView, Text, View, SafeAreaView, TouchableOpacity } from 'react-native';
-import Button from '../../Components/Button';
+import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import BleScreen from '../BleScreen/BleScreen'
 import ScreenHeader from '../../Components/ScreenHeader';
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';

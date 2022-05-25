@@ -24,7 +24,7 @@ import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 
 // Components
-import { Text, View, Button } from 'react-native';
+import { Text, View, Button, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -43,7 +43,7 @@ const FirmwareScreen: FunctionComponent<Props> = ({
   const [dfuState, setDfuState] = useState("")
   const [dfuTransferResult, setDfuTransferResult] = useState("")
   const [dfuReconnectRetry, setDfuReconnectRetry] = useState(0)
-  const [isBusy, setBusy] = useState(false)
+  const [busy, setBusy] = useState(false)
 
   useEffect(() => {
     BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
@@ -130,12 +130,14 @@ const FirmwareScreen: FunctionComponent<Props> = ({
 
   return (
     <View style={styles.mainContainer}>
-      <ScreenHeader title={t("peripheralDetail.screenTitle")} back />
+      <ScreenHeader title={t("firmware.screenTitle")} back />
 
       <ScrollView style={styles.container} >
         <View style={styles.spacer} />
 
-        <Button title={"Install firmware"} onPress={onInstallFirmwarePress} disabled={isBusy}></Button>
+        <TouchableOpacity style={styles.button} onPress={onInstallFirmwarePress} disabled={busy} >
+          <Text style={styles.text}>{t("firmware.install")}</Text>
+        </TouchableOpacity>
         
         <View style={styles.spacer} />
         

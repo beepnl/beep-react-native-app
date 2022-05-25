@@ -22,7 +22,6 @@ import { getPairedPeripherals } from 'App/Stores/Settings/Selectors'
 // Components
 import { ScrollView, Text, View } from 'react-native';
 import BluetoothLogo from 'App/Assets/Images/BluetoothLogo'
-import Button from '../../Components/Button';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -114,14 +113,14 @@ const WizardBluetoothScreen: FunctionComponent<Props> = ({
 
         <View style={styles.spacerDouble} />
 
-        { (bleState != "unsupported" || __DEV__) && <>
+        {/* { (bleState != "unsupported" || __DEV__) && <>
           <Button 
             size="small" 
             shadow={false}
             title={t("common.btnNext")}
             onPress={onNextPress} 
           />
-        </>}
+        </>} */}
 
       </ScrollView>
     </SafeAreaView>

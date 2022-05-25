@@ -25,7 +25,7 @@ import { getCombinedLogFileFrames } from 'App/Stores/BeepBase/Selectors'
 import { getLogFileProgress } from 'App/Stores/BeepBase/Selectors'
 
 // Components
-import { Text, View, Button, TextInput, PermissionsAndroid } from 'react-native';
+import { Text, View, TextInput, PermissionsAndroid, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -91,18 +91,18 @@ const LogFileScreen: FunctionComponent<Props> = ({
   }
 
   return (<>
-    <ScreenHeader title={t("peripheralDetail.screenTitle")} back />
+    <ScreenHeader title={t("logFile.screenTitle")} back />
 
     <ScrollView style={styles.container} >
       <View style={styles.spacer} />
 
-      <Button title={"Get log file size"} onPress={onGetLogFileSizePress}></Button>
-      <View style={styles.spacer} />
-      <Text style={[styles.text]}>{`Log file size: ${logFileSize?.toString()}`}</Text>
+      <Text style={styles.label}>{t("logFile.logFileSize")}<Text style={styles.text}>{logFileSize?.toString()}</Text></Text>
 
       <View style={styles.spacerDouble} />
 
-      <Button title={"Download log file"} onPress={onDownloadLogFilePress} disabled={logFileSize == undefined || logFileSize.value() == 0}></Button>
+      <TouchableOpacity style={styles.button} onPress={onDownloadLogFilePress} disabled={logFileSize == undefined || logFileSize.value() == 0} >
+        <Text style={styles.text}>{t("logFile.downloadLogFile")}</Text>
+      </TouchableOpacity>
       <View style={styles.spacer} />
       <Text style={[styles.text]}>{`Progress: ${Math.round(logFileProgress / logFileSize?.value() * 100)} %`}</Text>
       <View style={styles.spacer} />

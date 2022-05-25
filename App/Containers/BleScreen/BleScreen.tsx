@@ -11,8 +11,8 @@ import styles from './BleScreenStyle'
 import { ApplicationStyles, Colors, Fonts, Metrics } from '../../Theme';
 
 // Utils
-import BleManager, { disconnect, Peripheral, stopScan } from 'react-native-ble-manager'
-import { NativeModules, NativeEventEmitter, PermissionsAndroid, PermissionStatus } from "react-native";
+import BleManager, { Peripheral } from 'react-native-ble-manager'
+import { NativeModules, NativeEventEmitter, TouchableOpacity } from "react-native";
 import { Platform, FlatList, TouchableHighlight } from "react-native";
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 
@@ -24,7 +24,6 @@ import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 // Components
 import { Text, View } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
-import Button from '../../Components/Button';
 import * as Progress from 'react-native-progress';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
@@ -265,14 +264,10 @@ const BleScreen: FunctionComponent<Props> = ({
       
       { (!isScanning && connectingPeripheral == null && connectedPeripheral == null) && <>
         <View style={styles.spacerDouble} />
-        <Button 
-          size="small" 
-          shadow={false}
-          title={t("ble.retry")}
-          onPress={startScan} 
-        />
-      </>
-      }
+        <TouchableOpacity style={styles.button} onPress={startScan} >
+          <Text style={styles.text}>{t("ble.retry")}</Text>
+        </TouchableOpacity>
+      </>}
 
       { !!error && <>
         <View style={styles.messageContainer}>
