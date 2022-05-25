@@ -56,7 +56,7 @@ const TemperatureScreen: FunctionComponent<Props> = ({
   }, 5000)
 
   return (<>
-    <ScreenHeader title={t("wizard.screenTitle")} back />
+    <ScreenHeader title={t("sensor.temperature.screenTitle")} back />
 
     <View style={styles.container}>
       <View style={styles.spacer} />
