@@ -4,29 +4,28 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTypedSelector } from 'App/Stores';
-import { useNavigation } from '@react-navigation/native';
 import { useInterval } from '../../Helpers/useInterval';
 
 // Styles
 import styles from './PeripheralDetailScreenStyle'
+import { Colors } from '../../Theme';
 
 // Utils
-import Images from 'App/Assets/Images'
 import BleHelpers from '../../Helpers/BleHelpers';
+import { Peripheral } from 'react-native-ble-manager';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
 import { Text, View, Button, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
-import { DeviceModel } from '../../Models/DeviceModel';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Peripheral } from 'react-native-ble-manager';
 
 type MenuItem = { title: string, icon: string, screen: string }
 
@@ -112,7 +111,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
     return (
       <TouchableOpacity key={key} style={styles.navigationButton} onPress={() => { item.screen && navigation.navigate(item.screen)}}>
         <Text style={styles.text}>{item.title}</Text>
-        <Text style={styles.text}>&gt;</Text>
+        <Icon name="chevron-right" size={30} color={Colors.lightGrey} />
       </TouchableOpacity>
     )
   }

@@ -8,6 +8,7 @@ import { useTypedSelector } from 'App/Stores';
 
 // Styles
 import styles from './HomeScreenStyle'
+import { Colors } from '../../Theme';
 
 // Utils
 const nodePackage = require('../../../package.json')   //including node package config for app version
@@ -22,6 +23,7 @@ import { DeviceModel } from '../../Models/DeviceModel';
 // Components
 import { Text, View, TouchableOpacity, Button, ScrollView } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {
 }
@@ -73,7 +75,7 @@ const HomeScreen: FunctionComponent<Props> = ({
           return (
             <TouchableOpacity key={index} style={styles.navigationButton} onPress={() => onDevicePress(device)}>
               <Text style={styles.text}>{device.name}</Text>
-              <Text style={styles.text}>&gt;</Text>
+              <Icon name="chevron-right" size={30} color={Colors.lightGrey} />
             </TouchableOpacity>
           )
         })}
