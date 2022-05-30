@@ -42,7 +42,7 @@ export class DeviceModel {
   hardwareId: string
 
   constructor(props: any) {
-    this.id = props.id
+    this.id = props.id.toString() || ""
     this.name = props.name
     this.hardwareId = props.hardware_id
   }
