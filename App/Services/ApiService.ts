@@ -22,8 +22,14 @@ const apiAssets = create({
   timeout: 10000,
 })
 
+let token = ""
 function setToken(value: string) {
   api.headers['Authorization'] = `Bearer ${value}`
+  token = value
+}
+
+function getToken() {
+  return token
 }
 
 function login(email: string, password: string) {
@@ -40,6 +46,7 @@ function getFirmwares() {
 
 export default {
   setToken,
+  getToken,
   login,
 
   getDevices,

@@ -18,6 +18,7 @@ import BleManager, { Peripheral } from 'react-native-ble-manager'
 import BleHelpers from '../../Helpers/BleHelpers';
 import moment from 'moment'
 import i18n from '../../Localization';
+import api from 'App/Services/ApiService'
 
 // Data
 import StartupActions from 'App/Stores/Startup/Actions'
@@ -76,6 +77,10 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     });
 
     BleHelpers.init(peripheral)
+
+    if (token) {
+      api.setToken(token)
+    }
     
     return (() => {
       // BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
