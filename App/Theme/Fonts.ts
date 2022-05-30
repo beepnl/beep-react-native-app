@@ -27,13 +27,13 @@ const style = {
 
   bold: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 18,
   },
 
   underline: {
     // fontFamily: type.regular,
     textDecorationLine: "underline",
-    fontSize: 16,
+    fontSize: 18,
   },
 
   heading: {
