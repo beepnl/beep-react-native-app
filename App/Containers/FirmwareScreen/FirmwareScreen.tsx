@@ -31,6 +31,7 @@ import { Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ScrollView } from 'react-native-gesture-handler';
+import NavigationButton from '../../Components/NavigationButton';
 
 interface Props {
 }
@@ -56,18 +57,6 @@ const FirmwareScreen: FunctionComponent<Props> = ({
     // BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
   }, []);
 
-  const renderFirmwareItem = (firmware: FirmwareModel, key: number) => {
-    return (
-      <TouchableOpacity key={key} style={styles.navigationButton} onPress={() => { navigation.navigate("FirmwareDetailScreen", { firmware }) }}>
-        <View>
-          <Text style={styles.text}>{`BEEP base ${firmware.version}`}</Text>
-          <Text style={styles.instructions}>{firmware.size}</Text>
-        </View>
-        <Icon name="chevron-right" size={30} color={Colors.lightGrey} />
-      </TouchableOpacity>
-    )
-  }
-
   return (
     <View style={styles.mainContainer}>
       <ScreenHeader title={t("firmware.screenTitle")} back />
@@ -77,19 +66,15 @@ const FirmwareScreen: FunctionComponent<Props> = ({
 
         <Text style={styles.label}>{t("firmware.current")}</Text>
         <View style={styles.spacer} />
-        { renderFirmwareItem({ 
-            version: currentVersion, 
-            size: currentVersion == latestStableVersion ? t("firmware.latestInstalledDescription") : t("firmware.newerAvailableDescription")
-          }
-        )}
+        <NavigationButton title={`BEEP base ${currentVersion}`} subTitle={currentVersion == latestStableVersion ? t("firmware.latestInstalledDescription") : t("firmware.newerAvailableDescription")} disabled={true} />
         <View style={styles.spacerDouble} />
         <Text style={styles.label}>{t("firmware.other")}</Text>
         <View style={styles.spacer} />
-        { firmwaresStable.map((firmware: FirmwareModel, index: number) => renderFirmwareItem(firmware, index)) }
+        { firmwaresStable.map((firmware: FirmwareModel) => <NavigationButton title={`BEEP base ${firmware.version}`} subTitle={firmware.size} onPress={() => navigation.navigate("FirmwareDetailScreen", { firmware })} /> )}
         <View style={styles.spacerDouble} />
         <Text style={styles.label}>{t("firmware.test")}</Text>
         <View style={styles.spacer} />
-        { firmwaresTest.map((firmware: FirmwareModel, index: number) => renderFirmwareItem(firmware, index)) }
+        { firmwaresTest.map((firmware: FirmwareModel) => <NavigationButton title={`BEEP base ${firmware.version}`} subTitle={firmware.size} onPress={() => navigation.navigate("FirmwareDetailScreen", { firmware })} /> )}
 
       </ScrollView>
     </View>

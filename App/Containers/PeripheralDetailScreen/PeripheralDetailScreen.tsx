@@ -26,6 +26,7 @@ import { Text, View, Button, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
+import NavigationButton from '../../Components/NavigationButton';
 
 type MenuItem = { title: string, icon: string, screen: string }
 
@@ -107,15 +108,6 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
     // }
   }
 
-  const renderMenuItem = (item: MenuItem, key: string) => {
-    return (
-      <TouchableOpacity key={key} style={styles.navigationButton} onPress={() => { item.screen && navigation.navigate(item.screen)}}>
-        <Text style={styles.text}>{item.title}</Text>
-        <Icon name="chevron-right" size={30} color={Colors.lightGrey} />
-      </TouchableOpacity>
-    )
-  }
-
   return (<>
     <ScreenHeader title={t("peripheralDetail.screenTitle")} back />
 
@@ -148,7 +140,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
       { isConnected && <>
         <Text style={styles.label}>{t("peripheralDetail.details")}</Text>
-        { MENU_ITEMS.map((item: MenuItem, index: number) => renderMenuItem(item, index.toString()))}
+        { MENU_ITEMS.map((item: MenuItem) => <NavigationButton title={item.title} onPress={() => item.screen && navigation.navigate(item.screen)} />) }
       </>}
 
       <View style={styles.spacer} />

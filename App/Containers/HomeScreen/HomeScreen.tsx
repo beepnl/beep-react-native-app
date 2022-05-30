@@ -24,6 +24,7 @@ import { DeviceModel } from '../../Models/DeviceModel';
 import { Text, View, TouchableOpacity, Button, ScrollView } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import NavigationButton from '../../Components/NavigationButton';
 
 interface Props {
 }
@@ -71,14 +72,7 @@ const HomeScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
 
       <ScrollView style={styles.devicesContainer}>
-        { devices.map((device: DeviceModel, index: number) => {
-          return (
-            <TouchableOpacity key={index} style={styles.navigationButton} onPress={() => onDevicePress(device)}>
-              <Text style={styles.text}>{device.name}</Text>
-              <Icon name="chevron-right" size={30} color={Colors.lightGrey} />
-            </TouchableOpacity>
-          )
-        })}
+        { devices.map((device: DeviceModel) => <NavigationButton title={device.name} onPress={() => onDevicePress(device)} />) }
       </ScrollView>
 
       <View style={styles.spacerDouble} />
