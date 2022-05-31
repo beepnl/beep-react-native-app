@@ -74,9 +74,6 @@ export const COMMANDS = {
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const LOG_FILE_NAME = "BeepBaseLogFile.txt"
-const LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + LOG_FILE_NAME
-
 export type BluetoothState = 
 "off" |                 // Bluetooth is turned off
 "pairedConnected" |     // Bluetooth is on and all paired peripherals are connected
@@ -88,6 +85,9 @@ export const CONTROL_POINT_CHARACTERISTIC = "000068b0-0000-1000-8000-00805f9b34f
 export const LOG_FILE_CHARACTERISTIC = "be4768a3-719f-4bad-5040-c6ebc5f8c31b"
 
 export default class BleHelpers {
+
+  static LOG_FILE_NAME = "BeepBaseLogFile.txt"
+  static LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME
 
   static BleManagerDidUpdateValueForControlPointCharacteristicSubscription: EmitterSubscription
   static BleManagerDidUpdateValueForTXLogCharacteristicSubscription: EmitterSubscription
@@ -283,9 +283,9 @@ export default class BleHelpers {
 
   static initLogFile() {
     //delete old log file
-    RNFS.exists(LOG_FILE_PATH).then((exists: boolean) => {
+    RNFS.exists(BleHelpers.LOG_FILE_PATH).then((exists: boolean) => {
       if (exists) {
-        RNFS.unlink(LOG_FILE_PATH)
+        RNFS.unlink(BleHelpers.LOG_FILE_PATH)
         .then(() => {
           console.log("Existing log file deleted");
         })
@@ -300,7 +300,7 @@ export default class BleHelpers {
   }
 
   static exportLogFile() {
-    FileSystem.cpExternal(LOG_FILE_PATH, LOG_FILE_NAME, "downloads").catch(error => {
+    FileSystem.cpExternal(BleHelpers.LOG_FILE_PATH, BleHelpers.LOG_FILE_NAME, "downloads").catch(error => {
       console.log("Error copying to SD card", error)
     })
   }
@@ -311,7 +311,7 @@ export default class BleHelpers {
       const model = LogFileFrameModel.parse(buffer)
       if (model) {
         store.dispatch(BeepBaseActions.addLogFileFrame(model))
-        RNFS.appendFile(LOG_FILE_PATH, model.data.toString("ascii"), "ascii")
+        RNFS.appendFile(BleHelpers.LOG_FILE_PATH, model.data.toString("hex"))
         .catch((err) => {
           console.log("Error writing log file frame", err);
         });

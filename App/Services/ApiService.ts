@@ -2,6 +2,7 @@ import { create } from 'apisauce'
 
 const BASE_URL = 'https://api.beep.nl/api'
 const ASSETS_URL = "https://assets.beep.nl"
+const LOG_FILE_UPLOAD_URL = BASE_URL + "/sensors/flashlog"
 
 const api = create({
   baseURL: BASE_URL,
@@ -52,4 +53,6 @@ export default {
   getDevices,
 
   getFirmwares,
+
+  LOG_FILE_UPLOAD_URL,
 }
