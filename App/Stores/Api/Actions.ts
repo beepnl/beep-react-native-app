@@ -3,6 +3,7 @@ import { FirmwareModel } from '../../Models/FirmwareModel';
 
 export enum ApiTypes {
   GET_DEVICES = 'GET_DEVICES',
+  SEARCH_DEVICE = 'SEARCH_DEVICE',
   GET_FIRMWARES = 'GET_FIRMWARES',
   SET_FIRMWARES = 'SET_FIRMWARES',
   API_FAILURE = 'API_FAILURE',
@@ -16,6 +17,8 @@ interface C extends ActionCreators {
 
 const CreatedActions = createActions({
   getDevices: null,
+  searchDevice: null,
+  
   getFirmwares: null,
   setFirmwares: ['firmwares'],
 

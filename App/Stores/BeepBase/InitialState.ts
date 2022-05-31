@@ -1,3 +1,4 @@
+import { DeviceModel } from "../../Models/DeviceModel"
 import { FirmwareVersionModel } from "../../Models/FirmwareVersionModel"
 import { LogFileFrameModel } from "../../Models/LogFileFrameModel"
 import { LogFileSizeModel } from "../../Models/LogFileSizeModel"
@@ -12,6 +13,7 @@ export interface BeepBaseState {
   logFileSize: LogFileSizeModel | undefined
   logFileProgress: number
   logFileFrames: Array<LogFileFrameModel>
+  devices: Array<DeviceModel>
 }
 
 export const INITIAL_STATE: BeepBaseState = {
@@ -22,4 +24,5 @@ export const INITIAL_STATE: BeepBaseState = {
   logFileSize: undefined,
   logFileProgress: 0,
   logFileFrames: [],
+  devices: [],                  //search result during registration
 }

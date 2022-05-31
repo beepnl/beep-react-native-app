@@ -1,5 +1,6 @@
 import { ActionCreators, createActions } from 'reduxsauce';
 import { AteccModel } from '../../Models/AteccModel';
+import { DeviceModel } from '../../Models/DeviceModel';
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 import { LogFileFrameModel } from '../../Models/LogFileFrameModel';
 import { LogFileSizeModel } from '../../Models/LogFileSizeModel';
@@ -16,6 +17,7 @@ export enum BeepBaseTypes {
   SET_LOG_FILE_PROGRESS = 'SET_LOG_FILE_PROGRESS',
   ADD_LOG_FILE_FRAME = 'ADD_LOG_FILE_FRAME',
   CLEAR_LOG_FILE_FRAMES = 'CLEAR_LOG_FILE_FRAMES',
+  SET_DEVICES = 'SET_DEVICES',
 }
 
 interface C extends ActionCreators {
@@ -28,6 +30,7 @@ interface C extends ActionCreators {
   setLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_LOG_FILE_PROGRESS };
   addLogFileFrame: (frame: LogFileFrameModel) => { type: BeepBaseTypes.ADD_LOG_FILE_FRAME };
   clearLogFileFrame: () => { type: BeepBaseTypes.CLEAR_LOG_FILE_FRAMES };
+  setDevices: (devices: Array<DeviceModel>) => { type: BeepBaseTypes.SET_DEVICES };
 }
 
 const CreatedActions = createActions( {
@@ -40,6 +43,8 @@ const CreatedActions = createActions( {
   setLogFileProgress: ['progress'],
   addLogFileFrame: ['frame'],
   clearLogFileFrames: null,
+  searchDevice: ['hardwareId'],
+  setDevices: ['devices'],
 } );
 
 export default CreatedActions.Creators as C;

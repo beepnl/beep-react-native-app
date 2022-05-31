@@ -41,6 +41,10 @@ function getDevices() {
   return api.get("devices")
 }
 
+function getDevice(hardwareId: string) {
+  return api.get("devices", { hardware_id: hardwareId })
+}
+
 function getFirmwares() {
   return apiAssets.get("firmware/firmware_index.json")
 }
@@ -51,6 +55,7 @@ export default {
   login,
 
   getDevices,
+  getDevice,
 
   getFirmwares,
 
