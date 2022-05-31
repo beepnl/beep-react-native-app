@@ -9,7 +9,7 @@ i18n
     fallbackLng: 'en',
     // supportedLngs: Languages.map(language => language.code),
     debug: __DEV__,
-
+    compatibilityJSON: "v3",
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },

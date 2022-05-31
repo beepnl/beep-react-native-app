@@ -374,7 +374,7 @@ export default class BleHelpers {
     return hexStr.toUpperCase();
   }
 
-  static write(peripheralId: string, data: any) {
+  static write(peripheralId: string, command: any, params?: any) {
 
     const isLittleEndian = (function () {
       let t32 = new Uint32Array(1);
@@ -387,7 +387,12 @@ export default class BleHelpers {
     })();
     const isBigEndian = !isLittleEndian;
 
-    const buffer = Buffer.from(Array.isArray(data) ? data : [data])
+    const arrayCommand = Array.isArray(command) ? command : [command]
+    const arrayParams = Array.isArray(params) ? params : [params]
+    const arrayCommandParams = [...arrayCommand, arrayParams]
+    const buffer = Buffer.from(arrayCommandParams)
+    // const buffer = Buffer.from(Array.isArray(command) ? command : [command])
+
     // if (isLittleEndian) {
     //   buffer.swap16()
     // }
@@ -396,12 +401,10 @@ export default class BleHelpers {
       peripheralId,
       BEEP_SERVICE,
       CONTROL_POINT_CHARACTERISTIC,
-      // Array.isArray(data) ? data : [data],
-      // Array.isArray(data) ? data : [data],
       [...buffer]
     )
     .then(() => {
-      console.log("Written data: " + BleHelpers.byteToHexString([data]));
+      console.log("Written data: " + BleHelpers.byteToHexString([command]));
     })
     .catch((error) => {
       console.log(error);

@@ -12,15 +12,25 @@ import { Colors, Fonts, Metrics } from '../../Theme';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import BleManager, { Peripheral } from 'react-native-ble-manager'
+import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+import { Platform } from 'react-native'
 
 // Data
+import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
+import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
+import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
-import BleScreen from '../BleScreen/BleScreen'
+import { FlatList, Text, View, TouchableOpacity, NativeEventEmitter, NativeModules } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
+import * as Progress from 'react-native-progress';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import NavigationButton from '../../Components/NavigationButton';
+
+const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
 interface Props {
   navigation: StackNavigationProp,
@@ -32,16 +42,151 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  // const navigation = useNavigation();
+  const [isScanning, setIsScanning] = useState(false);
+  const scannedPeripherals = new Map<string, Peripheral>();
+  const [list, setList] = peripheral ? useState([peripheral]) : useState([])
+  const [connectingPeripheral, setConnectingPeripheral] = useState<Peripheral | null>(null)
+  const [connectedPeripheral, setConnectedPeripheral] = useState<Peripheral | null>(null)
+  const [error, setError] = useState("")
+  const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
+
+  useEffect(() => {
+    const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
+    const BleManagerStopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan);
+
+    startScan()
+    
+    return (() => {
+      isScanning && BleManager.stopScan()
+      
+      BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
+      BleManagerStopScanSubscription && BleManagerStopScanSubscription.remove()
+    })
+  }, [])
+
+  const startScan = () => {
+    function scan() {
+      setError("")
+      if (!isScanning) {
+        setConnectingPeripheral(null)
+        BleManager.scan([], 10, false).then((results) => {
+          console.log('Scanning...')
+          setIsScanning(true)
+          peripheral ? setList([peripheral]) : setList([])     //also show current peripheral in the scan result to allow reconnect
+        }).catch(err => {
+          console.error(err)
+          setError(err)
+        });
+      }
+    }
+
+    switch (Platform.OS) {
+      case "android":
+        BleManager.enableBluetooth().then(() => {
+          console.log("The bluetooth is already enabled or the user confirmed");
+          scan()
+        })
+        .catch((error) => {
+          console.log("The user refuse to enable bluetooth", error);
+          setError("Bluetooth is disabled or not allowed.")
+        });
+        break;
+        
+      case "ios":
+        scan()
+        break;
+    }
+  }
+
+  const handleStopScan = () => {
+    console.log('Scan is stopped');
+    setIsScanning(false);
+  }
+
+  const handleDiscoverPeripheral = (peripheral: Peripheral) => {
+    console.log('Found BLE peripheral', peripheral.id, peripheral.name);
+    if (peripheral.advertising?.isConnectable) {
+      if (!peripheral.name) {
+        peripheral.name = peripheral.advertising?.localName;
+        if (!peripheral.name) {
+          peripheral.name = '(NO NAME)';
+        }
+      }
+      //filter list based on name
+      if (peripheral.name.startsWith("BEEPBASE")) {
+        scannedPeripherals.set(peripheral.id, peripheral);
+        setList(Array.from(scannedPeripherals.values()));
+      }
+    }
+  }
+  const onPeripheralPress = (peripheral: Peripheral) => {
+    // if (connectingPeripheral == peripheral) {
+    //   selectPeripheral(peripheral)
+    // } else {
+      setConnectingPeripheral(peripheral)
+      connectPeripheral(peripheral)
+    // }
+  }
+
+  const connectPeripheral = (peripheral: Peripheral) => {
+    console.log("connectPeripheral", peripheral)
+
+    BleManager.stopScan().then(() => {
+      setError("")
+      BleManager.connect(peripheral.id).then(() => {
+        console.log("Connected to " + peripheral.name)
+        BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
+        BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+
+        const pairedPeripheral = new PairedPeripheralModel({
+          id: peripheral.id,
+          name: peripheral.name,
+        })
+        //store in settings
+        dispatch(BeepBaseActions.setPairedPeripheral(pairedPeripheral))
+        BleHelpers.retrieveServices(peripheral.id)
+      })
+      .catch((error) => {
+        console.log(error);
+        setError(error)
+      });
+    })
+  }
+
+  const selectPeripheral = (peripheral: Peripheral) => {
+    setConnectingPeripheral(null)
+    const pairedPeripheral = new PairedPeripheralModel({
+      id: peripheral.id,
+      name: peripheral.name,
+      isConnected: true,
+    })
+    //store in settings
+    dispatch(BeepBaseActions.setPairedPeripheral(pairedPeripheral))
+  }
+
+  let message = ""
+  if (error) {
+    message = error
+  } else if (isScanning) {
+    message = t("wizard.pair.scanning")
+  } else {
+    if (connectingPeripheral != null) {
+      message = t("wizard.pair.connecting")
+    } else {
+      if (list.length == 0) {
+        message = t("wizard.pair.scanResult_zero")
+      } else {
+        message = t("wizard.pair.scanResult", { count: list.length })
+      }
+    }
+  }
 
   const onNextPress = () => {
     navigation.navigate("WizardPairedScreen")
   }
 
   return (<>
-    <ScreenHeader title={t("wizard.screenTitle")} back />
-
-    <View style={styles.spacerDouble} />
+    <ScreenHeader title={t("wizard.pair.screenTitle")} back />
 
     <View style={styles.container}>
 
@@ -49,16 +194,53 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         <Text style={styles.itemText}>{t("wizard.pair.description")}</Text>
       </View>
 
+      <View style={styles.itemContainer}>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("wizard.pair.defaultPin")}</Text>
+      </View>
+
       <View style={styles.spacer} />
 
-      {/* <BleScreen showScreenHeader={false} onPaired={() => { navigation.navigate("WizardPairedScreen") }} /> */}
-      <BleScreen showScreenHeader={false} />
+      <View style={styles.messageContainer}>
+        <Text style={[styles.text, { textAlign: "center" }]}>{message}</Text>
+        { (isScanning || connectingPeripheral != null) &&
+          <Progress.CircleSnail style={{marginLeft: Metrics.doubleBaseMargin, alignSelf: "center"}} color={Colors.yellow} />
+        }
+      </View>
+      
+      { !!error && <>
+        <View style={styles.messageContainer}>
+          <Text style={styles.text}>{`Error: ${error}`}</Text>
+        </View>
+      </>}
 
       <View style={styles.spacer} />
 
-      { !!peripheral && 
-        <TouchableOpacity onPress={onNextPress}>
-          <Text style={[styles.textButton, { alignSelf: "flex-end" }]}>{t("common.btnNext")}</Text>
+      <FlatList
+        data={list}
+        renderItem={({ item }) => 
+          <NavigationButton 
+            title={item.name} 
+            subTitle={firmwareVersion ? t("wizard.pair.subtitle", { firmware: firmwareVersion.toString() }) : undefined}
+            onPress={() => onPeripheralPress(item)}
+            showArrow={false} 
+            selected={item == connectingPeripheral} 
+          />
+        }
+        keyExtractor={item => item.id}
+      />
+
+      { (!isScanning && connectingPeripheral == null && connectedPeripheral == null) && <>
+        <View style={styles.spacerDouble} />
+        <TouchableOpacity style={styles.button} onPress={startScan} >
+          <Text style={styles.text}>{t("wizard.pair.retry")}</Text>
+        </TouchableOpacity>
+      </>}
+
+      <View style={styles.spacer} />
+
+      { !!peripheral && peripheral.isConnected &&
+        <TouchableOpacity style={styles.button} onPress={onNextPress}>
+          <Text style={styles.text}>{t("common.btnNext")}</Text>
         </TouchableOpacity>
       }
     </View>

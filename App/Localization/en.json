@@ -25,7 +25,18 @@
     "bluetooth": {
     },
     "pair": {
-      "description": "Connect to BEEP base"
+      "screenTitle": "Connect",
+      "description": "Below you find a list with BEEP bases that were found. Click on a BEEP base to connect to it and have it play a sound.\n\nWhen you are certain you have selected the correct device, press Next.",
+      "defaultPin": "The default pincode is: 123456",
+      "scanResult_zero": "No BEEP bases found",
+      "scanResult": "Found one BEEP base",
+      "scanResult_plural": "Found {{count}} BEEP bases",
+      "scanning": "Searching for BEEP bases...",
+      "noResult": "No devices found.",
+      "select": "Select a device",
+      "connecting": "Connecting...",
+      "retry": "Retry scan",
+      "subtitle": "Firmware: {{firmware}}"
     },
     "paired": {
       "description": "Connected: sampling sensors"
@@ -85,12 +96,5 @@
     "DFU_PROCESS_STARTING": "Uploading firmware...",
     "DFU_COMPLETED": "Upload completed",
     "DFU_FAILED": "Failed uploading firmware"
-  },
-  "ble": {
-    "scanning": "Searching for BEEP base...",
-    "noResult": "No devices found.",
-    "select": "Select a device",
-    "connecting": "Connecting...",
-    "retry": "Retry scan"
   }
 }
