@@ -23,6 +23,13 @@ export const setFirmwareVersion = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setHardwareId = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    hardwareId: payload.atecc
+  }
+}
+
 export const setTemperatures = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
@@ -66,6 +73,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.SET_PAIRED_PERIPHERAL]: setPairedPeripheral,
   [BeepBaseTypes.CLEAR_PAIRED_PERIPHERAL]: clearPairedPeripheral,
   [BeepBaseTypes.SET_FIRMWARE_VERSION]: setFirmwareVersion,
+  [BeepBaseTypes.SET_HARDWARE_ID]: setHardwareId,
   [BeepBaseTypes.SET_TEMPERATURES]: setTemperatures,
   [BeepBaseTypes.SET_LOG_FILE_SIZE]: setLogFileSize,
   [BeepBaseTypes.SET_LOG_FILE_PROGRESS]: setLogFileProgress,

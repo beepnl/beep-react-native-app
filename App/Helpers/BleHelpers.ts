@@ -13,6 +13,7 @@ import { LogFileFrameModel } from '../Models/LogFileFrameModel';
 import { FirmwareVersionParser } from '../Models/FirmwareVersionModel';
 import RNFS from 'react-native-fs';
 import { FileSystem } from 'react-native-file-access';
+import { AteccParser } from '../Models/AteccModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -261,6 +262,11 @@ export default class BleHelpers {
         case COMMANDS.READ_DS18B20_CONVERSION:
           const models = new TemperatureParser({ data }).parse()
           store.dispatch(BeepBaseActions.setTemperatures(models))
+          break
+
+        case COMMANDS.READ_ATECC_READ_ID:
+          model = new AteccParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setHardwareId(model))
           break
 
         case COMMANDS.READ_MX_FLASH:

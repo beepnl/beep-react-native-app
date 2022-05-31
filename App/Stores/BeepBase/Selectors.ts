@@ -9,6 +9,10 @@ export const getFirmwareVersion = (state: AppState) => {
   return state.beepBase.firmwareVersion
 }
 
+export const getHardwareId = (state: AppState) => {
+  return state.beepBase.hardwareId
+}
+
 export const getTemperatures = (state: AppState) => {
   return state.beepBase.temperatures
 }

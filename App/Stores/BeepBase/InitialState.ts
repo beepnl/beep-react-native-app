@@ -7,6 +7,7 @@ import { TemperatureModel } from "../../Models/TemperatureModel"
 export interface BeepBaseState {
   pairedPeripheral: PairedPeripheralModel | undefined
   firmwareVersion: FirmwareVersionModel | undefined
+  hardwareId: string | undefined
   temperatures: Array<TemperatureModel>
   logFileSize: LogFileSizeModel | undefined
   logFileProgress: number
@@ -16,6 +17,7 @@ export interface BeepBaseState {
 export const INITIAL_STATE: BeepBaseState = {
   pairedPeripheral: undefined,
   firmwareVersion: undefined,
+  hardwareId: undefined,
   temperatures: [],
   logFileSize: undefined,
   logFileProgress: 0,
