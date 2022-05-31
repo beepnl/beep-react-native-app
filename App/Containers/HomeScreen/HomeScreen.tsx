@@ -14,14 +14,14 @@ import { Colors } from '../../Theme';
 const nodePackage = require('../../../package.json')   //including node package config for app version
 
 // Data
-import SettingsActions from 'App/Stores/Settings/Actions'
+import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { getDevices } from 'App/Stores/User/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
-import { Text, View, TouchableOpacity, Button, ScrollView } from 'react-native';
+import { Text, View, TouchableOpacity, Button, ScrollView, RefreshControl } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import NavigationButton from '../../Components/NavigationButton';
@@ -37,6 +37,16 @@ const HomeScreen: FunctionComponent<Props> = ({
   const jsVersion =  nodePackage.version
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const devices: Array<DeviceModel> = useTypedSelector<Array<DeviceModel>>(getDevices)
+  const [isRefreshing, setRefreshing] = useState(false)
+
+  useEffect(() => {
+    setRefreshing(false)
+  }, [devices])
+
+  const onRefresh = () => {
+    setRefreshing(true)
+    dispatch(ApiActions.getDevices())
+  }
 
   const onStartWizardPress = () => {
     navigation.navigate("Wizard")
@@ -71,7 +81,7 @@ const HomeScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacer} />
 
-      <ScrollView style={styles.devicesContainer}>
+      <ScrollView style={styles.devicesContainer} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />} >
         { devices.map((device: DeviceModel) => <NavigationButton title={device.name} onPress={() => onDevicePress(device)} />) }
       </ScrollView>
 

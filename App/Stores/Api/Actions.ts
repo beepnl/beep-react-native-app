@@ -2,6 +2,7 @@ import { ActionCreators, createActions } from 'reduxsauce';
 import { FirmwareModel } from '../../Models/FirmwareModel';
 
 export enum ApiTypes {
+  GET_DEVICES = 'GET_DEVICES',
   GET_FIRMWARES = 'GET_FIRMWARES',
   SET_FIRMWARES = 'SET_FIRMWARES',
   API_FAILURE = 'API_FAILURE',
@@ -14,6 +15,7 @@ interface C extends ActionCreators {
 }
 
 const CreatedActions = createActions({
+  getDevices: null,
   getFirmwares: null,
   setFirmwares: ['firmwares'],
 
