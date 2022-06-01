@@ -144,7 +144,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
       { isConnected && <>
         <Text style={styles.label}>{t("peripheralDetail.details")}</Text>
-        { MENU_ITEMS.map((item: MenuItem) => <NavigationButton title={item.title} onPress={() => item.screen && navigation.navigate(item.screen)} />) }
+        { MENU_ITEMS.map((item: MenuItem) => <NavigationButton key={item.title} title={item.title} onPress={() => item.screen && navigation.navigate(item.screen)} />) }
       </>}
 
       <View style={styles.spacer} />
