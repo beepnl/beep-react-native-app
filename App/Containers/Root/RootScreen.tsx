@@ -120,7 +120,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
 
   useEffect(() => {
     if (error && dropDownAlert?.current) {
-      const apiMessage = error.api?.error?.message
+      const apiMessage = error.message
       const message = t(`error.${error.problem}`, apiMessage)
       dropDownAlert.current.alertWithType('error', t("common.error"), message);
     }
