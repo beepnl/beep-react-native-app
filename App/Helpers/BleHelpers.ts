@@ -129,22 +129,27 @@ export default class BleHelpers {
       showAlert: true,
       restoreIdentifierKey: "it.vandillen.beep.restoreIdentifierKey",
       queueIdentifierKey: "it.vandillen.beep.queueIdentifierKey",
-    }).then(() => {
+    }).then(async () => {
       //request usage of Bluetooth on Android (iOS is handled by OS via info.plist entry)
-      if (Platform.OS === 'android' && Platform.Version >= 23) {
+      if (Platform.OS === 'android' && Platform.Version >= 31) {
+        const grantedSCAN = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN)
+        console.log("Permission BLUETOOTH_SCAN", grantedSCAN)
+        const grantedCONNECT = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT)
+        console.log("Permission BLUETOOTH_CONNECT", grantedCONNECT)
+      } else if (Platform.OS === 'android' && Platform.Version >= 23) {
         PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
           if (result) {
-            console.log("Permission is OK");
+            console.log("Permission is ACCESS_FINE_LOCATION OK");
             // DISABLED RECONNECT
             // BleHelpers.connectPairedPeripherals(pairedPeripherals)
           } else {
             PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
               if (result) {
-                console.log("User accepted permission");
+                console.log("User accepted ACCESS_FINE_LOCATION permission");
                 // DISABLED RECONNECT
                 // BleHelpers.connectPairedPeripherals(pairedPeripherals)
               } else {
-                console.log("User refused permission");
+                console.log("User refused ACCESS_FINE_LOCATION permission");
               }
             });
           }
