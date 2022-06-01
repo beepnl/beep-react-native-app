@@ -13,13 +13,15 @@ export const setFirmwares = (state: ApiState, payload: any) => {
 export const apiFailure = (state: ApiState, payload: any) => {
   const { response } = payload
   const api = response && response.data
+  const message = api.message || api.errors || api
   return {
     ...state,
     error: {
       response: response,
       status: response.status,
       problem: response.problem,
-      message: response.originalError,
+      // message: response.originalError,
+      message,
       api
     }
   }
