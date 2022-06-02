@@ -8,7 +8,8 @@ const api = create({
   baseURL: BASE_URL,
   headers: {
     Accept: 'application/json',
-    'Cache-Control': 'no-cache'
+    'Cache-Control': 'no-cache',
+    'X-ClientId': Platform.OS
     // 'Content-Type': 'application/x-www-form-urlencoded',
   },
   timeout: 10000,
