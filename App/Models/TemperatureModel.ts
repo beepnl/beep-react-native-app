@@ -11,7 +11,7 @@ export class TemperatureModel {
   }
 
   toString() {
-    return `${(this.value / 100)} °C  Timestamp: ${DateTimeHelper.formatTime(this.timestamp)}`
+    return `${(this.value / 100)} °C}`
   }
 
 }

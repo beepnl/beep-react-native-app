@@ -122,12 +122,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     }
   }
   const onPeripheralPress = (peripheral: Peripheral) => {
-    // if (connectingPeripheral == peripheral) {
-    //   selectPeripheral(peripheral)
-    // } else {
-      setConnectingPeripheral(peripheral)
-      connectPeripheral(peripheral)
-    // }
+    setConnectingPeripheral(peripheral)
+    connectPeripheral(peripheral)
   }
 
   const connectPeripheral = (peripheral: Peripheral) => {
@@ -141,12 +137,14 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
         BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
 
+        //store in settings
         const pairedPeripheral = new PairedPeripheralModel({
           id: peripheral.id,
           name: peripheral.name,
         })
-        //store in settings
         dispatch(BeepBaseActions.setPairedPeripheral(pairedPeripheral))
+
+        //services are needed to subscribe to notifications
         BleHelpers.retrieveServices(peripheral.id)
       })
       .catch((error) => {
@@ -154,17 +152,6 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         setError(error)
       });
     })
-  }
-
-  const selectPeripheral = (peripheral: Peripheral) => {
-    setConnectingPeripheral(null)
-    const pairedPeripheral = new PairedPeripheralModel({
-      id: peripheral.id,
-      name: peripheral.name,
-      isConnected: true,
-    })
-    //store in settings
-    dispatch(BeepBaseActions.setPairedPeripheral(pairedPeripheral))
   }
 
   let message = ""
