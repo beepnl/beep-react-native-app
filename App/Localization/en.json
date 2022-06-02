@@ -80,7 +80,10 @@
   "logFile": {
     "screenTitle": "Download data",
     "logFileSize": "Log size: ",
-    "downloadLogFile": "Download all data"
+    "downloadLogFile": "Download all data",
+    "progress": "Progress",
+    "download": "Download",
+    "upload": "Upload"
   },
   "firmware": {
     "screenTitle": "Firmware",
