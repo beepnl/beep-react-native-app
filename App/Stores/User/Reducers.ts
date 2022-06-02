@@ -1,8 +1,8 @@
-import { INITIAL_STATE, SettingsState } from './InitialState'
+import { INITIAL_STATE, UserState } from './InitialState'
 import { createReducer } from 'reduxsauce'
-import { SettingsTypes } from './Actions'
+import { UserTypes } from './Actions'
 
-export const setToken = (state: SettingsState, payload: any) => {
+export const setToken = (state: UserState, payload: any) => {
   const { token } = payload  
   return {
     ...state,
@@ -10,7 +10,7 @@ export const setToken = (state: SettingsState, payload: any) => {
   }
 }
 
-export const setUser = (state: SettingsState, payload: any) => {
+export const setUser = (state: UserState, payload: any) => {
   const { user } = payload  
   return {
     ...state,
@@ -18,7 +18,7 @@ export const setUser = (state: SettingsState, payload: any) => {
   }
 }
 
-export const setDevices = (state: SettingsState, payload: any) => {
+export const setDevices = (state: UserState, payload: any) => {
   const { devices } = payload  
   return {
     ...state,
@@ -27,7 +27,7 @@ export const setDevices = (state: SettingsState, payload: any) => {
 }
 
 export const reducer = createReducer(INITIAL_STATE, {
-  [SettingsTypes.SET_TOKEN]: setToken,
-  [SettingsTypes.SET_USER]: setUser,
-  [SettingsTypes.SET_DEVICES]: setDevices,
+  [UserTypes.SET_TOKEN]: setToken,
+  [UserTypes.SET_USER]: setUser,
+  [UserTypes.SET_DEVICES]: setDevices,
 })
