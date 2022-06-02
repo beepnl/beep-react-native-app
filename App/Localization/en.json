@@ -36,7 +36,7 @@
       "select": "Select a device",
       "connecting": "Connecting...",
       "retry": "Retry scan",
-      "subtitle": "Firmware: {{firmware}}"
+      "subtitle": "Firmware: v{{firmware}}  Hardware: v{{hardware}}"
     },
     "paired": {
       "description": "Connected: sampling sensors"

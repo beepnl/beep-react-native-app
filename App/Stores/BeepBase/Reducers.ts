@@ -23,6 +23,13 @@ export const setFirmwareVersion = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setHardwareVersion = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    hardwareVersion: payload.hardwareVersion
+  }
+}
+
 export const setHardwareId = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
@@ -69,24 +76,15 @@ export const clearLogFileFrames = (state: BeepBaseState, payload: any) => {
   }
 }
 
-export const setDevices = (state: BeepBaseState, payload: any) => {
-  const { devices } = payload  
-  return {
-    ...state,
-    devices
-  }
-}
-
-
 export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.SET_PAIRED_PERIPHERAL]: setPairedPeripheral,
   [BeepBaseTypes.CLEAR_PAIRED_PERIPHERAL]: clearPairedPeripheral,
   [BeepBaseTypes.SET_FIRMWARE_VERSION]: setFirmwareVersion,
+  [BeepBaseTypes.SET_HARDWARE_VERSION]: setHardwareVersion,
   [BeepBaseTypes.SET_HARDWARE_ID]: setHardwareId,
   [BeepBaseTypes.SET_TEMPERATURES]: setTemperatures,
   [BeepBaseTypes.SET_LOG_FILE_SIZE]: setLogFileSize,
   [BeepBaseTypes.SET_LOG_FILE_PROGRESS]: setLogFileProgress,
   [BeepBaseTypes.ADD_LOG_FILE_FRAME]: addLogFileFrame,
   [BeepBaseTypes.CLEAR_LOG_FILE_FRAMES]: clearLogFileFrames,
-  [BeepBaseTypes.SET_DEVICES]: setDevices,
 })

@@ -14,6 +14,7 @@ import { FirmwareVersionParser } from '../Models/FirmwareVersionModel';
 import RNFS from 'react-native-fs';
 import { FileSystem } from 'react-native-file-access';
 import { AteccParser } from '../Models/AteccModel';
+import { HardwareVersionParser } from '../Models/HardwareVersionModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -262,6 +263,11 @@ export default class BleHelpers {
         case COMMANDS.READ_FIRMWARE_VERSION:
           model = new FirmwareVersionParser({ data }).parse()
           store.dispatch(BeepBaseActions.setFirmwareVersion(model))
+          break
+
+        case COMMANDS.READ_HARDWARE_VERSION:
+          model = new HardwareVersionParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setHardwareVersion(model))
           break
 
         case COMMANDS.READ_DS18B20_CONVERSION:

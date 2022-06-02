@@ -20,8 +20,9 @@ import { Platform } from 'react-native'
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
+import { getFirmwareVersion, getHardwareVersion } from 'App/Stores/BeepBase/Selectors'
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
+import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
 
 // Components
 import { FlatList, Text, View, TouchableOpacity, NativeEventEmitter, NativeModules } from 'react-native';
@@ -49,6 +50,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const [connectedPeripheral, setConnectedPeripheral] = useState<Peripheral | null>(null)
   const [error, setError] = useState("")
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
+  const hardwareVersion: HardwareVersionModel = useTypedSelector<HardwareVersionModel>(getHardwareVersion)
 
   useEffect(() => {
     const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
@@ -137,6 +139,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         console.log("Connected to " + peripheral.name)
         BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
         BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+        BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
 
         const pairedPeripheral = new PairedPeripheralModel({
           id: peripheral.id,
@@ -220,7 +223,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         renderItem={({ item }) => 
           <NavigationButton 
             title={item.name} 
-            subTitle={firmwareVersion ? t("wizard.pair.subtitle", { firmware: firmwareVersion.toString() }) : undefined}
+            subTitle={firmwareVersion && hardwareVersion ? t("wizard.pair.subtitle", { firmware: firmwareVersion.toString(), hardware: hardwareVersion.toString() }) : undefined}
             onPress={() => onPeripheralPress(item)}
             showArrow={false} 
             selected={item == connectingPeripheral} 
