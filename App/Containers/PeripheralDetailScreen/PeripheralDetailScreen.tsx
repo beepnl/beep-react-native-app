@@ -17,6 +17,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
+import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
@@ -67,28 +68,46 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const [busy, setBusy] = useState(false)
   const isConnected = peripheral && peripheral.isConnected
 
+  useEffect(() => {
+    if (device) {
+      //sync current device id into paired peripheral
+      dispatch(BeepBaseActions.setPairedPeripheral({ 
+        ...peripheral, 
+        deviceId: device.id
+      }))
+
+      //refresh sensor definitions
+      dispatch(ApiActions.getSensorDefinitions(device))
+    }
+  }, [device])
+
+  const connect = () => {
+    setBusy(true)
+    BleHelpers.scanPeripheralByName(device.name).then((peripheral: Peripheral) => {
+      BleHelpers.connectPeripheral(peripheral.id).then(() => {
+        dispatch(BeepBaseActions.setPairedPeripheral({ 
+          ...peripheral, 
+          isConnected: true,
+          deviceId: device.id
+        }))
+        setBusy(false)
+      })
+    }).catch(() => {
+      //peripheral not found
+      setError("Peripheral not found")
+      setBusy(false)
+    })
+  }
+
   const onToggleConnectionPress = () => {
     setError("")
     if (isConnected) {
       BleHelpers.disconnectPeripheral(peripheral)
       dispatch(BeepBaseActions.setPairedPeripheral({ ...peripheral, isConnected: false }))
     } else {
-      setBusy(true)
-      BleHelpers.scanPeripheralByName(device.name).then((peripheral: Peripheral) => {
-        BleHelpers.connectPeripheral(peripheral.id).then(() => {
-          dispatch(BeepBaseActions.setPairedPeripheral({ 
-            ...peripheral, 
-            isConnected: true,
-            deviceId: device.id
-          }))
-          setBusy(false)
-        })
-      }).catch(() => {
-        //peripheral not found
-        setError("Device not found")
-        setBusy(false)
-      })
+      connect()
     }
+
     //OK:
     // if (peripheral) {
     //   console.log("peripheral.isConnected", peripheral.isConnected)
