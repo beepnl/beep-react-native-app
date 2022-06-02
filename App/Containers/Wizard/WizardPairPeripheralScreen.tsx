@@ -185,7 +185,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   }
 
   const onNextPress = () => {
-    navigation.navigate("WizardPairedScreen")
+    navigation.navigate("WizardRegisterScreen")
   }
 
   return (<>

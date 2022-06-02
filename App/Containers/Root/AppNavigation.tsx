@@ -12,6 +12,7 @@ import WizardWelcomeScreen from 'App/Containers/Wizard/WizardWelcomeScreen';
 import WizardBluetoothScreen from 'App/Containers/Wizard/WizardBluetoothScreen';
 import WizardPairPeripheralScreen from 'App/Containers/Wizard/WizardPairPeripheralScreen';
 import WizardPairedScreen from 'App/Containers/Wizard/WizardPairedScreen';
+import WizardRegisterScreen from 'App/Containers/Wizard/WizardRegisterScreen';
 
 export const AuthStack = () => {
   const Stack = createNativeStackNavigator();
@@ -29,6 +30,7 @@ const WizardStack = () => {
       <Stack.Screen name="WizardWelcomeScreen" component={WizardWelcomeScreen} />
       <Stack.Screen name="WizardBluetoothScreen" component={WizardBluetoothScreen} />
       <Stack.Screen name="WizardPairPeripheralScreen" component={WizardPairPeripheralScreen} />
+      <Stack.Screen name="WizardRegisterScreen" component={WizardRegisterScreen} />
       <Stack.Screen name="WizardPairedScreen" component={WizardPairedScreen} />
     </Stack.Navigator>
   );

@@ -38,6 +38,10 @@
       "retry": "Retry scan",
       "subtitle": "Firmware: v{{firmware}}  Hardware: v{{hardware}}"
     },
+    "register": {
+      "screenTitle": "Register",
+      "alreadyRegistered": "This BEEP base is already registered to another account.\n\nAsk the person you acquired your BEEP base from to transfer it to you."
+    },
     "paired": {
       "description": "Connected: sampling sensors"
     }

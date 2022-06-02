@@ -12,7 +12,8 @@ import {
 
 import {
   getDevices,
-  searchDevice,
+  registerDevice,
+  getSensorDefinitions,
   getFirmwares,
 } from './ApiSaga'
 
@@ -24,7 +25,8 @@ export default function* root() {
     takeLatest(AuthTypes.LOGOUT, logout),
 
     takeLatest(ApiTypes.GET_DEVICES, getDevices),
-    takeLatest(ApiTypes.SEARCH_DEVICE, searchDevice),
+    takeLatest(ApiTypes.REGISTER_DEVICE, registerDevice),
+    takeLatest(ApiTypes.GET_SENSOR_DEFINITIONS, getSensorDefinitions),
     takeLatest(ApiTypes.GET_FIRMWARES, getFirmwares),
   ])
 }

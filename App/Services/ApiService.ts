@@ -1,4 +1,5 @@
 import { create } from 'apisauce'
+import { Platform } from 'react-native'
 
 const BASE_URL = 'https://api.beep.nl/api'
 const ASSETS_URL = "https://assets.beep.nl"
@@ -46,19 +47,34 @@ function getDevice(hardwareId: string) {
   return api.get("devices", { hardware_id: hardwareId })
 }
 
+function registerDevice(params: any) {
+  return api.post("devices", { ...params })
+}
+
+function getSensorDefinitions(deviceId: string) {
+  return api.get("sensordefinition", { device_id: deviceId })
+}
+
 function getFirmwares() {
   return apiAssets.get("firmware/firmware_index.json")
 }
 
+
 export default {
+  //auth
   setToken,
   getToken,
   login,
 
+  //api
   getDevices,
   getDevice,
+  registerDevice,
+  getSensorDefinitions,
 
+  //assets
   getFirmwares,
 
+  //constants
   LOG_FILE_UPLOAD_URL,
 }

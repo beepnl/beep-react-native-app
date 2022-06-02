@@ -10,6 +10,14 @@ export const setFirmwares = (state: ApiState, payload: any) => {
   }
 }
 
+export const setRegisterState = (state: ApiState, payload: any) => {
+  const { registerState } = payload  
+  return {
+    ...state,
+    registerState
+  }
+}
+
 export const apiFailure = (state: ApiState, payload: any) => {
   const { response } = payload
   const api = response && response.data
@@ -29,5 +37,6 @@ export const apiFailure = (state: ApiState, payload: any) => {
 
 export const reducer = createReducer(API_INITIAL_STATE, {
   [ApiTypes.SET_FIRMWARES]: setFirmwares,
+  [ApiTypes.SET_REGISTER_STATE]: setRegisterState,
   [ApiTypes.API_FAILURE]: apiFailure,
 })

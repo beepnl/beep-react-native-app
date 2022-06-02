@@ -12,3 +12,7 @@ export const getFirmwaresStable = (state: AppState) => {
 export const getFirmwaresTest = (state: AppState) => {
   return state.api.firmwares.filter((firmware: FirmwareModel) => firmware.stability == "test")
 }
+
+export const getRegisterState = (state: AppState) => {
+  return state.api.registerState
+}
