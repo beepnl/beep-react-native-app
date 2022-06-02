@@ -29,9 +29,9 @@ export class FirmwareVersionParser {
     let minor = 0
     let revision = 0
     if (this.data?.length >= 6) {
-      major = this.data.readInt16BE(0)
-      minor = this.data.readInt16BE(2)
-      revision = this.data.readInt16BE(4)
+      major = this.data.readUInt16BE(0)
+      minor = this.data.readUInt16BE(2)
+      revision = this.data.readUInt16BE(4)
     }
     return new FirmwareVersionModel({ major, minor, revision })
   }
