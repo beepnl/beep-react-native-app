@@ -82,7 +82,7 @@ const HomeScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
 
       <ScrollView style={styles.devicesContainer} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />} >
-        { devices.map((device: DeviceModel) => <NavigationButton title={device.name} onPress={() => onDevicePress(device)} />) }
+        { devices.map((device: DeviceModel, index: number) => <NavigationButton key={index} title={device.name} onPress={() => onDevicePress(device)} />) }
       </ScrollView>
 
       <View style={styles.spacerDouble} />
