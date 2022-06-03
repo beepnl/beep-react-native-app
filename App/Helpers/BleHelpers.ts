@@ -124,7 +124,7 @@ export default class BleHelpers {
     return "off"
   }
 
-  static init(peripheral: PairedPeripheralModel) {
+  static init() {
     console.log("BleManager start");
     return BleManager.start({
       showAlert: true,
@@ -137,60 +137,23 @@ export default class BleHelpers {
         console.log("Permission BLUETOOTH_SCAN", grantedSCAN)
         const grantedCONNECT = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT)
         console.log("Permission BLUETOOTH_CONNECT", grantedCONNECT)
-      } else if (Platform.OS === 'android' && Platform.Version >= 23) {
+      }
+      else if (Platform.OS === 'android' && Platform.Version >= 23) {
         PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
           if (result) {
             console.log("Permission is ACCESS_FINE_LOCATION OK");
-            // DISABLED RECONNECT
-            // BleHelpers.connectPairedPeripherals(pairedPeripherals)
           } else {
             PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
               if (result) {
                 console.log("User accepted ACCESS_FINE_LOCATION permission");
-                // DISABLED RECONNECT
-                // BleHelpers.connectPairedPeripherals(pairedPeripherals)
               } else {
                 console.log("User refused ACCESS_FINE_LOCATION permission");
               }
             });
           }
         });
-      } else {
-        // DISABLED RECONNECT
-        // BleHelpers.connectPairedPeripherals(pairedPeripherals)
       }    
     })
-  }
-
-  static reconnect(pairedPeripherals: Array<PairedPeripheralModel>) {
-    console.log("reconnect")
-    BleManager.scan([], 15, false).then((results) => {
-    })
-  }
-
-  static connectPairedPeripherals(pairedPeripherals: Array<PairedPeripheralModel>) {
-    console.log("connectPairedPeripherals")
-    if (pairedPeripherals && pairedPeripherals.length > 0) {
-      // console.log("scanning from connectPairedPeripherals")
-      // BleManager.scan([], 10, false).then(() => {
-        // console.log("waiting 10 seconds for scan to finish")
-        // return delay(10000).then(() => {
-          // console.log("after 10 seconds foreach paired peripheral")
-          pairedPeripherals.forEach((pairedPeripheral) => {
-            return BleManager.connect(pairedPeripheral.id).then(() => {
-              console.log("Connected to " + pairedPeripheral.name)
-              // BleManager.retrieveServices(pairedPeripheral.id)
-              return BleHelpers.retrieveServices(pairedPeripheral.id)
-            })
-            .catch(() => {
-              console.log("Failed to connect to " + pairedPeripheral.name);
-            });
-          })
-        // }).catch(error => {
-          // console.error(error);
-        // });
-      // })
-    }
   }
 
   static connectPeripheral(peripheralId: string) {
