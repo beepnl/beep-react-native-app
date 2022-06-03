@@ -81,11 +81,12 @@ const WizardPairedPeripheralScreen: FunctionComponent<Props> = ({
         </View>
       )}
 
-      <View style={styles.spacer} />
+      <View style={[styles.spacer, { flex: 1 }]} />
 
-      <TouchableOpacity onPress={onNextPress}>
-        <Text style={[styles.textButton, { alignSelf: "flex-end" }]}>{t("common.btnFinish")}</Text>
+      <TouchableOpacity style={styles.button} onPress={onNextPress}>
+        <Text style={styles.text}>{t("common.btnFinish")}</Text>
       </TouchableOpacity>
+
     </View>
   </>)
 }

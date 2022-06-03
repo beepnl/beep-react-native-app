@@ -35,8 +35,10 @@
       "noResult": "No devices found.",
       "select": "Select a device",
       "connecting": "Connecting...",
+      "connected": "Connected",
       "retry": "Retry scan",
-      "subtitle": "Firmware: v{{firmware}}  Hardware: v{{hardware}}"
+      "subtitleConnected": "Firmware: v{{firmware}}  Hardware: v{{hardware}}",
+      "subtitleNotConnected": "Not connected"
     },
     "register": {
       "screenTitle": "Register",
