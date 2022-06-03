@@ -11,7 +11,7 @@ import { Metrics, Colors, Fonts, ApplicationStyles } from '../Theme';
 
 // Components
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface ScreenHeaderProps {
   title: string,
@@ -19,6 +19,7 @@ interface ScreenHeaderProps {
   showArrow?: boolean,
   disabled?: boolean,
   selected?: boolean,
+  Icon?: React.ComponentType<any> | React.ReactElement<any> | null,
   onPress?: () => void,
 }
 
@@ -28,15 +29,29 @@ const NavigationButton: FunctionComponent<ScreenHeaderProps> = ({
   showArrow = true,
   disabled = false,
   selected = false,
+  Icon,
   onPress,
 }) => {
+
+  const renderIcon = () => {
+    if (Icon) {
+      const icon = React.isValidElement(Icon) ? (Icon) : (<Icon />)
+      return icon
+    }
+    return <View style={ApplicationStyles.spacer} />
+  }
+
   return (
     <TouchableOpacity key={title} style={styles.container} onPress={onPress} disabled={disabled} >
-      <View>
-        <Text style={[styles.title, selected && { color: Colors.yellow }]}>{title}</Text>
-        { subTitle && <Text style={[styles.subTitle, selected && { color: Colors.yellow }]}>{subTitle}</Text> }
+      <View style={{ flexDirection: "row" }}>
+        { renderIcon() }
+        <View style={ApplicationStyles.spacerHalf} />
+        <View>
+          <Text style={[styles.title, selected && { color: Colors.yellow }]}>{title}</Text>
+          { subTitle && <Text style={[styles.subTitle, selected && { color: Colors.yellow }]}>{subTitle}</Text> }
+        </View>
       </View>
-      { showArrow && !disabled && <Icon name="chevron-right" size={30} color={Colors.lightGrey} /> }
+      { showArrow && !disabled && <IconMaterialCommunity name="chevron-right" size={30} color={Colors.lightGrey} /> }
     </TouchableOpacity>
   )
 }
@@ -48,7 +63,7 @@ const styles = StyleSheet.create({
     // height: Metrics.buttonHeight,
     alignItems: "center",
     justifyContent: "space-between",
-    padding: Metrics.baseMargin,
+    paddingVertical: Metrics.baseMargin,
     borderBottomWidth: 1,
     borderBottomColor: Colors.lightGrey,
   },
