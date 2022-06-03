@@ -32,7 +32,6 @@ import ScreenHeader from '../../Components/ScreenHeader';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import NavigationButton from '../../Components/NavigationButton';
 
-
 interface Props {
   navigation: StackNavigationProp,
 }
@@ -44,13 +43,13 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const hardwareId: AteccModel = useTypedSelector<AteccModel>(getHardwareId)
-  // const devices: Array<DeviceModel> | undefined = useTypedSelector<Array<DeviceModel> | undefined>(getDevices)
   const registerState: RegisterState = useTypedSelector<RegisterState>(getRegisterState)
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const hardwareVersion: HardwareVersionModel = useTypedSelector<HardwareVersionModel>(getHardwareVersion)
 
   useEffect(() => {
     if (peripheral && peripheral.isConnected) {
+      dispatch(ApiActions.setRegisterState("hardwareId"))
       //read hardware id from peripheral
       BleHelpers.write(peripheral.id, COMMANDS.READ_ATECC_READ_ID)
     } else {
@@ -73,6 +72,10 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   }, [hardwareId])
 
   const onNextPress = () => {
+    navigation.navigate("WizardPairedScreen")
+  }
+
+  const onFinishPress = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
@@ -87,15 +90,22 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
     <View style={styles.container}>
 
       <View style={styles.itemContainer}>
-        {/* <Text style={styles.itemText}>{t("wizard.register.alreadyRegistered")}</Text> */}
-        <Text style={styles.itemText}>{registerState}</Text>
+        <Text style={styles.itemText}>{t(`wizard.register.state.${registerState}`)}</Text>
       </View>
 
       <View style={[styles.spacer, { flex: 1 }]} />
 
-      <TouchableOpacity style={styles.button} onPress={onNextPress}>
-        <Text style={styles.text}>{t("common.btnNext")}</Text>
-      </TouchableOpacity>
+      { registerState == "registered" &&
+        <TouchableOpacity style={styles.button} onPress={onNextPress}>
+          <Text style={styles.text}>{t("common.btnNext")}</Text>
+        </TouchableOpacity>
+      }
+
+      { registerState == "deviceAlreadyLinkedToAnotherAccount" || registerState == "failed" &&
+        <TouchableOpacity style={styles.button} onPress={onFinishPress}>
+          <Text style={styles.text}>{t("common.btnFinish")}</Text>
+        </TouchableOpacity>
+      }
 
     </View>
   </>)

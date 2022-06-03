@@ -1,7 +1,8 @@
 import { DeviceModel } from "../../Models/DeviceModel";
 import { FirmwareModel } from "../../Models/FirmwareModel";
 
-export type RegisterState = "none" | "registering" | "registered" | "failed" | "deviceAlreadyLinkedToAnotherAccount"
+export type RegisterState = "none" | "hardwareId" | "checking" | "registering" | "registered" | "failed" | "deviceAlreadyLinkedToAnotherAccount"
+
 export interface ApiState {
   firmwares: Array<FirmwareModel>
   registerState: RegisterState

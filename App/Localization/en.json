@@ -40,7 +40,15 @@
     },
     "register": {
       "screenTitle": "Register",
-      "alreadyRegistered": "This BEEP base is already registered to another account.\n\nAsk the person you acquired your BEEP base from to transfer it to you."
+      "state": {
+        "none": "",
+        "hardwareId": "Retrieving hardware ID of BEEP base...",
+        "checking": "Checking registration status...",
+        "registering": "Registering BEEP base...",
+        "registered": "This BEEP base is successfully registered to your account.",
+        "failed": "Could not register this BEEP base.",
+        "deviceAlreadyLinkedToAnotherAccount": "This BEEP base is already registered to another account.\n\nAsk the person you acquired your BEEP base from to transfer it to you."
+      }
     },
     "paired": {
       "description": "Connected: sampling sensors"
@@ -77,6 +85,7 @@
   },
   "sensor": {
     "sampling": "Sampling data...",
+    "currentReading": "Current reading",
     "temperature": {
       "screenTitle": "Temperature",
     }
