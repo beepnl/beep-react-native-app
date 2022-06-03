@@ -56,6 +56,9 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
     const BleManagerStopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan);
 
+    dispatch(BeepBaseActions.setFirmwareVersion(undefined))
+    dispatch(BeepBaseActions.setHardwareVersion(undefined))
+
     startScan()
     
     return (() => {
@@ -123,6 +126,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   }
   const onPeripheralPress = (peripheral: Peripheral) => {
     setConnectingPeripheral(peripheral)
+    dispatch(BeepBaseActions.setFirmwareVersion(undefined))
+    dispatch(BeepBaseActions.setHardwareVersion(undefined))
     connectPeripheral(peripheral)
   }
 
@@ -133,9 +138,6 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       setError("")
       BleManager.connect(peripheral.id).then(() => {
         console.log("Connected to " + peripheral.name)
-        BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
-        BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
-        BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
 
         //store in settings
         const pairedPeripheral = new PairedPeripheralModel({
@@ -145,11 +147,16 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         dispatch(BeepBaseActions.setPairedPeripheral(pairedPeripheral))
 
         //services are needed to subscribe to notifications
-        BleHelpers.retrieveServices(peripheral.id)
+        BleHelpers.retrieveServices(peripheral.id).then(() => {
+          BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
+          BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+          BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
+        })
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error)
         setError(error)
+        setConnectingPeripheral(null)
       });
     })
   }
@@ -190,19 +197,13 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacer} />
 
-      <View style={styles.messageContainer}>
+      <View style={[styles.messageContainer, { flexDirection: "row", alignItems: "center", justifyContent: "center" }]}>
         <Text style={[styles.text, { textAlign: "center" }]}>{message}</Text>
         { (isScanning || connectingPeripheral != null) &&
           <Progress.CircleSnail style={{marginLeft: Metrics.doubleBaseMargin, alignSelf: "center"}} color={Colors.yellow} />
         }
       </View>
       
-      { !!error && <>
-        <View style={styles.messageContainer}>
-          <Text style={styles.text}>{`Error: ${error}`}</Text>
-        </View>
-      </>}
-
       <View style={styles.spacer} />
 
       <FlatList
@@ -210,7 +211,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         renderItem={({ item }) => 
           <NavigationButton 
             title={item.name} 
-            subTitle={firmwareVersion && hardwareVersion ? t("wizard.pair.subtitle", { firmware: firmwareVersion.toString(), hardware: hardwareVersion.toString() }) : undefined}
+            subTitle={item == connectingPeripheral && firmwareVersion && hardwareVersion ? t("wizard.pair.subtitle", { firmware: firmwareVersion.toString(), hardware: hardwareVersion.toString() }) : " " }
             onPress={() => onPeripheralPress(item)}
             showArrow={false} 
             selected={item == connectingPeripheral} 
@@ -228,7 +229,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacer} />
 
-      { !!peripheral && peripheral.isConnected &&
+      { !!peripheral && peripheral.isConnected && firmwareVersion && hardwareVersion &&
         <TouchableOpacity style={styles.button} onPress={onNextPress}>
           <Text style={styles.text}>{t("common.btnNext")}</Text>
         </TouchableOpacity>
