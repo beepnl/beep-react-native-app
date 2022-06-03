@@ -101,7 +101,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
         </TouchableOpacity>
       }
 
-      { registerState == "deviceAlreadyLinkedToAnotherAccount" || registerState == "failed" &&
+      { (registerState == "deviceAlreadyLinkedToAnotherAccount" || registerState == "failed") &&
         <TouchableOpacity style={styles.button} onPress={onFinishPress}>
           <Text style={styles.text}>{t("common.btnFinish")}</Text>
         </TouchableOpacity>
