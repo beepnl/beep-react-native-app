@@ -17,8 +17,8 @@ import AuthActions from 'App/Stores/Auth/Actions'
 import { getError } from 'App/Stores/Auth/Selectors';
 
 // Components
-import { Text, View, TouchableOpacity, Button, TextInput, Image } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
 }
@@ -44,7 +44,7 @@ const LoginScreen: FunctionComponent<Props> = ({
   return (
     <SafeAreaView style={styles.mainContainer}>
 
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={styles.spacerDouble} />
 
         <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 300, margin: Metrics.baseMargin }} source={Images.beepLogo} resizeMode="contain" />
@@ -87,7 +87,7 @@ const LoginScreen: FunctionComponent<Props> = ({
 
         <View style={styles.spacerDouble} />
 
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
