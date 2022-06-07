@@ -17,6 +17,10 @@ export const getHardwareId = (state: AppState) => {
   return state.beepBase.hardwareId
 }
 
+export const getSensorDefinitions = (state: AppState) => {
+  return state.beepBase.sensorDefinitions
+}
+
 export const getTemperatures = (state: AppState) => {
   return state.beepBase.temperatures
 }

@@ -37,6 +37,13 @@ export const setHardwareId = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setSensorDefinitions = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    sensorDefinitions: payload.sensorDefinitions
+  }
+}
+
 export const setTemperatures = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
@@ -82,6 +89,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.SET_FIRMWARE_VERSION]: setFirmwareVersion,
   [BeepBaseTypes.SET_HARDWARE_VERSION]: setHardwareVersion,
   [BeepBaseTypes.SET_HARDWARE_ID]: setHardwareId,
+  [BeepBaseTypes.SET_SENSOR_DEFINITIONS]: setSensorDefinitions,
   [BeepBaseTypes.SET_TEMPERATURES]: setTemperatures,
   [BeepBaseTypes.SET_LOG_FILE_SIZE]: setLogFileSize,
   [BeepBaseTypes.SET_LOG_FILE_PROGRESS]: setLogFileProgress,

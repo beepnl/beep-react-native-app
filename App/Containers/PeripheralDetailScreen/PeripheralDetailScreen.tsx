@@ -19,11 +19,12 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { getPairedPeripheral, getSensorDefinitions } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
+import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 
 // Components
-import { Text, View, Button, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -67,6 +68,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const [error, setError] = useState("")
   const [busy, setBusy] = useState(false)
   const isConnected = peripheral && peripheral.isConnected
+  const sensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getSensorDefinitions)
 
   useEffect(() => {
     if (device) {
@@ -144,7 +146,8 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       <Text style={styles.label}>{t("peripheralDetail.bleStatus")}<Text style={styles.text}>{t(`peripheralDetail.bleConnectionStatus.${peripheral ? peripheral.isConnected : false}`)}</Text></Text>
 
       <View style={styles.spacer} />
-      
+      { sensorDefinitions.map((sensorDefinition: SensorDefinitionModel) => <Text>{sensorDefimition.name}</Text>) }
+
       <TouchableOpacity style={styles.button} onPress={onToggleConnectionPress} disabled={busy} >
         <Text style={styles.text}>{t(`peripheralDetail.bleConnect.${peripheral ? !peripheral.isConnected : true}`)}</Text>
       </TouchableOpacity>
