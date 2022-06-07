@@ -28,13 +28,13 @@ import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
 import { FlatList, Text, View, TouchableOpacity, NativeEventEmitter, NativeModules } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import * as Progress from 'react-native-progress';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationButton from '../../Components/NavigationButton';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 const BLE_NAME_PREFIX = "BEEPBASE"
 
-type ListItem = Peripheral & { isScanned: boolean }
+type ListItem = Peripheral & { origin: "bonded" | "scanned" }
 
 interface Props {
   navigation: StackNavigationProp,
@@ -66,7 +66,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     //initialize scan result with all previously bonded peripherals
     BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
       const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
-      const bondedPeripherals: Array<ListItem> = filtered.map((peripheral: Peripheral) => ({ ...peripheral, isScanned: false }))
+      const bondedPeripherals: Array<ListItem> = filtered.map((peripheral: Peripheral) => ({ ...peripheral, origin: "bonded" }))
       setBondedPeripherals(bondedPeripherals)
       setList(bondedPeripherals)
     })
@@ -132,7 +132,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       }
       //filter list based on name
       if (peripheral.name.startsWith(BLE_NAME_PREFIX)) {
-        scannedPeripherals.set(peripheral.id, { ...peripheral, isScanned: true });
+        scannedPeripherals.set(peripheral.id, { ...peripheral, origin: "scanned" });
         // setList(Array.from(scannedPeripherals.values()));
         setList([...bondedPeripherals, ...Array.from(scannedPeripherals.values())])
       }
@@ -206,6 +206,18 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     navigation.navigate("WizardRegisterScreen")
   }
 
+  const getIcon = (peripheral: ListItem): React.ComponentType<any> | React.ReactElement<any> | null => {
+    const iconName = peripheral.origin == "bonded" ? "settings" : "bluetooth"
+    let color
+    if (peripheral == connectingPeripheral && firmwareVersion && hardwareVersion) {
+      color = Colors.bluetooth
+    } else {
+      color = Colors.lightGrey
+    }
+
+    return <Icon name={iconName} size={30} color={color} />
+  }
+
   return (<>
     <ScreenHeader title={t("wizard.pair.screenTitle")} back />
 
@@ -238,7 +250,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
             subTitle={item == connectingPeripheral && firmwareVersion && hardwareVersion ? t("wizard.pair.subtitleConnected", { firmware: firmwareVersion.toString(), hardware: hardwareVersion.toString() }) : t("wizard.pair.subtitleNotConnected") }
             onPress={() => onPeripheralPress(item)}
             showArrow={false} 
-            Icon={<Icon name={"bluetooth"} size={30} color={item == connectingPeripheral && firmwareVersion && hardwareVersion ? Colors.bluetooth : item.isScanned ? Colors.transparent : Colors.lightGrey} />}
+            Icon={getIcon(item)}
             selected={item == connectingPeripheral} 
           />
         }
