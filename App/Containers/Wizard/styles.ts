@@ -6,14 +6,22 @@ import { Metrics, Colors } from '../../Theme';
 export default StyleSheet.create({
   ...ApplicationStyles,
 
-  itemContainer: {
-    // ...ApplicationStyles.separator,
+  itemCenteredContainer: {
     width: Metrics.clientWidth,
     marginHorizontal: Metrics.baseMargin,
     marginVertical: Metrics.baseMargin,
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+
+  itemContainer: {
+    width: Metrics.clientWidth,
+    marginHorizontal: Metrics.baseMargin,
+    marginVertical: Metrics.baseMargin,
+    // alignSelf: "center",
+    // alignItems: "center",
+    // justifyContent: "space-between",
   },
 
   itemText: {

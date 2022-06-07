@@ -21,8 +21,8 @@ const style = {
   },
 
   big: {
-    // fontFamily: type.regular,
-    fontSize: 22,
+    fontWeight: "bold",
+    fontSize: 30,
   },
 
   bold: {

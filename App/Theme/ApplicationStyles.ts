@@ -172,6 +172,11 @@ const ApplicationStyles = {
     color: Colors.text,
   },
 
+  textBig: {
+    ...Fonts.style.big,
+    color: Colors.text,
+  },
+
   instructions: {
     ...Fonts.style.small,
     fontStyle: "italic",

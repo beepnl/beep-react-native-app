@@ -54,7 +54,16 @@
     },
     "calibrate": {
       "screenTitle": "Calibrate",
-      "description": "Inspect each of the sensors below in order to configure and calibrate them."
+      "description": "Inspect each of the sensors below in order to configure and calibrate them.",
+      "temperature": {
+        "screenTitle": "Temperature",
+        "step1": "1. Warm up one of the sensors in your hand and check which sensor temperature is increasing.",
+        "step2": "2. Name that sensor e.g. \"inside brood layer\".",
+        "step3": "3. Attach a label to the sensor cable.",
+        "location": "Sensor location",
+        "inside": "Inside hive",
+        "outside": "Outside hive"
+      }
     }
   },
   "home": {
