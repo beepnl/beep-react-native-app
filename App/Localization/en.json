@@ -52,8 +52,9 @@
         "deviceAlreadyLinkedToAnotherAccount": "This BEEP base is already registered to another account.\n\nAsk the person you acquired your BEEP base from to transfer it to you."
       }
     },
-    "paired": {
-      "description": "Connected: sampling sensors"
+    "calibrate": {
+      "screenTitle": "Calibrate",
+      "description": "Inspect each of the sensors below in order to configure and calibrate them."
     }
   },
   "home": {

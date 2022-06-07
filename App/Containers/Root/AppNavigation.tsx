@@ -11,7 +11,7 @@ import FirmwareDetailScreen from 'App/Containers//FirmwareScreen/FirmwareDetailS
 import WizardWelcomeScreen from 'App/Containers/Wizard/WizardWelcomeScreen';
 import WizardBluetoothScreen from 'App/Containers/Wizard/WizardBluetoothScreen';
 import WizardPairPeripheralScreen from 'App/Containers/Wizard/WizardPairPeripheralScreen';
-import WizardPairedScreen from 'App/Containers/Wizard/WizardPairedScreen';
+import WizardCalibrateScreen from 'App/Containers/Wizard/WizardCalibrateScreen';
 import WizardRegisterScreen from 'App/Containers/Wizard/WizardRegisterScreen';
 
 export const AuthStack = () => {
@@ -31,7 +31,7 @@ const WizardStack = () => {
       <Stack.Screen name="WizardBluetoothScreen" component={WizardBluetoothScreen} />
       <Stack.Screen name="WizardPairPeripheralScreen" component={WizardPairPeripheralScreen} />
       <Stack.Screen name="WizardRegisterScreen" component={WizardRegisterScreen} />
-      <Stack.Screen name="WizardPairedScreen" component={WizardPairedScreen} />
+      <Stack.Screen name="WizardCalibrateScreen" component={WizardCalibrateScreen} />
     </Stack.Navigator>
   );
 };

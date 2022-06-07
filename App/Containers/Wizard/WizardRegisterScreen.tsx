@@ -72,7 +72,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   }, [hardwareId])
 
   const onNextPress = () => {
-    navigation.navigate("WizardPairedScreen")
+    navigation.navigate("WizardCalibrateScreen")
   }
 
   const onFinishPress = () => {
