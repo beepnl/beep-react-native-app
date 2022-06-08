@@ -13,7 +13,7 @@ import { Colors, Fonts, Images, Metrics } from '../../Theme';
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import { useInterval } from '../../Helpers/useInterval';
+import useInterval from '../../Helpers/useInterval';
 
 // Data
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
@@ -50,7 +50,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
     }
-    // refresh()
+    refresh()
   }, [])
 
   useInterval(() => {

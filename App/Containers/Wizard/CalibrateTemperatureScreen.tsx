@@ -13,7 +13,7 @@ import { Colors, Fonts, Images, Metrics } from '../../Theme';
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import { useInterval } from '../../Helpers/useInterval';
+import useInterval from '../../Helpers/useInterval';
 
 // Data
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
@@ -56,7 +56,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
 
   useInterval(() => {
     refresh()
-  }, 1000)
+  }, 2000)
 
   const onFinishPress = () => {
     navigation.goBack()
@@ -88,8 +88,8 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacerDouble} />
 
-      { temperatures.map((temperatureModel: TemperatureModel, index: number) => <View>
-        <View key={index} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-evenly" }}>
+      { temperatures.map((temperatureModel: TemperatureModel, index: number) => <View key={index}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-evenly" }}>
           <IconFontAwesome name="thermometer-2" size={40} color={Colors.black} />
           <Text style={styles.textBig}>{temperatureModel.toString()}</Text>
         </View>
@@ -110,13 +110,14 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
             text={{ on: t("wizard.calibrate.temperature.inside"), off: t("wizard.calibrate.temperature.outside"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
             textStyle={{ ...Fonts.style.regular }}
             textProps={{ allowFontScaling: false }}
-            color={{ indicator: Colors.yellow, inactiveIndicator: Colors.black, active: Colors.white, inactive: Colors.white, activeBorder: Colors.lightGrey, inactiveBorder: Colors.lightGrey }}
+            color={{ indicator: Colors.yellow, inactiveIndicator: Colors.grey, active: Colors.white, inactive: Colors.white, activeBorder: Colors.lightGrey, inactiveBorder: Colors.lightGrey }}
             padding={16}
             width={115}
             radius={Metrics.inputHeight / 4}
             onValueChange={(value: boolean) => onToggleSwitchChange(temperatureModel, value)}
           />
         </View>
+        <View style={styles.spacerDouble} />
       </View>)}
 
       <View style={[styles.spacer, { flex: 1 }]} />

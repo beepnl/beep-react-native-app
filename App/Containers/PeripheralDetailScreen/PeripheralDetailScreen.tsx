@@ -4,7 +4,6 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTypedSelector } from 'App/Stores';
-import { useInterval } from '../../Helpers/useInterval';
 
 // Styles
 import styles from './PeripheralDetailScreenStyle'
@@ -146,7 +145,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       <Text style={styles.label}>{t("peripheralDetail.bleStatus")}<Text style={styles.text}>{t(`peripheralDetail.bleConnectionStatus.${peripheral ? peripheral.isConnected : false}`)}</Text></Text>
 
       <View style={styles.spacer} />
-      { sensorDefinitions.map((sensorDefinition: SensorDefinitionModel) => <Text>{sensorDefimition.name}</Text>) }
+      { sensorDefinitions.map((sensorDefinition: SensorDefinitionModel) => <Text>{sensorDefinition.name}</Text>) }
 
       <TouchableOpacity style={styles.button} onPress={onToggleConnectionPress} disabled={busy} >
         <Text style={styles.text}>{t(`peripheralDetail.bleConnect.${peripheral ? !peripheral.isConnected : true}`)}</Text>

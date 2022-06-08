@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTypedSelector } from 'App/Stores';
 import { useNavigation } from '@react-navigation/native';
-import { useInterval } from '../../Helpers/useInterval';
 
 // Styles
 import styles from './FirmwareScreenStyle'

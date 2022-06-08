@@ -13,7 +13,7 @@ import { Colors, Fonts, Metrics } from '../../Theme';
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import { useInterval } from '../../Helpers/useInterval';
+import useInterval from '../../Helpers/useInterval';
 
 // Data
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
@@ -61,10 +61,15 @@ const TemperatureScreen: FunctionComponent<Props> = ({
     <View style={styles.container}>
       <View style={styles.spacer} />
 
-      <Text style={styles.text}>{ `Temperature sensor count: ${temperatures.length}` }</Text>
+      <Text style={styles.text}>{t("sensor.currentReading")}</Text>
 
-      { temperatures.map((temperatureModel, index) => <View key={index} style={{ flexDirection: "row" }}>
-          <Text style={styles.text}>{ `Sensor ${index + 1}: ${temperatureModel.toString()}` }</Text>
+      { temperatures.map((temperatureModel, index) => 
+        <View key={index} style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View>
+            <Text style={styles.text}>{ `Sensor ${index + 1}` }</Text>
+
+          </View>
+          <Text style={styles.text}>{temperatureModel.toString()}</Text>
         </View>
       )}
     </View>
