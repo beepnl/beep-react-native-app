@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback, useRef } fr
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector, useStore } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -12,9 +12,11 @@ import { Colors } from '../../Theme';
 
 // Utils
 const nodePackage = require('../../../package.json')   //including node package config for app version
+import BleHelpers from '../../Helpers/BleHelpers';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
+import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { getDevices } from 'App/Stores/User/Selectors'
@@ -38,6 +40,16 @@ const HomeScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const devices: Array<DeviceModel> = useTypedSelector<Array<DeviceModel>>(getDevices)
   const [isRefreshing, setRefreshing] = useState(false)
+
+  useFocusEffect(
+    //clear beep base store when home screen becomes focused to remove any old peripheral data
+    React.useCallback(() => {
+      if (pairedPeripheral && pairedPeripheral.isConnected) {
+        BleHelpers.disconnectPeripheral(pairedPeripheral)?.catch(error => console.log(error))
+      }
+      dispatch(BeepBaseActions.clear())
+    }, [pairedPeripheral])
+  )
 
   useEffect(() => {
     setRefreshing(false)

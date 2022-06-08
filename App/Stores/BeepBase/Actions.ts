@@ -9,6 +9,7 @@ import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
 
 export enum BeepBaseTypes {
+  CLEAR = 'CLEAR',
   SET_PAIRED_PERIPHERAL = 'SET_PAIRED_PERIPHERAL',
   CLEAR_PAIRED_PERIPHERAL = 'CLEAR_PAIRED_PERIPHERAL',
   SET_FIRMWARE_VERSION = 'SET_FIRMWARE_VERSION',
@@ -23,6 +24,7 @@ export enum BeepBaseTypes {
 }
 
 interface C extends ActionCreators {
+  clear: () => { type: BeepBaseTypes.CLEAR };
   setPairedPeripheral: (peripheral: PairedPeripheralModel) => { type: BeepBaseTypes.SET_PAIRED_PERIPHERAL };
   clearPairedPeripheral: () => { type: BeepBaseTypes.CLEAR_PAIRED_PERIPHERAL };
   setFirmwareVersion: (firmwareVersion: FirmwareVersionModel) => { type: BeepBaseTypes.SET_FIRMWARE_VERSION };
@@ -37,6 +39,7 @@ interface C extends ActionCreators {
 }
 
 const CreatedActions = createActions( {
+  clear: null,
   setPairedPeripheral: ['peripheral'],
   clearPairedPeripheral: null,
   setFirmwareVersion: ['firmwareVersion'],

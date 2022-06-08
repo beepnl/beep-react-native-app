@@ -2,6 +2,8 @@ import { INITIAL_STATE, BeepBaseState } from './InitialState'
 import { createReducer } from 'reduxsauce'
 import { BeepBaseTypes } from './Actions'
 
+export const clear = (state: BeepBaseState, payload: any) => INITIAL_STATE
+
 export const setPairedPeripheral = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
@@ -84,6 +86,7 @@ export const clearLogFileFrames = (state: BeepBaseState, payload: any) => {
 }
 
 export const reducer = createReducer(INITIAL_STATE, {
+  [BeepBaseTypes.CLEAR]: clear,
   [BeepBaseTypes.SET_PAIRED_PERIPHERAL]: setPairedPeripheral,
   [BeepBaseTypes.CLEAR_PAIRED_PERIPHERAL]: clearPairedPeripheral,
   [BeepBaseTypes.SET_FIRMWARE_VERSION]: setFirmwareVersion,
