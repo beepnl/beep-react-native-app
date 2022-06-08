@@ -7,7 +7,9 @@ export enum ApiTypes {
   REGISTER_DEVICE = 'REGISTER_DEVICE',
   SET_REGISTER_STATE = 'SET_REGISTER_STATE',
   SET_DEVICES = 'SET_DEVICES',
+  CREATE_SENSOR_DEFINITION = 'CREATE_SENSOR_DEFINITION',
   GET_SENSOR_DEFINITIONS = 'GET_SENSOR_DEFINITIONS',
+  UPDATE_SENSOR_DEFINITION = 'UPDATE_SENSOR_DEFINITION',
   GET_FIRMWARES = 'GET_FIRMWARES',
   SET_FIRMWARES = 'SET_FIRMWARES',
   API_FAILURE = 'API_FAILURE',
@@ -26,7 +28,9 @@ const CreatedActions = createActions({
   setRegisterState: ['registerState'],
   setDevices: ['devices'],
 
+  createSensorDefinition: ['requestParams'],
   getSensorDefinitions: ['device'],
+  updateSensorDefinition: ['requestParams'],
 
   getFirmwares: null,
   setFirmwares: ['firmwares'],

@@ -1,4 +1,4 @@
-import { takeLatest, all } from 'redux-saga/effects'
+import { takeLatest, all, takeEvery } from 'redux-saga/effects'
 import { StartupTypes } from 'App/Stores/Startup/Actions'
 import { AuthTypes } from 'App/Stores/Auth/Actions'
 import { ApiTypes } from 'App/Stores/Api/Actions'
@@ -13,7 +13,9 @@ import {
 import {
   getDevices,
   registerDevice,
+  createSensorDefinition,
   getSensorDefinitions,
+  updateSensorDefinition,
   getFirmwares,
 } from './ApiSaga'
 
@@ -27,6 +29,8 @@ export default function* root() {
     takeLatest(ApiTypes.GET_DEVICES, getDevices),
     takeLatest(ApiTypes.REGISTER_DEVICE, registerDevice),
     takeLatest(ApiTypes.GET_SENSOR_DEFINITIONS, getSensorDefinitions),
+    takeEvery(ApiTypes.CREATE_SENSOR_DEFINITION, createSensorDefinition),
+    takeEvery(ApiTypes.UPDATE_SENSOR_DEFINITION, updateSensorDefinition),
     takeLatest(ApiTypes.GET_FIRMWARES, getFirmwares),
   ])
 }

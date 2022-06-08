@@ -51,8 +51,16 @@ function registerDevice(params: any) {
   return api.post("devices", { ...params })
 }
 
+function createSensorDefinition(params: any) {
+  return api.post("sensordefinition", { ...params })
+}
+
 function getSensorDefinitions(deviceId: string) {
   return api.get("sensordefinition", { device_id: deviceId })
+}
+
+function updateSensorDefinition(params: any) {
+  return api.put("sensordefinition", { ...params })
 }
 
 function getFirmwares() {
@@ -70,7 +78,9 @@ export default {
   getDevices,
   getDevice,
   registerDevice,
+  createSensorDefinition,
   getSensorDefinitions,
+  updateSensorDefinition,
 
   //assets
   getFirmwares,

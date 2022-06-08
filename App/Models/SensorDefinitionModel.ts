@@ -38,7 +38,7 @@ export class SensorDefinitionModel {
     this.id = props.id.toString()
     this.name = props.name
     this.deviceId = props.device_id
-    this.isInside = props.inside
+    this.isInside = !!props.inside
   }
 
 }

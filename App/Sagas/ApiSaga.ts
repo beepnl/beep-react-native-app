@@ -71,6 +71,27 @@ export function* getSensorDefinitions(action: any) {
   }
 }
 
+export function* createSensorDefinition(action: any) {
+  const { requestParams } = action
+  const response = yield call(api.createSensorDefinition, requestParams)
+  if (response && response.ok) {
+    debugger
+    //TODO: update device with defs from response
+  } else {
+    yield put(ApiActions.apiFailure(response))
+  }
+}
+
+export function* updateSensorDefinition(action: any) {
+  const { requestParams } = action
+  const response = yield call(api.updateSensorDefinition, requestParams)
+  if (response && response.ok) {
+    debugger
+  } else {
+    yield put(ApiActions.apiFailure(response))
+  }
+}
+
 export function* getFirmwares(action: any) {
   const response = yield call(api.getFirmwares)
   if (response && response.ok) {
