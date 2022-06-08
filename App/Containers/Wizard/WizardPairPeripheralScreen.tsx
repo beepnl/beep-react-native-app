@@ -69,9 +69,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       const bondedPeripherals: Array<ListItem> = filtered.map((peripheral: Peripheral) => ({ ...peripheral, origin: "bonded" }))
       setBondedPeripherals(bondedPeripherals)
       setList(bondedPeripherals)
+      startScan(bondedPeripherals)
     })
-
-    startScan(bondedPeripherals)
     
     return (() => {
       isScanning && BleManager.stopScan()
