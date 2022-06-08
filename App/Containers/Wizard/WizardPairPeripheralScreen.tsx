@@ -71,7 +71,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       setList(bondedPeripherals)
     })
 
-    startScan()
+    startScan(bondedPeripherals)
     
     return (() => {
       isScanning && BleManager.stopScan()
@@ -82,14 +82,14 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   }, [])
 
 
-  const scan = () => {
+  const scan = (initialPeripherals: Array<ListItem>) => {
     setError("")
     if (!isScanning) {
       setConnectingPeripheral(null)
       BleManager.scan([], 10, false).then((results) => {
         console.log('Scanning...')
         setIsScanning(true)
-        setList(bondedPeripherals)
+        setList(initialPeripherals)
       }).catch(err => {
         console.error(err)
         setError(err)
@@ -97,12 +97,13 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     }
   }
 
-  const startScan = () => {
+  const startScan = (initialPeripherals: Array<ListItem>) => {
+    const initialList = initialPeripherals || bondedPeripherals
     switch (Platform.OS) {
       case "android":
         BleManager.enableBluetooth().then(() => {
           console.log("The bluetooth is already enabled or the user confirmed");
-          scan()
+          scan(initialList)
         })
         .catch((error) => {
           console.log("The user refuse to enable bluetooth", error);
@@ -111,7 +112,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         break;
         
       case "ios":
-        scan()
+        scan(initialList)
         break;
     }
   }
