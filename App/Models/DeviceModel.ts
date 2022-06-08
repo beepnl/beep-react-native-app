@@ -1,4 +1,10 @@
+import { SensorDefinitionModel } from "./SensorDefinitionModel"
+
 /*
+    // 01233cd10043454bee  new
+    // 0123451539076025ee  old
+    // 0123451539076025ee
+
 {
         "id": 1,
         "hive_id": 2,
@@ -40,11 +46,17 @@ export class DeviceModel {
   id: string
   name: string
   hardwareId: string
+  sensorDefinitions: Array<SensorDefinitionModel>
 
   constructor(props: any) {
     this.id = props.id.toString() || ""
     this.name = props.name
     this.hardwareId = props.hardware_id
+    
+    this.sensorDefinitions = []
+    if (Array.isArray(props.sensor_definitions)) {
+      props.sensor_definitions.forEach((item: any) => this.sensorDefinitions.push(new SensorDefinitionModel(item)))
+    }
   }
 
 }
