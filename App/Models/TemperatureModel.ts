@@ -11,7 +11,7 @@ export class TemperatureModel {
   }
 
   toString() {
-    return `${(this.value / 100)} °C`
+    return `${(this.value / 100).toFixed(2)} °C`
   }
 
 }
