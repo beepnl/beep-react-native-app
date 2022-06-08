@@ -16,10 +16,12 @@ import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import useInterval from '../../Helpers/useInterval';
 
 // Data
+import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
 import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
+import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native';
@@ -37,8 +39,16 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
-  const [value, setValue] = useState("Sensor 1")
+  const names = temperatures.map((temperatureModel: TemperatureModel, index: number) => {
+    const [value, setValue] = useState(`Sensor ${index + 1}`)
+    return { value, setValue }
+  })
+  const sensorLocations = temperatures.map((temperatureModel: TemperatureModel, index: number) => {
+    const [value, setValue] = useState(false)
+    return { value, setValue }
+  })
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -59,18 +69,20 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   }, 2000)
 
   const onFinishPress = () => {
+    temperatures.forEach((temperatureModel: TemperatureModel, index: number) => {
+      const name = names[index].value
+      const inside = sensorLocations[index].value
+      const requestParams = {
+        device_hardware_id: device.hardwareId,
+        input_measurement_abbreviation: `t_${index}`,
+        name,
+        inside,
+      }
+      dispatch(ApiActions.updateSensorDefinition(requestParams))
+    })
+
     navigation.goBack()
   }
-
-  const onToggleSwitchChange = (temperatureModel: TemperatureModel, value: boolean) => {
-    // dispatch(SettingsActions.updateFunction(
-    //   {
-    //     ...func,
-    //     enabled: value,
-    //   }
-    // ))
-  }
-
 
   return (<>
     <ScreenHeader title={t("wizard.calibrate.temperature.screenTitle")} back />
@@ -97,8 +109,8 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
         <TextInput
           // ref={inputUsernameRef}
           style={styles.input}
-          onChangeText={setValue}
-          value={value}
+          onChangeText={names[index].setValue}
+          value={names[index].value}
           returnKeyType="next"
           // blurOnSubmit={false}
           // onSubmitEditing={() => inputPasswordRef?.current?.focus()}
@@ -114,8 +126,9 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
             padding={16}
             width={115}
             radius={Metrics.inputHeight / 4}
-            onValueChange={(value: boolean) => onToggleSwitchChange(temperatureModel, value)}
-          />
+            active={sensorLocations[index].value}
+            onValueChange={sensorLocations[index].setValue}
+            />
         </View>
         <View style={styles.spacerDouble} />
       </View>)}

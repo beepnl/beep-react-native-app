@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -16,10 +16,12 @@ import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import useInterval from '../../Helpers/useInterval';
 
 // Data
+import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
 import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
+import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
@@ -37,6 +39,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
 
   const refresh = () => {
@@ -46,6 +49,10 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     }
   }
 
+  useInterval(() => {
+    refresh()
+  }, 5000)
+
   useEffect(() => {
     if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
@@ -53,16 +60,31 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     refresh()
   }, [])
 
-  useInterval(() => {
-    refresh()
-  }, 5000)
+  useEffect(() => {
+    if (device && temperatures.length) {
+      initializeSensors()
+    }
+  }, [device, temperatures.length])
 
   const initializeSensors = () => {
-
+    temperatures.forEach((temperatureModel: TemperatureModel, index: number) => {
+      const requestParams = {
+        device_hardware_id: device.hardwareId,
+        input_measurement_abbreviation: `t_${index}`,
+        name: `Temperature sensor ${index + 1}`,
+        inside: false,
+      }
+      dispatch(ApiActions.createSensorDefinition(requestParams))
+    })
   }
 
   const onNextPress = () => {
-    navigation.navigate("HomeScreen")
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: "HomeScreen" }],
+      }),
+    );
   }
 
   return (<>

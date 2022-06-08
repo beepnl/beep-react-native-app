@@ -79,7 +79,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{ name: 'HomeScreen' }],
+        routes: [{ name: "HomeScreen" }],
       }),
     );
   }
