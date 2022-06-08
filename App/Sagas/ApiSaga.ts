@@ -38,11 +38,15 @@ export function* registerDevice(action: any) {
       if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
         //device already in db
         yield put(ApiActions.setRegisterState("registered"))
+        const device = new DeviceModel(deviceResponse.data[0])
+        yield put(BeepBaseActions.setDevice(device))
       } else {
         //device not found, register it
         const registerResponse = yield call(api.registerDevice, requestParams)
         if (registerResponse && registerResponse.ok) {
           yield put(ApiActions.setRegisterState("registered"))
+          const device = new DeviceModel(registerResponse.data)
+          yield put(BeepBaseActions.setDevice(device))
         } else {
           yield put(ApiActions.setRegisterState("failed"))
           yield put(ApiActions.apiFailure(registerResponse))

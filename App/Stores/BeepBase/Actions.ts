@@ -1,5 +1,6 @@
 import { ActionCreators, createActions } from 'reduxsauce';
 import { AteccModel } from '../../Models/AteccModel';
+import { DeviceModel } from '../../Models/DeviceModel';
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
 import { LogFileFrameModel } from '../../Models/LogFileFrameModel';
@@ -11,7 +12,7 @@ import { TemperatureModel } from '../../Models/TemperatureModel';
 export enum BeepBaseTypes {
   CLEAR = 'CLEAR',
   SET_PAIRED_PERIPHERAL = 'SET_PAIRED_PERIPHERAL',
-  CLEAR_PAIRED_PERIPHERAL = 'CLEAR_PAIRED_PERIPHERAL',
+  SET_DEVICE = 'SET_DEVICE',
   SET_FIRMWARE_VERSION = 'SET_FIRMWARE_VERSION',
   SET_HARDWARE_VERSION = 'SET_HARDWARE_VERSION',
   SET_HARDWARE_ID = 'SET_HARDWARE_ID',
@@ -26,7 +27,7 @@ export enum BeepBaseTypes {
 interface C extends ActionCreators {
   clear: () => { type: BeepBaseTypes.CLEAR };
   setPairedPeripheral: (peripheral: PairedPeripheralModel) => { type: BeepBaseTypes.SET_PAIRED_PERIPHERAL };
-  clearPairedPeripheral: () => { type: BeepBaseTypes.CLEAR_PAIRED_PERIPHERAL };
+  setDevice: (device: DeviceModel) => { type: BeepBaseTypes.SET_DEVICE };
   setFirmwareVersion: (firmwareVersion: FirmwareVersionModel) => { type: BeepBaseTypes.SET_FIRMWARE_VERSION };
   setHardwareVersion: (hardwareVersion: HardwareVersionModel) => { type: BeepBaseTypes.SET_HARDWARE_VERSION };
   setHardwareId: (atecc: AteccModel) => { type: BeepBaseTypes.SET_HARDWARE_ID };
@@ -41,7 +42,7 @@ interface C extends ActionCreators {
 const CreatedActions = createActions( {
   clear: null,
   setPairedPeripheral: ['peripheral'],
-  clearPairedPeripheral: null,
+  setDevice: ['device'],
   setFirmwareVersion: ['firmwareVersion'],
   setHardwareVersion: ['hardwareVersion'],
   setHardwareId: ['atecc'],

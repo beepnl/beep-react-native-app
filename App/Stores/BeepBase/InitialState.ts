@@ -1,3 +1,4 @@
+import { DeviceModel } from "../../Models/DeviceModel"
 import { FirmwareVersionModel } from "../../Models/FirmwareVersionModel"
 import { HardwareVersionModel } from "../../Models/HardwareVersionModel"
 import { LogFileFrameModel } from "../../Models/LogFileFrameModel"
@@ -8,6 +9,7 @@ import { TemperatureModel } from "../../Models/TemperatureModel"
 
 export interface BeepBaseState {
   pairedPeripheral: PairedPeripheralModel | undefined
+  device: DeviceModel | undefined
   firmwareVersion: FirmwareVersionModel | undefined
   hardwareVersion: HardwareVersionModel | undefined
   hardwareId: string | undefined
@@ -20,6 +22,7 @@ export interface BeepBaseState {
 
 export const INITIAL_STATE: BeepBaseState = {
   pairedPeripheral: undefined,
+  device: undefined,
   firmwareVersion: undefined,
   hardwareVersion: undefined,
   hardwareId: undefined,

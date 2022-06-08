@@ -11,10 +11,10 @@ export const setPairedPeripheral = (state: BeepBaseState, payload: any) => {
   }
 }
 
-export const clearPairedPeripheral = (state: BeepBaseState, payload: any) => {
+export const setDevice = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
-    pairedPeripheral: undefined
+    device: payload.device
   }
 }
 
@@ -88,7 +88,7 @@ export const clearLogFileFrames = (state: BeepBaseState, payload: any) => {
 export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.CLEAR]: clear,
   [BeepBaseTypes.SET_PAIRED_PERIPHERAL]: setPairedPeripheral,
-  [BeepBaseTypes.CLEAR_PAIRED_PERIPHERAL]: clearPairedPeripheral,
+  [BeepBaseTypes.SET_DEVICE]: setDevice,
   [BeepBaseTypes.SET_FIRMWARE_VERSION]: setFirmwareVersion,
   [BeepBaseTypes.SET_HARDWARE_VERSION]: setHardwareVersion,
   [BeepBaseTypes.SET_HARDWARE_ID]: setHardwareId,

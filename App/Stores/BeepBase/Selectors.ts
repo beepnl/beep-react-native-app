@@ -5,6 +5,10 @@ export const getPairedPeripheral = (state: AppState) => {
   return state.beepBase.pairedPeripheral
 }
 
+export const getDevice = (state: AppState) => {
+  return state.beepBase.device
+}
+
 export const getFirmwareVersion = (state: AppState) => {
   return state.beepBase.firmwareVersion
 }
