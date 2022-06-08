@@ -58,7 +58,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   }, [])
 
   useEffect(() => {
-    if (hardwareId?.id) {
+    if (hardwareId?.id && firmwareVersion && hardwareVersion) {
       //if we have the hardware id, try registering the peripheral as a new device in the api
       const requestParams = {
         hardware_id: hardwareId.toString(),
