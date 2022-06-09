@@ -37,7 +37,7 @@ export function* registerDevice(action: any) {
       //no info field means search result
       if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
         //device already in db
-        yield put(ApiActions.setRegisterState("registered"))
+        yield put(ApiActions.setRegisterState("alreadyRegistered"))
         const device = new DeviceModel(deviceResponse.data[0])
         yield put(BeepBaseActions.setDevice(device))
       } else {

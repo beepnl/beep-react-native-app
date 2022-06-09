@@ -95,7 +95,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
 
       <View style={[styles.spacer, { flex: 1 }]} />
 
-      { registerState == "registered" &&
+      { registerState == "registered" || registerState == "alreadyRegistered" &&
         <TouchableOpacity style={styles.button} onPress={onNextPress}>
           <Text style={styles.text}>{t("common.btnNext")}</Text>
         </TouchableOpacity>
