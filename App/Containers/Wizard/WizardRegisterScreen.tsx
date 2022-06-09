@@ -25,6 +25,7 @@ import { RegisterState } from '../../Stores/Api/InitialState';
 import { getFirmwareVersion, getHardwareVersion } from '../../Stores/BeepBase/Selectors';
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
+import { getError } from 'App/Stores/Api/Selectors';
 
 // Components
 import { Text, View, TouchableOpacity } from 'react-native';
@@ -46,6 +47,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   const registerState: RegisterState = useTypedSelector<RegisterState>(getRegisterState)
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const hardwareVersion: HardwareVersionModel = useTypedSelector<HardwareVersionModel>(getHardwareVersion)
+  const error = useSelector(getError)
 
   useEffect(() => {
     if (peripheral && peripheral.isConnected) {
@@ -92,6 +94,12 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
       <View style={styles.itemContainer}>
         <Text style={styles.itemText}>{t(`wizard.register.state.${registerState}`)}</Text>
       </View>
+
+      { !!error && 
+        <View style={styles.itemContainer}>
+          <Text style={[styles.itemText, styles.error]}>{error.message}</Text>
+        </View>
+      }
 
       <View style={[styles.spacer, { flex: 1 }]} />
 

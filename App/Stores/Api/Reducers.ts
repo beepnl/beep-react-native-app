@@ -14,6 +14,7 @@ export const setRegisterState = (state: ApiState, payload: any) => {
   const { registerState } = payload  
   return {
     ...state,
+    error: undefined,
     registerState
   }
 }
