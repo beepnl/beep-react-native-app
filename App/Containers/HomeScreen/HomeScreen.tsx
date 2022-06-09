@@ -8,7 +8,7 @@ import { useTypedSelector } from 'App/Stores';
 
 // Styles
 import styles from './HomeScreenStyle'
-import { Colors } from '../../Theme';
+import { Colors, Images } from '../../Theme';
 
 // Utils
 const nodePackage = require('../../../package.json')   //including node package config for app version
@@ -23,7 +23,7 @@ import { getDevices } from 'App/Stores/User/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
-import { Text, View, TouchableOpacity, Button, ScrollView, RefreshControl } from 'react-native';
+import { Text, View, TouchableOpacity, Button, ScrollView, RefreshControl, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import NavigationButton from '../../Components/NavigationButton';
@@ -94,7 +94,14 @@ const HomeScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
 
       <ScrollView style={styles.devicesContainer} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />} >
-        { devices.map((device: DeviceModel, index: number) => <NavigationButton key={index} title={device.name} onPress={() => onDevicePress(device)} />) }
+        { devices.map((device: DeviceModel, index: number) => 
+          <NavigationButton 
+            key={index} 
+            title={device.name} 
+            Icon={<Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="contain" />}
+            onPress={() => onDevicePress(device)} 
+          />
+        )}
       </ScrollView>
 
       <View style={styles.spacerDouble} />
