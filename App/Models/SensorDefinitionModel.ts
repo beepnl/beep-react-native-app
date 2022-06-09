@@ -33,12 +33,32 @@ export class SensorDefinitionModel {
   deviceId: string
   name: string
   isInside: boolean | null
+  offset: number
+  multiplier: number
+  inputMeasurementId: number
+  outputMeasurementId: number
+  inputAbbreviation: string
+  outputAbbreviation: string
 
   constructor(props: any) {
     this.id = props.id.toString()
     this.name = props.name
     this.deviceId = props.device_id
     this.isInside = !!props.inside
+    this.offset = props.offset
+    this.multiplier = props.multiplier
+    this.inputMeasurementId = props.input_measurement_id
+    this.outputMeasurementId = props.output_measurement_id
+    this.inputAbbreviation = props.input_abbr
+    this.outputAbbreviation = props.output_abbr
+    }
+
+  isTemperatureSensor() {
+    return this.inputAbbreviation?.startsWith("t_")
+  }
+
+  isWeightSensor() {
+    return this.inputAbbreviation == "w_v"
   }
 
 }

@@ -1,4 +1,4 @@
-import { put, call } from 'redux-saga/effects'
+import { put, call, select, all } from 'redux-saga/effects'
 import ApiActions from 'App/Stores/Api/Actions'
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import UserActions from 'App/Stores/User/Actions'
@@ -6,6 +6,7 @@ import api from 'App/Services/ApiService'
 import { DeviceModel } from '../Models/DeviceModel'
 import { FirmwareModel } from '../Models/FirmwareModel'
 import { SensorDefinitionModel } from '../Models/SensorDefinitionModel'
+import { getTemperatureSensorDefinitions } from '../Stores/BeepBase/Selectors'
 
 export function* getDevices(action: any) {
   const response = yield call(api.getDevices)
@@ -61,12 +62,33 @@ export function* registerDevice(action: any) {
   }
 }
 
+export function* initializeSensors(action: any) {
+  const { device, temperatures } = action
+  yield call(getSensorDefinitions, action)
+  const temperatureSensorDefinitions: Array<SensorDefinitionModel> = getTemperatureSensorDefinitions(yield select())
+  yield all(temperatures.map((temperatureModel: any, index: number) => {
+    const sensorAbbr = `t_${index}`
+    const sensorDefinition = temperatureSensorDefinitions.find(temperatureSensorDefinition => temperatureSensorDefinition.inputAbbreviation === sensorAbbr)
+    if (!sensorDefinition) {
+      //definition for this sensor not found in api
+      const requestParams = {
+        device_hardware_id: device.hardwareId,
+        input_measurement_abbreviation: sensorAbbr,
+        name: `Temperature sensor ${index + 1}`,
+        inside: true,
+      }
+      return call(createSensorDefinition, { requestParams })
+    }
+  }))
+}
+
 export function* getSensorDefinitions(action: any) {
   const { device } = action
   const response = yield call(api.getSensorDefinitions, device.id)
   if (response && response.ok) {
     const sensorDefinitions: Array<SensorDefinitionModel> = []
     response.data?.map((item: any) => sensorDefinitions.push(new SensorDefinitionModel(item)))
+    //store in beep base store because it belongs to the currently connected beep base
     yield put(BeepBaseActions.setSensorDefinitions(sensorDefinitions))
   } else {
     yield put(ApiActions.apiFailure(response))

@@ -19,9 +19,10 @@ import useInterval from '../../Helpers/useInterval';
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
-import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
+import { getTemperatureSensorDefinitions, getTemperatures } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
+import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
@@ -41,6 +42,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
+  const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getTemperatureSensorDefinitions)
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -51,30 +53,42 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
 
   useInterval(() => {
     refresh()
-  }, 5000)
+  }, __DEV__ ? 60000 : 5000)
 
   useEffect(() => {
     if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
     }
+
     refresh()
   }, [])
 
   useEffect(() => {
-    if (device && temperatures.length) {
-      initializeSensors()
+    if (device) {
+      //temperature
+      if (temperatures.length) {
+        dispatch(ApiActions.initializeSensors(device, temperatures))
+      }
+
+      //weight
+      //...
     }
   }, [device, temperatures.length])
 
-  const initializeSensors = () => {
+  const initializeTemperatureSensors = () => {
     temperatures.forEach((temperatureModel: TemperatureModel, index: number) => {
-      const requestParams = {
-        device_hardware_id: device.hardwareId,
-        input_measurement_abbreviation: `t_${index}`,
-        name: `Temperature sensor ${index + 1}`,
-        inside: false,
+      const sensorAbbr = `t_${index}`
+      const sensorDefinition = temperatureSensorDefinitions.find(temperatureSensorDefinition => temperatureSensorDefinition.inputAbbreviation === sensorAbbr)
+      if (!sensorDefinition) {
+        //definition for this sensor not found in api
+        const requestParams = {
+          device_hardware_id: device.hardwareId,
+          input_measurement_abbreviation: sensorAbbr,
+          name: `Temperature sensor ${index + 1}`,
+          inside: true,
+        }
+        dispatch(ApiActions.createSensorDefinition(requestParams))
       }
-      dispatch(ApiActions.createSensorDefinition(requestParams))
     })
   }
 

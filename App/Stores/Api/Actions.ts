@@ -7,6 +7,7 @@ export enum ApiTypes {
   REGISTER_DEVICE = 'REGISTER_DEVICE',
   SET_REGISTER_STATE = 'SET_REGISTER_STATE',
   SET_DEVICES = 'SET_DEVICES',
+  INITIALIZE_SENSORS = 'INITIALIZE_SENSORS',
   CREATE_SENSOR_DEFINITION = 'CREATE_SENSOR_DEFINITION',
   GET_SENSOR_DEFINITIONS = 'GET_SENSOR_DEFINITIONS',
   UPDATE_SENSOR_DEFINITION = 'UPDATE_SENSOR_DEFINITION',
@@ -28,6 +29,7 @@ const CreatedActions = createActions({
   setRegisterState: ['registerState'],
   setDevices: ['devices'],
 
+  initializeSensors: ['device', 'temperatures'],
   createSensorDefinition: ['requestParams'],
   getSensorDefinitions: ['device'],
   updateSensorDefinition: ['requestParams'],

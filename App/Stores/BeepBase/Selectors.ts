@@ -1,5 +1,6 @@
 import { AppState } from 'App/Stores'
 import { LogFileFrameModel } from '../../Models/LogFileFrameModel'
+import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel'
 
 export const getPairedPeripheral = (state: AppState) => {
   return state.beepBase.pairedPeripheral
@@ -23,6 +24,14 @@ export const getHardwareId = (state: AppState) => {
 
 export const getSensorDefinitions = (state: AppState) => {
   return state.beepBase.sensorDefinitions
+}
+
+export const getTemperatureSensorDefinitions = (state: AppState) => {
+  return state.beepBase.sensorDefinitions.filter((sensorDefinition: SensorDefinitionModel) => sensorDefinition.isTemperatureSensor())
+}
+
+export const getWeightSensorDefinitions = (state: AppState) => {
+  return state.beepBase.sensorDefinitions.filter((sensorDefinition: SensorDefinitionModel) => sensorDefinition.isWeightSensor())
 }
 
 export const getTemperatures = (state: AppState) => {
