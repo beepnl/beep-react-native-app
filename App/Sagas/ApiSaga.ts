@@ -47,6 +47,8 @@ export function* registerDevice(action: any) {
           yield put(ApiActions.setRegisterState("registered"))
           const device = new DeviceModel(registerResponse.data)
           yield put(BeepBaseActions.setDevice(device))
+          //refresh user device list
+          yield call(getDevices, null)
         } else {
           yield put(ApiActions.setRegisterState("failed"))
           yield put(ApiActions.apiFailure(registerResponse))
