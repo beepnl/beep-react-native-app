@@ -42,7 +42,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
   const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getTemperatureSensorDefinitions)
   const names = temperatures.map((temperatureModel: TemperatureModel, index: number) => {
-    const [value, setValue] = useState(`Sensor ${index + 1}`)
+    const [value, setValue] = useState(`Temperature sensor ${index + 1}`)
     return { value, setValue }
   })
   const sensorLocations = temperatures.map((temperatureModel: TemperatureModel, index: number) => {
@@ -99,7 +99,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   return (<>
     <ScreenHeader title={t("wizard.calibrate.temperature.screenTitle")} back />
 
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.spacer} />
 
       <View style={styles.itemContainer}>
@@ -119,7 +119,6 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
         </View>
         <View style={styles.spacer} />
         <TextInput
-          // ref={inputUsernameRef}
           style={styles.input}
           onChangeText={names[index].setValue}
           value={names[index].value}
@@ -145,12 +144,13 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
       </View>)}
 
-      <View style={[styles.spacer, { flex: 1 }]} />
+    </ScrollView>
 
+    <View style={styles.itemContainer}>
       <TouchableOpacity style={styles.button} onPress={onFinishPress}>
         <Text style={styles.text}>{t("common.btnFinish")}</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
   </>)
 }
 
