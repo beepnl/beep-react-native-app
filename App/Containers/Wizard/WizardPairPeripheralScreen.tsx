@@ -13,7 +13,7 @@ import { Colors, Fonts, Metrics } from '../../Theme';
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import BleManager, { Peripheral } from 'react-native-ble-manager'
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '../../Helpers/BleHelpers';
 import { Platform } from 'react-native'
 
 // Data
@@ -32,7 +32,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import NavigationButton from '../../Components/NavigationButton';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
-const BLE_NAME_PREFIX = "BEEPBASE"
 
 type ListItem = Peripheral & { origin: "bonded" | "scanned" }
 

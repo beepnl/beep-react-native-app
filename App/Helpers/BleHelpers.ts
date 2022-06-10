@@ -81,6 +81,7 @@ export type BluetoothState =
 "pairedNotConnected" |  // Bluetooth is on and not all paired peripherals are connected
 "noPaired"              // Bluetooth is on and there are no paired peripherals
 
+export const BLE_NAME_PREFIX = "BEEPBASE-"
 export const BEEP_SERVICE = "be4768a1-719f-4bad-5040-c6ebc5f8c31b"
 export const CONTROL_POINT_CHARACTERISTIC = "000068b0-0000-1000-8000-00805f9b34fb"
 export const LOG_FILE_CHARACTERISTIC = "be4768a3-719f-4bad-5040-c6ebc5f8c31b"

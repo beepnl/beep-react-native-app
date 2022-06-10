@@ -12,7 +12,7 @@ import { Colors, Fonts, Metrics } from '../../Theme';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '../../Helpers/BleHelpers';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
@@ -31,7 +31,7 @@ import { getError } from 'App/Stores/Api/Selectors';
 import { Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import NavigationButton from '../../Components/NavigationButton';
+import { generateKey } from '../../Helpers/random';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -62,12 +62,15 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     if (hardwareId?.id && firmwareVersion && hardwareVersion) {
       //if we have the hardware id, try registering the peripheral as a new device in the api
+      const key = generateKey(16)
+      const suffix = key.slice(-4)
+      const name = BLE_NAME_PREFIX + suffix.toUpperCase()
       const requestParams = {
         hardware_id: hardwareId.toString(),
-        name: peripheral.name,
+        key,
+        name,
         firmware_version: firmwareVersion.toString(),
         hardware_version: hardwareVersion.toString(),
-        create_ttn_device: true,
       }
       dispatch(ApiActions.registerDevice(hardwareId, requestParams))
     }
