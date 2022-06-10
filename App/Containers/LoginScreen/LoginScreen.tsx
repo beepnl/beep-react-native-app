@@ -38,7 +38,9 @@ const LoginScreen: FunctionComponent<Props> = ({
   const inputPasswordRef = useRef<TextInput>(null)
 
   const onLoginPress = () => {
-    dispatch(AuthActions.login(username, password))
+    if (username && password) {
+      dispatch(AuthActions.login(username.trim(), password))
+    }
   }
 
   return (
