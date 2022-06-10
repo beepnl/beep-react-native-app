@@ -59,8 +59,8 @@ function getSensorDefinitions(deviceId: string) {
   return api.get("sensordefinition", { device_id: deviceId })
 }
 
-function updateSensorDefinition(params: any) {
-  return api.put("sensordefinition", { ...params })
+function updateSensorDefinition(id: string, params: any) {
+  return api.put(`sensordefinition/${id}`, { ...params })
 }
 
 function getFirmwares() {

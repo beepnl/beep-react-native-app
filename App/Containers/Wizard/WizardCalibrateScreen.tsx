@@ -19,10 +19,9 @@ import useInterval from '../../Helpers/useInterval';
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
-import { getTemperatureSensorDefinitions, getTemperatures } from 'App/Stores/BeepBase/Selectors';
+import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
-import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
@@ -42,7 +41,6 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
-  const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getTemperatureSensorDefinitions)
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -74,23 +72,6 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
       //...
     }
   }, [device, temperatures.length])
-
-  const initializeTemperatureSensors = () => {
-    temperatures.forEach((temperatureModel: TemperatureModel, index: number) => {
-      const sensorAbbr = `t_${index}`
-      const sensorDefinition = temperatureSensorDefinitions.find(temperatureSensorDefinition => temperatureSensorDefinition.inputAbbreviation === sensorAbbr)
-      if (!sensorDefinition) {
-        //definition for this sensor not found in api
-        const requestParams = {
-          device_hardware_id: device.hardwareId,
-          input_measurement_abbreviation: sensorAbbr,
-          name: `Temperature sensor ${index + 1}`,
-          inside: true,
-        }
-        dispatch(ApiActions.createSensorDefinition(requestParams))
-      }
-    })
-  }
 
   const onNextPress = () => {
     navigation.dispatch(

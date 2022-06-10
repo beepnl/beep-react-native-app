@@ -99,7 +99,6 @@ export function* createSensorDefinition(action: any) {
   const { requestParams } = action
   const response = yield call(api.createSensorDefinition, requestParams)
   if (response && response.ok) {
-    debugger
     //TODO: update device with defs from response
   } else {
     yield put(ApiActions.apiFailure(response))
@@ -107,10 +106,17 @@ export function* createSensorDefinition(action: any) {
 }
 
 export function* updateSensorDefinition(action: any) {
-  const { requestParams } = action
-  const response = yield call(api.updateSensorDefinition, requestParams)
+  const { sensorDefinition } = action
+  const requestParams = {
+    device_id: sensorDefinition.deviceId,
+    input_measurement_abbreviation: sensorDefinition.inputAbbreviation,
+    name: sensorDefinition.name,
+    inside: sensorDefinition.isInside,
+  }
+  const response = yield call(api.updateSensorDefinition, sensorDefinition.id, requestParams)
   if (response && response.ok) {
-    debugger
+    const sensorDefinition = new SensorDefinitionModel(response.data)
+    yield put(BeepBaseActions.updateSensorDefinition(sensorDefinition))
   } else {
     yield put(ApiActions.apiFailure(response))
   }

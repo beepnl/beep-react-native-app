@@ -32,7 +32,7 @@ export class SensorDefinitionModel {
   id: string
   deviceId: string
   name: string
-  isInside: boolean | null
+  isInside: boolean
   offset: number
   multiplier: number
   inputMeasurementId: number

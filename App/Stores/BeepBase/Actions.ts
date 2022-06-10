@@ -17,6 +17,7 @@ export enum BeepBaseTypes {
   SET_HARDWARE_VERSION = 'SET_HARDWARE_VERSION',
   SET_HARDWARE_ID = 'SET_HARDWARE_ID',
   SET_SENSOR_DEFINITIONS = 'SET_SENSOR_DEFINITIONS',
+  UPDATE_SENSOR_DEFINITION = 'UPDATE_SENSOR_DEFINITION',
   SET_TEMPERATURES = 'SET_TEMPERATURES',
   SET_LOG_FILE_SIZE = 'SET_LOG_FILE_SIZE',
   SET_LOG_FILE_PROGRESS = 'SET_LOG_FILE_PROGRESS',
@@ -32,6 +33,7 @@ interface C extends ActionCreators {
   setHardwareVersion: (hardwareVersion: HardwareVersionModel) => { type: BeepBaseTypes.SET_HARDWARE_VERSION };
   setHardwareId: (atecc: AteccModel) => { type: BeepBaseTypes.SET_HARDWARE_ID };
   setSensorDefinitions: (sensorDefinitions: Array<SensorDefinitionModel>) => { type: BeepBaseTypes.SET_SENSOR_DEFINITIONS };
+  updateSensorDefinition: (sensorDefinition: SensorDefinitionModel) => { type: BeepBaseTypes.UPDATE_SENSOR_DEFINITION };
   setTemperatures: (temperatures: Array<TemperatureModel>) => { type: BeepBaseTypes.SET_TEMPERATURES };
   setLogFileSize: (size: LogFileSizeModel) => { type: BeepBaseTypes.SET_LOG_FILE_SIZE };
   setLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_LOG_FILE_PROGRESS };
@@ -47,6 +49,7 @@ const CreatedActions = createActions( {
   setHardwareVersion: ['hardwareVersion'],
   setHardwareId: ['atecc'],
   setSensorDefinitions: ['sensorDefinitions'],
+  updateSensorDefinition: ['sensorDefinition'],
   setTemperatures: ['temperatures'],
   setLogFileSize: ['size'],
   setLogFileProgress: ['progress'],

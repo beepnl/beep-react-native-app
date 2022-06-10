@@ -10,7 +10,7 @@ export enum ApiTypes {
   INITIALIZE_SENSORS = 'INITIALIZE_SENSORS',
   CREATE_SENSOR_DEFINITION = 'CREATE_SENSOR_DEFINITION',
   GET_SENSOR_DEFINITIONS = 'GET_SENSOR_DEFINITIONS',
-  UPDATE_SENSOR_DEFINITION = 'UPDATE_SENSOR_DEFINITION',
+  UPDATE_API_SENSOR_DEFINITION = 'UPDATE_API_SENSOR_DEFINITION',
   GET_FIRMWARES = 'GET_FIRMWARES',
   SET_FIRMWARES = 'SET_FIRMWARES',
   API_FAILURE = 'API_FAILURE',
@@ -32,7 +32,7 @@ const CreatedActions = createActions({
   initializeSensors: ['device', 'temperatures'],
   createSensorDefinition: ['requestParams'],
   getSensorDefinitions: ['device'],
-  updateSensorDefinition: ['requestParams'],
+  updateApiSensorDefinition: ['sensorDefinition'],
 
   getFirmwares: null,
   setFirmwares: ['firmwares'],

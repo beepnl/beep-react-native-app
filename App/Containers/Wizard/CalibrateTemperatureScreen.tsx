@@ -19,9 +19,9 @@ import useInterval from '../../Helpers/useInterval';
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
-import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
-import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
-import { DeviceModel } from '../../Models/DeviceModel';
+import { getTemperatureSensorDefinitions, getTemperatures } from 'App/Stores/BeepBase/Selectors';
+import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native';
@@ -39,14 +39,14 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
+  const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getTemperatureSensorDefinitions)
   const names = temperatures.map((temperatureModel: TemperatureModel, index: number) => {
     const [value, setValue] = useState(`Sensor ${index + 1}`)
     return { value, setValue }
   })
   const sensorLocations = temperatures.map((temperatureModel: TemperatureModel, index: number) => {
-    const [value, setValue] = useState(false)
+    const [value, setValue] = useState(true)
     return { value, setValue }
   })
 
@@ -58,27 +58,39 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   }
 
   useEffect(() => {
+    if (temperatures.length === temperatureSensorDefinitions.length) {
+      temperatureSensorDefinitions.forEach((sensorDefinition: SensorDefinitionModel, index: number) => {
+        //overwrite sensor props with values from api
+        names[index].setValue(sensorDefinition.name)
+        sensorLocations[index].setValue(sensorDefinition.isInside)
+      })
+    } else {
+      //illegal state, device sensor count differs from api sensor count
+      navigation.goBack()
+    }
+
     if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
     }
-    // refresh()
+
+    refresh()
   }, [])
 
   useInterval(() => {
     refresh()
-  }, 2000)
+  }, __DEV__ ? 20000 : 2000)
 
   const onFinishPress = () => {
     temperatures.forEach((temperatureModel: TemperatureModel, index: number) => {
       const name = names[index].value
-      const inside = sensorLocations[index].value
-      const requestParams = {
-        device_hardware_id: device.hardwareId,
-        input_measurement_abbreviation: `t_${index}`,
+      const isInside = sensorLocations[index].value
+      const temperatureSensorDefinition = temperatureSensorDefinitions[index]
+      const param = {
+        ...temperatureSensorDefinition,
         name,
-        inside,
+        isInside,
       }
-      dispatch(ApiActions.updateSensorDefinition(requestParams))
+      dispatch(ApiActions.updateApiSensorDefinition(param))
     })
 
     navigation.goBack()

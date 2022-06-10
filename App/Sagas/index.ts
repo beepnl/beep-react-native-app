@@ -32,7 +32,7 @@ export default function* root() {
     takeLatest(ApiTypes.GET_SENSOR_DEFINITIONS, getSensorDefinitions),
     takeEvery(ApiTypes.INITIALIZE_SENSORS, initializeSensors),
     takeEvery(ApiTypes.CREATE_SENSOR_DEFINITION, createSensorDefinition),
-    takeEvery(ApiTypes.UPDATE_SENSOR_DEFINITION, updateSensorDefinition),
+    takeEvery(ApiTypes.UPDATE_API_SENSOR_DEFINITION, updateSensorDefinition),
     takeLatest(ApiTypes.GET_FIRMWARES, getFirmwares),
   ])
 }
