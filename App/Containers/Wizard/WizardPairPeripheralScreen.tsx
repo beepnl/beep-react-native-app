@@ -67,8 +67,6 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
       const bondedPeripherals: Array<ListItem> = filtered.map((peripheral: Peripheral) => ({ ...peripheral, origin: "bonded" }))
       setBondedPeripherals(bondedPeripherals)
-      setList(bondedPeripherals)
-      startScan(bondedPeripherals)
     })
     
     return (() => {
@@ -79,15 +77,14 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     })
   }, [])
 
-
-  const scan = (initialPeripherals: Array<ListItem>) => {
+  const scan = () => {
     setError("")
     if (!isScanning) {
       setConnectingPeripheral(null)
       BleManager.scan([], 10, false).then((results) => {
         console.log('Scanning...')
         setIsScanning(true)
-        setList(initialPeripherals)
+        setList(bondedPeripherals)
       }).catch(err => {
         console.error(err)
         setError(err)
@@ -95,13 +92,12 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     }
   }
 
-  const startScan = (initialPeripherals: Array<ListItem>) => {
-    const initialList = initialPeripherals || bondedPeripherals
+  const startScan = () => {
     switch (Platform.OS) {
       case "android":
         BleManager.enableBluetooth().then(() => {
           console.log("The bluetooth is already enabled or the user confirmed");
-          scan(initialList)
+          scan()
         })
         .catch((error) => {
           console.log("The user refuse to enable bluetooth", error);
@@ -110,10 +106,12 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         break;
         
       case "ios":
-        scan(initialList)
+        scan()
         break;
     }
   }
+
+  useEffect(startScan, [bondedPeripherals])
 
   const handleStopScan = () => {
     console.log('Scan is stopped');
