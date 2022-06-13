@@ -361,6 +361,10 @@ export default class BleHelpers {
 
   static write(peripheralId: string, command: any, params?: any) {
 
+    const isString = function(value: any) {
+      return typeof value === 'string' || value instanceof String
+    }
+
     const isLittleEndian = (function () {
       let t32 = new Uint32Array(1);
       let t8 = new Uint8Array(t32.buffer);
@@ -373,10 +377,14 @@ export default class BleHelpers {
     const isBigEndian = !isLittleEndian;
 
     const arrayCommand = Array.isArray(command) ? command : [command]
-    const arrayParams = Array.isArray(params) ? params : [params]
-    const arrayCommandParams = [...arrayCommand, arrayParams]
+    let arrayCommandParams
+    if (params !== undefined) {
+      const arrayParams = Array.isArray(params) ? params : isString(params) ? Buffer.from(params, "hex") : [params]
+      arrayCommandParams = [...arrayCommand, ...arrayParams]
+    } else {
+      arrayCommandParams = arrayCommand
+    }
     const buffer = Buffer.from(arrayCommandParams)
-    // const buffer = Buffer.from(Array.isArray(command) ? command : [command])
 
     // if (isLittleEndian) {
     //   buffer.swap16()
@@ -389,7 +397,7 @@ export default class BleHelpers {
       [...buffer]
     )
     .then(() => {
-      console.log("Written data: " + BleHelpers.byteToHexString([command]));
+      console.log("Written data: " + BleHelpers.byteToHexString([...buffer]));
     })
     .catch((error) => {
       console.log(error);
