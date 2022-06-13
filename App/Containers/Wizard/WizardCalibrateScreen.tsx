@@ -19,9 +19,10 @@ import useInterval from '../../Helpers/useInterval';
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
-import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
+import { getTemperatures, getWeight } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
+import { WeightModel } from '../../Models/WeightModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
@@ -41,6 +42,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
+  const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -56,6 +58,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
     }
 
     refresh()
@@ -99,6 +102,14 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
           title={temperatures.map((temperatureModel) => temperatureModel.toString()).join(", ")} 
           Icon={<IconFontAwesome name="thermometer-2" size={30} color={Colors.black} />}
           onPress={() => navigation.navigate("CalibrateTemperatureScreen")} 
+        />
+      }
+
+      { weight &&
+        <NavigationButton 
+          title={weight.toString()} 
+          Icon={<IconFontAwesome name="thermometer-2" size={30} color={Colors.black} />}
+          onPress={() => navigation.navigate("CalibrateWeightScreen")} 
         />
       }
 

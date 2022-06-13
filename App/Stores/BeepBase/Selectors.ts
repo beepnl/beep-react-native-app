@@ -38,6 +38,10 @@ export const getTemperatures = (state: AppState) => {
   return state.beepBase.temperatures
 }
 
+export const getWeight = (state: AppState) => {
+  return state.beepBase.weight
+}
+
 export const getLogFileSize = (state: AppState) => {
   return state.beepBase.logFileSize
 }

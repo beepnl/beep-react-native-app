@@ -15,6 +15,7 @@ import RNFS from 'react-native-fs';
 import { FileSystem } from 'react-native-file-access';
 import { AteccParser } from '../Models/AteccModel';
 import { HardwareVersionParser } from '../Models/HardwareVersionModel';
+import { WeightParser } from '../Models/WeightModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -238,9 +239,16 @@ export default class BleHelpers {
           store.dispatch(BeepBaseActions.setHardwareVersion(model))
           break
 
+        //temperature sensor
         case COMMANDS.READ_DS18B20_CONVERSION:
           const models = new TemperatureParser({ data }).parse()
           store.dispatch(BeepBaseActions.setTemperatures(models))
+          break
+
+        //weight sensor
+        case COMMANDS.READ_HX711_CONVERSION:
+          model = new WeightParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setWeight(model))
           break
 
         case COMMANDS.READ_ATECC_READ_ID:

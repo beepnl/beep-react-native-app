@@ -8,6 +8,7 @@ import { LogFileSizeModel } from '../../Models/LogFileSizeModel';
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
+import { WeightModel } from '../../Models/WeightModel';
 
 export enum BeepBaseTypes {
   CLEAR = 'CLEAR',
@@ -19,6 +20,7 @@ export enum BeepBaseTypes {
   SET_SENSOR_DEFINITIONS = 'SET_SENSOR_DEFINITIONS',
   UPDATE_SENSOR_DEFINITION = 'UPDATE_SENSOR_DEFINITION',
   SET_TEMPERATURES = 'SET_TEMPERATURES',
+  SET_WEIGHT = 'SET_WEIGHT',
   SET_LOG_FILE_SIZE = 'SET_LOG_FILE_SIZE',
   SET_LOG_FILE_PROGRESS = 'SET_LOG_FILE_PROGRESS',
   ADD_LOG_FILE_FRAME = 'ADD_LOG_FILE_FRAME',
@@ -35,6 +37,7 @@ interface C extends ActionCreators {
   setSensorDefinitions: (sensorDefinitions: Array<SensorDefinitionModel>) => { type: BeepBaseTypes.SET_SENSOR_DEFINITIONS };
   updateSensorDefinition: (sensorDefinition: SensorDefinitionModel) => { type: BeepBaseTypes.UPDATE_SENSOR_DEFINITION };
   setTemperatures: (temperatures: Array<TemperatureModel>) => { type: BeepBaseTypes.SET_TEMPERATURES };
+  setWeight: (weight: WeightModel) => { type: BeepBaseTypes.SET_WEIGHT };
   setLogFileSize: (size: LogFileSizeModel) => { type: BeepBaseTypes.SET_LOG_FILE_SIZE };
   setLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_LOG_FILE_PROGRESS };
   addLogFileFrame: (frame: LogFileFrameModel) => { type: BeepBaseTypes.ADD_LOG_FILE_FRAME };
@@ -51,6 +54,7 @@ const CreatedActions = createActions( {
   setSensorDefinitions: ['sensorDefinitions'],
   updateSensorDefinition: ['sensorDefinition'],
   setTemperatures: ['temperatures'],
+  setWeight: ['weight'],
   setLogFileSize: ['size'],
   setLogFileProgress: ['progress'],
   addLogFileFrame: ['frame'],

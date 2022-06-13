@@ -6,6 +6,7 @@ import { LogFileSizeModel } from "../../Models/LogFileSizeModel"
 import { PairedPeripheralModel } from "../../Models/PairedPeripheralModel"
 import { SensorDefinitionModel } from "../../Models/SensorDefinitionModel"
 import { TemperatureModel } from "../../Models/TemperatureModel"
+import { WeightModel } from "../../Models/WeightModel"
 
 export interface BeepBaseState {
   pairedPeripheral: PairedPeripheralModel | undefined
@@ -15,6 +16,7 @@ export interface BeepBaseState {
   hardwareId: string | undefined
   sensorDefinitions: Array<SensorDefinitionModel>
   temperatures: Array<TemperatureModel>
+  weight: WeightModel | undefined
   logFileSize: LogFileSizeModel | undefined
   logFileProgress: number
   logFileFrames: Array<LogFileFrameModel>
@@ -28,6 +30,7 @@ export const INITIAL_STATE: BeepBaseState = {
   hardwareId: undefined,
   sensorDefinitions: [],
   temperatures: [],
+  weight: undefined,
   logFileSize: undefined,
   logFileProgress: 0,
   logFileFrames: [],

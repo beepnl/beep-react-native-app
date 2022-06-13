@@ -63,6 +63,13 @@ export const setTemperatures = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setWeight = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    weight: payload.weight
+  }
+}
+
 export const setLogFileSize = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
@@ -105,6 +112,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.SET_SENSOR_DEFINITIONS]: setSensorDefinitions,
   [BeepBaseTypes.UPDATE_SENSOR_DEFINITION]: updateSensorDefinition,
   [BeepBaseTypes.SET_TEMPERATURES]: setTemperatures,
+  [BeepBaseTypes.SET_WEIGHT]: setWeight,
   [BeepBaseTypes.SET_LOG_FILE_SIZE]: setLogFileSize,
   [BeepBaseTypes.SET_LOG_FILE_PROGRESS]: setLogFileProgress,
   [BeepBaseTypes.ADD_LOG_FILE_FRAME]: addLogFileFrame,
