@@ -12,6 +12,7 @@ import {
 
 import {
   getDevices,
+  checkDeviceRegistration,
   registerDevice,
   initializeSensors,
   createSensorDefinition,
@@ -28,6 +29,7 @@ export default function* root() {
     takeLatest(AuthTypes.LOGOUT, logout),
 
     takeLatest(ApiTypes.GET_DEVICES, getDevices),
+    takeLatest(ApiTypes.CHECK_DEVICE_REGISTRATION, checkDeviceRegistration),
     takeLatest(ApiTypes.REGISTER_DEVICE, registerDevice),
     takeLatest(ApiTypes.GET_SENSOR_DEFINITIONS, getSensorDefinitions),
     takeEvery(ApiTypes.INITIALIZE_SENSORS, initializeSensors),

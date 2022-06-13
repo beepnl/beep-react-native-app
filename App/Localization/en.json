@@ -43,15 +43,20 @@
     "register": {
       "screenTitle": "Register",
       "state": {
-        "none": "",
+        "none": "...",
         "hardwareId": "Retrieving hardware ID of BEEP base...",
         "checking": "Checking registration status...",
+        "notYetRegistered": "This BEEP base is not yet registered.\n\nIn order to configure this BEEP base, it must be registered to your BEEP account.\n\nAfter successful registration, it will be reset to factory default settings.",
         "registering": "Registering BEEP base...",
         "registered": "This BEEP base is successfully registered to your account.",
+        "factoryReset": "Resetting to factory defaults...",
         "alreadyRegistered": "This BEEP base is already registered to your account.",
         "failed": "Could not register this BEEP base.",
         "deviceAlreadyLinkedToAnotherAccount": "This BEEP base is already registered to another account.\n\nAsk the person you acquired your BEEP base from to transfer it to you."
-      }
+      },
+      "name": "Name",
+      "namePlaceholder": "Name your BEEP base",
+      "registerButton": "Register this BEEP base to your account",
     },
     "calibrate": {
       "screenTitle": "Calibrate",

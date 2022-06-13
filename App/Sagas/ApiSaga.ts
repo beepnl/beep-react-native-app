@@ -7,6 +7,7 @@ import { DeviceModel } from '../Models/DeviceModel'
 import { FirmwareModel } from '../Models/FirmwareModel'
 import { SensorDefinitionModel } from '../Models/SensorDefinitionModel'
 import { getTemperatureSensorDefinitions } from '../Stores/BeepBase/Selectors'
+import BleHelpers, { COMMANDS } from '../Helpers/BleHelpers'
 
 export function* getDevices(action: any) {
   const response = yield call(api.getDevices)
@@ -16,6 +17,37 @@ export function* getDevices(action: any) {
     yield put(UserActions.setDevices(devices))
   } else {
     yield put(ApiActions.apiFailure(response))
+  }
+}
+
+export function* checkDeviceRegistration(action: any) {
+  yield put(ApiActions.setRegisterState("checking"))
+
+  const { hardwareId } = action
+
+  //search for existing device
+  const deviceResponse = yield call(api.getDevice, hardwareId.id)
+  if (deviceResponse && deviceResponse.ok && deviceResponse.data) {
+    if (deviceResponse.data.info) {
+      //info field has error code
+      switch (deviceResponse.data.info) {
+        case "device_not_yours":
+          yield put(ApiActions.setRegisterState("deviceAlreadyLinkedToAnotherAccount"))
+          break;
+      }
+    } else {
+      //no info field means search result
+      if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
+        //device already in db
+        yield put(ApiActions.setRegisterState("alreadyRegistered"))
+      } else {
+        //device not found
+        yield put(ApiActions.setRegisterState("notYetRegistered"))
+      }
+    }
+  } else {
+    yield put(ApiActions.setRegisterState("failed"))
+    yield put(ApiActions.apiFailure(deviceResponse))
   }
 }
 

@@ -4,6 +4,7 @@ import { RegisterState } from './InitialState';
 
 export enum ApiTypes {
   GET_DEVICES = 'GET_DEVICES',
+  CHECK_DEVICE_REGISTRATION = 'CHECK_DEVICE_REGISTRATION',
   REGISTER_DEVICE = 'REGISTER_DEVICE',
   SET_REGISTER_STATE = 'SET_REGISTER_STATE',
   SET_DEVICES = 'SET_DEVICES',
@@ -25,6 +26,7 @@ interface C extends ActionCreators {
 
 const CreatedActions = createActions({
   getDevices: null,
+  checkDeviceRegistration: ['hardwareId'],
   registerDevice: ['peripheralId', 'hardwareId', 'requestParams'],
   setRegisterState: ['registerState'],
   setDevices: ['devices'],
