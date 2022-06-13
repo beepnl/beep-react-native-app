@@ -224,6 +224,10 @@ export default class BleHelpers {
       const data: Buffer = buffer.subarray(1)
       let model
       switch (command) {
+        case COMMANDS.RESPONSE:
+          console.log("BLE response", data)
+          break
+
         case COMMANDS.READ_FIRMWARE_VERSION:
           model = new FirmwareVersionParser({ data }).parse()
           store.dispatch(BeepBaseActions.setFirmwareVersion(model))
