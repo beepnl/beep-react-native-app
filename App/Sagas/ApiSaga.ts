@@ -22,7 +22,7 @@ export function* getDevices(action: any) {
 export function* registerDevice(action: any) {
   yield put(ApiActions.setRegisterState("registering"))
 
-  const { hardwareId, requestParams } = action
+  const { peripheralId, hardwareId, requestParams } = action
 
   //search for existing device
   const deviceResponse = yield call(api.getDevice, hardwareId.id)
@@ -41,6 +41,8 @@ export function* registerDevice(action: any) {
         yield put(ApiActions.setRegisterState("alreadyRegistered"))
         const device = new DeviceModel(deviceResponse.data[0])
         yield put(BeepBaseActions.setDevice(device))
+        //update firmware with LoRa devEUI. This will also rename the BLE name
+        BleHelpers.write(peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
       } else {
         //device not found, register it
         const registerResponse = yield call(api.registerDevice, requestParams)
@@ -48,6 +50,8 @@ export function* registerDevice(action: any) {
           yield put(ApiActions.setRegisterState("registered"))
           const device = new DeviceModel(registerResponse.data)
           yield put(BeepBaseActions.setDevice(device))
+          //update firmware with LoRa devEUI. This will also rename the BLE name
+          BleHelpers.write(peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
           //refresh user device list
           yield call(getDevices, null)
         } else {

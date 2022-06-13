@@ -46,13 +46,15 @@ export class DeviceModel {
   id: string
   name: string
   hardwareId: string
+  devEUI: string
   sensorDefinitions: Array<SensorDefinitionModel>
 
   constructor(props: any) {
     this.id = props.id.toString() || ""
     this.name = props.name
     this.hardwareId = props.hardware_id
-    
+    this.devEUI = props.key
+
     this.sensorDefinitions = []
     if (Array.isArray(props.sensor_definitions)) {
       props.sensor_definitions.forEach((item: any) => this.sensorDefinitions.push(new SensorDefinitionModel(item)))

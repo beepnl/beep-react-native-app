@@ -72,7 +72,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
         firmware_version: firmwareVersion.toString(),
         hardware_version: hardwareVersion.toString(),
       }
-      dispatch(ApiActions.registerDevice(hardwareId, requestParams))
+      dispatch(ApiActions.registerDevice(peripheral.id, hardwareId, requestParams))
     }
   }, [hardwareId])
 

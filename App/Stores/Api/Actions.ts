@@ -25,7 +25,7 @@ interface C extends ActionCreators {
 
 const CreatedActions = createActions({
   getDevices: null,
-  registerDevice: ['hardwareId', 'requestParams'],
+  registerDevice: ['peripheralId', 'hardwareId', 'requestParams'],
   setRegisterState: ['registerState'],
   setDevices: ['devices'],
 
