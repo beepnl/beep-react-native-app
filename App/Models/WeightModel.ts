@@ -1,8 +1,28 @@
-type CHANNEL_NAME = "UNKNOWN" | "A_GAIN128" | "B_GAIN32" | "A_GAIN64"
+type ChannelName = "A_GAIN128" | "B_GAIN32" | "A_GAIN64"
+
 type Channel = {
-  name: CHANNEL_NAME,
+  name: ChannelName,
+  bitmask: number,
   value: number
 }
+
+export const CHANNELS: Array<Channel> = [
+  {
+    name: "A_GAIN128",
+    bitmask: 1,
+    value: 0,
+  },
+  {
+    name: "B_GAIN32",
+    bitmask: 2,
+    value: 0,
+  },
+  {
+    name: "A_GAIN64",
+    bitmask: 4,
+    value: 0,
+  },
+]
 
 export class WeightModel {
   channels: Array<Channel> = []
@@ -25,44 +45,36 @@ export class WeightParser {
   }
 
   parse(): WeightModel | undefined {
+    const data = []
     const len = this.data?.length
-    let i = 0
-    while (i < len) {
-      const channelByte = this.data.readUInt8(i++)
-      let name: CHANNEL_NAME = "UNKNOWN"
-      switch (channelByte) {
-        case 1:
-          name = "A_GAIN128"
-          break;
-        case 2:
-          name = "B_GAIN32"
-          break;
-        case 4:
-          name = "A_GAIN64"
-          break;
+    if (len >= 4) {
+      let i = 0
+      while (i < len) {
+        const channelByte = this.data.readUInt8(i++)
+        const channel = CHANNELS.find(ch => ch.bitmask == channelByte)
+        if (!channel) {
+          i += 3
+          continue
+        }
+  
+        //read 24bit signed value
+        let byte1 = this.data.readUInt8(i++)
+        const signed = byte1 & 0b10000000
+        if (signed) {
+          byte1 &= 0b01111111
+        }
+        const byte2 = this.data.readUInt8(i++)
+        const byte3 = this.data.readUInt8(i++)
+        let combined = (byte1<<16) | (byte2<<8) | (byte3)
+        if (signed) {
+          combined = -combined
+        }
+        channel.value = combined
+  
+        data.push(channel)
       }
-
-      const data = []
-      //read 24bit signed value
-      let byte1 = this.data.readUInt8(i++)
-      const signed = byte1 & 0b10000000
-      if (signed) {
-        byte1 &= 0b01111111
-      }
-      const byte2 = this.data.readUInt8(i++)
-      const byte3 = this.data.readUInt8(i++)
-      let combined = (byte1<<16) | (byte2<<8) | (byte3)
-      if (signed) {
-        combined = -combined
-      }
-
-      const channel: Channel = {
-        name,
-        value: combined,
-      }
-      data.push(channel)
-
-      return new WeightModel({ data })
     }
+
+    return new WeightModel({ data })
   }
 }

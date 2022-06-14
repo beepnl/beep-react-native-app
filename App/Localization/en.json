@@ -59,7 +59,7 @@
       "registerButton": "Register this BEEP base to your account",
     },
     "calibrate": {
-      "screenTitle": "Calibrate",
+      "screenTitle": "Calibrate temperature",
       "description": "Inspect each of the sensors below in order to configure and calibrate them.",
       "temperature": {
         "screenTitle": "Temperature",
@@ -69,6 +69,29 @@
         "location": "Sensor location",
         "inside": "Inside hive",
         "outside": "Outside hive"
+      },
+      "weight": {
+        "screenTitle": "Calibrate weight",
+        "tareButton": "Measure tare",
+        "calibrateButton": "Calibrate",
+        "retryButton": "Retry",
+        "confirmTitle": "Are you sure ?",
+        "confirmMessage": "It appears that your weight sensor has already been tared.\n\nYou should only tare without any weight on the BEEP base, so never do this when it is installed under a hive.\n\nDo you really want to tare again?",
+        "confirmOkButton": "I'm sure",
+        "page": {
+          "tare": "In order to calibrate the weight sensor, we must first determine the tare weight, or zero value.\n\nMake sure nothing is on the scale and press the button below to set the tare weight.",
+          "calibrate": "Enter your exact weight in kg below, step on the scale and press the calibrate button below.",
+        },
+        "state": {
+          "sampling": "Sampling weight sensor...",
+          "timeout": "Weight sensor did not respond in time",
+          "tareIdle": "",
+          "tareCompleted": "Successfully determined tare weight.",
+          "tareDeviationTooLarge": "Please make sure that there is nothing placed on top of the scale, and that you do not apply any weight while the weight sensor is being sampled.",
+          "calibrateIdle": "",
+          "calibrateCompleted": "Successfully completed calibration.",
+          "calibrateDeviationTooLarge": "Please remain still on the scale, while the weight sensor is being sampled."
+        }
       }
     }
   },

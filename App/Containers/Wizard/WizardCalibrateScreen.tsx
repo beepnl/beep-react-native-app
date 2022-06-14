@@ -22,13 +22,14 @@ import { TemperatureModel } from '../../Models/TemperatureModel';
 import { getTemperatures, getWeight } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
-import { WeightModel } from '../../Models/WeightModel';
+import { CHANNELS, WeightModel } from '../../Models/WeightModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
+import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -46,8 +47,8 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
 
   const refresh = () => {
     if (pairedPeripheral) {
-      //initialize temperature sensors
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
     }
   }
 
@@ -56,9 +57,11 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   }, __DEV__ ? 60000 : 5000)
 
   useEffect(() => {
-    if (pairedPeripheral) {
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
+      //initialize sensors
+      if (pairedPeripheral) {
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
+      const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 1])
     }
 
     refresh()
@@ -108,7 +111,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
       { weight &&
         <NavigationButton 
           title={weight.toString()} 
-          Icon={<IconFontAwesome name="thermometer-2" size={30} color={Colors.black} />}
+          Icon={<IconMaterialCommunityIcons name="scale" size={30} color={Colors.black} />}
           onPress={() => navigation.navigate("CalibrateWeightScreen")} 
         />
       }
