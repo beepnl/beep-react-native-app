@@ -23,6 +23,8 @@ import { getTemperatures, getWeight } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
 import { CHANNELS, WeightModel } from '../../Models/WeightModel';
+import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
+import { getWeightSensorDefinitions } from '../../Stores/BeepBase/Selectors';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
@@ -44,8 +46,10 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
+  const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")
   const [temperatureSensorsInitialized, setTemperatureSensorsInitialized] = useState(false)
   const [weightSensorInitialized, setWeightSensorInitialized] = useState(false)
+  const weightSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getWeightSensorDefinitions)
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -62,8 +66,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
       //initialize sensors
       if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
-      const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 1])
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel?.bitmask, 1])
     }
 
     refresh()
@@ -94,6 +97,20 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     );
   }
 
+  const getWeightTitle = () => {
+    const weightSensorDefinition = weightSensorDefinitions[0]
+    if (weightSensorDefinition) {
+      const sensorChannel = weight.channels.find(ch => ch.bitmask == channel?.bitmask)
+      if (sensorChannel) {
+        const value = sensorChannel.value
+        const offsetValue = Math.max(value - weightSensorDefinition.offset, 0)
+        return `${((offsetValue) * weightSensorDefinition.multiplier).toFixed(2)} Kg`
+      } 
+    }
+
+    return weight.toString()
+  }
+
   return (<>
     <ScreenHeader title={t("wizard.calibrate.screenTitle")} back />
 
@@ -116,7 +133,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
 
       { weight &&
         <NavigationButton 
-          title={weight.toString()} 
+          title={getWeightTitle()} 
           Icon={<IconMaterialCommunityIcons name="scale" size={30} color={Colors.black} />}
           onPress={() => navigation.navigate("CalibrateWeightScreen")} 
         />
