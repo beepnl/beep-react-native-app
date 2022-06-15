@@ -14,6 +14,7 @@ import { Colors, Fonts, Images, Metrics } from '../../Theme';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import useInterval from '../../Helpers/useInterval';
+import useTimeout from '../../Helpers/useTimeout';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
@@ -55,7 +56,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const weightSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getWeightSensorDefinitions)
   const [page, setPage] = useState<PAGE>("tare")
   const [state, setState] = useState<STATE>("tareIdle")
-
+  const [resetTimer, setResetTimer] = useState(false)
   const [readings, setReadings] = useState<Array<number>>([])
   const [offset, setOffset] = useState(0)
 
@@ -82,52 +83,58 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
 
   useEffect(() => {
     if (state == "sampling" && weight) {
-      const newReadings = [...readings, weight.channels[0].value]
-      setReadings(newReadings)
+      const newReading = weight.channels[0]?.value
+      if (newReading) {
+        const newReadings = [...readings, newReading]
+        setReadings(newReadings)
 
-      if (newReadings.length) {
-        let min: number | undefined = undefined
-        let max: number | undefined = undefined
-        let sum = 0
-        newReadings.forEach((reading: number) => {
-          if (min == undefined || reading < min) {
-            min = reading
-          } 
-          if (max == undefined || reading > max) {
-            max = reading
-          }
-          sum += reading
-        })
-        const average = sum / newReadings.length
-        const spread = max - min
-        const percentualDeviation = spread / average * 100
-
-        const allowedPercentualDeviation = page == "tare" ? TARE_ALLOWED_PERCENTUAL_DEVIATION : CALIBRATE_ALLOWED_PERCENTUAL_DEVIATION
-        if (percentualDeviation > allowedPercentualDeviation) {
-          if (page == "tare") {
-            //stop on first deviation
-            setState("tareDeviationTooLarge")
-          } else if (page == "calibrate") {
-            //collect max number of deviations before stopping
-            setConsecutiveDeviationErrors(consecutiveDeviationErrors + 1)
-            if (consecutiveDeviationErrors > ALLOWED_CONSECUTIVE_DEVIATION_ERRORS) {
-              setState("calibrateDeviationTooLarge")
+        if (newReadings.length) {
+          let min: number | undefined = undefined
+          let max: number | undefined = undefined
+          let sum = 0
+          newReadings.forEach((reading: number) => {
+            if (min == undefined || reading < min) {
+              min = reading
+            } 
+            if (max == undefined || reading > max) {
+              max = reading
             }
-          }
-          return
-        }
+            sum += reading
+          })
+          const average = sum / newReadings.length
+          const spread = max - min
+          const percentualDeviation = spread / average * 100
 
-        if (newReadings.length >= REQUIRED_CONSECUTIVE_READINGS) {
-          if (page == "tare") {
-            setOffset(Math.round(average))
-          } else if (page == "calibrate") {
-            //TODO: calculation is wrong
-            if (!isNaN(parsedCalibrateWeight)) {
-              const multiplier = parsedCalibrateWeight / (average - offset)
-              setMultiplier(multiplier)
+          const allowedPercentualDeviation = page == "tare" ? TARE_ALLOWED_PERCENTUAL_DEVIATION : CALIBRATE_ALLOWED_PERCENTUAL_DEVIATION
+          if (percentualDeviation > allowedPercentualDeviation) {
+            if (page == "tare") {
+              //stop on first deviation
+              setState("tareDeviationTooLarge")
+            } else if (page == "calibrate") {
+              //collect max number of deviations before stopping
+              setConsecutiveDeviationErrors(consecutiveDeviationErrors + 1)
+              setReadings([])
+              //reset timer for new set of REQUIRED_CONSECUTIVE_READINGS readings
+              setResetTimer(true)
+              if (consecutiveDeviationErrors > ALLOWED_CONSECUTIVE_DEVIATION_ERRORS) {
+                setState("calibrateDeviationTooLarge")
+              }
             }
+            return
           }
-          setState(`${page}Completed`)
+
+          if (newReadings.length >= REQUIRED_CONSECUTIVE_READINGS) {
+            if (page == "tare") {
+              setOffset(Math.round(average))
+            } else if (page == "calibrate") {
+              if (!isNaN(parsedCalibrateWeight)) {
+                const multiplier = parsedCalibrateWeight / (average - offset)
+                setMultiplier(multiplier)
+              }
+            }
+            setState(`${page}Completed`)
+            setResetTimer(false)
+          }
         }
       }
     }
@@ -151,17 +158,10 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
     }
   }
 
-  useEffect(() => {
-    if (state == "sampling") {
-      const timer = setTimeout(() => {
-        if (state == "sampling") {
-          //still sampling after time out
-          setState("timeout")
-        }
-      }, 20000);
-      return () => clearTimeout(timer);
-    }
-  }, [state]);
+  useTimeout(() => {
+    setState("timeout")
+    setResetTimer(false)
+  }, state == "sampling" || resetTimer ? 20000 : null)
 
   const onNextPress = () => {
     setPage("calibrate")
