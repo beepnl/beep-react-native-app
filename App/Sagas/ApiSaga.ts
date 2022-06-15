@@ -6,7 +6,7 @@ import api from 'App/Services/ApiService'
 import { DeviceModel } from '../Models/DeviceModel'
 import { FirmwareModel } from '../Models/FirmwareModel'
 import { SensorDefinitionModel } from '../Models/SensorDefinitionModel'
-import { getTemperatureSensorDefinitions } from '../Stores/BeepBase/Selectors'
+import { getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
 import BleHelpers, { COMMANDS } from '../Helpers/BleHelpers'
 
 export function* getDevices(action: any) {
@@ -23,7 +23,7 @@ export function* getDevices(action: any) {
 export function* checkDeviceRegistration(action: any) {
   yield put(ApiActions.setRegisterState("checking"))
 
-  const { hardwareId } = action
+  const { peripheralId, hardwareId } = action
 
   //search for existing device
   const deviceResponse = yield call(api.getDevice, hardwareId.id)
@@ -32,14 +32,19 @@ export function* checkDeviceRegistration(action: any) {
       //info field has error code
       switch (deviceResponse.data.info) {
         case "device_not_yours":
+          //cancel wizard
           yield put(ApiActions.setRegisterState("deviceAlreadyLinkedToAnotherAccount"))
           break;
       }
     } else {
-      //no info field means search result
+      //no info field means we have a search result
       if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
-        //device already in db
+        //device is already in db
         yield put(ApiActions.setRegisterState("alreadyRegistered"))
+        const device = new DeviceModel(deviceResponse.data[0])
+        yield put(BeepBaseActions.setDevice(device))
+        //update firmware with LoRa devEUI. This will also rename the BLE name
+        BleHelpers.write(peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
       } else {
         //device not found
         yield put(ApiActions.setRegisterState("notYetRegistered"))
@@ -54,51 +59,23 @@ export function* checkDeviceRegistration(action: any) {
 export function* registerDevice(action: any) {
   yield put(ApiActions.setRegisterState("registering"))
 
-  const { peripheralId, hardwareId, requestParams } = action
-
-  //search for existing device
-  const deviceResponse = yield call(api.getDevice, hardwareId.id)
-  if (deviceResponse && deviceResponse.ok && deviceResponse.data) {
-    if (deviceResponse.data.info) {
-      //info field has error code
-      switch (deviceResponse.data.info) {
-        case "device_not_yours":
-          yield put(ApiActions.setRegisterState("deviceAlreadyLinkedToAnotherAccount"))
-          break;
-      }
-    } else {
-      //no info field means search result
-      if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
-        //device already in db
-        yield put(ApiActions.setRegisterState("alreadyRegistered"))
-        const device = new DeviceModel(deviceResponse.data[0])
-        yield put(BeepBaseActions.setDevice(device))
-        //update firmware with LoRa devEUI. This will also rename the BLE name
-        BleHelpers.write(peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
-      } else {
-        //device not found, register it
-        const registerResponse = yield call(api.registerDevice, requestParams)
-        if (registerResponse && registerResponse.ok) {
-          yield put(ApiActions.setRegisterState("registered"))
-          const device = new DeviceModel(registerResponse.data)
-          yield put(BeepBaseActions.setDevice(device))
-          //update firmware with LoRa devEUI. This will also rename the BLE name
-          BleHelpers.write(peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
-          //refresh user device list
-          yield call(getDevices, null)
-        } else {
-          yield put(ApiActions.setRegisterState("failed"))
-          yield put(ApiActions.apiFailure(registerResponse))
-        }
-      }
-    }
+  const { peripheralId, requestParams } = action
+  const registerResponse = yield call(api.registerDevice, requestParams)
+  if (registerResponse && registerResponse.ok) {
+    yield put(ApiActions.setRegisterState("registered"))
+    const device = new DeviceModel(registerResponse.data)
+    yield put(BeepBaseActions.setDevice(device))
+    //update firmware with LoRa devEUI. This will also rename the BLE name
+    BleHelpers.write(peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+    //refresh user device list
+    yield call(getDevices, null)
   } else {
     yield put(ApiActions.setRegisterState("failed"))
-    yield put(ApiActions.apiFailure(deviceResponse))
+    yield put(ApiActions.apiFailure(registerResponse))
   }
 }
 
-export function* initializeSensors(action: any) {
+export function* initializeTemperatureSensors(action: any) {
   const { device, temperatures } = action
   yield call(getSensorDefinitions, action)
   const temperatureSensorDefinitions: Array<SensorDefinitionModel> = getTemperatureSensorDefinitions(yield select())
@@ -116,6 +93,26 @@ export function* initializeSensors(action: any) {
       return call(createSensorDefinition, { requestParams })
     }
   }))
+}
+
+export function* initializeWeightSensor(action: any) {
+  const { device, weight } = action
+  yield call(getSensorDefinitions, action)
+  const weightSensorDefinitions: Array<SensorDefinitionModel> = getWeightSensorDefinitions(yield select())
+  const sensorAbbr = "w_v"
+  const sensorDefinition = weightSensorDefinitions.find(weightSensorDefinition => weightSensorDefinition.inputAbbreviation === sensorAbbr)
+  if (!sensorDefinition) {
+    //definition for this sensor not found in api
+    const requestParams = {
+      device_hardware_id: device.hardwareId,
+      input_measurement_abbreviation: sensorAbbr,
+      output_measurement_abbreviation: "weight_kg",
+      name: "Weight sensor",
+      // offset: weight.offset,
+      // multiplier: weight.multiplier,
+    }
+    yield call(createSensorDefinition, { requestParams })
+  }
 }
 
 export function* getSensorDefinitions(action: any) {

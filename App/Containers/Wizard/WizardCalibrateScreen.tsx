@@ -44,6 +44,8 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
+  const [temperatureSensorsInitialized, setTemperatureSensorsInitialized] = useState(false)
+  const [weightSensorInitialized, setWeightSensorInitialized] = useState(false)
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -67,17 +69,21 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     refresh()
   }, [])
 
+  //create temperature sensor definitions if not found in api db
   useEffect(() => {
-    if (device) {
-      //temperature
-      if (temperatures.length) {
-        dispatch(ApiActions.initializeSensors(device, temperatures))
-      }
-
-      //weight
-      //...
+    if (device && temperatures.length && !temperatureSensorsInitialized) {
+      dispatch(ApiActions.initializeTemperatureSensors(device, temperatures))
+      setTemperatureSensorsInitialized(true)
     }
   }, [device, temperatures.length])
+
+  //create weight sensor definition if not found in api db
+  useEffect(() => {
+    if (device && weight && !weightSensorInitialized) {
+      dispatch(ApiActions.initializeWeightSensor(device, weight))
+      setWeightSensorInitialized(true)
+    }
+  }, [device, weight])
 
   const onNextPress = () => {
     navigation.dispatch(

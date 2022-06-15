@@ -8,7 +8,8 @@ export enum ApiTypes {
   REGISTER_DEVICE = 'REGISTER_DEVICE',
   SET_REGISTER_STATE = 'SET_REGISTER_STATE',
   SET_DEVICES = 'SET_DEVICES',
-  INITIALIZE_SENSORS = 'INITIALIZE_SENSORS',
+  INITIALIZE_TEMPERATURE_SENSORS = 'INITIALIZE_TEMPERATURE_SENSORS',
+  INITIALIZE_WEIGHT_SENSOR = 'INITIALIZE_WEIGHT_SENSOR',
   CREATE_SENSOR_DEFINITION = 'CREATE_SENSOR_DEFINITION',
   GET_SENSOR_DEFINITIONS = 'GET_SENSOR_DEFINITIONS',
   UPDATE_API_SENSOR_DEFINITION = 'UPDATE_API_SENSOR_DEFINITION',
@@ -26,12 +27,13 @@ interface C extends ActionCreators {
 
 const CreatedActions = createActions({
   getDevices: null,
-  checkDeviceRegistration: ['hardwareId'],
-  registerDevice: ['peripheralId', 'hardwareId', 'requestParams'],
+  checkDeviceRegistration: ['peripheralId', 'hardwareId'],
+  registerDevice: ['peripheralId', 'requestParams'],
   setRegisterState: ['registerState'],
   setDevices: ['devices'],
 
-  initializeSensors: ['device', 'temperatures'],
+  initializeTemperatureSensors: ['device', 'temperatures'],
+  initializeWeightSensor: ['device', 'weight'],
   createSensorDefinition: ['requestParams'],
   getSensorDefinitions: ['device'],
   updateApiSensorDefinition: ['sensorDefinition'],

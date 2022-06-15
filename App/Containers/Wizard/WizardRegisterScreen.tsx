@@ -67,7 +67,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     if (hardwareId?.id && firmwareVersion && hardwareVersion) {
       //if we have the hardware id, check device register state in api
-      dispatch(ApiActions.checkDeviceRegistration(hardwareId))
+      dispatch(ApiActions.checkDeviceRegistration(peripheral.id, hardwareId))
     }
   }, [hardwareId])
 
@@ -80,7 +80,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
       firmware_version: firmwareVersion.toString(),
       hardware_version: hardwareVersion.toString(),
     }
-    dispatch(ApiActions.registerDevice(peripheral.id, hardwareId, requestParams))
+    dispatch(ApiActions.registerDevice(peripheral.id, requestParams))
   }
 
   const onNextPress = () => {
