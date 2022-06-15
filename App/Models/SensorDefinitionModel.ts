@@ -32,7 +32,7 @@ export class SensorDefinitionModel {
   id: string
   deviceId: string
   name: string
-  isInside: boolean
+  isInside: boolean | undefined
   offset: number
   multiplier: number
   inputMeasurementId: number
@@ -44,7 +44,7 @@ export class SensorDefinitionModel {
     this.id = props.id.toString()
     this.name = props.name
     this.deviceId = props.device_id
-    this.isInside = !!props.inside
+    this.isInside = props.inside != undefined ? props.inside : undefined
     this.offset = props.offset
     this.multiplier = props.multiplier
     this.inputMeasurementId = props.input_measurement_id

@@ -18,11 +18,9 @@ import useInterval from '../../Helpers/useInterval';
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { TemperatureModel } from '../../Models/TemperatureModel';
-import { getTemperatureSensorDefinitions, getTemperatures } from 'App/Stores/BeepBase/Selectors';
+import { getWeightSensorDefinitions, getWeight } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
-import { getWeight } from '../../Stores/BeepBase/Selectors';
 import { CHANNELS, WeightModel } from '../../Models/WeightModel';
 
 // Components
@@ -54,14 +52,15 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
   const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
-  const weightSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getTemperatureSensorDefinitions)
+  const weightSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getWeightSensorDefinitions)
   const [page, setPage] = useState<PAGE>("tare")
   const [state, setState] = useState<STATE>("tareIdle")
 
   const [readings, setReadings] = useState<Array<number>>([])
   const [offset, setOffset] = useState(0)
 
-  const [calibrateWeight, setCalibrateWeight] = useState(0)
+  const [calibrateWeight, setCalibrateWeight] = useState("")
+  const parsedCalibrateWeight = parseFloat(calibrateWeight)
   const [consecutiveDeviationErrors, setConsecutiveDeviationErrors] = useState(0)
   const [multiplier, setMultiplier] = useState(0)
 
@@ -76,21 +75,6 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
     }
   }
-
-  useEffect(() => {
-    // if (temperatures.length === temperatureSensorDefinitions.length) {
-    //   temperatureSensorDefinitions.forEach((sensorDefinition: SensorDefinitionModel, index: number) => {
-    //     //overwrite sensor props with values from api
-    //     names[index].setValue(sensorDefinition.name)
-    //     sensorLocations[index].setValue(sensorDefinition.isInside)
-    //   })
-    // } else {
-    //   //illegal state, device sensor count differs from api sensor count
-    //   navigation.goBack()
-    // }
-
-    // refresh()
-  }, [])
 
   useInterval(() => {
     refresh()
@@ -138,8 +122,10 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
             setOffset(Math.round(average))
           } else if (page == "calibrate") {
             //TODO: calculation is wrong
-            const multiplier = calibrateWeight / (average - offset)
-            setMultiplier(multiplier)
+            if (!isNaN(parsedCalibrateWeight)) {
+              const multiplier = parsedCalibrateWeight / (average - offset)
+              setMultiplier(multiplier)
+            }
           }
           setState(`${page}Completed`)
         }
@@ -183,7 +169,20 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   }
 
   const onFinishPress = () => {
-  }
+    //update api sensor definition
+    const weightSensorDefinition = weightSensorDefinitions[0]
+    if (weightSensorDefinition) {
+      const param = {
+        ...weightSensorDefinition,
+        offset,
+        multiplier,
+      }
+      dispatch(ApiActions.updateApiSensorDefinition(param))
+    }
+
+    //close screen
+    navigation.goBack()
+ }
 
   return (<>
     <ScreenHeader title={t("wizard.calibrate.weight.screenTitle")} back />
@@ -224,14 +223,15 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
       { state == "calibrateIdle" && <>
         <TextInput
           style={styles.input}
-          onChangeText={(value) => setCalibrateWeight(parseFloat(value))}
-          value={calibrateWeight.toString()}
+          onChangeText={setCalibrateWeight}
+          value={calibrateWeight}
           keyboardType={"numeric"}
           returnKeyType="next"
+          maxLength={8}
         />
         <View style={styles.spacer} />
 
-        { calibrateWeight > 0 &&
+        { !isNaN(parsedCalibrateWeight) && parsedCalibrateWeight > 0 &&
           <TouchableOpacity style={styles.button} onPress={onCalibratePress}>
             <Text style={styles.text}>{t("wizard.calibrate.weight.calibrateButton")}</Text>
           </TouchableOpacity>

@@ -140,12 +140,16 @@ export function* createSensorDefinition(action: any) {
 
 export function* updateSensorDefinition(action: any) {
   const { sensorDefinition } = action
-  const requestParams = {
+
+  const requestParams: any = {
     device_id: sensorDefinition.deviceId,
     input_measurement_abbreviation: sensorDefinition.inputAbbreviation,
-    name: sensorDefinition.name,
-    inside: sensorDefinition.isInside,
   }
+  if (sensorDefinition.name != undefined) requestParams.name = sensorDefinition.name
+  if (sensorDefinition.isInside != undefined) requestParams.inside = sensorDefinition.isInside
+  if (sensorDefinition.offset != undefined) requestParams.offset = sensorDefinition.offset
+  if (sensorDefinition.multiplier != undefined) requestParams.multiplier = sensorDefinition.multiplier
+  
   const response = yield call(api.updateSensorDefinition, sensorDefinition.id, requestParams)
   if (response && response.ok) {
     const sensorDefinition = new SensorDefinitionModel(response.data)

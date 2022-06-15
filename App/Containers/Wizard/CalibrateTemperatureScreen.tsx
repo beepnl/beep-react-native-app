@@ -58,11 +58,12 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   }
 
   useEffect(() => {
+    //this screen is an edit screen for the temperature sensors so we
+    //need to overwrite sensor definition props with values from api
     if (temperatures.length === temperatureSensorDefinitions.length) {
       temperatureSensorDefinitions.forEach((sensorDefinition: SensorDefinitionModel, index: number) => {
-        //overwrite sensor props with values from api
         names[index].setValue(sensorDefinition.name)
-        sensorLocations[index].setValue(sensorDefinition.isInside)
+        sensorLocations[index].setValue(!!sensorDefinition.isInside)
       })
     } else {
       //illegal state, device sensor count differs from api sensor count
@@ -93,6 +94,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
       dispatch(ApiActions.updateApiSensorDefinition(param))
     })
 
+    //close screen
     navigation.goBack()
   }
 
