@@ -5,6 +5,7 @@ import HomeScreen from 'App/Containers/HomeScreen/HomeScreen';
 import SettingsScreen from 'App/Containers/SettingsScreen/SettingsScreen';
 import PeripheralDetailScreen from 'App/Containers/PeripheralDetailScreen/PeripheralDetailScreen';
 import TemperatureScreen from 'App/Containers/Sensor/TemperatureScreen';
+import WeightScreen from 'App/Containers/Sensor/WeightScreen';
 import LogFileScreen from 'App/Containers/LogFileScreen/LogFileScreen';
 import FirmwareScreen from 'App/Containers/FirmwareScreen/FirmwareScreen';
 import FirmwareDetailScreen from 'App/Containers//FirmwareScreen/FirmwareDetailScreen';
@@ -49,6 +50,8 @@ export const AppStack = () => {
       <Stack.Screen name="PeripheralDetailScreen" component={PeripheralDetailScreen} />
       <Stack.Screen name="TemperatureScreen" component={TemperatureScreen} />
       <Stack.Screen name="CalibrateTemperatureScreen" component={CalibrateTemperatureScreen} />
+      <Stack.Screen name="WeightScreen" component={WeightScreen} />
+      <Stack.Screen name="CalibrateWeightScreen" component={CalibrateWeightScreen} />
       <Stack.Screen name="LogFileScreen" component={LogFileScreen} />
       <Stack.Screen name="FirmwareScreen" component={FirmwareScreen} />
       <Stack.Screen name="FirmwareDetailScreen" component={FirmwareDetailScreen} />
