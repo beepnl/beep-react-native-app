@@ -1,4 +1,5 @@
 import { SensorDefinitionModel } from "./SensorDefinitionModel"
+import { BLE_NAME_PREFIX } from "../Helpers/BleHelpers"
 
 /*
     // 01233cd10043454bee  new
@@ -59,6 +60,14 @@ export class DeviceModel {
     if (Array.isArray(props.sensor_definitions)) {
       props.sensor_definitions.forEach((item: any) => this.sensorDefinitions.push(new SensorDefinitionModel(item)))
     }
+  }
+
+  static getBleName(instance: DeviceModel) {
+    if (instance) {
+      const suffix = instance.devEUI.slice(-4).toUpperCase()
+      return BLE_NAME_PREFIX + suffix
+    }
+    return ""
   }
 
 }

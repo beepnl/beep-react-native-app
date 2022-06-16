@@ -110,7 +110,8 @@
   },
   "peripheralDetail": {
     "screenTitle": "Base detail",
-    "bleName": "Device name: ",
+    "deviceName": "Device name: ",
+    "bleName": "Bluetooth name: ",
     "bleStatus": "Bluetooth: ",
     "bleConnectionStatus": {
       "true": "Connected",

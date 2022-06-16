@@ -64,12 +64,6 @@ const HomeScreen: FunctionComponent<Props> = ({
     navigation.navigate("Wizard")
   }
 
-  const onPeripheralPress = () => {
-    if (pairedPeripheral) {
-      navigation.navigate("PeripheralDetailScreen")
-    }
-  }
-
   const onDevicePress = (device: DeviceModel) => {
     navigation.navigate("PeripheralDetailScreen", { device })
   }
@@ -86,10 +80,6 @@ const HomeScreen: FunctionComponent<Props> = ({
       <TouchableOpacity style={styles.button} onPress={onStartWizardPress}>
         <Text style={styles.text}>{t("home.startWizard")}</Text>
       </TouchableOpacity>
-
-      {/* { pairedPeripheral &&
-        <Button title={pairedPeripheral.name} onPress={onPeripheralPress}></Button>
-      } */}
 
       <View style={styles.spacer} />
 

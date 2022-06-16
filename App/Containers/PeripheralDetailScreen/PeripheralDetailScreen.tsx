@@ -62,12 +62,11 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  const device = route.params?.device
+  const device: DeviceModel = route.params?.device
   const peripheralEqualsDevice = peripheral?.name === device?.name
   const [error, setError] = useState("")
   const [busy, setBusy] = useState(false)
   const isConnected = peripheral && peripheral.isConnected
-  const sensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getSensorDefinitions)
 
   useEffect(() => {
     if (device) {
@@ -78,13 +77,12 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       }))
 
       //refresh sensor definitions
-      dispatch(ApiActions.getSensorDefinitions(device))
     }
   }, [device])
 
   const connect = () => {
     setBusy(true)
-    BleHelpers.scanPeripheralByName(device.name).then((peripheral: Peripheral) => {
+    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((peripheral: Peripheral) => {
       BleHelpers.connectPeripheral(peripheral.id).then(() => {
         dispatch(BeepBaseActions.setPairedPeripheral({ 
           ...peripheral, 
@@ -138,14 +136,14 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
     <ScrollView style={styles.container} >
       <View style={styles.spacer} />
 
-      <Text style={styles.label}>{t("peripheralDetail.bleName")}<Text style={styles.text}>{device?.name}</Text></Text>
+      <Text style={styles.label}>{t("peripheralDetail.deviceName")}<Text style={styles.text}>{device?.name}</Text></Text>
+      <Text style={styles.label}>{t("peripheralDetail.bleName")}<Text style={styles.text}>{DeviceModel.getBleName(device)}</Text></Text>
 
       <View style={styles.spacer} />
 
       <Text style={styles.label}>{t("peripheralDetail.bleStatus")}<Text style={styles.text}>{t(`peripheralDetail.bleConnectionStatus.${peripheral ? peripheral.isConnected : false}`)}</Text></Text>
 
       <View style={styles.spacer} />
-      { sensorDefinitions.map((sensorDefinition: SensorDefinitionModel) => <Text>{sensorDefinition.name}</Text>) }
 
       <TouchableOpacity style={styles.button} onPress={onToggleConnectionPress} disabled={busy} >
         <Text style={styles.text}>{t(`peripheralDetail.bleConnect.${peripheral ? !peripheral.isConnected : true}`)}</Text>
