@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   },
 
   menuItem: {
-    ...Fonts.style.big,
+    ...Fonts.style.regular,
     marginHorizontal: Metrics.doubleBaseMargin,
     color: Colors.text,
   },
