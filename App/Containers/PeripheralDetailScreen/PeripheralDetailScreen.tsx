@@ -10,7 +10,7 @@ import styles from './PeripheralDetailScreenStyle'
 import { Colors } from '../../Theme';
 
 // Utils
-import BleHelpers from '../../Helpers/BleHelpers';
+import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import { Peripheral } from 'react-native-ble-manager';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -18,9 +18,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral, getSensorDefinitions } from 'App/Stores/BeepBase/Selectors'
+import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
-import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
+import { CHANNELS } from '../../Models/WeightModel';
 
 // Components
 import { Text, View, TouchableOpacity } from 'react-native';
@@ -39,19 +39,24 @@ type MenuItem = {
 
 const MENU_ITEMS: Array<MenuItem> = [
   {
-    title: "Temperature",
-    icon: <IconFontAwesome name="thermometer-2" size={30} color={Colors.black} />,
+    title: "peripheralDetail.items.temperature",
     screen: "TemperatureScreen",
+    icon: <IconFontAwesome name="thermometer-2" size={30} color={Colors.black} />,
   },
   {
-    title: "Download data",
-    icon: null,
+    title: "peripheralDetail.items.weight",
+    screen: "WeightScreen",
+    icon: <IconMaterialCommunityIcons name="scale" size={30} color={Colors.black} />,
+  },
+  {
+    title: "peripheralDetail.items.logFile",
     screen: "LogFileScreen",
+    icon: null,
   },
   {
-    title: "Firmware",
-    icon: null,
+    title: "peripheralDetail.items.firmware",
     screen: "FirmwareScreen",
+    icon: null,
   },
 ]
 
@@ -75,6 +80,12 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const isConnected = peripheral && peripheral.isConnected
 
   useEffect(() => {
+    if (isConnected) {
+      BleHelpers.disconnectPeripheral(peripheral)
+    }
+  }, [])
+
+  useEffect(() => {
     if (device) {
       //sync current device id into paired peripheral
       dispatch(BeepBaseActions.setPairedPeripheral({ 
@@ -86,6 +97,15 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       dispatch(ApiActions.getSensorDefinitions(device))
     }
   }, [device])
+
+  useEffect(() => {
+    if (isConnected) {
+      //get latest sensor readings
+      BleHelpers.write(peripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
+      const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
+      BleHelpers.write(peripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
+    }
+  }, [isConnected])
 
   const connect = () => {
     setBusy(true)
@@ -156,23 +176,21 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         <View style={styles.spacer} />
       </>}
 
-      { !!busy && <Text>Scanning...</Text> }
-
-      { !!error && <>
-        <Text style={styles.error}>{error}</Text>
-        <View style={styles.spacer} />
-      </>}
-
       { !isConnected && <>
         <Text style={styles.instructions}>{t("peripheralDetail.instructions")}</Text>
-        <View style={styles.spacer} />
+        <View style={styles.spacerDouble} />
       </>}
 
-      {/* <View style={styles.spacer} /> */}
+      { !!busy && <Text style={styles.text}>Scanning...</Text> }
+
+      { !!error && <>
+        <Text style={[styles.text, styles.error]}>{error}</Text>
+        <View style={styles.spacer} />
+      </>}
 
       { isConnected && <>
         <Text style={styles.label}>{t("peripheralDetail.details")}</Text>
-        { MENU_ITEMS.map((item: MenuItem) => <NavigationButton key={item.title} title={item.title} Icon={item.icon} onPress={() => item.screen && navigation.navigate(item.screen)} />) }
+        { MENU_ITEMS.map((item: MenuItem) => <NavigationButton key={item.title} title={t(`${item.title}`)} Icon={item.icon} onPress={() => item.screen && navigation.navigate(item.screen)} />) }
       </>}
 
       <View style={styles.spacer} />
