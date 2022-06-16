@@ -28,23 +28,29 @@ import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
 import NavigationButton from '../../Components/NavigationButton';
+import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
+import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-type MenuItem = { title: string, icon: string, screen: string }
+type MenuItem = { 
+  title: string, 
+  screen: string,
+  icon: React.ComponentType<any> | React.ReactElement<any> | null, 
+}
 
 const MENU_ITEMS: Array<MenuItem> = [
   {
     title: "Temperature",
-    icon: "",
+    icon: <IconFontAwesome name="thermometer-2" size={30} color={Colors.black} />,
     screen: "TemperatureScreen",
   },
   {
     title: "Download data",
-    icon: "",
+    icon: null,
     screen: "LogFileScreen",
   },
   {
     title: "Firmware",
-    icon: "",
+    icon: null,
     screen: "FirmwareScreen",
   },
 ]
@@ -76,7 +82,8 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         deviceId: device.id
       }))
 
-      //refresh sensor definitions
+      //refresh sensor definitions for sensor detail screens
+      dispatch(ApiActions.getSensorDefinitions(device))
     }
   }, [device])
 
@@ -138,32 +145,34 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
       <Text style={styles.label}>{t("peripheralDetail.deviceName")}<Text style={styles.text}>{device?.name}</Text></Text>
       <Text style={styles.label}>{t("peripheralDetail.bleName")}<Text style={styles.text}>{DeviceModel.getBleName(device)}</Text></Text>
-
-      <View style={styles.spacer} />
-
       <Text style={styles.label}>{t("peripheralDetail.bleStatus")}<Text style={styles.text}>{t(`peripheralDetail.bleConnectionStatus.${peripheral ? peripheral.isConnected : false}`)}</Text></Text>
 
-      <View style={styles.spacer} />
+      <View style={styles.spacerDouble} />
 
-      <TouchableOpacity style={styles.button} onPress={onToggleConnectionPress} disabled={busy} >
-        <Text style={styles.text}>{t(`peripheralDetail.bleConnect.${peripheral ? !peripheral.isConnected : true}`)}</Text>
-      </TouchableOpacity>
-      <View style={styles.spacer} />
+      { !isConnected && <>
+        <TouchableOpacity style={styles.button} onPress={onToggleConnectionPress} disabled={busy} >
+          <Text style={styles.text}>{t(`peripheralDetail.bleConnect.${peripheral ? !peripheral.isConnected : true}`)}</Text>
+        </TouchableOpacity>
+        <View style={styles.spacer} />
+      </>}
+
       { !!busy && <Text>Scanning...</Text> }
+
       { !!error && <>
         <Text style={styles.error}>{error}</Text>
         <View style={styles.spacer} />
       </>}
+
       { !isConnected && <>
         <Text style={styles.instructions}>{t("peripheralDetail.instructions")}</Text>
         <View style={styles.spacer} />
       </>}
 
-      <View style={styles.spacer} />
+      {/* <View style={styles.spacer} /> */}
 
       { isConnected && <>
         <Text style={styles.label}>{t("peripheralDetail.details")}</Text>
-        { MENU_ITEMS.map((item: MenuItem) => <NavigationButton key={item.title} title={item.title} onPress={() => item.screen && navigation.navigate(item.screen)} />) }
+        { MENU_ITEMS.map((item: MenuItem) => <NavigationButton key={item.title} title={item.title} Icon={item.icon} onPress={() => item.screen && navigation.navigate(item.screen)} />) }
       </>}
 
       <View style={styles.spacer} />

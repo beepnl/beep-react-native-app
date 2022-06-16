@@ -48,6 +48,7 @@ export const AppStack = () => {
       <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
       <Stack.Screen name="PeripheralDetailScreen" component={PeripheralDetailScreen} />
       <Stack.Screen name="TemperatureScreen" component={TemperatureScreen} />
+      <Stack.Screen name="CalibrateTemperatureScreen" component={CalibrateTemperatureScreen} />
       <Stack.Screen name="LogFileScreen" component={LogFileScreen} />
       <Stack.Screen name="FirmwareScreen" component={FirmwareScreen} />
       <Stack.Screen name="FirmwareDetailScreen" component={FirmwareDetailScreen} />

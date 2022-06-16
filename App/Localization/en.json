@@ -112,7 +112,7 @@
     "screenTitle": "Base detail",
     "deviceName": "Device name: ",
     "bleName": "Bluetooth name: ",
-    "bleStatus": "Bluetooth: ",
+    "bleStatus": "Bluetooth status: ",
     "bleConnectionStatus": {
       "true": "Connected",
       "false": "Disconnected"
@@ -128,8 +128,12 @@
   "sensor": {
     "sampling": "Sampling data...",
     "currentReading": "Current reading",
+    "configure": "Configure",
     "temperature": {
       "screenTitle": "Temperature",
+      "location": "Sensor location: ",
+      "inside": "Inside hive",
+      "outside": "Outside hive"
     }
   },
   "logFile": {

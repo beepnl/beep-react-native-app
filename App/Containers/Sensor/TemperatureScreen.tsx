@@ -20,6 +20,8 @@ import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
 import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
+import { getTemperatureSensorDefinitions } from '../../Stores/BeepBase/Selectors';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
@@ -35,7 +37,9 @@ const TemperatureScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
+  const temperatureSensors: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
+  const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getTemperatureSensorDefinitions)
+  const isCalibrated = temperatureSensors.length == temperatureSensorDefinitions.length
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -55,23 +59,39 @@ const TemperatureScreen: FunctionComponent<Props> = ({
     refresh()
   }, 5000)
 
+  const onConfigurePress = () => {
+    navigation.navigate("CalibrateTemperatureScreen")
+  }
+
   return (<>
     <ScreenHeader title={t("sensor.temperature.screenTitle")} back />
 
     <View style={styles.container}>
       <View style={styles.spacer} />
 
-      <Text style={styles.text}>{t("sensor.currentReading")}</Text>
+      <Text style={styles.label}>{t("sensor.currentReading")}</Text>
 
-      { temperatures.map((temperatureModel, index) => 
-        <View key={index} style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View>
-            <Text style={styles.text}>{ `Sensor ${index + 1}` }</Text>
+      <View style={styles.spacer} />
 
-          </View>
-          <Text style={styles.text}>{temperatureModel.toString()}</Text>
+      { isCalibrated &&
+        <View style={styles.container}>
+          { temperatureSensors.map((temperatureModel, index) =>
+            <View key={index}>
+              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                <Text style={styles.text}>{temperatureSensorDefinitions[index].name}</Text>
+                <Text style={styles.text}>{temperatureModel.toString()}</Text>
+              </View>
+              <Text style={styles.text}>{t("sensor.temperature.location") + t(`sensor.temperature.${temperatureSensorDefinitions[index].isInside ? "inside" : "outside"}`)}</Text>
+              <View style={styles.spacerDouble} />
+            </View>)
+          }
         </View>
-      )}
+      }
+
+      <TouchableOpacity style={styles.button} onPress={onConfigurePress} >
+        <Text style={styles.text}>{t("sensor.configure")}</Text>
+      </TouchableOpacity>
+
     </View>
   </>)
 }
