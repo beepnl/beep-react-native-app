@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
 
 // Hooks
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { Colors, Fonts, Metrics } from '../../Theme';
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '../../Helpers/BleHelpers';
+import { generateKey } from '../../Helpers/random';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
@@ -31,7 +32,6 @@ import { getError } from 'App/Stores/Api/Selectors';
 import { Text, View, TouchableOpacity, TextInput } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { generateKey } from '../../Helpers/random';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -50,8 +50,8 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   const error = useSelector(getError)
 
   //registration info
-  const key = generateKey(16)
-  const suffix = key.slice(-4).toUpperCase()
+  const key = useRef(generateKey(16))
+  const suffix = key.current.slice(-4).toUpperCase()
   const [name, setName] = useState(BLE_NAME_PREFIX + suffix)
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
     //try registering the peripheral as a new device in the api
     const requestParams = {
       hardware_id: hardwareId.toString(),
-      key,
+      key: key.current,
       name,
       firmware_version: firmwareVersion.toString(),
       hardware_version: hardwareVersion.toString(),
@@ -129,7 +129,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
 
       <View style={[styles.spacer, { flex: 1 }]} />
 
-      { registerState == "registered" || registerState == "alreadyRegistered" &&
+      { (registerState == "registered" || registerState == "alreadyRegistered") &&
         <TouchableOpacity style={styles.button} onPress={onNextPress}>
           <Text style={styles.text}>{t("common.btnNext")}</Text>
         </TouchableOpacity>

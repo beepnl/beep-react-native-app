@@ -175,7 +175,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   }
 
   const showNext = !!peripheral && peripheral.isConnected && firmwareVersion
-  let showProgress = isScanning || connectingPeripheral != null
+  let showProgress = isScanning || (connectingPeripheral != null)
   if (showNext) {
     showProgress = false
   }
