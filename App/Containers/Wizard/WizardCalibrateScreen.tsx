@@ -104,7 +104,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
       if (sensorChannel) {
         const value = sensorChannel.value
         const offsetValue = Math.max(value - weightSensorDefinition.offset, 0)
-        return `${((offsetValue) * weightSensorDefinition.multiplier).toFixed(2)} Kg`
+        return `${((offsetValue) * weightSensorDefinition.multiplier).toFixed(2)} kg`
       } 
     }
 
