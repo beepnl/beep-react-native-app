@@ -139,6 +139,12 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
         />
       }
 
+        <NavigationButton 
+          title={"Audio"} 
+          Icon={<IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />}
+          onPress={() => navigation.navigate("CalibrateAudioScreen")} 
+        />
+
       <View style={{ flex: 1, justifyContent: "center" }}>
         <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, aspectRatio: 3840/2160, height: null, margin: Metrics.baseMargin }} source={Images.beepBase} resizeMode="contain" />
       </View>

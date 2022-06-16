@@ -16,6 +16,7 @@ import WizardRegisterScreen from 'App/Containers/Wizard/WizardRegisterScreen';
 import WizardCalibrateScreen from 'App/Containers/Wizard/WizardCalibrateScreen';
 import CalibrateTemperatureScreen from 'App/Containers/Wizard/CalibrateTemperatureScreen';
 import CalibrateWeightScreen from 'App/Containers/Wizard/CalibrateWeightScreen';
+import CalibrateAudioScreen from 'App/Containers/Wizard/CalibrateAudioScreen';
 
 export const AuthStack = () => {
   const Stack = createNativeStackNavigator();
@@ -37,6 +38,7 @@ const WizardStack = () => {
       <Stack.Screen name="WizardCalibrateScreen" component={WizardCalibrateScreen} />
       <Stack.Screen name="CalibrateTemperatureScreen" component={CalibrateTemperatureScreen} />
       <Stack.Screen name="CalibrateWeightScreen" component={CalibrateWeightScreen} />
+      <Stack.Screen name="CalibrateAudioScreen" component={CalibrateAudioScreen} />
     </Stack.Navigator>
   );
 };

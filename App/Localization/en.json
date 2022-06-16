@@ -59,7 +59,7 @@
       "registerButton": "Register this BEEP base to your account",
     },
     "calibrate": {
-      "screenTitle": "Calibrate temperature",
+      "screenTitle": "Calibrate",
       "description": "Inspect each of the sensors below in order to configure and calibrate them.",
       "temperature": {
         "screenTitle": "Temperature",
@@ -91,6 +91,15 @@
           "calibrateIdle": "",
           "calibrateCompleted": "Successfully completed calibration.",
           "calibrateDeviationTooLarge": "Please remain still on the scale, while the weight sensor is being sampled."
+        }
+      },
+      "audio": {
+        "screenTitle": "Audio channel",
+        "plug": {
+          "description": "Check the specifications of your microphone and select the ring/tip to which the signal line is connected."
+        },
+        "frequencies": {
+          "description": "Specify the observed frequency range.\n\nThe observed range will be divided into the number of bins you specify."
         }
       }
     }
@@ -148,7 +157,7 @@
       "raw": "Raw value",
       "offset": "Offset",
       "multiplier": "Multiplier"
-    }
+    },
   },
   "logFile": {
     "screenTitle": "Download data",
