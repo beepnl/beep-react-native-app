@@ -19,19 +19,23 @@ import useTimeout from '../../Helpers/useTimeout';
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getWeightSensorDefinitions, getWeight } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
-import { CHANNELS, WeightModel } from '../../Models/WeightModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 type PAGE = "plug" | "frequencies"
 
 type CHANNEL = "IN3L" | "IN2R" | "IN2L"
+
+const trackStyle = { height: 4, backgroundColor: Colors.lightGrey }
+const markerStyle = { width: 24, height: 24, borderRadius: 12, backgroundColor: Colors.yellow }
+const pressedMarkerStyle = { width: 30, height: 30, borderRadius: 15, backgroundColor: Colors.yellow }
+const selectedStyle = { backgroundColor: Colors.yellow }
 
 interface Props {
   navigation: StackNavigationProp,
@@ -46,6 +50,8 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
   const [page, setPage] = useState<PAGE>("plug")
   const [channel, setChannel] = useState<CHANNEL>("IN3L")
   const channels: Array<CHANNEL> = ["IN3L", "IN2R", "IN2L"]
+  const [frequencies, setFrequencies] = useState([0, 2000])
+  const [bins, setBins] = useState([1])
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -58,9 +64,6 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
     refresh()
   }, __DEV__ ? 5000 : 5000)
 
-  const onTarePress = () => {
-  }
-  
   const onNextPress = () => {
     setPage("frequencies")
   }
@@ -121,6 +124,54 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
       </>}
 
       { page == "frequencies" && <>
+        <View style={styles.itemContainer}>
+          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.startFrequency")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${frequencies[0]} Hz`}</Text></Text>
+          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.endFrequency")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${frequencies[1]} Hz`}</Text></Text>
+        </View>
+
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginHorizontal: Metrics.baseMargin }}>
+          <Text style={styles.text}>0 Hz</Text>
+          <View style={styles.spacer} />
+          <MultiSlider
+            sliderLength={240}
+            values={frequencies}
+            onValuesChange={setFrequencies}
+            min={0}
+            max={2000}
+            step={50}
+            trackStyle={trackStyle}
+            markerStyle={markerStyle}
+            pressedMarkerStyle={pressedMarkerStyle}
+            selectedStyle={selectedStyle}
+          />
+          <View style={styles.spacer} />
+          <Text style={styles.text}>2 kHz</Text>
+        </View>
+
+        <View style={styles.spacerDouble} />
+
+        <View style={styles.itemContainer}>
+          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.bins")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${bins[0]}`}</Text></Text>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginHorizontal: Metrics.baseMargin }}>
+          <Text style={styles.text}>1</Text>
+          <View style={styles.spacer} />
+          <MultiSlider
+              sliderLength={240}
+              values={bins}
+              onValuesChange={setBins}
+              min={1}
+              max={12}
+              enabledOne={true}
+              enabledTwo={false}
+              trackStyle={trackStyle}
+              markerStyle={markerStyle}
+              pressedMarkerStyle={pressedMarkerStyle}
+              selectedStyle={trackStyle}
+            />
+          <View style={styles.spacer} />
+          <Text style={styles.text}>12</Text>
+        </View>
       </>}
 
     </ScrollView>

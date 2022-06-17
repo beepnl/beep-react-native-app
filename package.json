@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@os-team/i18next-react-native-language-detector": "^1.0.10",
+    "@ptomasroos/react-native-multi-slider": "ptomasroos/react-native-multi-slider",
     "@react-native-async-storage/async-storage": "^1.15.4",
     "@react-native-community/masked-view": "^0.1.6",
     "@react-native-community/toolbar-android": "^0.2.1",

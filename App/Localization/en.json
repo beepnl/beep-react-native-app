@@ -99,7 +99,10 @@
           "description": "Check the specifications of your microphone and select the ring/tip to which the signal line is connected."
         },
         "frequencies": {
-          "description": "Specify the observed frequency range.\n\nThe observed range will be divided into the number of bins you specify."
+          "description": "Specify the observed frequency range.\n\nThe observed range will be divided into the number of bins you specify.",
+          "startFrequency": "Start frequency: ",
+          "endFrequency": "End frequency: ",
+          "bins": "Amount of bins: "
         }
       }
     }
