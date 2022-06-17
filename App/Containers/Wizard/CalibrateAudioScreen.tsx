@@ -21,6 +21,8 @@ import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
+import { AudioModel, Channel, ChannelName, CHANNELS } from '../../Models/AudioModel';
+import { getAudio } from '../../Stores/BeepBase/Selectors';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native';
@@ -29,8 +31,6 @@ import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommun
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 type PAGE = "plug" | "frequencies"
-
-type CHANNEL = "IN3L" | "IN2R" | "IN2L"
 
 const trackStyle = { height: 4, backgroundColor: Colors.lightGrey }
 const markerStyle = { width: 24, height: 24, borderRadius: 12, backgroundColor: Colors.yellow }
@@ -48,8 +48,8 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const [page, setPage] = useState<PAGE>("plug")
-  const [channel, setChannel] = useState<CHANNEL>("IN3L")
-  const channels: Array<CHANNEL> = ["IN3L", "IN2R", "IN2L"]
+  const audio: AudioModel = useTypedSelector<AudioModel>(getAudio)
+  const [channel, setChannel] = useState<Channel>(audio?.channel)
   const [frequencies, setFrequencies] = useState([0, 2000])
   const [bins, setBins] = useState([1])
 
@@ -69,28 +69,28 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
   }
 
   const onFinishPress = () => {
-    //update api sensor definition
-    // const weightSensorDefinition = weightSensorDefinitions[0]
-    // if (weightSensorDefinition) {
-    //   const param = {
-    //     ...weightSensorDefinition,
-    //     offset,
-    //     multiplier,
-    //   }
-    //   dispatch(ApiActions.updateApiSensorDefinition(param))
-    // }
-
+    //update firmware
+    const params = Buffer.alloc(6)
+    let i = 0
+    params.writeUint8(channel.bitmask, i++)
+    params.writeUint8(audio.gain, i++)
+    params.writeInt8(audio.volume, i++)
+    params.writeUint8(audio.bins, i++)
+    params.writeUint8(audio.startBin, i++)
+    params.writeUint8(audio.stopBin, i++)
+    BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_AUDIO_ADC_CONFIG, params)
+    
     //close screen
     navigation.goBack()
   }
 
-  const getImage = (channel: CHANNEL) => {
-    switch (channel) {
-      case "IN3L":
+  const getImage = (channel: Channel) => {
+    switch (channel.name) {
+      case "IN3LM":
         return Images.connectorIN3L
-      case "IN2R":
+      case "IN2RP":
         return Images.connectorIN2R
-      case "IN2L":
+      case "IN2LP":
         return Images.connectorIN2L
     }
   }
@@ -113,7 +113,7 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
     
           <View style={styles.spacerDouble} />
 
-          { channels.map((ch: CHANNEL, index: number) => {
+          { CHANNELS.map((ch: Channel, index: number) => {
             return <TouchableOpacity key={index} style={{ flexDirection: "row", width: "100%", alignItems: "center", justifyContent: "center", paddingVertical: Metrics.baseMargin }} onPress={() => setChannel(ch)}>
               <IconMaterialCommunityIcons name={ch == channel ? "radiobox-marked" : "radiobox-blank"} size={30} color={Colors.black} />
               <View style={styles.spacer} />

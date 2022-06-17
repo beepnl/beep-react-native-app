@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -19,12 +19,13 @@ import useInterval from '../../Helpers/useInterval';
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
-import { getTemperatures, getWeight } from 'App/Stores/BeepBase/Selectors';
+import { getTemperatures, getWeight, getAudio } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
 import { CHANNELS, WeightModel } from '../../Models/WeightModel';
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { getWeightSensorDefinitions } from '../../Stores/BeepBase/Selectors';
+import { AudioModel } from '../../Models/AudioModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
@@ -46,7 +47,8 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
-  const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")
+  const weightChannel = CHANNELS.find(ch => ch.name == "A_GAIN128")
+  const audio: AudioModel = useTypedSelector<AudioModel>(getAudio)
   const [temperatureSensorsInitialized, setTemperatureSensorsInitialized] = useState(false)
   const [weightSensorInitialized, setWeightSensorInitialized] = useState(false)
   const weightSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getWeightSensorDefinitions)
@@ -55,6 +57,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
     }
   }
 
@@ -62,11 +65,18 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     refresh()
   }, __DEV__ ? 60000 : 5000)
 
+  //refresh audio sensor from device on screen focus
+  useFocusEffect(
+    React.useCallback(() => {
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
+    }, [audio])
+  )
+  
   useEffect(() => {
-      //initialize sensors
-      if (pairedPeripheral) {
+    //initialize sensors
+    if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel?.bitmask, 1])
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, weightChannel?.bitmask, 1])
     }
 
     refresh()
@@ -100,7 +110,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const getWeightTitle = () => {
     const weightSensorDefinition = weightSensorDefinitions[0]
     if (weightSensorDefinition) {
-      const sensorChannel = weight.channels.find(ch => ch.bitmask == channel?.bitmask)
+      const sensorChannel = weight.channels.find(ch => ch.bitmask == weightChannel?.bitmask)
       if (sensorChannel) {
         const value = sensorChannel.value
         const offsetValue = Math.max(value - weightSensorDefinition.offset, 0)
@@ -139,11 +149,11 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
         />
       }
 
-        <NavigationButton 
-          title={"Audio"} 
-          Icon={<IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />}
-          onPress={() => navigation.navigate("CalibrateAudioScreen")} 
-        />
+      <NavigationButton 
+        title={ audio ? "Audio channel " + audio.channel.name : "Audio"}
+        Icon={<IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />}
+        onPress={() => navigation.navigate("CalibrateAudioScreen")} 
+      />
 
       <View style={{ flex: 1, justifyContent: "center" }}>
         <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, aspectRatio: 3840/2160, height: null, margin: Metrics.baseMargin }} source={Images.beepBase} resizeMode="contain" />

@@ -42,6 +42,10 @@ export const getWeight = (state: AppState) => {
   return state.beepBase.weight
 }
 
+export const getAudio = (state: AppState) => {
+  return state.beepBase.audio
+}
+
 export const getLogFileSize = (state: AppState) => {
   return state.beepBase.logFileSize
 }

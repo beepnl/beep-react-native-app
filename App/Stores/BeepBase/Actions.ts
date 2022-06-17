@@ -1,5 +1,6 @@
 import { ActionCreators, createActions } from 'reduxsauce';
 import { AteccModel } from '../../Models/AteccModel';
+import { AudioModel } from '../../Models/AudioModel';
 import { DeviceModel } from '../../Models/DeviceModel';
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
@@ -21,6 +22,7 @@ export enum BeepBaseTypes {
   UPDATE_SENSOR_DEFINITION = 'UPDATE_SENSOR_DEFINITION',
   SET_TEMPERATURES = 'SET_TEMPERATURES',
   SET_WEIGHT = 'SET_WEIGHT',
+  SET_AUDIO = 'SET_AUDIO',
   SET_LOG_FILE_SIZE = 'SET_LOG_FILE_SIZE',
   SET_LOG_FILE_PROGRESS = 'SET_LOG_FILE_PROGRESS',
   ADD_LOG_FILE_FRAME = 'ADD_LOG_FILE_FRAME',
@@ -38,6 +40,7 @@ interface C extends ActionCreators {
   updateSensorDefinition: (sensorDefinition: SensorDefinitionModel) => { type: BeepBaseTypes.UPDATE_SENSOR_DEFINITION };
   setTemperatures: (temperatures: Array<TemperatureModel>) => { type: BeepBaseTypes.SET_TEMPERATURES };
   setWeight: (weight: WeightModel) => { type: BeepBaseTypes.SET_WEIGHT };
+  setAudio: (audio: AudioModel) => { type: BeepBaseTypes.SET_AUDIO };
   setLogFileSize: (size: LogFileSizeModel) => { type: BeepBaseTypes.SET_LOG_FILE_SIZE };
   setLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_LOG_FILE_PROGRESS };
   addLogFileFrame: (frame: LogFileFrameModel) => { type: BeepBaseTypes.ADD_LOG_FILE_FRAME };
@@ -55,6 +58,7 @@ const CreatedActions = createActions( {
   updateSensorDefinition: ['sensorDefinition'],
   setTemperatures: ['temperatures'],
   setWeight: ['weight'],
+  setAudio: ['audio'],
   setLogFileSize: ['size'],
   setLogFileProgress: ['progress'],
   addLogFileFrame: ['frame'],

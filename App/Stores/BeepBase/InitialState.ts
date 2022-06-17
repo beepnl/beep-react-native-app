@@ -1,3 +1,4 @@
+import { AudioModel } from "../../Models/AudioModel"
 import { DeviceModel } from "../../Models/DeviceModel"
 import { FirmwareVersionModel } from "../../Models/FirmwareVersionModel"
 import { HardwareVersionModel } from "../../Models/HardwareVersionModel"
@@ -17,6 +18,7 @@ export interface BeepBaseState {
   sensorDefinitions: Array<SensorDefinitionModel>
   temperatures: Array<TemperatureModel>
   weight: WeightModel | undefined
+  audio: AudioModel | undefined
   logFileSize: LogFileSizeModel | undefined
   logFileProgress: number
   logFileFrames: Array<LogFileFrameModel>
@@ -31,6 +33,7 @@ export const INITIAL_STATE: BeepBaseState = {
   sensorDefinitions: [],
   temperatures: [],
   weight: undefined,
+  audio: undefined,
   logFileSize: undefined,
   logFileProgress: 0,
   logFileFrames: [],
