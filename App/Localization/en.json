@@ -20,9 +20,20 @@
   },
   "wizard": {
     "screenTitle": "Configuration",
-    "welcome": {
+    "assemble": {
+      "screenTitle": "Assemble",
+      "step1": "1. Assemble the 8 legs to the yellow base.",
+      "step2": "2. Get out the 3.5mm sample microphone plug and plug in the microphone.",
+      "nb": "NB: You can plug in the rubber pads to support your hive later."
     },
-    "bluetooth": {
+    "wakeUp": {
+      "screenTitle": "Wake up",
+      "buttonTitle": "For BEEP base model version 3.3 and newer",
+      "button": "Activate the Bluetooth by pressing the button shortly.",
+      "magnetTitle": "For older model versions",
+      "magnet": "Use the magnet and hold it next to the microphone plug.",
+      "allTitle": "For all models",
+      "all": "Two short beeps will indicate that Bluetooth is activated."
     },
     "pair": {
       "screenTitle": "Connect",

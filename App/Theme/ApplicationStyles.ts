@@ -21,8 +21,8 @@ const ApplicationStyles = {
 
   container: {
     flex: 1,
-    marginHorizontal: Metrics.baseMargin,
-    marginVertical: Metrics.baseMargin,
+    paddingHorizontal: Metrics.baseMargin,
+    paddingVertical: Metrics.baseMargin,
     backgroundColor: Colors.transparent
   },
 

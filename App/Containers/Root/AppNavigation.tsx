@@ -10,8 +10,8 @@ import AudioScreen from 'App/Containers/Sensor/AudioScreen';
 import LogFileScreen from 'App/Containers/LogFileScreen/LogFileScreen';
 import FirmwareScreen from 'App/Containers/FirmwareScreen/FirmwareScreen';
 import FirmwareDetailScreen from 'App/Containers//FirmwareScreen/FirmwareDetailScreen';
-import WizardWelcomeScreen from 'App/Containers/Wizard/WizardWelcomeScreen';
-import WizardBluetoothScreen from 'App/Containers/Wizard/WizardBluetoothScreen';
+import WizardAssembleScreen from 'App/Containers/Wizard/WizardAssembleScreen';
+import WizardWakeUpScreen from 'App/Containers/Wizard/WizardWakeUpScreen';
 import WizardPairPeripheralScreen from 'App/Containers/Wizard/WizardPairPeripheralScreen';
 import WizardRegisterScreen from 'App/Containers/Wizard/WizardRegisterScreen';
 import WizardCalibrateScreen from 'App/Containers/Wizard/WizardCalibrateScreen';
@@ -31,9 +31,9 @@ export const AuthStack = () => {
 const WizardStack = () => {
   const Stack = createNativeStackNavigator();
   return (
-    <Stack.Navigator initialRouteName="WizardPairPeripheralScreen" screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="WizardWelcomeScreen" component={WizardWelcomeScreen} />
-      <Stack.Screen name="WizardBluetoothScreen" component={WizardBluetoothScreen} />
+    <Stack.Navigator initialRouteName="WizardAssembleScreen" screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="WizardAssembleScreen" component={WizardAssembleScreen} />
+      <Stack.Screen name="WizardWakeUpScreen" component={WizardWakeUpScreen} />
       <Stack.Screen name="WizardPairPeripheralScreen" component={WizardPairPeripheralScreen} />
       <Stack.Screen name="WizardRegisterScreen" component={WizardRegisterScreen} />
       <Stack.Screen name="WizardCalibrateScreen" component={WizardCalibrateScreen} />

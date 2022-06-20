@@ -221,7 +221,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     <View style={styles.container}>
 
       <View style={styles.itemContainer}>
-        <Text style={styles.itemText}>{t("wizard.pair.description")}</Text>
+        <Text style={styles.text}>{t("wizard.pair.description")}</Text>
       </View>
 
       <View style={styles.itemContainer}>
