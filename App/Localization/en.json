@@ -121,7 +121,8 @@
   "home": {
     "screenTitle": "My BEEP bases",
     "introduction": "Below you find a list of BEEP bases that are currently associated with your account.",
-    "startWizard": "Configure new BEEP base"
+    "startWizard": "Configure new BEEP base",
+    "help": "Need help?"
   },
   "settings": {
     "account": "Account",

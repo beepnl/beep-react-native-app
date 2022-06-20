@@ -195,9 +195,9 @@ const ApplicationStyles = {
   },
 
   link: {
-    fontSize: 14,
+    ...Fonts.style.regular,
     textDecorationLine: 'underline',
-    color: Colors.text,
+    color: Colors.link,
   },
 
   textLight: {

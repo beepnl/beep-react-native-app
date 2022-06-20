@@ -12,6 +12,7 @@ import { Colors, Images } from '../../Theme';
 
 // Utils
 import BleHelpers from '../../Helpers/BleHelpers';
+import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
@@ -24,8 +25,8 @@ import { DeviceModel } from '../../Models/DeviceModel';
 // Components
 import { Text, View, TouchableOpacity, Button, ScrollView, RefreshControl, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import NavigationButton from '../../Components/NavigationButton';
+import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 
 interface Props {
 }
@@ -66,6 +67,10 @@ const HomeScreen: FunctionComponent<Props> = ({
     navigation.navigate("PeripheralDetailScreen", { device })
   }
 
+  const onHelpPress = () => {
+    OpenExternalHelpers.openUrl("https://beepsupport.freshdesk.com/en/support/solutions/folders/60000479696")
+  }
+
   return (<>
     <ScreenHeader title={t("home.screenTitle")} menu />
 
@@ -91,6 +96,14 @@ const HomeScreen: FunctionComponent<Props> = ({
           />
         )}
       </ScrollView>
+
+      <View style={styles.spacer} />
+      <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }} onPress={onHelpPress}>
+        <IconFontAwesome name="question-circle-o" size={22} color={Colors.link} />
+        <View style={styles.spacerHalf} />
+        <Text style={[styles.text, styles.link]}>{t("home.help")}</Text>
+      </TouchableOpacity>
+      <View style={styles.spacer} />
     </View>
   </>)
 }
