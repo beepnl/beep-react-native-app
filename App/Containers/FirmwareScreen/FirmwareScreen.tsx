@@ -74,8 +74,9 @@ const FirmwareScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
         <Text style={styles.label}>{t("firmware.other")}</Text>
         <View style={styles.spacer} />
-        { firmwaresStable.map((firmware: FirmwareModel) => 
+        { firmwaresStable.map((firmware: FirmwareModel, index: number) => 
           <NavigationButton 
+            key={`stable${index}`}
             title={`BEEP base ${firmware.version}`} 
             subTitle={firmware.size} 
             Icon={<IconMaterialCommunityIcons name="hexagon-outline" size={40} color={Colors.yellow} />}
@@ -85,8 +86,9 @@ const FirmwareScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
         <Text style={styles.label}>{t("firmware.test")}</Text>
         <View style={styles.spacer} />
-        { firmwaresTest.map((firmware: FirmwareModel) => 
+        { firmwaresTest.map((firmware: FirmwareModel, index: number) => 
           <NavigationButton 
+            key={`test${index}`}
             title={`BEEP base ${firmware.version}`} 
             subTitle={firmware.size} 
             Icon={<IconMaterialCommunityIcons name="hexagon-outline" size={40} color={Colors.yellow} />}
