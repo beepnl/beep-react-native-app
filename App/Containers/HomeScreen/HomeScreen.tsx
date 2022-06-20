@@ -91,7 +91,7 @@ const HomeScreen: FunctionComponent<Props> = ({
           <NavigationButton 
             key={index} 
             title={device.name} 
-            Icon={<Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="contain" />}
+            Icon={<Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="cover" />}
             onPress={() => onDevicePress(device)} 
           />
         )}
