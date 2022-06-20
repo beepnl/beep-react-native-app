@@ -11,7 +11,6 @@ import styles from './HomeScreenStyle'
 import { Colors, Images } from '../../Theme';
 
 // Utils
-const nodePackage = require('../../../package.json')   //including node package config for app version
 import BleHelpers from '../../Helpers/BleHelpers';
 
 // Data
@@ -36,7 +35,6 @@ const HomeScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const jsVersion =  nodePackage.version
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const devices: Array<DeviceModel> = useTypedSelector<Array<DeviceModel>>(getDevices)
   const [isRefreshing, setRefreshing] = useState(false)
@@ -93,11 +91,6 @@ const HomeScreen: FunctionComponent<Props> = ({
           />
         )}
       </ScrollView>
-
-      <View style={styles.spacerDouble} />
-      <Text style={styles.text}>{t('about.versionJS', { version: jsVersion + (__DEV__ ? " DEV" : "") })}</Text>
-      <View style={styles.spacerDouble} />
-
     </View>
   </>)
 }

@@ -124,8 +124,10 @@
     "startWizard": "Configure new BEEP base"
   },
   "settings": {
+    "account": "Account",
     "username": "E-mail: ",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "app": "App"
   },
   "about": {
     "screenTitle": "About",
