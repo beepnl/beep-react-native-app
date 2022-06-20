@@ -16,6 +16,7 @@ import { FileSystem } from 'react-native-file-access';
 import { AteccParser } from '../Models/AteccModel';
 import { HardwareVersionParser } from '../Models/HardwareVersionModel';
 import { WeightParser } from '../Models/WeightModel';
+import { AudioParser } from '../Models/AudioModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -251,6 +252,12 @@ export default class BleHelpers {
           store.dispatch(BeepBaseActions.setWeight(model))
           break
 
+        //audio sensor
+        case COMMANDS.READ_AUDIO_ADC_CONFIG:
+          model = new AudioParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setAudio(model))
+          break
+
         case COMMANDS.READ_ATECC_READ_ID:
           model = new AteccParser({ data }).parse()
           store.dispatch(BeepBaseActions.setHardwareId(model))
@@ -373,6 +380,10 @@ export default class BleHelpers {
       return typeof value === 'string' || value instanceof String
     }
 
+    const isBuffer = function(obj: any) {
+      return obj != null && obj.constructor != null && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+    }
+
     const isLittleEndian = (function () {
       let t32 = new Uint32Array(1);
       let t8 = new Uint8Array(t32.buffer);
@@ -384,15 +395,20 @@ export default class BleHelpers {
     })();
     const isBigEndian = !isLittleEndian;
 
+    let buffer: Buffer
     const arrayCommand = Array.isArray(command) ? command : [command]
     let arrayCommandParams
     if (params !== undefined) {
-      const arrayParams = Array.isArray(params) ? params : isString(params) ? Buffer.from(params, "hex") : [params]
-      arrayCommandParams = [...arrayCommand, ...arrayParams]
+      if (isBuffer(params)) {
+        buffer = Buffer.concat([Buffer.from(arrayCommand), params])
+      } else {
+        const arrayParams = Array.isArray(params) ? params : isString(params) ? Buffer.from(params, "hex") : [params]
+        arrayCommandParams = [...arrayCommand, ...arrayParams]
+        buffer = Buffer.from(arrayCommandParams)
+      }
     } else {
-      arrayCommandParams = arrayCommand
+      buffer = Buffer.from(arrayCommand)
     }
-    const buffer = Buffer.from(arrayCommandParams)
 
     // if (isLittleEndian) {
     //   buffer.swap16()

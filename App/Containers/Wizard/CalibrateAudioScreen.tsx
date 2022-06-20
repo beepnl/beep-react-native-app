@@ -32,6 +32,10 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 type PAGE = "plug" | "frequencies"
 
+const BIN_RESOLUTION = 3.937752016
+const FREQUENCY_STEP = 50
+const getFrequencyByBin = (bin: number) => Math.round((bin * 2 * BIN_RESOLUTION)/ FREQUENCY_STEP) * FREQUENCY_STEP
+
 const trackStyle = { height: 4, backgroundColor: Colors.lightGrey }
 const markerStyle = { width: 24, height: 24, borderRadius: 12, backgroundColor: Colors.yellow }
 const pressedMarkerStyle = { width: 30, height: 30, borderRadius: 15, backgroundColor: Colors.yellow }
@@ -50,35 +54,35 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
   const [page, setPage] = useState<PAGE>("plug")
   const audio: AudioModel = useTypedSelector<AudioModel>(getAudio)
   const [channel, setChannel] = useState<Channel>(audio?.channel)
-  const [frequencies, setFrequencies] = useState([0, 2000])
-  const [bins, setBins] = useState([1])
+  const [frequencies, setFrequencies] = useState([ getFrequencyByBin(audio.startBin), getFrequencyByBin(audio.stopBin) ])
+  const [bins, setBins] = useState([audio.bins])
 
-  const refresh = () => {
-    if (pairedPeripheral) {
-      //read weight sensor
-      // BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
-    }
-  }
+  const updateFirmware = () => {
+    const startBin = Math.round(frequencies[0] / BIN_RESOLUTION / 2)
+    const stopBin = Math.round(frequencies[1] / BIN_RESOLUTION / 2)
 
-  useInterval(() => {
-    refresh()
-  }, __DEV__ ? 5000 : 5000)
-
-  const onNextPress = () => {
-    setPage("frequencies")
-  }
-
-  const onFinishPress = () => {
-    //update firmware
     const params = Buffer.alloc(6)
     let i = 0
     params.writeUint8(channel.bitmask, i++)
     params.writeUint8(audio.gain, i++)
     params.writeInt8(audio.volume, i++)
-    params.writeUint8(audio.bins, i++)
-    params.writeUint8(audio.startBin, i++)
-    params.writeUint8(audio.stopBin, i++)
+    params.writeUint8(bins[0], i++)
+    params.writeUint8(startBin, i++)
+    params.writeUint8(stopBin, i++)
     BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_AUDIO_ADC_CONFIG, params)
+  }
+
+  const onNextPress = () => {
+    //update firmware with selected channel
+    // updateFirmware()
+
+    //show page 2
+    setPage("frequencies")
+  }
+
+  const onFinishPress = () => {
+    //update firmware
+    updateFirmware()
     
     //close screen
     navigation.goBack()
@@ -138,7 +142,7 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
             onValuesChange={setFrequencies}
             min={0}
             max={2000}
-            step={50}
+            step={FREQUENCY_STEP}
             trackStyle={trackStyle}
             markerStyle={markerStyle}
             pressedMarkerStyle={pressedMarkerStyle}
