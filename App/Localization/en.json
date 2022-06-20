@@ -22,7 +22,7 @@
     "screenTitle": "Configuration",
     "assemble": {
       "screenTitle": "Assemble",
-      "step1": "1. Assemble the 8 legs to the yellow base.",
+      "step1": "1. Make sure that the BEEP base that you want to configure is nearby and powered.",
       "step2": "2. Get out the 3.5mm sample microphone plug and plug in the microphone.",
       "nb": "NB: You can plug in the rubber pads to support your hive later."
     },
