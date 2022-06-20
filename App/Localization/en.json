@@ -186,7 +186,9 @@
   },
   "logFile": {
     "screenTitle": "Download data",
-    "logFileSize": "Log size: ",
+    "logFile": "Log file",
+    "logFileSize": "Log file size: ",
+    "timestamp": "Last checked on: ",
     "downloadLogFile": "Download all data",
     "progress": "Progress",
     "download": "Download",

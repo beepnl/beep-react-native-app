@@ -56,7 +56,7 @@ const MENU_ITEMS: Array<MenuItem> = [
   {
     title: "peripheralDetail.items.logFile",
     screen: "LogFileScreen",
-    icon: null,
+    icon: <IconMaterialCommunityIcons name="download" size={30} color={Colors.black} />,
   },
   {
     title: "peripheralDetail.items.firmware",

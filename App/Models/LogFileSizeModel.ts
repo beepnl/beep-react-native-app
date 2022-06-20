@@ -10,7 +10,11 @@ export class LogFileSizeModel {
   }
 
   toString() {
-    return `${FormatHelpers.formatSizeAsHumanReadable(this.data)}  Timestamp: ${DateTimeHelper.formatTime(this.timestamp)}`
+    return `${FormatHelpers.formatSizeAsHumanReadable(this.data)}`
+  }
+
+  getTimestamp() {
+    return `${DateTimeHelper.formatTime(this.timestamp)}`
   }
 
   value() {

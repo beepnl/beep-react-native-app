@@ -9,7 +9,6 @@ import { useNavigation } from '@react-navigation/native';
 // Styles
 import styles from './LogFileScreenStyle'
 import { Colors } from '../../Theme';
-import Images from 'App/Assets/Images'
 
 // Utils
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
@@ -25,12 +24,19 @@ import { getCombinedLogFileFrames } from 'App/Stores/BeepBase/Selectors'
 import { getLogFileProgress } from 'App/Stores/BeepBase/Selectors'
 
 // Components
-import { Text, View, TextInput, PermissionsAndroid, TouchableOpacity } from 'react-native';
+import { Text, View, PermissionsAndroid, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
 import ApiService from '../../Services/ApiService';
 import * as Progress from 'react-native-progress';
+
+type STATE = 
+  "idle" |
+  "downloading" |
+  "uploading" |
+  "completed" |
+  "failed"
 
 interface Props {
 }
@@ -45,7 +51,8 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const logFileProgress: number = useTypedSelector<number>(getLogFileProgress)
   const combinedLogFileFrames: Buffer = useTypedSelector<Buffer>(getCombinedLogFileFrames)
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [uploadStatus, setUploadStatus] = useState("")
+  const [state, setState] = useState<STATE>("idle")
+  const [error, setError] = useState("")
         
   useEffect(() => {
     dispatch(BeepBaseActions.setLogFileProgress(0))
@@ -61,6 +68,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
 
       // dispatch(BeepBaseActions.setLogFileProgress(0))
       //download finished, upload to api
+      setState("uploading")
       RNFS.uploadFiles({
         toUrl: ApiService.LOG_FILE_UPLOAD_URL,
         files: [{ 
@@ -82,16 +90,18 @@ const LogFileScreen: FunctionComponent<Props> = ({
       }).promise.then((response: UploadResult) => {
         if (response.statusCode == 200) {
           console.log('FILES UPLOADED!'); // response.statusCode, response.headers, response.body
+          setState("completed")
           setUploadProgress(1)
         } else {
-          setUploadProgress(0)
           console.log('SERVER ERROR');
-          setUploadStatus(`${response.statusCode}: ${response.body}`)
+          setUploadProgress(0)
+          setState("failed")
+          setError(`${response.statusCode}: ${response.body}`)
         }
       })
       .catch((err) => {
           setUploadProgress(0)
-          setUploadStatus(err.description)
+          setError(err.description)
           if (err.description === "cancelled") {
             // cancelled by user
           }
@@ -108,29 +118,13 @@ const LogFileScreen: FunctionComponent<Props> = ({
 
   const onDownloadLogFilePress = async () => {
     if (logFileSize) {
-      // PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE).then(async (granted: boolean) => {
-      //   let requested
-      //   if (!granted) {
-      //     requested = await PermissionsAndroid.request(
-      //       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      //       {
-      //         title: "BEEP Base",
-      //         message: "Please grant access to write to storage",
-      //         buttonNegative: "Cancel",
-      //         buttonPositive: "OK"
-      //       }
-      //     );
-      //   }
-      //   if (granted || requested === PermissionsAndroid.RESULTS.GRANTED) {
-          setUploadProgress(0)
-          setUploadStatus("")
-          dispatch(BeepBaseActions.clearLogFileFrames())
-          if (peripheral) {
-            BleHelpers.initLogFile()
-            BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
-          }
-        // }
-      // })
+      setUploadProgress(0)
+      setState("downloading")
+      dispatch(BeepBaseActions.clearLogFileFrames())
+      if (peripheral) {
+        BleHelpers.initLogFile()
+        BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
+      }
     }
   }
 
@@ -145,11 +139,18 @@ const LogFileScreen: FunctionComponent<Props> = ({
     <ScrollView style={styles.container} >
       <View style={styles.spacer} />
 
+      <Text style={styles.label}>{t("logFile.logFile")}</Text>
+      <View style={styles.spacer} />
       <Text style={styles.label}>{t("logFile.logFileSize")}<Text style={styles.text}>{logFileSize?.toString()}</Text></Text>
+      <Text style={styles.label}>{t("logFile.timestamp")}<Text style={styles.text}>{logFileSize?.getTimestamp()}</Text></Text>
 
       <View style={styles.spacerDouble} />
 
-      <TouchableOpacity style={styles.button} onPress={onDownloadLogFilePress} disabled={logFileSize == undefined || logFileSize.value() == 0} >
+      <TouchableOpacity
+        style={styles.button} 
+        onPress={onDownloadLogFilePress} 
+        disabled={logFileSize == undefined || logFileSize.value() == 0 || state == "downloading" || state == "uploading"}
+      >
         <Text style={styles.text}>{t("logFile.downloadLogFile")}</Text>
       </TouchableOpacity>
       
@@ -189,8 +190,10 @@ const LogFileScreen: FunctionComponent<Props> = ({
       <Text style={[styles.text]}>{`Upload progress: ${uploadProgress} %`}</Text>
       */}
 
-      <View style={styles.spacer} />
-      <Text style={[styles.text]}>{`Upload status: ${uploadStatus}`}</Text>
+      { !!error && <>
+        <View style={styles.spacer} />
+        <Text style={[styles.error]}>{`Error: ${error}`}</Text>
+      </>}
 
     </ScrollView>
   </>)
