@@ -231,7 +231,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
 
       <View style={[styles.messageContainer, { flexDirection: "row", alignItems: "center", justifyContent: "center" }]}>
-        <Text style={[styles.text, { textAlign: "center" }]}>{message}</Text>
+        <Text style={[styles.text, { textAlign: "center" }, error && styles.error ]}>{message}</Text>
         { showProgress &&
           <Progress.CircleSnail style={{marginLeft: Metrics.doubleBaseMargin, alignSelf: "center"}} color={Colors.yellow} />
         }
