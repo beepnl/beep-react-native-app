@@ -68,7 +68,7 @@ const FirmwareScreen: FunctionComponent<Props> = ({
         <NavigationButton 
           title={currentVersion ? `BEEP base ${currentVersion}` : "BEEP base"} 
           subTitle={currentVersion == latestStableVersion ? t("firmware.latestInstalledDescription") : t("firmware.newerAvailableDescription")} 
-          Icon={<IconMaterialCommunityIcons name="hexagon-outline" size={40} color={Colors.yellow} />}
+          Icon={<IconMaterialCommunityIcons name="hexagon-outline" size={34} color={Colors.yellow} />}
           disabled={true} 
         />
         <View style={styles.spacerDouble} />
@@ -79,7 +79,7 @@ const FirmwareScreen: FunctionComponent<Props> = ({
             key={`stable${index}`}
             title={`BEEP base ${firmware.version}`} 
             subTitle={firmware.size} 
-            Icon={<IconMaterialCommunityIcons name="hexagon-outline" size={40} color={Colors.yellow} />}
+            Icon={<IconMaterialCommunityIcons name="hexagon-outline" size={34} color={Colors.yellow} />}
             onPress={() => navigation.navigate("FirmwareDetailScreen", { firmware })} 
           />
         )}
@@ -91,10 +91,11 @@ const FirmwareScreen: FunctionComponent<Props> = ({
             key={`test${index}`}
             title={`BEEP base ${firmware.version}`} 
             subTitle={firmware.size} 
-            Icon={<IconMaterialCommunityIcons name="hexagon-outline" size={40} color={Colors.yellow} />}
+            Icon={<IconMaterialCommunityIcons name="hexagon-outline" size={34} color={Colors.yellow} />}
             onPress={() => navigation.navigate("FirmwareDetailScreen", { firmware })} 
           /> 
         )}
+        <View style={styles.spacerDouble} />
 
       </ScrollView>
     </View>

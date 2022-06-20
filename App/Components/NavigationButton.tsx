@@ -45,7 +45,9 @@ const NavigationButton: FunctionComponent<ScreenHeaderProps> = ({
     <TouchableOpacity key={title} style={styles.container} onPress={onPress} disabled={disabled} >
       <View style={{ flexDirection: "row" }}>
         <View style={ApplicationStyles.spacerHalf} />
-        { renderIcon() }
+        <View style={{ width: 30, alignItems: "center" }}>
+          { renderIcon() }
+        </View>
         <View style={ApplicationStyles.spacer} />
         <View>
           <Text style={[styles.title, selected && { color: Colors.yellow }]}>{title}</Text>
