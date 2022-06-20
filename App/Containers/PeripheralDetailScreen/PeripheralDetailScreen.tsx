@@ -49,6 +49,11 @@ const MENU_ITEMS: Array<MenuItem> = [
     icon: <IconMaterialCommunityIcons name="scale" size={30} color={Colors.black} />,
   },
   {
+    title: "peripheralDetail.items.audio",
+    screen: "AudioScreen",
+    icon: <IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />,
+  },
+  {
     title: "peripheralDetail.items.logFile",
     screen: "LogFileScreen",
     icon: null,
@@ -104,6 +109,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
       const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
+      BleHelpers.write(peripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
     }
   }, [isConnected])
 

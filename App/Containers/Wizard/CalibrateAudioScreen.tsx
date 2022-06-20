@@ -34,7 +34,7 @@ type PAGE = "plug" | "frequencies"
 
 const BIN_RESOLUTION = 3.937752016
 const FREQUENCY_STEP = 50
-const getFrequencyByBin = (bin: number) => Math.round((bin * 2 * BIN_RESOLUTION)/ FREQUENCY_STEP) * FREQUENCY_STEP
+export const getFrequencyByBin = (bin: number) => Math.round((bin * 2 * BIN_RESOLUTION)/ FREQUENCY_STEP) * FREQUENCY_STEP
 
 const trackStyle = { height: 4, backgroundColor: Colors.lightGrey }
 const markerStyle = { width: 24, height: 24, borderRadius: 12, backgroundColor: Colors.yellow }

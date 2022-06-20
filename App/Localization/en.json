@@ -139,6 +139,7 @@
     "items": {
       "temperature": "Temperature",
       "weight": "Weight",
+      "audio": "Audio",
       "logFile": "Download data",
       "firmware": "Firmware",
     }
@@ -161,6 +162,13 @@
       "offset": "Offset",
       "multiplier": "Multiplier"
     },
+    "audio": {
+      "screenTitle": "Audio",
+      "channel": "Audio channel",
+      "startFrequency": "Start frequency",
+      "stopFrequency": "Stop frequency",
+      "bins": "Amount of bins"
+    }
   },
   "logFile": {
     "screenTitle": "Download data",
