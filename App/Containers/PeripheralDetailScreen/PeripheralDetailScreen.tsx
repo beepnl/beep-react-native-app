@@ -61,7 +61,7 @@ const MENU_ITEMS: Array<MenuItem> = [
   {
     title: "peripheralDetail.items.firmware",
     screen: "FirmwareScreen",
-    icon: null,
+    icon: <IconFontAwesome name="microchip" size={30} color={Colors.black} />,
   },
 ]
 
