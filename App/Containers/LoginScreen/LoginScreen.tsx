@@ -11,6 +11,7 @@ import styles from './LoginScreenStyle'
 import { Images, Metrics } from '../../Theme';
 
 // Utils
+import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
 
 // Data
 import AuthActions from 'App/Stores/Auth/Actions'
@@ -29,7 +30,7 @@ const LoginScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const error = useSelector(getError)
+  const error = useTypedSelector<string | undefined>(getError)
 
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -41,6 +42,14 @@ const LoginScreen: FunctionComponent<Props> = ({
     if (username && password) {
       dispatch(AuthActions.login(username.trim(), password))
     }
+  }
+
+  const onForgotPasswordPress = () => {
+    OpenExternalHelpers.openUrl(`https://app.beep.nl/password-forgot?email=${username}`)
+  }
+
+  const onCreateAccountPress = () => {
+    OpenExternalHelpers.openUrl(`https://app.beep.nl/sign-up`)
   }
 
   return (
@@ -88,6 +97,23 @@ const LoginScreen: FunctionComponent<Props> = ({
         </TouchableOpacity>
 
         <View style={styles.spacerDouble} />
+        <View style={styles.spacerDouble} />
+
+        <View style={styles.centeredContainer}>
+          <TouchableOpacity onPress={onForgotPasswordPress}>
+            <Text style={[styles.text, styles.link]}>{t("login.forgotPassword")}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.spacerDouble} />
+
+        <View style={styles.centeredContainer}>
+          <TouchableOpacity onPress={onCreateAccountPress}>
+            <Text style={[styles.text, styles.link]}>{t("login.signUp")}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.spacer} />
 
       </ScrollView>
     </SafeAreaView>
