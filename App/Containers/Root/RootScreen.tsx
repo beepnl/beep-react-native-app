@@ -76,7 +76,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       }
     });
 
-    BleHelpers.init(peripheral)
+    BleHelpers.init()
 
     if (token) {
       api.setToken(token)
