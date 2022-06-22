@@ -224,53 +224,55 @@ export default class BleHelpers {
       const buffer: Buffer = Buffer.from(value)
       const command = buffer.readInt8()
       const data: Buffer = buffer.subarray(1)
-      let model
-      switch (command) {
-        case COMMANDS.RESPONSE:
-          console.log("BLE response", data)
-          break
-
-        case COMMANDS.READ_FIRMWARE_VERSION:
-          model = new FirmwareVersionParser({ data }).parse()
-          store.dispatch(BeepBaseActions.setFirmwareVersion(model))
-          break
-
-        case COMMANDS.READ_HARDWARE_VERSION:
-          model = new HardwareVersionParser({ data }).parse()
-          store.dispatch(BeepBaseActions.setHardwareVersion(model))
-          break
-
-        //temperature sensor
-        case COMMANDS.READ_DS18B20_CONVERSION:
-          const models = new TemperatureParser({ data }).parse()
-          store.dispatch(BeepBaseActions.setTemperatures(models))
-          break
-
-        //weight sensor
-        case COMMANDS.READ_HX711_CONVERSION:
-          model = new WeightParser({ data }).parse()
-          store.dispatch(BeepBaseActions.setWeight(model))
-          break
-
-        //audio sensor
-        case COMMANDS.READ_AUDIO_ADC_CONFIG:
-          model = new AudioParser({ data }).parse()
-          store.dispatch(BeepBaseActions.setAudio(model))
-          break
-
-        case COMMANDS.READ_ATECC_READ_ID:
-          model = new AteccParser({ data }).parse()
-          store.dispatch(BeepBaseActions.setHardwareId(model))
-          break
-
-        case COMMANDS.READ_MX_FLASH:
-          console.log(data)
-          break
-
-        case COMMANDS.SIZE_MX_FLASH:
-          model = LogFileSizeModel.parse(data)
-          store.dispatch(BeepBaseActions.setLogFileSize(model))
-          break
+      if (data.length) {
+        let model
+        switch (command) {
+          case COMMANDS.RESPONSE:
+            console.log("BLE response", data)
+            break
+  
+          case COMMANDS.READ_FIRMWARE_VERSION:
+            model = new FirmwareVersionParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setFirmwareVersion(model))
+            break
+  
+          case COMMANDS.READ_HARDWARE_VERSION:
+            model = new HardwareVersionParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setHardwareVersion(model))
+            break
+  
+          //temperature sensor
+          case COMMANDS.READ_DS18B20_CONVERSION:
+            const models = new TemperatureParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setTemperatures(models))
+            break
+  
+          //weight sensor
+          case COMMANDS.READ_HX711_CONVERSION:
+            model = new WeightParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setWeight(model))
+            break
+  
+          //audio sensor
+          case COMMANDS.READ_AUDIO_ADC_CONFIG:
+            model = new AudioParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setAudio(model))
+            break
+  
+          case COMMANDS.READ_ATECC_READ_ID:
+            model = new AteccParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setHardwareId(model))
+            break
+  
+          case COMMANDS.READ_MX_FLASH:
+            console.log(data)
+            break
+  
+          case COMMANDS.SIZE_MX_FLASH:
+            model = LogFileSizeModel.parse(data)
+            store.dispatch(BeepBaseActions.setLogFileSize(model))
+            break
+        }
       }
     }
   }
