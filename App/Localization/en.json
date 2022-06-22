@@ -72,6 +72,9 @@
     "calibrate": {
       "screenTitle": "Calibrate",
       "description": "Inspect each of the sensors below in order to configure and calibrate them.",
+      "retrievingTemperature": "Temperature...",
+      "retrievingWeight": "Weight...",
+      "retrievingAudio": "Audio...",
       "temperature": {
         "screenTitle": "Temperature",
         "step1": "1. Warm up one of the sensors in your hand and check which sensor temperature is increasing.",
