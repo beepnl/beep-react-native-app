@@ -99,15 +99,6 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
             isConnected,
           }
           dispatch(BeepBaseActions.setPairedPeripheral(updated))
-
-          if (!isConnected && !isScanning && !scanning) {
-            // DISABLED RECONNECT
-            //reconnect by scanning
-            // scanning = true
-            // BleManager.scan([], 10, false).then(() => {
-            //   setIsScanning(true)
-            // })
-          }
         }
       })
     }
