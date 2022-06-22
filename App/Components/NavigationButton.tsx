@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     width: "100%",
-    // height: Metrics.buttonHeight,
+    minHeight: Metrics.buttonHeight,
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: Metrics.baseMargin,
