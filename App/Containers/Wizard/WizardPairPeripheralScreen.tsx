@@ -50,7 +50,6 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const [list, setList] = useState<Array<ListItem>>([])
   const [bondedPeripherals, setBondedPeripherals] = useState<Array<ListItem>>([])
   const [connectingPeripheral, setConnectingPeripheral] = useState<Peripheral | null>(null)
-  const [connectedPeripheral, setConnectedPeripheral] = useState<Peripheral | null>(null)
   const [error, setError] = useState("")
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const hardwareVersion: HardwareVersionModel = useTypedSelector<HardwareVersionModel>(getHardwareVersion)
@@ -114,8 +113,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   useEffect(startScan, [bondedPeripherals])
 
   const handleStopScan = () => {
-    console.log('Scan is stopped');
-    setIsScanning(false);
+    console.log('Scan is stopped')
+    setIsScanning(false)
   }
 
   const handleDiscoverPeripheral = (peripheral: Peripheral) => {
@@ -254,7 +253,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         keyExtractor={item => item.id}
       />
 
-      { (!isScanning && connectingPeripheral == null && connectedPeripheral == null) && <>
+      { (!isScanning && connectingPeripheral == null) && <>
         <View style={styles.spacerDouble} />
         <TouchableOpacity style={styles.button} onPress={startScan} >
           <Text style={styles.text}>{t("wizard.pair.retry")}</Text>
