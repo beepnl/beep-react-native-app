@@ -16,6 +16,7 @@ import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
 // Data
 import AuthActions from 'App/Stores/Auth/Actions'
 import { getError } from 'App/Stores/Auth/Selectors';
+import { getUsername } from 'App/Stores/Settings/Selectors';
 
 // Components
 import { Text, View, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
@@ -32,7 +33,7 @@ const LoginScreen: FunctionComponent<Props> = ({
 
   const error = useTypedSelector<string | undefined>(getError)
 
-  const [username, setUsername] = useState("")
+  const [username, setUsername] = useState(useTypedSelector<string>(getUsername))
   const [password, setPassword] = useState("")
 
   const inputUsernameRef = useRef<TextInput>(null)
@@ -88,7 +89,7 @@ const LoginScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
 
         { !!error && <>
-          <Text style={styles.error}>{error}</Text>
+          <Text style={[styles.text, styles.error, { alignSelf: "center" }]}>{t(`login.error.${error}`)}</Text>
           <View style={styles.spacerDouble} />
         </>}
 

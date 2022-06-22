@@ -20,6 +20,8 @@ export function* login(action: any) {
       yield put(UserActions.setToken(api_token))
       //store user details
       yield put(UserActions.setUser(new UserModel(response.data)))
+      //persist username for next login
+      yield put(SettingsActions.setUsername(username))
       //refresh registered devices linked to user account
       yield call(getDevices, null)
     }

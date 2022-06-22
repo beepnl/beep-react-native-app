@@ -16,7 +16,10 @@
     "password": "Password",
     "login": "Sign in",
     "forgotPassword": "I forgot my password",
-    "signUp": "Create an account"
+    "signUp": "Create an account",
+    "error": {
+      "invalid_user": "Invalid username or password"
+    }
   },
   "wizard": {
     "screenTitle": "Configuration",
