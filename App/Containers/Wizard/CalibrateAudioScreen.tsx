@@ -86,6 +86,9 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
     
     //close screen
     navigation.goBack()
+
+    //refresh audio sensor on calibration screen
+    BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
   }
 
   const getImage = (channel: Channel) => {

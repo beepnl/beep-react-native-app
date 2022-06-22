@@ -33,6 +33,7 @@ import ScreenHeader from '../../Components/ScreenHeader';
 import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as Progress from 'react-native-progress';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -65,13 +66,6 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     refresh()
   }, __DEV__ ? 60000 : 5000)
 
-  //refresh audio sensor from device on screen focus
-  useFocusEffect(
-    React.useCallback(() => {
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
-    }, [audio])
-  )
-  
   useEffect(() => {
     //initialize sensors
     if (pairedPeripheral) {
@@ -108,17 +102,19 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   }
 
   const getWeightTitle = () => {
-    const weightSensorDefinition = weightSensorDefinitions[0]
-    if (weightSensorDefinition) {
-      const sensorChannel = weight.channels.find(ch => ch.bitmask == weightChannel?.bitmask)
-      if (sensorChannel) {
-        const value = sensorChannel.value
-        const offsetValue = Math.max(value - weightSensorDefinition.offset, 0)
-        return `${((offsetValue) * weightSensorDefinition.multiplier).toFixed(2)} kg`
-      } 
+    if (weight) {
+      const weightSensorDefinition = weightSensorDefinitions[0]
+      if (weightSensorDefinition) {
+        const sensorChannel = weight.channels.find(ch => ch.bitmask == weightChannel?.bitmask)
+        if (sensorChannel) {
+          const value = sensorChannel.value
+          const offsetValue = Math.max(value - weightSensorDefinition.offset, 0)
+          return `${((offsetValue) * weightSensorDefinition.multiplier).toFixed(2)} kg`
+        } 
+      }
+      return weight.toString()
     }
-
-    return weight.toString()
+    return t("wizard.calibrate.retrievingWeight")
   }
 
   return (<>
@@ -133,25 +129,30 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacer} />
 
-      { temperatures.length > 0 &&
-        <NavigationButton 
-          title={temperatures.map((temperatureModel) => temperatureModel.toString()).join(", ")} 
-          Icon={<IconFontAwesome name="thermometer-2" size={30} color={Colors.black} />}
-          onPress={() => navigation.navigate("CalibrateTemperatureScreen")} 
-        />
-      }
-
-      { weight &&
-        <NavigationButton 
-          title={getWeightTitle()} 
-          Icon={<IconMaterialCommunityIcons name="scale" size={30} color={Colors.black} />}
-          onPress={() => navigation.navigate("CalibrateWeightScreen")} 
-        />
-      }
+      <NavigationButton 
+        title={temperatures.length > 0 ? temperatures.map((temperatureModel) => temperatureModel.toString()).join(", ") : t("wizard.calibrate.retrievingTemperature")} 
+        Icon={temperatures.length > 0 ?
+          <IconFontAwesome name="thermometer-2" size={30} color={Colors.black} /> :
+          <Progress.CircleSnail size={30} color={Colors.black} />
+        }
+        onPress={() => navigation.navigate("CalibrateTemperatureScreen")} 
+      />
 
       <NavigationButton 
-        title={ audio ? "Audio channel " + audio.channel.name : "Audio"}
-        Icon={<IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />}
+        title={getWeightTitle()} 
+        Icon={!!weight ?
+          <IconMaterialCommunityIcons name="scale" size={30} color={Colors.black} /> :
+          <Progress.CircleSnail size={30} color={Colors.black} />
+        }
+        onPress={() => navigation.navigate("CalibrateWeightScreen")} 
+      />
+
+      <NavigationButton 
+        title={!!audio ? "Audio channel " + audio.channel.name : t("wizard.calibrate.retrievingAudio")}
+        Icon={!!audio ?
+          <IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} /> :
+          <Progress.CircleSnail size={30} color={Colors.black} />
+        }
         onPress={() => navigation.navigate("CalibrateAudioScreen")} 
       />
 
