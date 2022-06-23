@@ -17,21 +17,22 @@ import { generateKey } from '../../Helpers/random';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
+import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getHardwareId } from 'App/Stores/BeepBase/Selectors'
 import { getRegisterState } from 'App/Stores/Api/Selectors'
 import { AteccModel } from '../../Models/AteccModel';
 import { RegisterState } from '../../Stores/Api/InitialState';
-import { getFirmwareVersion, getHardwareVersion } from '../../Stores/BeepBase/Selectors';
+import { getDevice, getFirmwareVersion, getHardwareVersion } from '../../Stores/BeepBase/Selectors';
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
 import { getError } from 'App/Stores/Api/Selectors';
+import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
 import { Text, View, TouchableOpacity, TextInput } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -43,6 +44,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const hardwareId: AteccModel = useTypedSelector<AteccModel>(getHardwareId)
   const registerState: RegisterState = useTypedSelector<RegisterState>(getRegisterState)
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
@@ -84,6 +86,14 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
   }
 
   const onNextPress = () => {
+    //update paired peripheral with current device id
+    if (device) {
+      dispatch(BeepBaseActions.setPairedPeripheral({ 
+        ...peripheral, 
+        isConnected: true,
+        deviceId: device.id
+      }))
+    }
     navigation.navigate("WizardCalibrateScreen")
   }
 

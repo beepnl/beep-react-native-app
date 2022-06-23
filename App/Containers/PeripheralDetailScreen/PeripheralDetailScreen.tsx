@@ -79,19 +79,22 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const device: DeviceModel = route.params?.device
-  const peripheralEqualsDevice = peripheral?.name === device?.name
+  const peripheralEqualsDevice = peripheral?.deviceId === device?.id
   const [error, setError] = useState("")
   const [busy, setBusy] = useState(false)
   const isConnected = peripheral && peripheral.isConnected
 
   useEffect(() => {
-    if (isConnected) {
-      BleHelpers.disconnectPeripheral(peripheral)
+    if (!peripheralEqualsDevice) {
+      if (isConnected) {
+        BleHelpers.disconnectPeripheral(peripheral)
+      }
+      dispatch(BeepBaseActions.setPairedPeripheral(undefined))
     }
   }, [])
 
   useEffect(() => {
-    if (device) {
+    if (peripheralEqualsDevice && device) {
       //sync current device id into paired peripheral
       dispatch(BeepBaseActions.setPairedPeripheral({ 
         ...peripheral, 
@@ -105,6 +108,9 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
   useEffect(() => {
     if (isConnected) {
+      //update current device
+      dispatch(BeepBaseActions.setDevice(device))
+      
       //get latest sensor readings
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
       const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
