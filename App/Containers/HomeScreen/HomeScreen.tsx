@@ -27,6 +27,7 @@ import { Text, View, TouchableOpacity, Button, ScrollView, RefreshControl, Image
 import ScreenHeader from '../../Components/ScreenHeader';
 import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
+import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface Props {
 }
@@ -39,16 +40,6 @@ const HomeScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const devices: Array<DeviceModel> = useTypedSelector<Array<DeviceModel>>(getDevices)
   const [isRefreshing, setRefreshing] = useState(false)
-
-  useFocusEffect(
-    //clear beep base store when home screen becomes focused to remove any old peripheral data
-    React.useCallback(() => {
-      if (pairedPeripheral && pairedPeripheral.isConnected) {
-        BleHelpers.disconnectPeripheral(pairedPeripheral)?.catch(error => console.log(error))
-      }
-      dispatch(BeepBaseActions.clear())
-    }, [pairedPeripheral])
-  )
 
   useEffect(() => {
     setRefreshing(false)
@@ -91,7 +82,10 @@ const HomeScreen: FunctionComponent<Props> = ({
           <NavigationButton 
             key={index} 
             title={device.name} 
-            Icon={<Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="cover" />}
+            Icon={pairedPeripheral?.deviceId === device.id ?
+              <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.bluetooth} /> :
+              <Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="cover" />
+            }
             onPress={() => onDevicePress(device)} 
           />
         )}
