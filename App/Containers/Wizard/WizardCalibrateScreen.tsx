@@ -121,10 +121,14 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     <ScreenHeader title={t("wizard.calibrate.screenTitle")} back />
 
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.spacer} />
 
       <View style={styles.itemContainer}>
-        <Text style={styles.itemText}>{t("wizard.calibrate.description")}</Text>
+        <Text style={styles.label}>{t("peripheralDetail.deviceName")}<Text style={styles.text}>{device?.name}</Text></Text>
+        <Text style={styles.label}>{t("peripheralDetail.bleName")}<Text style={styles.text}>{DeviceModel.getBleName(device)}</Text></Text>
+      </View>
+
+      <View style={styles.itemContainer}>
+        <Text style={styles.text}>{t("wizard.calibrate.description")}</Text>
       </View>
 
       <View style={styles.spacer} />
