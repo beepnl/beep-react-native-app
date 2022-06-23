@@ -18,6 +18,9 @@ import { HardwareVersionParser } from '../Models/HardwareVersionModel';
 import { WeightParser } from '../Models/WeightModel';
 import { AudioParser } from '../Models/AudioModel';
 import { LoRaWanStateParser } from '../Models/LoRaWanStateModel';
+import { LoRaWanDeviceEUIParser } from '../Models/LoRaWanDeviceEUIModel';
+import { LoRaWanAppEUIParser } from '../Models/LoRaWanAppEUIModel';
+import { LoRaWanAppKeyParser } from '../Models/LoRaWanAppKeyModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -246,6 +249,24 @@ export default class BleHelpers {
           case COMMANDS.READ_LORAWAN_STATE:
             model = new LoRaWanStateParser({ data }).parse()
             store.dispatch(BeepBaseActions.setLoRaWanState(model))
+            break
+
+          //LoRaWan device EUI
+          case COMMANDS.READ_LORAWAN_DEVEUI:
+            model = new LoRaWanDeviceEUIParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setLoRaWanDeviceEUI(model))
+            break
+
+          //LoRaWan app EUI
+          case COMMANDS.READ_LORAWAN_APPEUI:
+            model = new LoRaWanAppEUIParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setLoRaWanAppEUI(model))
+            break
+
+          //LoRaWan app key
+          case COMMANDS.READ_LORAWAN_APPKEY:
+            model = new LoRaWanAppKeyParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setLoRaWanAppKey(model))
             break
 
           //temperature sensor

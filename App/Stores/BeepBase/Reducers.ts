@@ -47,6 +47,27 @@ export const setLoRaWanState = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setLoRaWanDeviceEUI = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    loRaWanDeviceEUI: payload.loRaWanDeviceEUI
+  }
+}
+
+export const setLoRaWanAppEUI = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    loRaWanAppEUI: payload.loRaWanAppEUI
+  }
+}
+
+export const setLoRaWanAppKey = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    loRaWanAppKey: payload.loRaWanAppKey
+  }
+}
+
 export const setSensorDefinitions = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
@@ -124,6 +145,9 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.SET_HARDWARE_VERSION]: setHardwareVersion,
   [BeepBaseTypes.SET_HARDWARE_ID]: setHardwareId,
   [BeepBaseTypes.SET_LO_RA_WAN_STATE]: setLoRaWanState,
+  [BeepBaseTypes.SET_LO_RA_WAN_DEVICE_EUI]: setLoRaWanDeviceEUI,
+  [BeepBaseTypes.SET_LO_RA_WAN_APP_EUI]: setLoRaWanAppEUI,
+  [BeepBaseTypes.SET_LO_RA_WAN_APP_KEY]: setLoRaWanAppKey,
   [BeepBaseTypes.SET_SENSOR_DEFINITIONS]: setSensorDefinitions,
   [BeepBaseTypes.UPDATE_SENSOR_DEFINITION]: updateSensorDefinition,
   [BeepBaseTypes.SET_TEMPERATURES]: setTemperatures,

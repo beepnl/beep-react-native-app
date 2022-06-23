@@ -6,6 +6,9 @@ import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
 import { LogFileFrameModel } from '../../Models/LogFileFrameModel';
 import { LogFileSizeModel } from '../../Models/LogFileSizeModel';
+import { LoRaWanAppEUIModel } from '../../Models/LoRaWanAppEUIModel';
+import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
+import { LoRaWanDeviceEUIModel } from '../../Models/LoRaWanDeviceEUIModel';
 import { LoRaWanStateModel } from '../../Models/LoraWanStateModel';
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
@@ -20,6 +23,9 @@ export enum BeepBaseTypes {
   SET_HARDWARE_VERSION = 'SET_HARDWARE_VERSION',
   SET_HARDWARE_ID = 'SET_HARDWARE_ID',
   SET_LO_RA_WAN_STATE = 'SET_LO_RA_WAN_STATE',
+  SET_LO_RA_WAN_DEVICE_EUI = 'SET_LO_RA_WAN_DEVICE_EUI',
+  SET_LO_RA_WAN_APP_EUI = 'SET_LO_RA_WAN_APP_EUI',
+  SET_LO_RA_WAN_APP_KEY = 'SET_LO_RA_WAN_APP_KEY',
   SET_SENSOR_DEFINITIONS = 'SET_SENSOR_DEFINITIONS',
   UPDATE_SENSOR_DEFINITION = 'UPDATE_SENSOR_DEFINITION',
   SET_TEMPERATURES = 'SET_TEMPERATURES',
@@ -39,6 +45,9 @@ interface C extends ActionCreators {
   setHardwareVersion: (hardwareVersion: HardwareVersionModel) => { type: BeepBaseTypes.SET_HARDWARE_VERSION };
   setHardwareId: (atecc: AteccModel) => { type: BeepBaseTypes.SET_HARDWARE_ID };
   setLoRaWanState: (loRaWanState: LoRaWanStateModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_STATE };
+  setLoRaWanDeviceEUI: (loRaWanDeviceEUI: LoRaWanDeviceEUIModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_DEVICE_EUI };
+  setLoRaWanAppEUI: (loRaWanAppEUI: LoRaWanAppEUIModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_APP_EUI };
+  setLoRaWanAppKey: (loRaWanAppKey: LoRaWanAppKeyModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_APP_KEY };
   setSensorDefinitions: (sensorDefinitions: Array<SensorDefinitionModel>) => { type: BeepBaseTypes.SET_SENSOR_DEFINITIONS };
   updateSensorDefinition: (sensorDefinition: SensorDefinitionModel) => { type: BeepBaseTypes.UPDATE_SENSOR_DEFINITION };
   setTemperatures: (temperatures: Array<TemperatureModel>) => { type: BeepBaseTypes.SET_TEMPERATURES };
@@ -58,6 +67,9 @@ const CreatedActions = createActions( {
   setHardwareVersion: ['hardwareVersion'],
   setHardwareId: ['atecc'],
   setLoRaWanState: ['loRaWanState'],
+  setLoRaWanDeviceEUI: ['loRaWanDeviceEUI'],
+  setLoRaWanAppEUI: ['loRaWanAppEUI'],
+  setLoRaWanAppKey: ['loRaWanAppKey'],
   setSensorDefinitions: ['sensorDefinitions'],
   updateSensorDefinition: ['sensorDefinition'],
   setTemperatures: ['temperatures'],

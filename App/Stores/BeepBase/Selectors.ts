@@ -26,6 +26,18 @@ export const getLoRaWanState = (state: AppState) => {
   return state.beepBase.loRaWanState
 }
 
+export const getLoRaWanDeviceEUI = (state: AppState) => {
+  return state.beepBase.loRaWanDeviceEUI
+}
+
+export const getLoRaWanAppEUI = (state: AppState) => {
+  return state.beepBase.loRaWanAppEUI
+}
+
+export const getLoRaWanAppKey = (state: AppState) => {
+  return state.beepBase.loRaWanAppKey
+}
+
 export const getSensorDefinitions = (state: AppState) => {
   return state.beepBase.sensorDefinitions
 }
