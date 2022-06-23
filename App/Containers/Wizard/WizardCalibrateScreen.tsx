@@ -93,12 +93,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   }, [device, weight])
 
   const onNextPress = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: "HomeScreen" }],
-      }),
-    );
+    navigation.navigate("WizardLoRaScreen")
   }
 
   const getWeightTitle = () => {

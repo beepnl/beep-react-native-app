@@ -17,6 +17,7 @@ import { AteccParser } from '../Models/AteccModel';
 import { HardwareVersionParser } from '../Models/HardwareVersionModel';
 import { WeightParser } from '../Models/WeightModel';
 import { AudioParser } from '../Models/AudioModel';
+import { LoRaWanStateParser } from '../Models/LoRaWanStateModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -240,7 +241,13 @@ export default class BleHelpers {
             model = new HardwareVersionParser({ data }).parse()
             store.dispatch(BeepBaseActions.setHardwareVersion(model))
             break
-  
+
+          //LoRaWan state
+          case COMMANDS.READ_LORAWAN_STATE:
+            model = new LoRaWanStateParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setLoRaWanState(model))
+            break
+
           //temperature sensor
           case COMMANDS.READ_DS18B20_CONVERSION:
             const models = new TemperatureParser({ data }).parse()

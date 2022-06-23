@@ -22,6 +22,10 @@ export const getHardwareId = (state: AppState) => {
   return state.beepBase.hardwareId
 }
 
+export const getLoRaWanState = (state: AppState) => {
+  return state.beepBase.loRaWanState
+}
+
 export const getSensorDefinitions = (state: AppState) => {
   return state.beepBase.sensorDefinitions
 }

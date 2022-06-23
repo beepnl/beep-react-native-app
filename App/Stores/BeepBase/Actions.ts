@@ -6,6 +6,7 @@ import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
 import { LogFileFrameModel } from '../../Models/LogFileFrameModel';
 import { LogFileSizeModel } from '../../Models/LogFileSizeModel';
+import { LoRaWanStateModel } from '../../Models/LoraWanStateModel';
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
@@ -18,6 +19,7 @@ export enum BeepBaseTypes {
   SET_FIRMWARE_VERSION = 'SET_FIRMWARE_VERSION',
   SET_HARDWARE_VERSION = 'SET_HARDWARE_VERSION',
   SET_HARDWARE_ID = 'SET_HARDWARE_ID',
+  SET_LO_RA_WAN_STATE = 'SET_LO_RA_WAN_STATE',
   SET_SENSOR_DEFINITIONS = 'SET_SENSOR_DEFINITIONS',
   UPDATE_SENSOR_DEFINITION = 'UPDATE_SENSOR_DEFINITION',
   SET_TEMPERATURES = 'SET_TEMPERATURES',
@@ -36,6 +38,7 @@ interface C extends ActionCreators {
   setFirmwareVersion: (firmwareVersion: FirmwareVersionModel) => { type: BeepBaseTypes.SET_FIRMWARE_VERSION };
   setHardwareVersion: (hardwareVersion: HardwareVersionModel) => { type: BeepBaseTypes.SET_HARDWARE_VERSION };
   setHardwareId: (atecc: AteccModel) => { type: BeepBaseTypes.SET_HARDWARE_ID };
+  setLoRaWanState: (loRaWanState: LoRaWanStateModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_STATE };
   setSensorDefinitions: (sensorDefinitions: Array<SensorDefinitionModel>) => { type: BeepBaseTypes.SET_SENSOR_DEFINITIONS };
   updateSensorDefinition: (sensorDefinition: SensorDefinitionModel) => { type: BeepBaseTypes.UPDATE_SENSOR_DEFINITION };
   setTemperatures: (temperatures: Array<TemperatureModel>) => { type: BeepBaseTypes.SET_TEMPERATURES };
@@ -54,6 +57,7 @@ const CreatedActions = createActions( {
   setFirmwareVersion: ['firmwareVersion'],
   setHardwareVersion: ['hardwareVersion'],
   setHardwareId: ['atecc'],
+  setLoRaWanState: ['loRaWanState'],
   setSensorDefinitions: ['sensorDefinitions'],
   updateSensorDefinition: ['sensorDefinition'],
   setTemperatures: ['temperatures'],

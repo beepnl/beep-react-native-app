@@ -7,7 +7,7 @@ export default StyleSheet.create({
   ...ApplicationStyles,
 
   itemCenteredContainer: {
-    width: Metrics.clientWidth,
+    // width: Metrics.clientWidth,
     marginHorizontal: Metrics.baseMargin,
     marginVertical: Metrics.baseMargin,
     alignSelf: "center",
@@ -16,7 +16,7 @@ export default StyleSheet.create({
   },
 
   itemContainer: {
-    width: Metrics.clientWidth,
+    // width: Metrics.clientWidth,
     marginHorizontal: Metrics.baseMargin,
     marginVertical: Metrics.baseMargin,
     // alignSelf: "center",

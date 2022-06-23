@@ -40,6 +40,13 @@ export const setHardwareId = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setLoRaWanState = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    loRaWanState: payload.loRaWanState
+  }
+}
+
 export const setSensorDefinitions = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
@@ -116,6 +123,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.SET_FIRMWARE_VERSION]: setFirmwareVersion,
   [BeepBaseTypes.SET_HARDWARE_VERSION]: setHardwareVersion,
   [BeepBaseTypes.SET_HARDWARE_ID]: setHardwareId,
+  [BeepBaseTypes.SET_LO_RA_WAN_STATE]: setLoRaWanState,
   [BeepBaseTypes.SET_SENSOR_DEFINITIONS]: setSensorDefinitions,
   [BeepBaseTypes.UPDATE_SENSOR_DEFINITION]: updateSensorDefinition,
   [BeepBaseTypes.SET_TEMPERATURES]: setTemperatures,

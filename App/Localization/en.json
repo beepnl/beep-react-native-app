@@ -6,7 +6,8 @@
     "btnCancel": "Cancel",
     "btnStart": "Start",
     "btnNext": "Next",
-    "btnFinish": "Finish"
+    "btnFinish": "Finish",
+    "btnSkip": "Skip"
   },
   "menu": {
     "itemSettings": "Settings"
@@ -122,6 +123,34 @@
           "bins": "Amount of bins: "
         }
       }
+    },
+    "lora": {
+      "screenTitle": "LoRa network",
+      "loraState": "LoRa state of BEEP base",
+      "showDetails": "Show details",
+      "hideDetails": "Hide details",
+      "state": {
+        "reading": "Reading from BEEP base",
+        "disabled": "Disabled",
+        "enabledJoined": "Enabled and joined to network",
+        "enabledNotJoined": "Enabled, but not joined to any network"
+      },
+      "details": {
+        "deviceEUI": "Device EUI",
+        "appEUI": "App EUI",
+        "appKey": "Application key",
+        "ADR": "Adaptive data rate",
+        "DCL": "Duty cycle limitation",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "subTitle": "Configuring your LoRa",
+      "descriptionAutomatic": "The recommended method is using automatic configuration. This will register your BEEP base with The Things Network (TTN) and automatically register it with BEEP.",
+      "automaticButton": "Automatic configuration",
+      "descriptionManual": "Alternatively you can manually configure your LoRa network connection, for instance when you want to use your own LoRa network provider.",
+      "manualButton": "Manual configuration",
+      "skipTitle": "Are you sure ?",
+      "skipMessage": "Your BEEP base is not connected to any LoRa network and will not be able to upload its measurements."
     }
   },
   "home": {

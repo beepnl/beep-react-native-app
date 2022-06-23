@@ -4,6 +4,7 @@ import { FirmwareVersionModel } from "../../Models/FirmwareVersionModel"
 import { HardwareVersionModel } from "../../Models/HardwareVersionModel"
 import { LogFileFrameModel } from "../../Models/LogFileFrameModel"
 import { LogFileSizeModel } from "../../Models/LogFileSizeModel"
+import { LoRaWanStateModel } from "../../Models/LoraWanStateModel"
 import { PairedPeripheralModel } from "../../Models/PairedPeripheralModel"
 import { SensorDefinitionModel } from "../../Models/SensorDefinitionModel"
 import { TemperatureModel } from "../../Models/TemperatureModel"
@@ -15,6 +16,7 @@ export interface BeepBaseState {
   firmwareVersion: FirmwareVersionModel | undefined
   hardwareVersion: HardwareVersionModel | undefined
   hardwareId: string | undefined
+  loRaWanState: LoRaWanStateModel | undefined
   sensorDefinitions: Array<SensorDefinitionModel>
   temperatures: Array<TemperatureModel>
   weight: WeightModel | undefined
@@ -30,6 +32,7 @@ export const INITIAL_STATE: BeepBaseState = {
   firmwareVersion: undefined,
   hardwareVersion: undefined,
   hardwareId: undefined,
+  loRaWanState: undefined,
   sensorDefinitions: [],
   temperatures: [],
   weight: undefined,
