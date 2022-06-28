@@ -59,6 +59,7 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
   }, [])
 
   const onAutomaticPress = () => {
+    navigation.navigate("WizardLoRaAutomaticScreen")
   }
 
   const onManualPress = () => {
@@ -100,7 +101,7 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
       </View>
 
       <TouchableOpacity onPress={() => setDetailsCollapsed(!isDetailsCollapsed)}>
-        <Text style={[styles.link, { alignSelf: "center" }]}>{t("wizard.lora.showDetails")}</Text>
+        <Text style={[styles.link, { alignSelf: "center" }]}>{t(`wizard.lora.${isDetailsCollapsed ? "show" : "hide"}Details`)}</Text>
       </TouchableOpacity>
       <Collapsible collapsed={isDetailsCollapsed}>
         <View style={styles.itemContainer}>

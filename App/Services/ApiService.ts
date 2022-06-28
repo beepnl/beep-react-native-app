@@ -51,6 +51,10 @@ function registerDevice(params: any) {
   return api.post("devices", { ...params })
 }
 
+function createTtnDevice(hardwareId: string, params: any) {
+  return api.post(`devices/ttn/${hardwareId}`, { ...params })
+}
+
 function createSensorDefinition(params: any) {
   return api.post("sensordefinition", { ...params })
 }
@@ -78,6 +82,7 @@ export default {
   getDevices,
   getDevice,
   registerDevice,
+  createTtnDevice,
   createSensorDefinition,
   getSensorDefinitions,
   updateSensorDefinition,

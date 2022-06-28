@@ -16,3 +16,7 @@ export const getFirmwaresTest = (state: AppState) => {
 export const getRegisterState = (state: AppState) => {
   return state.api.registerState
 }
+
+export const getLoRaConfigState = (state: AppState) => {
+  return state.api.loRaConfigState
+}

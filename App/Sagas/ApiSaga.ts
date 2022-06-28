@@ -6,8 +6,10 @@ import api from 'App/Services/ApiService'
 import { DeviceModel } from '../Models/DeviceModel'
 import { FirmwareModel } from '../Models/FirmwareModel'
 import { SensorDefinitionModel } from '../Models/SensorDefinitionModel'
-import { getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
+import { getDevice, getHardwareId, getPairedPeripheral, getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
 import BleHelpers, { COMMANDS } from '../Helpers/BleHelpers'
+import { PairedPeripheralModel } from '../Models/PairedPeripheralModel'
+import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED } from '../Models/LoRaWanStateModel'
 
 export function* getDevices(action: any) {
   const response = yield call(api.getDevices)
@@ -72,6 +74,41 @@ export function* registerDevice(action: any) {
   } else {
     yield put(ApiActions.setRegisterState("failed"))
     yield put(ApiActions.apiFailure(registerResponse))
+  }
+}
+
+export function* configureLoRaAutomatic(action: any) {
+  yield put(ApiActions.setLoRaConfigState("registeringApi"))
+
+  const { appKey } = action
+  const hardwareId: string = getHardwareId(yield select())
+  const device: DeviceModel = getDevice(yield select())
+  const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
+  const appEui: string = "70b3d57ed0028d38"
+
+  const requestParams = {
+    lorawan_device: {
+      dev_eui: device.devEUI,
+      app_key: appKey,
+    }
+  }
+  
+  const response = yield call(api.createTtnDevice, hardwareId.toString(), requestParams)
+  if (response && response.ok) {
+    yield put(ApiActions.setLoRaConfigState("writingCredentials"))
+    // console.log(response)
+    //write lora credentials to peripheral
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, appEui)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+    yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
+  } else {
+    yield put(ApiActions.setLoRaConfigState("failedToRegister"))
+    //TODO: messages = response.data.errors.[lorawan_device.app_key]
+    //      msg1 = message[0]
+    //      msg2 = message[1]
+    yield put(ApiActions.apiFailure(response))
   }
 }
 

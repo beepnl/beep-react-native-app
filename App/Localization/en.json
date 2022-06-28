@@ -150,7 +150,21 @@
       "descriptionManual": "Alternatively you can manually configure your LoRa network connection, for instance when you want to use your own LoRa network provider.",
       "manualButton": "Manual configuration",
       "skipTitle": "Are you sure ?",
-      "skipMessage": "Your BEEP base is not connected to any LoRa network and will not be able to upload its measurements."
+      "skipMessage": "Your BEEP base is not connected to any LoRa network and will not be able to upload its measurements.",
+      "automatic": {
+        "screenTitle": "LoRa automatic",
+        "description": "Automatic configuration will register your BEEP base with The Things Network (TTN).\n\nAfter registration it will automatically connect to the TTN LoRa network and start uploading its measurements.",
+        "startButton": "Start automatic configuration",
+        "state": {
+          "none": "",
+          "registeringApi": "Registering device with TTN...",
+          "writingCredentials": "Writing credentials to device...",
+          "checkingConnectivity": "Checking LoRa connectivity...",
+          "connected": "Successfully connected",
+          "failedToRegister": "Failed to register with TTN",
+          "failedToConnect": "Failed to connect"
+        }
+      }
     }
   },
   "home": {

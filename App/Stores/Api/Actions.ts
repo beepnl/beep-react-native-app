@@ -7,6 +7,8 @@ export enum ApiTypes {
   CHECK_DEVICE_REGISTRATION = 'CHECK_DEVICE_REGISTRATION',
   REGISTER_DEVICE = 'REGISTER_DEVICE',
   SET_REGISTER_STATE = 'SET_REGISTER_STATE',
+  SET_LO_RA_CONFIG_STATE = 'SET_LO_RA_CONFIG_STATE',
+  CONFIGURE_LO_RA_AUTOMATIC = 'CONFIGURE_LO_RA_AUTOMATIC',
   SET_DEVICES = 'SET_DEVICES',
   INITIALIZE_TEMPERATURE_SENSORS = 'INITIALIZE_TEMPERATURE_SENSORS',
   INITIALIZE_WEIGHT_SENSOR = 'INITIALIZE_WEIGHT_SENSOR',
@@ -22,6 +24,7 @@ interface C extends ActionCreators {
   getFirmwares: () => { type: ApiTypes.GET_FIRMWARES };
   setFirmwares: (firmwares: Array<FirmwareModel>) => { type: ApiTypes.SET_FIRMWARES };
   setRegisterState: (registerState: RegisterState) => { type: ApiTypes.SET_REGISTER_STATE }
+  setLoRaConfigState: (loRaConfigState: RegisterState) => { type: ApiTypes.SET_LO_RA_CONFIG_STATE }
   apiFailure: (response: any) => { type: ApiTypes.API_FAILURE };
 }
 
@@ -29,7 +32,9 @@ const CreatedActions = createActions({
   getDevices: null,
   checkDeviceRegistration: ['peripheralId', 'hardwareId'],
   registerDevice: ['peripheralId', 'requestParams'],
+  configureLoRaAutomatic: ['appKey'],
   setRegisterState: ['registerState'],
+  setLoRaConfigState: ['loRaConfigState'],
   setDevices: ['devices'],
 
   initializeTemperatureSensors: ['device', 'temperatures'],

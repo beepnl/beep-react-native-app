@@ -1,8 +1,8 @@
-const BITMASK_ENABLED = 1
-const BITMASK_JOINED = 2
-const BITMASK_DUTY_CYCLE_LIMITATION = 4
-const BITMASK_ADAPTIVE_DATA_RATE = 8
-const BITMASK_KEYS_VALID = 16
+export const BITMASK_ENABLED = 1
+export const BITMASK_JOINED = 2
+export const BITMASK_DUTY_CYCLE_LIMITATION = 4
+export const BITMASK_ADAPTIVE_DATA_RATE = 8
+export const BITMASK_KEYS_VALID = 16
 
 export class LoRaWanStateModel {
   isEnabled: boolean
