@@ -46,7 +46,7 @@ export function* checkDeviceRegistration(action: any) {
         const device = new DeviceModel(deviceResponse.data[0])
         yield put(BeepBaseActions.setDevice(device))
         //update firmware with LoRa devEUI. This will also rename the BLE name
-        BleHelpers.write(peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+        yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
       } else {
         //device not found
         yield put(ApiActions.setRegisterState("notYetRegistered"))
@@ -68,7 +68,7 @@ export function* registerDevice(action: any) {
     const device = new DeviceModel(registerResponse.data)
     yield put(BeepBaseActions.setDevice(device))
     //update firmware with LoRa devEUI. This will also rename the BLE name
-    BleHelpers.write(peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
     //refresh user device list
     yield call(getDevices, null)
   } else {
@@ -110,6 +110,20 @@ export function* configureLoRaAutomatic(action: any) {
     //      msg2 = message[1]
     yield put(ApiActions.apiFailure(response))
   }
+}
+
+export function* configureLoRaManual(action: any) {
+  yield put(ApiActions.setLoRaConfigState("writingCredentials"))
+
+  const { devEUI, appEui, appKey } = action
+  const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
+
+  //write lora credentials to peripheral
+  yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, appEui)
+  yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, devEUI)
+  yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
+  yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+  yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
 }
 
 export function* initializeTemperatureSensors(action: any) {

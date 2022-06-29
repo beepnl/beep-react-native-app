@@ -119,7 +119,7 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
   return (<>
     <ScreenHeader title={t("wizard.lora.screenTitle")} back />
 
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.container}>
 
       <View style={styles.itemContainer}>
         <Text style={[styles.itemText, styles.label]}>{t("wizard.lora.loraState")}</Text>
@@ -163,13 +163,14 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
         <Text style={styles.text}>{t("wizard.lora.manualButton")}</Text>
       </TouchableOpacity>
 
-      <View style={[styles.spacer, { flex: 1 }]} />
-      
+      <View style={styles.spacerDouble} />
+    </ScrollView>
+    
+    <View style={styles.itemContainer}>
       <TouchableOpacity style={styles.button} onPress={onSkipPress}>
         <Text style={styles.text}>{t("common.btnSkip")}</Text>
       </TouchableOpacity>
-
-    </ScrollView>
+    </View>
 
     <Modal
       isVisible={isModalVisible}
