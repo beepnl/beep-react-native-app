@@ -50,8 +50,8 @@ const NavigationButton: FunctionComponent<ScreenHeaderProps> = ({
         </View>
         <View style={ApplicationStyles.spacer} />
         <View>
-          <Text style={[styles.title, selected && { color: Colors.yellow }]}>{title}</Text>
-          { subTitle && <Text style={[styles.subTitle, selected && { color: Colors.yellow }]}>{subTitle}</Text> }
+          <Text style={[styles.title, selected && { color: Colors.darkYellow }]}>{title}</Text>
+          { subTitle && <Text style={[styles.subTitle, selected && { color: Colors.darkYellow }]}>{subTitle}</Text> }
         </View>
       </View>
       { showArrow && !disabled && <IconMaterialCommunity name="chevron-right" size={30} color={Colors.lightGrey} /> }

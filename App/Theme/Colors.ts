@@ -17,6 +17,7 @@ export default {
 
   //theme
   yellow: "#F8B132",
+  darkYellow: "#db8f07",
   grey: "#575556",
   white: "#F4F6F6",
   shadow: "#363536",
