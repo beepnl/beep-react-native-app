@@ -30,11 +30,12 @@ import { LoRaConfigState } from '../../Stores/Api/InitialState';
 import { getLoRaConfigState } from '../../Stores/Api/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import useInterval from '../../Helpers/useInterval';
+import ApiService from '../../Services/ApiService';
 
 const RETRY_COUNT = 8
 
@@ -42,7 +43,7 @@ interface Props {
   navigation: StackNavigationProp,
 }
 
-const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
+const WizardLoRaManualScreen: FunctionComponent<Props> = ({
   navigation,
 }) => {
   const { t } = useTranslation();
@@ -55,6 +56,10 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const loRaWanState: LoRaWanStateModel = useTypedSelector<LoRaWanStateModel>(getLoRaWanState)
 
+  const [devEui, setDevEui] = useState("")
+  const [appEui, setAppEui] = useState("")
+  const [appKey, setAppKey] = useState("")
+  
   useEffect(() => {
     BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_STATE)
   }, [])
@@ -73,9 +78,9 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
     }
   }, [loRaWanState])
 
-  const onStartPress = () => {
-    dispatch(ApiActions.configureLoRaAutomatic(key.current))
-    retry.current = RETRY_COUNT
+  const onSetCredentialsPress = () => {
+    // dispatch(ApiActions.configureLoRaAutomatic(key.current))
+    // retry.current = RETRY_COUNT
   }
 
   const onNextPress = () => {
@@ -83,37 +88,64 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   }
 
   return (<>
-    <ScreenHeader title={t("wizard.lora.automatic.screenTitle")} back />
+    <ScreenHeader title={t("wizard.lora.manual.screenTitle")} back />
 
     <ScrollView contentContainerStyle={styles.container}>
 
       <View style={styles.itemContainer}>
-        <Text style={styles.text}>{t("wizard.lora.automatic.description")}</Text>
+        <Text style={styles.text}>{t("wizard.lora.manual.description")}</Text>
       </View>
 
-      <View style={styles.spacerDouble} />
-
-      { (state == "none" || state == "failedToRegister" || state == "failedToConnect") &&
-        <TouchableOpacity style={styles.button} onPress={onStartPress}>
-          <Text style={styles.text}>{t("wizard.lora.automatic.startButton")}</Text>
-        </TouchableOpacity>
-      }
-
-      <View style={styles.spacerDouble} />
+      <View style={styles.spacer} />
 
       <View style={styles.itemContainer}>
-        <Text style={styles.itemText}>{t(`wizard.lora.automatic.state.${state}`)}</Text>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{ApiService.LORA_SENSORS_URL}</Text>
       </View>
+
+      <View style={styles.spacerDouble} />
+
+      <Text style={styles.label}>{t("wizard.lora.manual.devEui")}</Text>
+      <View style={styles.spacer} />
+      <TextInput
+        style={styles.input}
+        onChangeText={setDevEui}
+        value={devEui}
+        placeholder={t("wizard.lora.manual.devEuiPlaceholder")}
+        returnKeyType="next"
+      />
+
+      <View style={styles.spacerDouble} />
+
+      <Text style={styles.label}>{t("wizard.lora.manual.appEui")}</Text>
+      <View style={styles.spacer} />
+      <TextInput
+        style={styles.input}
+        onChangeText={setAppEui}
+        value={appEui}
+        placeholder={t("wizard.lora.manual.appEuiPlaceholder")}
+        returnKeyType="next"
+      />
+
+      <View style={styles.spacerDouble} />
+
+      <Text style={styles.label}>{t("wizard.lora.manual.appKey")}</Text>
+      <View style={styles.spacer} />
+      <TextInput
+        style={styles.input}
+        onChangeText={setAppKey}
+        value={appKey}
+        placeholder={t("wizard.lora.manual.appKeyPlaceholder")}
+        returnKeyType="next"
+      />
 
       <View style={[styles.spacer, { flex: 1 }]} />
 
-      { state == "connected" &&
-        <TouchableOpacity style={styles.button} onPress={onNextPress}>
-          <Text style={styles.text}>{t("common.btnNext")}</Text>
-        </TouchableOpacity>
-      }
+      <TouchableOpacity style={styles.button} onPress={onSetCredentialsPress}>
+        <Text style={styles.text}>{t("wizard.lora.manual.setCredentialsButton")}</Text>
+      </TouchableOpacity>
+
     </ScrollView>
   </>)
 }
 
-export default WizardLoRaAutomaticScreen
+export default WizardLoRaManualScreen

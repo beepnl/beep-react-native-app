@@ -38,7 +38,7 @@ const style = {
 
   heading: {
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 22,
   },
 
   headingSmall: {

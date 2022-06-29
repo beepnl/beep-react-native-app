@@ -8,7 +8,7 @@ import { useTypedSelector } from 'App/Stores';
 
 // Styles
 import styles from './styles'
-import { ApplicationStyles, Colors, Fonts, Images, Metrics } from '../../Theme';
+import { Colors, Fonts, Images, Metrics } from '../../Theme';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
@@ -28,16 +28,12 @@ import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
-import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Collapsible from 'react-native-collapsible';
-import Modal from 'react-native-modal';
 
 interface Props {
   navigation: StackNavigationProp,
 }
 
-const WizardLoRaScreen: FunctionComponent<Props> = ({
+const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
   navigation,
 }) => {
   const { t } = useTranslation();
@@ -48,7 +44,6 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
   const loRaWanAppEUI: LoRaWanAppEUIModel = useTypedSelector<LoRaWanAppEUIModel>(getLoRaWanAppEUI)
   const loRaWanAppKey: LoRaWanAppKeyModel = useTypedSelector<LoRaWanAppKeyModel>(getLoRaWanAppKey)
   const [isDetailsCollapsed, setDetailsCollapsed] = useState(true)
-  const [isModalVisible, setModalVisible] = useState(false)
 
   useEffect(() => {
     //read state from device
@@ -60,20 +55,7 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
     }
   }, [])
 
-  const onAutomaticPress = () => {
-    navigation.navigate("WizardLoRaAutomaticScreen")
-  }
-  
-  const onManualPress = () => {
-    navigation.navigate("WizardLoRaManualScreen")
-  }
-  
-  const onSkipPress = () => {
-    setModalVisible(true)
-  }
-
-  const onSkipConfirmPress = () => {
-    setModalVisible(false)
+  const onNextPress = () => {
     navigation.navigate("WizardEnergyScreen")
   }
 
@@ -91,10 +73,6 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
     } else {
       return t("wizard.lora.state.reading")
     }
-  }
-
-  const hideModal = () => {
-    setModalVisible(false)
   }
 
   const renderDetails = () => (
@@ -126,78 +104,24 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
         <Text style={styles.itemText}>{getStateText()}</Text>
       </View>
 
-      <TouchableOpacity onPress={() => setDetailsCollapsed(!isDetailsCollapsed)}>
-        <Text style={[styles.link, { alignSelf: "center" }]}>{t(`wizard.lora.${isDetailsCollapsed ? "show" : "hide"}Details`)}</Text>
-      </TouchableOpacity>
-      <Collapsible collapsed={isDetailsCollapsed}>
+      { loRaWanState?.hasJoined && <>
         { renderDetails() }
-      </Collapsible>
 
-      <View style={styles.spacer} />
-      <View style={styles.separator} />
-      <View style={styles.spacer} />
+        <View style={styles.spacerDouble} />
 
-      <View style={styles.itemContainer}>
-        <Text style={[styles.text, { ...Fonts.style.bold }]}>{t("wizard.lora.subTitle")}</Text>
-      </View>
+        <View style={styles.itemContainer}>
+          <Text style={styles.text}>{t("wizard.lora.descriptionJoined")}</Text>
+        </View>
 
-      <View style={styles.itemContainer}>
-        <Text style={styles.text}>{t("wizard.lora.descriptionAutomatic")}</Text>
-      </View>
-
-      <View style={styles.spacer} />
-
-      <TouchableOpacity style={styles.button} onPress={onAutomaticPress}>
-        <Text style={styles.text}>{t("wizard.lora.automaticButton")}</Text>
-      </TouchableOpacity>
-
-      <View style={styles.spacerDouble} />
-
-      <View style={styles.itemContainer}>
-        <Text style={styles.text}>{t("wizard.lora.descriptionManual")}</Text>
-      </View>
-
-      <View style={styles.spacer} />
-
-      <TouchableOpacity style={styles.button} onPress={onManualPress}>
-        <Text style={styles.text}>{t("wizard.lora.manualButton")}</Text>
-      </TouchableOpacity>
-
-      <View style={[styles.spacer, { flex: 1 }]} />
-      
-      <TouchableOpacity style={styles.button} onPress={onSkipPress}>
-        <Text style={styles.text}>{t("common.btnSkip")}</Text>
-      </TouchableOpacity>
+        <View style={[styles.spacer, { flex: 1 }]} />
+        
+        <TouchableOpacity style={styles.button} onPress={onNextPress}>
+          <Text style={styles.text}>{t("common.btnNext")}</Text>
+        </TouchableOpacity>
+      </>}
 
     </ScrollView>
-
-    <Modal
-      isVisible={isModalVisible}
-      onBackdropPress={hideModal}
-      onBackButtonPress={hideModal}
-      useNativeDriver={true}
-      backdropOpacity={0.3}
-    >
-      <View style={ApplicationStyles.modalContainer}>
-        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("wizard.lora.skipTitle")}</Text>
-        <View style={styles.spacer} />
-        <View style={styles.itemContianer}>
-          <Text style={styles.itemText}>{t("wizard.lora.skipMessage")}</Text>
-          <View style={styles.spacerDouble} />
-          <View style={ApplicationStyles.buttonsContainer}>
-            <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={onSkipConfirmPress}>
-              <Text style={styles.text}>{t("common.btnSkip")}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={hideModal}>
-              <Text style={styles.text}>{t("common.btnCancel")}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.spacerHalf} />
-        </View>
-      </View>
-    </Modal>
-
   </>)
 }
 
-export default WizardLoRaScreen
+export default WizardLoRaOverviewScreen

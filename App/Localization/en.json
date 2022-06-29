@@ -164,7 +164,22 @@
           "failedToRegister": "Failed to register with TTN",
           "failedToConnect": "Failed to connect"
         }
-      }
+      },
+      "manual": {
+        "screenTitle": "LoRa manual",
+        "description": "1. Register your device with your LoRa network provider.\n\n2. Make sure your LoRa provider has the HTTP integration set to the following endpoint:",
+        "devEui": "Dev EUI",
+        "devEuiPlaceholder": "16 hexadecimal characters",
+        "appEui": "Application EUI",
+        "appEuiPlaceholder": "16 hexadecimal characters",
+        "appKey": "Application Key",
+        "appKeyPlaceholder": "32 hexadecimal characters",
+        "setCredentialsButton": "Set credentials",
+      },
+      "descriptionJoined": "You have successfully configured your LoRa connection. The BEEP base is now able to upload its measurements."
+    },
+    "energy": {
+      "screenTitle": "Energy",
     }
   },
   "home": {

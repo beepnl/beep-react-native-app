@@ -4,6 +4,7 @@ import { Platform } from 'react-native'
 const BASE_URL = 'https://api.beep.nl/api'
 const ASSETS_URL = "https://assets.beep.nl"
 const LOG_FILE_UPLOAD_URL = BASE_URL + "/sensors/flashlog"
+const LORA_SENSORS_URL = BASE_URL + "/lora_sensors"
 
 const api = create({
   baseURL: BASE_URL,
@@ -92,4 +93,5 @@ export default {
 
   //constants
   LOG_FILE_UPLOAD_URL,
+  LORA_SENSORS_URL,
 }
