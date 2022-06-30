@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { CommonActions, RouteProp, StackActions, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -31,13 +31,16 @@ import ScreenHeader from '../../Components/ScreenHeader';
 
 interface Props {
   navigation: StackNavigationProp,
+  route: RouteProp<any, any>,
 }
 
 const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
   navigation,
+  route,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const fromSensorScreen = route.params?.fromSensorScreen
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const loRaWanState: LoRaWanStateModel = useTypedSelector<LoRaWanStateModel>(getLoRaWanState)
   const loRaWanDeviceEUI: LoRaWanDeviceEUIModel = useTypedSelector<LoRaWanDeviceEUIModel>(getLoRaWanDeviceEUI)
@@ -56,7 +59,13 @@ const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
   }, [])
 
   const onNextPress = () => {
-    navigation.navigate("WizardEnergyScreen")
+    if (fromSensorScreen) {
+      //go back to Sensor/LoRaScreen
+      navigation.dispatch(StackActions.pop(3))
+    } else {
+      //continue wizard
+      navigation.navigate("WizardEnergyScreen")
+    }
   }
 
   const getStateText = () => {

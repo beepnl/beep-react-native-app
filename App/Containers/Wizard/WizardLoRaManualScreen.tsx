@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback, useRef } fr
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { CommonActions, RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -34,13 +34,16 @@ const RETRY_COUNT = 8
 
 interface Props {
   navigation: StackNavigationProp,
+  route: RouteProp<any, any>,
 }
 
 const WizardLoRaManualScreen: FunctionComponent<Props> = ({
   navigation,
+  route,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const fromSensorScreen = route.params?.fromSensorScreen
   const state: LoRaConfigState = useTypedSelector<LoRaConfigState>(getLoRaConfigState)
   const retry = useRef(RETRY_COUNT)
 
@@ -130,7 +133,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
   }
 
   const onNextPress = () => {
-    navigation.navigate("WizardLoRaOverviewScreen")
+    navigation.navigate("WizardLoRaOverviewScreen", { fromSensorScreen })
   }
 
   return (<>

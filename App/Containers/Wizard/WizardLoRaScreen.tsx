@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { CommonActions, RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -35,13 +35,16 @@ import Modal from 'react-native-modal';
 
 interface Props {
   navigation: StackNavigationProp,
+  route: RouteProp<any, any>,
 }
 
 const WizardLoRaScreen: FunctionComponent<Props> = ({
   navigation,
+  route,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const fromSensorScreen = route.params?.fromSensorScreen
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const loRaWanState: LoRaWanStateModel = useTypedSelector<LoRaWanStateModel>(getLoRaWanState)
   const loRaWanDeviceEUI: LoRaWanDeviceEUIModel = useTypedSelector<LoRaWanDeviceEUIModel>(getLoRaWanDeviceEUI)
@@ -61,11 +64,11 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
   }, [])
 
   const onAutomaticPress = () => {
-    navigation.navigate("WizardLoRaAutomaticScreen")
+    navigation.navigate("WizardLoRaAutomaticScreen", { fromSensorScreen })
   }
   
   const onManualPress = () => {
-    navigation.navigate("WizardLoRaManualScreen")
+    navigation.navigate("WizardLoRaManualScreen", { fromSensorScreen })
   }
   
   const onSkipPress = () => {
@@ -165,7 +168,7 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacerDouble} />
     </ScrollView>
-    
+
     <View style={styles.itemContainer}>
       <TouchableOpacity style={styles.button} onPress={onSkipPress}>
         <Text style={styles.text}>{t("common.btnSkip")}</Text>

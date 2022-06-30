@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback, useRef } fr
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { CommonActions, RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -19,34 +19,30 @@ import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { getDevice, getHardwareId, getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState } from '../../Stores/BeepBase/Selectors';
+import { getLoRaWanState } from '../../Stores/BeepBase/Selectors';
 import { LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
-import { LoRaWanDeviceEUIModel } from '../../Models/LoRaWanDeviceEUIModel';
-import { LoRaWanAppEUIModel } from '../../Models/LoRaWanAppEUIModel';
-import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
-import { AteccModel } from '../../Models/AteccModel';
-import { DeviceModel } from '../../Models/DeviceModel';
 import { LoRaConfigState } from '../../Stores/Api/InitialState';
 import { getLoRaConfigState } from '../../Stores/Api/Selectors';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
-import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import useInterval from '../../Helpers/useInterval';
 
 const RETRY_COUNT = 8
 
 interface Props {
   navigation: StackNavigationProp,
+  route: RouteProp<any, any>,
 }
 
 const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   navigation,
+  route,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const fromSensorScreen = route.params?.fromSensorScreen
   const state: LoRaConfigState = useTypedSelector<LoRaConfigState>(getLoRaConfigState)
   const retry = useRef(RETRY_COUNT)
 
@@ -79,7 +75,7 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   }
 
   const onNextPress = () => {
-    navigation.navigate("WizardLoRaOverviewScreen")
+    navigation.navigate("WizardLoRaOverviewScreen", { fromSensorScreen })
   }
 
   return (<>

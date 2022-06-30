@@ -221,6 +221,7 @@
       "temperature": "Temperature",
       "weight": "Weight",
       "audio": "Audio",
+      "lora": "LoRa",
       "logFile": "Download data",
       "firmware": "Firmware",
     }
@@ -249,6 +250,11 @@
       "startFrequency": "Start frequency",
       "stopFrequency": "Stop frequency",
       "bins": "Amount of bins"
+    },
+    "lora": {
+      "screenTitle": "LoRa network",
+      "status": "Status",
+      "settings": "Settings"
     }
   },
   "logFile": {

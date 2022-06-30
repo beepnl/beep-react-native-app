@@ -29,6 +29,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
 import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type MenuItem = { 
@@ -52,6 +53,11 @@ const MENU_ITEMS: Array<MenuItem> = [
     title: "peripheralDetail.items.audio",
     screen: "AudioScreen",
     icon: <IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />,
+  },
+  {
+    title: "peripheralDetail.items.lora",
+    screen: "LoRaScreen",
+    icon: <IconIonicons name="ios-radio-outline" size={30} color={Colors.black} style={{ transform: [{ rotate: '90deg'}] }} />,
   },
   {
     title: "peripheralDetail.items.logFile",
