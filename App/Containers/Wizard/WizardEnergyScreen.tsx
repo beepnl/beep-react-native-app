@@ -40,7 +40,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   useEffect(() => {
   }, [])
 
-  const onNextPress = () => {
+  const onFinishPress = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
@@ -52,11 +52,18 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   return (<>
     <ScreenHeader title={t("wizard.energy.screenTitle")} back />
 
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.container}>
 
       <View style={styles.itemContainer}>
         <Text style={styles.itemText}>{t("wizard.energy.description")}</Text>
       </View>
+
+      <View style={styles.spacerDouble} />
+
+      <TouchableOpacity style={styles.button} onPress={onFinishPress}>
+        <Text style={styles.text}>{t("common.btnFinish")}</Text>
+      </TouchableOpacity>
+
 
     </ScrollView>
   </>)
