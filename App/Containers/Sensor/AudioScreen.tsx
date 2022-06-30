@@ -58,24 +58,26 @@ const AudioScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacer} />
 
-      <View style={styles.container}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <View style={styles.itemContainer}>
+        <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.audio.channel")}</Text>
           <Text style={styles.text}>{audioSensor ? audioSensor.channel.name : "-"}</Text>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.audio.startFrequency")}</Text>
           <Text style={styles.text}>{audioSensor ? `${getFrequencyByBin(audioSensor.startBin)} Hz` : "- Hz"}</Text>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.audio.stopFrequency")}</Text>
           <Text style={styles.text}>{audioSensor ? `${getFrequencyByBin(audioSensor.stopBin)} Hz` : "- Hz"}</Text>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.audio.bins")}</Text>
           <Text style={styles.text}>{audioSensor ? audioSensor.bins : "-"}</Text>
         </View>
       </View>
+
+      <View style={[styles.spacer, { flex: 1 }]} />
 
       <TouchableOpacity style={styles.button} onPress={onConfigurePress} >
         <Text style={styles.text}>{t("sensor.configure")}</Text>

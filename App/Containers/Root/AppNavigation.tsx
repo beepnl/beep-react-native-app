@@ -7,7 +7,7 @@ import PeripheralDetailScreen from 'App/Containers/PeripheralDetailScreen/Periph
 import TemperatureScreen from 'App/Containers/Sensor/TemperatureScreen';
 import WeightScreen from 'App/Containers/Sensor/WeightScreen';
 import AudioScreen from 'App/Containers/Sensor/AudioScreen';
-import LogFileScreen from 'App/Containers/LogFileScreen/LogFileScreen';
+import LogFileScreen from 'App/Containers/Sensor/LogFileScreen';
 import FirmwareScreen from 'App/Containers/FirmwareScreen/FirmwareScreen';
 import FirmwareDetailScreen from 'App/Containers//FirmwareScreen/FirmwareDetailScreen';
 import WizardAssembleScreen from 'App/Containers/Wizard/WizardAssembleScreen';

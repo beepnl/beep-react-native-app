@@ -7,12 +7,15 @@ export default StyleSheet.create({
   ...ApplicationStyles,
 
   itemContainer: {
-    // ...ApplicationStyles.separator,
-    width: Metrics.clientWidth,
-    marginHorizontal: Metrics.baseMargin,
-    marginVertical: Metrics.baseMargin,
-    alignSelf: "center",
-    alignItems: "center",
+    padding: Metrics.baseMargin,
+    borderRadius: Metrics.baseMargin,
+    borderWidth: 1,
+    borderColor: Colors.yellow,
+    backgroundColor: Colors.lightYellow,
+  },
+
+  itemRow: {
+    flexDirection: "row", 
     justifyContent: "space-between",
   },
 

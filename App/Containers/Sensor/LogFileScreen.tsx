@@ -7,7 +7,7 @@ import { useTypedSelector } from 'App/Stores';
 import { useNavigation } from '@react-navigation/native';
 
 // Styles
-import styles from './LogFileScreenStyle'
+import styles from './styles'
 import { Colors } from '../../Theme';
 
 // Utils
@@ -49,7 +49,6 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const logFileSize: LogFileSizeModel = useTypedSelector<LogFileSizeModel>(getLogFileSize)
   const logFileProgress: number = useTypedSelector<number>(getLogFileProgress)
-  const combinedLogFileFrames: Buffer = useTypedSelector<Buffer>(getCombinedLogFileFrames)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [state, setState] = useState<STATE>("idle")
   const [error, setError] = useState("")
@@ -141,8 +140,14 @@ const LogFileScreen: FunctionComponent<Props> = ({
 
       <Text style={styles.label}>{t("logFile.logFile")}</Text>
       <View style={styles.spacer} />
-      <Text style={styles.label}>{t("logFile.logFileSize")}<Text style={styles.text}>{logFileSize?.toString()}</Text></Text>
-      <Text style={styles.label}>{t("logFile.timestamp")}<Text style={styles.text}>{logFileSize?.getTimestamp()}</Text></Text>
+      <View style={styles.itemContainer}>
+        <View style={styles.itemRow}>
+          <Text style={styles.label}>{t("logFile.logFileSize")}<Text style={styles.text}>{logFileSize?.toString()}</Text></Text>
+        </View>
+        <View style={styles.itemRow}>
+          <Text style={styles.label}>{t("logFile.timestamp")}<Text style={styles.text}>{logFileSize?.getTimestamp()}</Text></Text>
+        </View>
+      </View>
 
       <View style={styles.spacerDouble} />
 

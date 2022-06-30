@@ -7,7 +7,7 @@ import { useTypedSelector } from 'App/Stores';
 
 // Styles
 import styles from './FirmwareScreenStyle'
-import { Colors, Metrics } from '../../Theme';
+import { Colors, Fonts, Metrics } from '../../Theme';
 
 // Utils
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
@@ -138,7 +138,7 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
       <ScrollView style={styles.container} >
         <View style={styles.spacer} />
 
-        <Text style={styles.heading}>{`BEEP base ${firmware.version}`}</Text>
+        <Text style={[styles.text, { ...Fonts.style.bold }]}>{`BEEP base ${firmware.version}`}</Text>
         <Text style={styles.instructions}>{firmware.size}</Text>
         <View style={styles.spacerDouble} />
         <Text style={styles.text}>{firmware.releaseNotes}</Text>

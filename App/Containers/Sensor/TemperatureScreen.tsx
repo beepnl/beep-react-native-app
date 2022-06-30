@@ -73,20 +73,18 @@ const TemperatureScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacer} />
 
-      { isCalibrated &&
-        <View style={styles.container}>
-          { temperatureSensors.map((temperatureModel, index) =>
-            <View key={index}>
-              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <Text style={styles.text}>{temperatureSensorDefinitions[index].name}</Text>
-                <Text style={styles.text}>{temperatureModel.toString()}</Text>
-              </View>
-              <Text style={styles.text}>{t("sensor.temperature.location") + t(`sensor.temperature.${temperatureSensorDefinitions[index].isInside ? "inside" : "outside"}`)}</Text>
-              <View style={styles.spacerDouble} />
-            </View>)
-          }
-        </View>
-      }
+      { isCalibrated && temperatureSensors.map((temperatureModel, index) => <View key={index}>
+          <View style={styles.itemContainer}>
+            <View style={styles.itemRow}>
+              <Text style={styles.text}>{temperatureSensorDefinitions[index].name}</Text>
+              <Text style={styles.text}>{temperatureModel.toString()}</Text>
+            </View>
+            <Text style={styles.text}>{t("sensor.temperature.location") + t(`sensor.temperature.${temperatureSensorDefinitions[index].isInside ? "inside" : "outside"}`)}</Text>
+          </View>
+          <View style={styles.spacerDouble} />
+      </View>)}
+
+      <View style={[styles.spacer, { flex: 1 }]} />
 
       <TouchableOpacity style={styles.button} onPress={onConfigurePress} >
         <Text style={styles.text}>{t("sensor.configure")}</Text>

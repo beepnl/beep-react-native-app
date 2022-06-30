@@ -89,8 +89,8 @@ const WeightScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacer} />
 
-      <View style={[styles.container, { flex: 0 }]}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <View style={[styles.itemContainer, { flex: 0 }]}>
+        <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.weight.sensorName")}</Text>
           <Text style={styles.text}>{getWeightTitle()}</Text>
         </View>
@@ -102,20 +102,22 @@ const WeightScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacer} />
 
-      <View style={styles.container}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <View style={styles.itemContainer}>
+        <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.weight.raw")}</Text>
           <Text style={styles.text}>{weightSensor ? weightSensor.channels[0]?.value : "- kg"}</Text>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.weight.offset")}</Text>
           <Text style={styles.text}>{weightSensorDefinition?.offset ? weightSensorDefinition.offset.toString() : "-"}</Text>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.weight.multiplier")}</Text>
           <Text style={styles.text}>{weightSensorDefinition?.multiplier ? weightSensorDefinition.multiplier.toString() : "-"}</Text>
         </View>
       </View>
+
+      <View style={[styles.spacer, { flex: 1 }]} />
 
       <TouchableOpacity style={styles.button} onPress={onConfigurePress} >
         <Text style={styles.text}>{t("sensor.configure")}</Text>
