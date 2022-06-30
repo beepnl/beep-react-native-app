@@ -254,7 +254,10 @@
     "lora": {
       "screenTitle": "LoRa network",
       "status": "Status",
-      "settings": "Settings"
+      "settings": "Settings",
+      "reset": "Reset LoRa stack",
+      "resetInstructions": "This resets the LoRa stack, but does not erase any LoRa settings such as the Dev EUI, App EUI or App key.\nIt will reconnect your BEEP base to the LoRa network.",
+      "resetting": "Resetting LoRa stack..."
     }
   },
   "logFile": {

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
 
 // Hooks
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ import useInterval from '../../Helpers/useInterval';
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState } from '../../Stores/BeepBase/Selectors';
-import { LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
+import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
 import { LoRaWanDeviceEUIModel } from '../../Models/LoRaWanDeviceEUIModel';
 import { LoRaWanAppEUIModel } from '../../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
@@ -42,6 +42,7 @@ const LoRaScreen: FunctionComponent<Props> = ({
   const loRaWanAppEUI: LoRaWanAppEUIModel = useTypedSelector<LoRaWanAppEUIModel>(getLoRaWanAppEUI)
   const loRaWanAppKey: LoRaWanAppKeyModel = useTypedSelector<LoRaWanAppKeyModel>(getLoRaWanAppKey)
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const [isResetting, setIsResetting] = useState(false)
 
   useEffect(() => {
     //read state from device
@@ -53,6 +54,23 @@ const LoRaScreen: FunctionComponent<Props> = ({
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_APPKEY)
     }
   }, [])
+
+  useEffect(() => {
+    if (isResetting) {
+      setIsResetting(false)
+    }
+  }, [loRaWanState])
+
+  useInterval(() => {
+    BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_STATE)
+  }, 5000)
+
+  const onResetPress = () => {
+    if (pairedPeripheral) {
+      setIsResetting(true)
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+    }
+  }
 
   const onConfigurePress = () => {
     navigation.navigate("WizardLoRaScreen", { fromSensorScreen: true })
@@ -77,7 +95,7 @@ const LoRaScreen: FunctionComponent<Props> = ({
   return (<>
     <ScreenHeader title={t("sensor.lora.screenTitle")} back />
 
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.spacer} />
 
       <Text style={styles.label}>{t("sensor.lora.status")}</Text>
@@ -106,14 +124,29 @@ const LoRaScreen: FunctionComponent<Props> = ({
         <Text style={styles.label}>{t("wizard.lora.details.DCL")}</Text>
         <Text style={styles.text}>{t(`wizard.lora.details.${loRaWanState?.isDutyCycleLimitationEnabled ? "enabled" : "disabled"}`)}</Text>
       </View>
-  
-      <View style={[styles.spacer, { flex: 1 }]} />
+
+      <View style={styles.spacerDouble} />
+
+      <TouchableOpacity style={styles.button} onPress={onResetPress} disabled={isResetting}>
+        <Text style={styles.text}>{t("sensor.lora.reset")}</Text>
+      </TouchableOpacity>
+      <View style={styles.spacerHalf} />
+      { isResetting &&
+        <Text style={styles.text}>{t("sensor.lora.resetting")}</Text>
+      }
+      { !isResetting &&
+        <Text style={styles.instructions}>{t("sensor.lora.resetInstructions")}</Text>
+      }
+
+      <View style={[styles.spacerDouble, { flex: 1 }]} />
 
       <TouchableOpacity style={styles.button} onPress={onConfigurePress} >
         <Text style={styles.text}>{t("sensor.configure")}</Text>
       </TouchableOpacity>
 
-    </View>
+      <View style={styles.spacerDouble} />
+
+    </ScrollView>
   </>)
 }
 
