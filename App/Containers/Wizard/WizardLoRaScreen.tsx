@@ -72,7 +72,11 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
   }
   
   const onSkipPress = () => {
-    setModalVisible(true)
+    if (loRaWanState.hasJoined) {
+      onSkipConfirmPress()
+    } else {
+      setModalVisible(true)
+    }
   }
 
   const onSkipConfirmPress = () => {
