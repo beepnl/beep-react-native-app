@@ -30,7 +30,8 @@ const LoginScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
+  const [beeVisible, setBeeVisible] = useState(true)
+  
   const error = useTypedSelector<string | undefined>(getError)
 
   const [username, setUsername] = useState(useTypedSelector<string>(getUsername))
@@ -53,6 +54,12 @@ const LoginScreen: FunctionComponent<Props> = ({
     OpenExternalHelpers.openUrl(`https://app.beep.nl/sign-up`)
   }
 
+  const onBeePress = () => {
+    setBeeVisible(false)
+  }
+
+  const BEE_SIZE = 125
+
   return (
     <SafeAreaView style={styles.mainContainer}>
 
@@ -60,6 +67,27 @@ const LoginScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
 
         <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 300, margin: Metrics.baseMargin }} source={Images.beepLogo} resizeMode="contain" />
+        { beeVisible &&
+          <TouchableOpacity 
+            style={{
+              position: "absolute", 
+              left: Math.random() * (Metrics.clientWidth - BEE_SIZE),
+              top: Math.random() * (300 - BEE_SIZE),
+            }}
+            onPress={onBeePress}
+          >
+            <Image 
+              style={{ 
+                width: BEE_SIZE, 
+                height: null,
+                aspectRatio: 498 / 420,
+                transform: [{ rotate: `${Math.random() * 360}deg`}],
+              }}
+              source={Images.beeAnimation} 
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        }
 
         <TextInput
           ref={inputUsernameRef}
