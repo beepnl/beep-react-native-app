@@ -1,4 +1,5 @@
 import { ActionCreators, createActions } from 'reduxsauce';
+import { ApplicationConfigModel } from '../../Models/ApplicationConfigModel';
 import { AteccModel } from '../../Models/AteccModel';
 import { AudioModel } from '../../Models/AudioModel';
 import { DeviceModel } from '../../Models/DeviceModel';
@@ -22,6 +23,7 @@ export enum BeepBaseTypes {
   SET_FIRMWARE_VERSION = 'SET_FIRMWARE_VERSION',
   SET_HARDWARE_VERSION = 'SET_HARDWARE_VERSION',
   SET_HARDWARE_ID = 'SET_HARDWARE_ID',
+  SET_APPLICATION_CONFIG = 'SET_APPLICATION_CONFIG',
   SET_LO_RA_WAN_STATE = 'SET_LO_RA_WAN_STATE',
   SET_LO_RA_WAN_DEVICE_EUI = 'SET_LO_RA_WAN_DEVICE_EUI',
   SET_LO_RA_WAN_APP_EUI = 'SET_LO_RA_WAN_APP_EUI',
@@ -44,6 +46,7 @@ interface C extends ActionCreators {
   setFirmwareVersion: (firmwareVersion: FirmwareVersionModel) => { type: BeepBaseTypes.SET_FIRMWARE_VERSION };
   setHardwareVersion: (hardwareVersion: HardwareVersionModel) => { type: BeepBaseTypes.SET_HARDWARE_VERSION };
   setHardwareId: (atecc: AteccModel) => { type: BeepBaseTypes.SET_HARDWARE_ID };
+  setApplicationConfig: (applicationConfig: ApplicationConfigModel) => { type: BeepBaseTypes.SET_APPLICATION_CONFIG };
   setLoRaWanState: (loRaWanState: LoRaWanStateModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_STATE };
   setLoRaWanDeviceEUI: (loRaWanDeviceEUI: LoRaWanDeviceEUIModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_DEVICE_EUI };
   setLoRaWanAppEUI: (loRaWanAppEUI: LoRaWanAppEUIModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_APP_EUI };
@@ -66,6 +69,7 @@ const CreatedActions = createActions( {
   setFirmwareVersion: ['firmwareVersion'],
   setHardwareVersion: ['hardwareVersion'],
   setHardwareId: ['atecc'],
+  setApplicationConfig: ['applicationConfig'],
   setLoRaWanState: ['loRaWanState'],
   setLoRaWanDeviceEUI: ['loRaWanDeviceEUI'],
   setLoRaWanAppEUI: ['loRaWanAppEUI'],

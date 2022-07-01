@@ -9,6 +9,7 @@ import { useTypedSelector } from 'App/Stores';
 // Styles
 import styles from './styles'
 import { Colors, Fonts, Images, Metrics } from '../../Theme';
+import { markerStyle, pressedMarkerStyle, selectedStyle, trackStyle } from '../../Theme/ApplicationStyles';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
@@ -35,11 +36,6 @@ type PAGE = "plug" | "frequencies"
 const BIN_RESOLUTION = 3.937752016
 const FREQUENCY_STEP = 50
 export const getFrequencyByBin = (bin: number) => Math.round((bin * 2 * BIN_RESOLUTION)/ FREQUENCY_STEP) * FREQUENCY_STEP
-
-const trackStyle = { height: 4, backgroundColor: Colors.lightGrey }
-const markerStyle = { width: 24, height: 24, borderRadius: 12, backgroundColor: Colors.yellow }
-const pressedMarkerStyle = { width: 30, height: 30, borderRadius: 15, backgroundColor: Colors.yellow }
-const selectedStyle = { backgroundColor: Colors.yellow }
 
 interface Props {
   navigation: StackNavigationProp,

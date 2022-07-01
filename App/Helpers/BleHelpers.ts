@@ -21,6 +21,7 @@ import { LoRaWanStateParser } from '../Models/LoRaWanStateModel';
 import { LoRaWanDeviceEUIParser } from '../Models/LoRaWanDeviceEUIModel';
 import { LoRaWanAppEUIParser } from '../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyParser } from '../Models/LoRaWanAppKeyModel';
+import { ApplicationConfigParser } from '../Models/ApplicationConfigModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -243,6 +244,12 @@ export default class BleHelpers {
           case COMMANDS.READ_HARDWARE_VERSION:
             model = new HardwareVersionParser({ data }).parse()
             store.dispatch(BeepBaseActions.setHardwareVersion(model))
+            break
+
+          //Application config
+          case COMMANDS.READ_APPLICATION_CONFIG:
+            model = new ApplicationConfigParser({ data }).parse()
+            store.dispatch(BeepBaseActions.setApplicationConfig(model))
             break
 
           //LoRaWan state

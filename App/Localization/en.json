@@ -177,12 +177,34 @@
         "appKey": "Application key",
         "appKeyPlaceholder": "32 hexadecimal characters",
         "appKeyError": "Invalid Application key",
-        "setCredentialsButton": "Set credentials",
+        "setCredentialsButton": "Set credentials"
       },
       "descriptionJoined": "You have successfully configured your LoRa connection. The BEEP base is now able to upload its measurements."
     },
     "energy": {
       "screenTitle": "Energy",
+      "description": "Choose an optimum between how often measurements are taken and the energy consumed.",
+      "takeEvery": "Take measurements every",
+      "maxInterval": "1x/day",
+      "minInterval": "1x/min",
+      "interval": {
+        "1440": "day",
+        "720": "12 hours",
+        "360": "6 hours",
+        "180": "3 hours",
+        "120": "2 hours",
+        "60": "1 hour",
+        "30": "30 minutes",
+        "20": "20 minutes",
+        "15": "15 minutes",
+        "10": "10 minutes",
+        "5": "5 minutes",
+        "1": "minute"
+      },
+      "averagePower": "Average power: ",
+      "estimatedBatteryLife": "Estimated battery life: ",
+      "estimatedBatteryLifeValue": "{{days}} days  ⃰",
+      "disclaimer": "  ⃰Based on using 2 x 1.5V AAA batteries with a capacity of 750mAh."
     }
   },
   "home": {

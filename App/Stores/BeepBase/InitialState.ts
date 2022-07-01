@@ -1,3 +1,4 @@
+import { ApplicationConfigModel } from "../../Models/ApplicationConfigModel"
 import { AudioModel } from "../../Models/AudioModel"
 import { DeviceModel } from "../../Models/DeviceModel"
 import { FirmwareVersionModel } from "../../Models/FirmwareVersionModel"
@@ -19,6 +20,7 @@ export interface BeepBaseState {
   firmwareVersion: FirmwareVersionModel | undefined
   hardwareVersion: HardwareVersionModel | undefined
   hardwareId: string | undefined
+  applicationConfig: ApplicationConfigModel | undefined
   loRaWanState: LoRaWanStateModel | undefined
   loRaWanDeviceEUI: LoRaWanDeviceEUIModel | undefined
   loRaWanAppEUI: LoRaWanAppEUIModel | undefined
@@ -38,6 +40,7 @@ export const INITIAL_STATE: BeepBaseState = {
   firmwareVersion: undefined,
   hardwareVersion: undefined,
   hardwareId: undefined,
+  applicationConfig: undefined,
   loRaWanState: undefined,
   loRaWanDeviceEUI: undefined,
   loRaWanAppEUI: undefined,

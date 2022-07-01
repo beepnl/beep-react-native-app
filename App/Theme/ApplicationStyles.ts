@@ -2,6 +2,12 @@ import Fonts from './Fonts'
 import Metrics from './Metrics'
 import Colors from './Colors'
 
+// MultiSlider
+export const trackStyle = { height: 4, backgroundColor: Colors.lightGrey }
+export const markerStyle = { width: 24, height: 24, borderRadius: 12, backgroundColor: Colors.yellow }
+export const pressedMarkerStyle = { width: 30, height: 30, borderRadius: 15, backgroundColor: Colors.yellow }
+export const selectedStyle = { backgroundColor: Colors.yellow }
+
 export const shadow = {
   shadowColor: "#000",
   shadowOffset: {
