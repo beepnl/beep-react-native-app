@@ -10,6 +10,7 @@ import { getDevice, getHardwareId, getPairedPeripheral, getTemperatureSensorDefi
 import BleHelpers, { COMMANDS } from '../Helpers/BleHelpers'
 import { PairedPeripheralModel } from '../Models/PairedPeripheralModel'
 import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED } from '../Models/LoRaWanStateModel'
+import { APP_EUI, TTNModel } from '../Models/TTNModel'
 
 export function* getDevices(action: any) {
   const response = yield call(api.getDevices)
@@ -84,7 +85,6 @@ export function* configureLoRaAutomatic(action: any) {
   const hardwareId: string = getHardwareId(yield select())
   const device: DeviceModel = getDevice(yield select())
   const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
-  const appEui: string = "70b3d57ed0028d38"
 
   const requestParams = {
     lorawan_device: {
@@ -95,12 +95,14 @@ export function* configureLoRaAutomatic(action: any) {
   
   const response = yield call(api.createTtnDevice, hardwareId.toString(), requestParams)
   if (response && response.ok) {
+    //retrieve keys from api's TTN registration
+    const ttn = new TTNModel(response.data)
+
     yield put(ApiActions.setLoRaConfigState("writingCredentials"))
-    // console.log(response)
     //write lora credentials to peripheral
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, appEui)
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, APP_EUI)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, ttn.devEUI)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, ttn.appKey)
     yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
     yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
   } else {
