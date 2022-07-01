@@ -45,7 +45,8 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   const fromSensorScreen = route.params?.fromSensorScreen
   const state: LoRaConfigState = useTypedSelector<LoRaConfigState>(getLoRaConfigState)
   const retry = useRef(RETRY_COUNT)
-
+  const [startPressed, setStartPressed] = useState(false)
+  
   const appKey = useRef(generateKey(32))
 
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
@@ -70,6 +71,7 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   }, [loRaWanState])
 
   const onStartPress = () => {
+    setStartPressed(true)
     dispatch(ApiActions.configureLoRaAutomatic(appKey.current))
     retry.current = RETRY_COUNT
   }
@@ -89,7 +91,7 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacerDouble} />
 
-      { (state == "none" || state == "failedToRegister" || state == "failedToConnect") &&
+      { (state == "none" || state == "failedToRegister" || state == "failedToConnect" || !startPressed) &&
         <TouchableOpacity style={styles.button} onPress={onStartPress}>
           <Text style={styles.text}>{t("wizard.lora.automatic.startButton")}</Text>
         </TouchableOpacity>
