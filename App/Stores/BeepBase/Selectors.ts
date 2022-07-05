@@ -79,3 +79,7 @@ export const getCombinedLogFileFrames = (state: AppState) => {
   const buffers = sorted.map((model: LogFileFrameModel) => model.data)    //extract data frames
   return Buffer.concat(buffers)
 }
+
+export const getBatteryPercentage = (state: AppState) => {
+  return state.beepBase.batteryPercentage
+}

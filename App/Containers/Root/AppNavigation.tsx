@@ -8,6 +8,7 @@ import TemperatureScreen from 'App/Containers/Sensor/TemperatureScreen';
 import WeightScreen from 'App/Containers/Sensor/WeightScreen';
 import AudioScreen from 'App/Containers/Sensor/AudioScreen';
 import LoRaScreen from 'App/Containers/Sensor/LoRaScreen';
+import EnergyScreen from 'App/Containers/Sensor/EnergyScreen';
 import LogFileScreen from 'App/Containers/Sensor/LogFileScreen';
 import FirmwareScreen from 'App/Containers/FirmwareScreen/FirmwareScreen';
 import FirmwareDetailScreen from 'App/Containers//FirmwareScreen/FirmwareDetailScreen';
@@ -67,6 +68,7 @@ export const AppStack = () => {
       <Stack.Screen name="WeightScreen" component={WeightScreen} />
       <Stack.Screen name="CalibrateWeightScreen" component={CalibrateWeightScreen} />
       <Stack.Screen name="AudioScreen" component={AudioScreen} />
+      <Stack.Screen name="EnergyScreen" component={EnergyScreen} />
       <Stack.Screen name="LoRaScreen" component={LoRaScreen} />
       <Stack.Screen name="WizardLoRaScreen" component={WizardLoRaScreen} />
       <Stack.Screen name="WizardLoRaAutomaticScreen" component={WizardLoRaAutomaticScreen} />

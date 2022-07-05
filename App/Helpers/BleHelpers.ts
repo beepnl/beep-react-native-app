@@ -22,6 +22,7 @@ import { LoRaWanDeviceEUIParser } from '../Models/LoRaWanDeviceEUIModel';
 import { LoRaWanAppEUIParser } from '../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyParser } from '../Models/LoRaWanAppKeyModel';
 import { ApplicationConfigParser } from '../Models/ApplicationConfigModel';
+import { BatteryParser } from '../Models/BatteryModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -92,6 +93,8 @@ export const BLE_NAME_PREFIX = "BEEPBASE-"
 export const BEEP_SERVICE = "be4768a1-719f-4bad-5040-c6ebc5f8c31b"
 export const CONTROL_POINT_CHARACTERISTIC = "000068b0-0000-1000-8000-00805f9b34fb"
 export const LOG_FILE_CHARACTERISTIC = "be4768a3-719f-4bad-5040-c6ebc5f8c31b"
+export const BATTERY_SERVICE = "0000180f-0000-1000-8000-00805f9b34fb"
+export const BATTERY_LEVEL_CHARACTERISTIC = "00002a19-0000-1000-8000-00805f9b34fb"
 
 export default class BleHelpers {
 
@@ -225,89 +228,99 @@ export default class BleHelpers {
 
   static onValueForCharacteristic({ value, peripheral, characteristic, service }) {
     // console.log(`Recieved ${data} for characteristic ${characteristic}`);
-    if (characteristic.toLowerCase() == CONTROL_POINT_CHARACTERISTIC) {
-      const buffer: Buffer = Buffer.from(value)
-      const command = buffer.readInt8()
-      const data: Buffer = buffer.subarray(1)
-      if (data.length) {
-        let model
-        switch (command) {
-          case COMMANDS.RESPONSE:
-            console.log("BLE response", data)
-            break
-  
-          case COMMANDS.READ_FIRMWARE_VERSION:
-            model = new FirmwareVersionParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setFirmwareVersion(model))
-            break
-  
-          case COMMANDS.READ_HARDWARE_VERSION:
-            model = new HardwareVersionParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setHardwareVersion(model))
-            break
+    switch (characteristic.toLowerCase()) {
+      case CONTROL_POINT_CHARACTERISTIC:
+        BleHelpers.handleControlPointCharacteristic({ value, peripheral })
+        break
 
-          //Application config
-          case COMMANDS.READ_APPLICATION_CONFIG:
-            model = new ApplicationConfigParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setApplicationConfig(model))
-            break
-
-          //LoRaWan state
-          case COMMANDS.READ_LORAWAN_STATE:
-            model = new LoRaWanStateParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setLoRaWanState(model))
-            break
-
-          //LoRaWan device EUI
-          case COMMANDS.READ_LORAWAN_DEVEUI:
-            model = new LoRaWanDeviceEUIParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setLoRaWanDeviceEUI(model))
-            break
-
-          //LoRaWan app EUI
-          case COMMANDS.READ_LORAWAN_APPEUI:
-            model = new LoRaWanAppEUIParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setLoRaWanAppEUI(model))
-            break
-
-          //LoRaWan app key
-          case COMMANDS.READ_LORAWAN_APPKEY:
-            model = new LoRaWanAppKeyParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setLoRaWanAppKey(model))
-            break
-
-          //temperature sensor
-          case COMMANDS.READ_DS18B20_CONVERSION:
-            const models = new TemperatureParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setTemperatures(models))
-            break
+      case LOG_FILE_CHARACTERISTIC:
+        BleHelpers.handleLogFileCharacteristic({ value, peripheral })
+        break
+    }
+  }
   
-          //weight sensor
-          case COMMANDS.READ_HX711_CONVERSION:
-            model = new WeightParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setWeight(model))
-            break
-  
-          //audio sensor
-          case COMMANDS.READ_AUDIO_ADC_CONFIG:
-            model = new AudioParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setAudio(model))
-            break
-  
-          case COMMANDS.READ_ATECC_READ_ID:
-            model = new AteccParser({ data }).parse()
-            store.dispatch(BeepBaseActions.setHardwareId(model))
-            break
-  
-          case COMMANDS.READ_MX_FLASH:
-            console.log(data)
-            break
-  
-          case COMMANDS.SIZE_MX_FLASH:
-            model = LogFileSizeModel.parse(data)
-            store.dispatch(BeepBaseActions.setLogFileSize(model))
-            break
-        }
+  static handleControlPointCharacteristic({ value, peripheral }) {
+    const buffer: Buffer = Buffer.from(value)
+    const command = buffer.readInt8()
+    const data: Buffer = buffer.subarray(1)
+    if (data.length) {
+      let model
+      switch (command) {
+        case COMMANDS.RESPONSE:
+          console.log("BLE response", data)
+          break
+
+        case COMMANDS.READ_FIRMWARE_VERSION:
+          model = new FirmwareVersionParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setFirmwareVersion(model))
+          break
+
+        case COMMANDS.READ_HARDWARE_VERSION:
+          model = new HardwareVersionParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setHardwareVersion(model))
+          break
+
+        //Application config
+        case COMMANDS.READ_APPLICATION_CONFIG:
+          model = new ApplicationConfigParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setApplicationConfig(model))
+          break
+
+        //LoRaWan state
+        case COMMANDS.READ_LORAWAN_STATE:
+          model = new LoRaWanStateParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setLoRaWanState(model))
+          break
+
+        //LoRaWan device EUI
+        case COMMANDS.READ_LORAWAN_DEVEUI:
+          model = new LoRaWanDeviceEUIParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setLoRaWanDeviceEUI(model))
+          break
+
+        //LoRaWan app EUI
+        case COMMANDS.READ_LORAWAN_APPEUI:
+          model = new LoRaWanAppEUIParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setLoRaWanAppEUI(model))
+          break
+
+        //LoRaWan app key
+        case COMMANDS.READ_LORAWAN_APPKEY:
+          model = new LoRaWanAppKeyParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setLoRaWanAppKey(model))
+          break
+
+        //temperature sensor
+        case COMMANDS.READ_DS18B20_CONVERSION:
+          const models = new TemperatureParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setTemperatures(models))
+          break
+
+        //weight sensor
+        case COMMANDS.READ_HX711_CONVERSION:
+          model = new WeightParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setWeight(model))
+          break
+
+        //audio sensor
+        case COMMANDS.READ_AUDIO_ADC_CONFIG:
+          model = new AudioParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setAudio(model))
+          break
+
+        case COMMANDS.READ_ATECC_READ_ID:
+          model = new AteccParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setHardwareId(model))
+          break
+
+        case COMMANDS.READ_MX_FLASH:
+          console.log(data)
+          break
+
+        case COMMANDS.SIZE_MX_FLASH:
+          model = LogFileSizeModel.parse(data)
+          store.dispatch(BeepBaseActions.setLogFileSize(model))
+          break
       }
     }
   }
@@ -336,17 +349,15 @@ export default class BleHelpers {
     })
   }
 
-  static onValueForLogFileCharacteristic({ value, peripheral, characteristic, service }) {
-    if (characteristic.toLowerCase() == LOG_FILE_CHARACTERISTIC) {
-      const buffer: Buffer = Buffer.from(value)
-      const model = LogFileFrameModel.parse(buffer)
-      if (model) {
-        store.dispatch(BeepBaseActions.addLogFileFrame(model))
-        RNFS.appendFile(BleHelpers.LOG_FILE_PATH, model.data.toString("hex"))
-        .catch((err) => {
-          console.log("Error writing log file frame", err);
-        });
-      }
+  static handleLogFileCharacteristic({ value, peripheral }) {
+    const buffer: Buffer = Buffer.from(value)
+    const model = LogFileFrameModel.parse(buffer)
+    if (model) {
+      store.dispatch(BeepBaseActions.addLogFileFrame(model))
+      RNFS.appendFile(BleHelpers.LOG_FILE_PATH, model.data.toString("hex"))
+      .catch((err) => {
+        console.log("Error writing log file frame", err);
+      });
     }
   }
 
@@ -356,15 +367,16 @@ export default class BleHelpers {
       return BleManager.retrieveServices(peripheralId).then((peripheralInfo) => {
         // console.log("Peripheral info:", peripheralInfo);
         console.log("retrieveServices OK")
-        BleManager.startNotification(peripheralId, BEEP_SERVICE, CONTROL_POINT_CHARACTERISTIC).then(() => {
+        return BleManager.startNotification(peripheralId, BEEP_SERVICE, CONTROL_POINT_CHARACTERISTIC).then(() => {
           console.log("Notification BEEP CONTROL POINT subscribed")
           BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription.remove()
           BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic);
-        })
-        BleManager.startNotification(peripheralId, BEEP_SERVICE, LOG_FILE_CHARACTERISTIC).then(() => {
-          console.log("Notification LOG FILE subscribed")
-          BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription.remove()
-          BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForLogFileCharacteristic);
+        }).then(() => {
+          return BleManager.startNotification(peripheralId, BEEP_SERVICE, LOG_FILE_CHARACTERISTIC).then(() => {
+            console.log("Notification LOG FILE subscribed")
+            BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription.remove()
+            BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic);
+          })
         })
       })
       .catch((error) => {
@@ -409,6 +421,18 @@ export default class BleHelpers {
       hexStr += hex;
     }
     return hexStr.toUpperCase();
+  }
+
+  static readBatteryLevel(peripheralId: string) {
+    return BleHelpers.read(peripheralId, BATTERY_SERVICE, BATTERY_LEVEL_CHARACTERISTIC).then((value: any) => {
+      const buffer: Buffer = Buffer.from(value)
+      const model = new BatteryParser({ data: buffer }).parse()
+      store.dispatch(BeepBaseActions.setBattery(model))
+    })
+  }
+
+  static read(peripheralId: string, serviceUUID: string, characteristicUUID: string) {
+    return BleManager.read(peripheralId, serviceUUID, characteristicUUID)
   }
 
   static write(peripheralId: string, command: any, params?: any) {

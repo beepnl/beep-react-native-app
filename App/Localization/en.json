@@ -244,6 +244,7 @@
       "weight": "Weight",
       "audio": "Audio",
       "lora": "LoRa",
+      "energy": "Energy",
       "logFile": "Download data",
       "firmware": "Firmware",
     }
@@ -280,6 +281,17 @@
       "reset": "Reset LoRa stack",
       "resetInstructions": "This resets the LoRa stack, but does not erase any LoRa settings such as the Dev EUI, App EUI or App key.\nIt will reconnect your BEEP base to the LoRa network.",
       "resetting": "Resetting LoRa stack..."
+    },
+    "energy": {
+      "screenTitle": "Energy",
+      "battery": "Battery",
+      "capacity": "Capacity: ",
+      "usage": "Energy usage",
+      "interval": "Measurement interval: ",
+      "intervalMinutes": "{{interval}} minutes",
+      "measureToSendRatio": "Measurement to send ratio: ",
+      "averagePower": "Average power: ",
+      "instructions": "The measurement interval dictates how often measurements are taken.\n\nThe measurement to send ratio dictates how often measurements are sent: e.g. if the ratio is 3:1, only one in three measurements will be uploaded."
     }
   },
   "logFile": {

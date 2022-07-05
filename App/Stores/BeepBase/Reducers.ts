@@ -144,6 +144,13 @@ export const clearLogFileFrames = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setBattery = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    batteryPercentage: payload.percentage
+  }
+}
+
 export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.CLEAR]: clear,
   [BeepBaseTypes.SET_PAIRED_PERIPHERAL]: setPairedPeripheral,
@@ -165,4 +172,5 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.SET_LOG_FILE_PROGRESS]: setLogFileProgress,
   [BeepBaseTypes.ADD_LOG_FILE_FRAME]: addLogFileFrame,
   [BeepBaseTypes.CLEAR_LOG_FILE_FRAMES]: clearLogFileFrames,
+  [BeepBaseTypes.SET_BATTERY]: setBattery,
 })

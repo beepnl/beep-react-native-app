@@ -60,6 +60,11 @@ const MENU_ITEMS: Array<MenuItem> = [
     icon: <IconIonicons name="ios-radio-outline" size={30} color={Colors.black} style={{ transform: [{ rotate: '90deg'}] }} />,
   },
   {
+    title: "peripheralDetail.items.energy",
+    screen: "EnergyScreen",
+    icon: <IconMaterialCommunityIcons name="battery-charging-wireless-70" size={30} color={Colors.black} />,
+  },
+  {
     title: "peripheralDetail.items.logFile",
     screen: "LogFileScreen",
     icon: <IconMaterialCommunityIcons name="download" size={30} color={Colors.black} />,
@@ -139,6 +144,8 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
     }).catch(() => {
       //peripheral not found
       setError("Peripheral not found")
+      //in case we have an invisible connection in the BLE layer try to disconnect
+      BleHelpers.disconnectAllPeripherals()
       setBusy(false)
     })
   }
@@ -183,7 +190,9 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
       <Text style={styles.label}>{t("peripheralDetail.deviceName")}<Text style={styles.text}>{device?.name}</Text></Text>
       <Text style={styles.label}>{t("peripheralDetail.bleName")}<Text style={styles.text}>{DeviceModel.getBleName(device)}</Text></Text>
-      <Text style={styles.label}>{t("peripheralDetail.bleStatus")}<Text style={styles.text}>{t(`peripheralDetail.bleConnectionStatus.${peripheral?.isConnected != undefined ? peripheral.isConnected : false}`)}</Text></Text>
+      <TouchableOpacity onPress={onToggleConnectionPress}>
+        <Text style={styles.label}>{t("peripheralDetail.bleStatus")}<Text style={styles.text}>{t(`peripheralDetail.bleConnectionStatus.${peripheral?.isConnected != undefined ? peripheral.isConnected : false}`)}</Text></Text>
+      </TouchableOpacity>
 
       <View style={styles.spacerDouble} />
 
