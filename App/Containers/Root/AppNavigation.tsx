@@ -22,6 +22,7 @@ import WizardLoRaAutomaticScreen from 'App/Containers/Wizard/WizardLoRaAutomatic
 import WizardLoRaManualScreen from 'App/Containers/Wizard/WizardLoRaManualScreen';
 import WizardLoRaOverviewScreen from 'App/Containers/Wizard/WizardLoRaOverviewScreen';
 import WizardEnergyScreen from 'App/Containers/Wizard/WizardEnergyScreen';
+import WizardCongratulationsScreen from 'App/Containers/Wizard/WizardCongratulationsScreen';
 import CalibrateTemperatureScreen from 'App/Containers/Wizard/CalibrateTemperatureScreen';
 import CalibrateWeightScreen from 'App/Containers/Wizard/CalibrateWeightScreen';
 import CalibrateAudioScreen from 'App/Containers/Wizard/CalibrateAudioScreen';
@@ -49,6 +50,7 @@ const WizardStack = () => {
       <Stack.Screen name="WizardLoRaManualScreen" component={WizardLoRaManualScreen} />
       <Stack.Screen name="WizardLoRaOverviewScreen" component={WizardLoRaOverviewScreen} />
       <Stack.Screen name="WizardEnergyScreen" component={WizardEnergyScreen} />
+      <Stack.Screen name="WizardCongratulationsScreen" component={WizardCongratulationsScreen} />
       <Stack.Screen name="CalibrateTemperatureScreen" component={CalibrateTemperatureScreen} />
       <Stack.Screen name="CalibrateWeightScreen" component={CalibrateWeightScreen} />
       <Stack.Screen name="CalibrateAudioScreen" component={CalibrateAudioScreen} />

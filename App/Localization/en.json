@@ -205,6 +205,12 @@
       "estimatedBatteryLife": "Estimated battery life: ",
       "estimatedBatteryLifeValue": "{{days}} days  ⃰",
       "disclaimer": "  ⃰Based on using 2 x 1.5V AAA batteries with a capacity of 750mAh."
+    },
+    "congratulations": {
+      "screenTitle": "Congratulations",
+      "description": "You have successfully completed the configuration of your BEEP base!\n\nYou may now install your BEEP base into your apiary.",
+      "installButton": "How do I physically install my BEEP base?",
+      "registerButton": "How do I link my BEEP base to a specific hive in the BEEP web app?"
     }
   },
   "home": {

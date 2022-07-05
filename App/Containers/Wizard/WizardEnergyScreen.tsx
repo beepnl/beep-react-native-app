@@ -54,12 +54,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   }, [])
 
   const onFinishPress = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: "HomeScreen" }],
-      }),
-    );
+    navigation.navigate("WizardCongratulationsScreen")
   }
 
   const getAveragePower = () => {
