@@ -15,6 +15,7 @@
   "login": {
     "username": "Username",
     "password": "Password",
+    "testEnvironmentWarning": "Warning: using Test environment",
     "login": "Sign in",
     "forgotPassword": "I forgot my password",
     "signUp": "Create an account",
@@ -222,12 +223,14 @@
   "settings": {
     "account": "Account",
     "username": "E-mail: ",
+    "development": "Development",
+    "environment": "Use environment",
+    "test": "Test",
+    "production": "Production",
+    "apiBaseUrl": "API base URL: ",
     "logout": "Sign out",
-    "app": "App"
-  },
-  "about": {
-    "screenTitle": "About",
-    "versionJS": "App version {{version}}"
+    "app": "App",
+    "versionJS": "App version: "
   },
   "peripheralDetail": {
     "screenTitle": "Base detail",

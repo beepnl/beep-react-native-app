@@ -32,4 +32,6 @@ export function* login(action: any) {
 
 export function* logout(action: any) {
   yield put(UserActions.setToken(undefined))
+  yield put(UserActions.setUser(undefined))
+  yield put(UserActions.setDevices([]))
 }

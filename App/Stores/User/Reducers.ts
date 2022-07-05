@@ -18,6 +18,14 @@ export const setUser = (state: UserState, payload: any) => {
   }
 }
 
+export const setUseProduction = (state: UserState, payload: any) => {
+  const { useProduction } = payload  
+  return {
+    ...state,
+    useProduction
+  }
+}
+
 export const setDevices = (state: UserState, payload: any) => {
   const { devices } = payload  
   return {
@@ -29,5 +37,6 @@ export const setDevices = (state: UserState, payload: any) => {
 export const reducer = createReducer(INITIAL_STATE, {
   [UserTypes.SET_TOKEN]: setToken,
   [UserTypes.SET_USER]: setUser,
+  [UserTypes.SET_USE_PRODUCTION]: setUseProduction,
   [UserTypes.SET_DEVICES]: setDevices,
 })

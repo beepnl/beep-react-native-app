@@ -1,6 +1,7 @@
 import { create } from 'apisauce'
 import { Platform } from 'react-native'
 
+const TEST_URL = 'https://test.beep.nl/api'
 const BASE_URL = 'https://api.beep.nl/api'
 const ASSETS_URL = "https://assets.beep.nl"
 const LOG_FILE_UPLOAD_URL = BASE_URL + "/sensors/flashlog"
@@ -16,6 +17,18 @@ const api = create({
   },
   timeout: 10000,
 })
+
+function setBaseUrl(useProduction: boolean) {
+  if (useProduction) {
+    api.setBaseURL(BASE_URL)
+  } else {
+    api.setBaseURL(TEST_URL)
+  }
+}
+
+function getBaseUrl(useProduction: boolean) {
+  return useProduction ? BASE_URL : TEST_URL
+}
 
 const apiAssets = create({
   baseURL: ASSETS_URL,
@@ -92,6 +105,8 @@ export default {
   getFirmwares,
 
   //constants
+  getBaseUrl,
+  setBaseUrl,
   LOG_FILE_UPLOAD_URL,
   LORA_SENSORS_URL,
 }

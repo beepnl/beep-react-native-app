@@ -1,12 +1,17 @@
-import { select } from 'redux-saga/effects'
+import { call, select } from 'redux-saga/effects'
+import { getUseProduction } from '../Stores/User/Selectors'
 
 // Utils
 import moment from 'moment'
 import momentDurationFormatSetup from 'moment-duration-format'
 import 'moment/locale/nl'
+import api from 'App/Services/ApiService'
 
 export function* startup() {
   console.log("**** App Startup ****")
+
+  const useProduction: boolean = getUseProduction(yield select())
+  yield call(api.setBaseUrl, useProduction)
 
   //init moment duration plug-in
   momentDurationFormatSetup(moment)

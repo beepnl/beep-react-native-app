@@ -8,7 +8,7 @@ import { useTypedSelector } from 'App/Stores';
 
 // Styles
 import styles from './LoginScreenStyle'
-import { Images, Metrics } from '../../Theme';
+import { Colors, Images, Metrics } from '../../Theme';
 
 // Utils
 import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
@@ -17,6 +17,7 @@ import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
 import AuthActions from 'App/Stores/Auth/Actions'
 import { getError } from 'App/Stores/Auth/Selectors';
 import { getUsername } from 'App/Stores/Settings/Selectors';
+import { getUseProduction } from '../../Stores/User/Selectors';
 
 // Components
 import { Text, View, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
@@ -31,7 +32,7 @@ const LoginScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [beeVisible, setBeeVisible] = useState(true)
-  
+  const useProduction = useTypedSelector<boolean>(getUseProduction)
   const error = useTypedSelector<string | undefined>(getError)
 
   const [username, setUsername] = useState(useTypedSelector<string>(getUsername))
@@ -115,6 +116,11 @@ const LoginScreen: FunctionComponent<Props> = ({
         />
 
         <View style={styles.spacerDouble} />
+
+        { !useProduction && <>
+          <Text style={[styles.text, { color: Colors.darkYellow, alignSelf: "center" }]}>{t("login.testEnvironmentWarning")}</Text>
+          <View style={styles.spacer} />
+        </>}
 
         { !!error && <>
           <Text style={[styles.text, styles.error, { alignSelf: "center" }]}>{t(`login.error.${error}`)}</Text>
