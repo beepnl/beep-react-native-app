@@ -16,6 +16,7 @@ export default StyleSheet.create({
 
   itemRow: {
     flexDirection: "row", 
+    marginVertical: Metrics.halfBaseMargin,
     justifyContent: "space-between",
   },
 
