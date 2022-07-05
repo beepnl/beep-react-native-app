@@ -410,6 +410,16 @@ export default class BleHelpers {
     }
   }
 
+  static disconnectAllPeripherals() {
+    BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
+      peripherals.forEach((peripheral: Peripheral) => {
+        if (peripheral.name?.startsWith(BLE_NAME_PREFIX)) {
+          BleManager.disconnect(peripheral.id, true).catch(error => console.log(error))
+        }
+      })
+    })
+  }
+
   static byteToHexString(uint8arr) {
     if (!uint8arr) {
       return '';
