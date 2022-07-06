@@ -69,11 +69,13 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const TARE_ALLOWED_PERCENTUAL_DEVIATION = 0.3
   const CALIBRATE_ALLOWED_PERCENTUAL_DEVIATION = 1.0
   const ALLOWED_CONSECUTIVE_DEVIATION_ERRORS = 3
+  const TIMEOUT = 60000
 
   const refresh = () => {
     if (pairedPeripheral) {
       //read weight sensor
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
     }
   }
 
@@ -85,6 +87,12 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
     if (state == "sampling" && weight) {
       const newReading = weight.channels[0]?.value
       if (newReading) {
+        //discard same readings. Each reading should be unique, within tolerance
+        if (page == "calibrate" && readings.find(reading => reading == newReading) != undefined) {
+          console.log("Discarding reading", newReading)
+          return
+        }
+
         const newReadings = [...readings, newReading]
         setReadings(newReadings)
 
@@ -161,7 +169,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   useTimeout(() => {
     setState("timeout")
     setResetTimer(false)
-  }, state == "sampling" || resetTimer ? 20000 : null)
+  }, state == "sampling" || resetTimer ? TIMEOUT : null)
 
   const onNextPress = () => {
     setPage("calibrate")
