@@ -81,7 +81,9 @@ const SettingsScreen: FunctionComponent<Props> = ({
         <Text style={styles.text}>{t("settings.logout")}</Text>
       </TouchableOpacity>
 
-      <View style={styles.spacerDouble} />
+      <View style={styles.spacer} />
+      <View style={styles.separator} />
+      <View style={styles.spacer} />
 
       <Text style={styles.label}>{t("settings.development")}</Text>
       <View style={styles.spacer} />
@@ -107,7 +109,9 @@ const SettingsScreen: FunctionComponent<Props> = ({
         </View>
       </View>
 
-      <View style={styles.spacerDouble} />
+      <View style={styles.spacer} />
+      <View style={styles.separator} />
+      <View style={styles.spacer} />
 
       <Text style={styles.label}>{t("settings.app")}</Text>
       <View style={styles.spacer} />

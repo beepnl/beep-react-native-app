@@ -237,6 +237,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       </View>
       
       <View style={styles.spacer} />
+      <View style={styles.separator} />
+      <View style={styles.spacer} />
 
       <FlatList
         data={list}

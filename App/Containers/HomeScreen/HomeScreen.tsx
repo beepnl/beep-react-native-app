@@ -75,6 +75,8 @@ const HomeScreen: FunctionComponent<Props> = ({
         <Text style={styles.text}>{t("home.startWizard")}</Text>
       </TouchableOpacity>
 
+      <View style={styles.spacerDouble} />
+      <View style={styles.separator} />
       <View style={styles.spacer} />
 
       <ScrollView style={styles.devicesContainer} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />} >
