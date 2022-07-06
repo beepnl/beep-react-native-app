@@ -62,7 +62,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
     BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_APPLICATION_CONFIG, params)
   }
 
-  const onFinishPress = () => {
+  const onNextPress = () => {
     //update firmware
     updateFirmware()
 
@@ -143,8 +143,8 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
     </ScrollView>
 
     <View style={styles.itemContainer}>
-      <TouchableOpacity style={styles.button} onPress={onFinishPress}>
-        <Text style={styles.text}>{t("common.btnFinish")}</Text>
+      <TouchableOpacity style={styles.button} onPress={onNextPress}>
+        <Text style={styles.text}>{t("common.btnNext")}</Text>
       </TouchableOpacity>
     </View>
   </>)
