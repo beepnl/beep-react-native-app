@@ -1,5 +1,6 @@
 import { ApplicationConfigModel } from "../../Models/ApplicationConfigModel"
 import { AudioModel } from "../../Models/AudioModel"
+import { ClockModel } from "../../Models/ClockModel"
 import { DeviceModel } from "../../Models/DeviceModel"
 import { FirmwareVersionModel } from "../../Models/FirmwareVersionModel"
 import { HardwareVersionModel } from "../../Models/HardwareVersionModel"
@@ -33,6 +34,7 @@ export interface BeepBaseState {
   logFileProgress: number
   logFileFrames: Array<LogFileFrameModel>
   batteryPercentage: number | undefined
+  clock: ClockModel | undefined
 }
 
 export const INITIAL_STATE: BeepBaseState = {
@@ -54,4 +56,5 @@ export const INITIAL_STATE: BeepBaseState = {
   logFileProgress: 0,
   logFileFrames: [],
   batteryPercentage: undefined,
+  clock: undefined,
 }

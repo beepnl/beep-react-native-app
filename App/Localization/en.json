@@ -254,6 +254,7 @@
       "audio": "Audio",
       "lora": "LoRa",
       "energy": "Energy",
+      "clock": "Clock",
       "logFile": "Download data",
       "firmware": "Firmware",
     }
@@ -301,6 +302,15 @@
       "measureToSendRatio": "Measurement to send ratio: ",
       "averagePower": "Average power: ",
       "instructions": "The measurement interval dictates how often measurements are taken.\n\nThe measurement to send ratio dictates how often measurements are sent: e.g. if the ratio is 3:1, only one in three measurements will be uploaded."
+    },
+    "clock": {
+      "screenTitle": "Clock",
+      "date": "Date: ",
+      "time": "Time: ",
+      "drift": "Drift: ",
+      "seconds": "seconds",
+      "syncInstructions": "The Synchronize button synchronizes the clock of the BEEP base with the clock of your phone.",
+      "syncButton": "Synchronize clock"
     }
   },
   "logFile": {

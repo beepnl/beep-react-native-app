@@ -83,3 +83,7 @@ export const getCombinedLogFileFrames = (state: AppState) => {
 export const getBatteryPercentage = (state: AppState) => {
   return state.beepBase.batteryPercentage
 }
+
+export const getClock = (state: AppState) => {
+  return state.beepBase.clock
+}

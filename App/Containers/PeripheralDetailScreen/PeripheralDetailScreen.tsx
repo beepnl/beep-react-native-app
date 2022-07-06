@@ -65,6 +65,11 @@ const MENU_ITEMS: Array<MenuItem> = [
     icon: <IconMaterialCommunityIcons name="battery-charging-wireless-70" size={30} color={Colors.black} />,
   },
   {
+    title: "peripheralDetail.items.clock",
+    screen: "ClockScreen",
+    icon: <IconMaterialCommunityIcons name="clock-outline" size={30} color={Colors.black} />,
+  },
+  {
     title: "peripheralDetail.items.logFile",
     screen: "LogFileScreen",
     icon: <IconMaterialCommunityIcons name="download" size={30} color={Colors.black} />,

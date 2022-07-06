@@ -23,6 +23,7 @@ import { LoRaWanAppEUIParser } from '../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyParser } from '../Models/LoRaWanAppKeyModel';
 import { ApplicationConfigParser } from '../Models/ApplicationConfigModel';
 import { BatteryParser } from '../Models/BatteryModel';
+import { ClockModel } from '../Models/ClockModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -79,6 +80,8 @@ export const COMMANDS = {
   ALARM_CONFIG_READ : 0x23,
   ALARM_CONFIG_WRITE : 0xA3,
   ALARM_STATUS_READ : 0x24,
+  READ_CLOCK : 0x25,
+  WRITE_CLOCK : 0xA5,
 }
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -320,6 +323,11 @@ export default class BleHelpers {
         case COMMANDS.SIZE_MX_FLASH:
           model = LogFileSizeModel.parse(data)
           store.dispatch(BeepBaseActions.setLogFileSize(model))
+          break
+
+        case COMMANDS.READ_CLOCK:
+          model = ClockModel.parse(data)
+          store.dispatch(BeepBaseActions.setClock(model))
           break
       }
     }

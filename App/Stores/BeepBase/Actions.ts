@@ -3,6 +3,7 @@ import { ApplicationConfigModel } from '../../Models/ApplicationConfigModel';
 import { AteccModel } from '../../Models/AteccModel';
 import { AudioModel } from '../../Models/AudioModel';
 import { BatteryModel } from '../../Models/BatteryModel';
+import { ClockModel } from '../../Models/ClockModel';
 import { DeviceModel } from '../../Models/DeviceModel';
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
@@ -39,6 +40,7 @@ export enum BeepBaseTypes {
   ADD_LOG_FILE_FRAME = 'ADD_LOG_FILE_FRAME',
   CLEAR_LOG_FILE_FRAMES = 'CLEAR_LOG_FILE_FRAMES',
   SET_BATTERY = 'SET_BATTERY',
+  SET_CLOCK = 'SET_CLOCK',
 }
 
 interface C extends ActionCreators {
@@ -59,6 +61,7 @@ interface C extends ActionCreators {
   setWeight: (weight: WeightModel) => { type: BeepBaseTypes.SET_WEIGHT };
   setAudio: (audio: AudioModel) => { type: BeepBaseTypes.SET_AUDIO };
   setBattery: (battery: BatteryModel) => { type: BeepBaseTypes.SET_BATTERY };
+  setClock: (clock: ClockModel) => { type: BeepBaseTypes.SET_CLOCK };
   setLogFileSize: (size: LogFileSizeModel) => { type: BeepBaseTypes.SET_LOG_FILE_SIZE };
   setLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_LOG_FILE_PROGRESS };
   addLogFileFrame: (frame: LogFileFrameModel) => { type: BeepBaseTypes.ADD_LOG_FILE_FRAME };
@@ -83,6 +86,7 @@ const CreatedActions = createActions( {
   setWeight: ['weight'],
   setAudio: ['audio'],
   setBattery: ['percentage'],
+  setClock: ['clock'],
   setLogFileSize: ['size'],
   setLogFileProgress: ['progress'],
   addLogFileFrame: ['frame'],

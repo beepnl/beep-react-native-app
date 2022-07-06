@@ -151,6 +151,13 @@ export const setBattery = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setClock = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    clock: payload.clock
+  }
+}
+
 export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.CLEAR]: clear,
   [BeepBaseTypes.SET_PAIRED_PERIPHERAL]: setPairedPeripheral,
@@ -173,4 +180,5 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.ADD_LOG_FILE_FRAME]: addLogFileFrame,
   [BeepBaseTypes.CLEAR_LOG_FILE_FRAMES]: clearLogFileFrames,
   [BeepBaseTypes.SET_BATTERY]: setBattery,
+  [BeepBaseTypes.SET_CLOCK]: setClock,
 })
