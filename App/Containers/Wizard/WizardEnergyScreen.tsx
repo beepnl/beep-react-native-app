@@ -43,6 +43,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const applicationConfig: ApplicationConfigModel = useTypedSelector<ApplicationConfigModel>(getApplicationConfig)
   const [sliderIndex, setSliderIndex] = useState([8])
+  const measureToSendRatio = 1    //currently not able to change this using the app
 
   const INTERVALS = [1440, 720, 360, 180, 120, 60, 30, 20, 15, 10, 5, 1].map((duration: number) => ({ duration, description: t(`wizard.energy.interval.${duration}`) }))
 
@@ -53,7 +54,19 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
     }
   }, [])
 
+  const updateFirmware = () => {
+    const params = Buffer.alloc(3)
+    let i = 0
+    params.writeUint8(measureToSendRatio, i++)
+    params.writeUInt16BE(INTERVALS[sliderIndex[0]].duration, i++)
+    BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_APPLICATION_CONFIG, params)
+  }
+
   const onFinishPress = () => {
+    //update firmware
+    updateFirmware()
+
+    //next step in wizard
     navigation.navigate("WizardCongratulationsScreen")
   }
 
