@@ -1,4 +1,4 @@
-import { put, call, select, all } from 'redux-saga/effects'
+import { put, call, select, all, take } from 'redux-saga/effects'
 import ApiActions from 'App/Stores/Api/Actions'
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import UserActions from 'App/Stores/User/Actions'
@@ -6,11 +6,13 @@ import api from 'App/Services/ApiService'
 import { DeviceModel } from '../Models/DeviceModel'
 import { FirmwareModel } from '../Models/FirmwareModel'
 import { SensorDefinitionModel } from '../Models/SensorDefinitionModel'
-import { getDevice, getHardwareId, getPairedPeripheral, getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
+import { getDevice, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
 import BleHelpers, { COMMANDS } from '../Helpers/BleHelpers'
 import { PairedPeripheralModel } from '../Models/PairedPeripheralModel'
-import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED } from '../Models/LoRaWanStateModel'
+import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
 import { APP_EUI, TTNModel } from '../Models/TTNModel'
+import { BeepBaseTypes } from '../Stores/BeepBase/Actions'
+import { CHANNELS } from '../Models/AudioModel'
 
 export function* getDevices(action: any) {
   const response = yield call(api.getDevices)
@@ -68,8 +70,45 @@ export function* registerDevice(action: any) {
     yield put(ApiActions.setRegisterState("registered"))
     const device = new DeviceModel(registerResponse.data)
     yield put(BeepBaseActions.setDevice(device))
+
     //update firmware with LoRa devEUI. This will also rename the BLE name
     yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+
+    //reset device to factory defaults (as specified here)
+
+    //ENERGY
+    let params = Buffer.alloc(3)
+    let i = 0
+    params.writeUint8(1, i++)                   //message to send ratio
+    params.writeUInt16BE(15, i++)               //interval in minutes
+    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_APPLICATION_CONFIG, params)
+
+    //LORA
+    yield call(BleHelpers.write, peripheralId, COMMANDS.READ_LORAWAN_STATE)
+    yield take(BeepBaseTypes.SET_LO_RA_WAN_STATE)
+    const loRaWanState: LoRaWanStateModel = getLoRaWanState(yield select())
+    let newState = BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION
+    if (loRaWanState.hasJoined) {
+      newState |= BITMASK_ENABLED
+    }
+    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_STATE, newState)
+    
+    //AUDIO
+    params = Buffer.alloc(6)
+    i = 0
+    params.writeUint8(CHANNELS[0].bitmask, i++)   //IN3LM
+    params.writeUint8(20, i++)                    //gain
+    params.writeInt8(0, i++)                      //volume
+    params.writeUint8(10, i++)                    //number of bins
+    params.writeUint8(9, i++)                     //start bin
+    params.writeUint8(70, i++)                    //stop bin
+    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_AUDIO_ADC_CONFIG, params)
+
+    //CLOCK TODO: check if feature is supported in firmware
+    params = Buffer.alloc(4)
+    params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
+    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_CLOCK, params)
+
     //refresh user device list
     yield call(getDevices, null)
   } else {
