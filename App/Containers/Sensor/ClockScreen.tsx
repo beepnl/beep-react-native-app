@@ -50,7 +50,7 @@ const ClockScreen: FunctionComponent<Props> = ({
 
   const onSyncPress = () => {
     const params = Buffer.alloc(4)
-    params.writeUint32BE((new Date().valueOf() + 1500) / 1000, 0)   //adding 1500 ms for processing and communication delay
+    params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)   //adding 1500 ms for processing and communication delay
     BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_CLOCK, params)
   }
 
