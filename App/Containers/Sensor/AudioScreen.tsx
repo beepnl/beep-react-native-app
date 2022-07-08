@@ -38,11 +38,9 @@ const AudioScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const audioSensor: AudioModel = useTypedSelector<AudioModel>(getAudio)
 
-  useFocusEffect(
-    React.useCallback(() => {
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
-    }, [audioSensor])
-  )
+  useEffect(() => {
+    BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
+  }, [])
 
   const onConfigurePress = () => {
     navigation.navigate("CalibrateAudioScreen")
