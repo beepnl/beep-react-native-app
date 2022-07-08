@@ -2,6 +2,7 @@ import { put, call } from 'redux-saga/effects'
 import AuthActions from 'App/Stores/Auth/Actions'
 import SettingsActions from 'App/Stores/Settings/Actions'
 import UserActions from 'App/Stores/User/Actions'
+import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import api from 'App/Services/ApiService'
 import { UserModel } from '../Models/UserModel'
 import { getDevices } from './ApiSaga'
@@ -34,4 +35,5 @@ export function* logout(action: any) {
   yield put(UserActions.setToken(undefined))
   yield put(UserActions.setUser(undefined))
   yield put(UserActions.setDevices([]))
+  yield put(BeepBaseActions.clear())
 }
