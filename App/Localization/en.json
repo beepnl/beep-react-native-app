@@ -93,6 +93,8 @@
         "screenTitle": "Calibrate weight",
         "tareButton": "Measure tare",
         "calibrateButton": "Calibrate",
+        "calibrateWeightPlaceholder": "Weight in kg",
+        "calibrateWeightError": "Invalid weight",
         "retryButton": "Retry",
         "confirmTitle": "Are you sure ?",
         "confirmMessage": "It appears that your weight sensor has already been tared.\n\nYou should only tare without any weight on the BEEP base, so never do this when it is installed under a hive.\n\nDo you really want to tare again?",

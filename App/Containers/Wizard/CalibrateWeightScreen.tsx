@@ -28,6 +28,7 @@ import { CHANNELS, WeightModel } from '../../Models/WeightModel';
 import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
+import TextInputMask from 'react-native-text-input-mask';
 
 type PAGE = "tare" | "calibrate"
 
@@ -61,7 +62,10 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const [offset, setOffset] = useState(0)
 
   const [calibrateWeight, setCalibrateWeight] = useState("")
+  const [calibrateWeightFormatted, setCalibrateWeightFormatted] = useState("")
   const parsedCalibrateWeight = parseFloat(calibrateWeight)
+  const [calibrateWeightError, setCalibrateWeightError] = useState("")
+  
   const [consecutiveDeviationErrors, setConsecutiveDeviationErrors] = useState(0)
   const [multiplier, setMultiplier] = useState(0)
 
@@ -171,6 +175,21 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
     setResetTimer(false)
   }, state == "sampling" || resetTimer ? TIMEOUT : null)
 
+  const onCalibrateWeightChangeText = (formatted: string, extracted?: string | undefined) => {
+    setCalibrateWeight(extracted || "")
+    setCalibrateWeightFormatted(formatted)
+  }
+
+  const onCalibrateWeightValidate = () => {
+    const parsed = parseFloat(calibrateWeight)
+    if (isNaN(parsed)) {
+      setCalibrateWeightError(t("wizard.calibrate.weight.calibrateWeightError"))
+    }
+    else {
+      setCalibrateWeightError("")
+    }
+  }
+
   const onNextPress = () => {
     setPage("calibrate")
     setState("calibrateIdle")
@@ -229,14 +248,24 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
       </>}
 
       { state == "calibrateIdle" && <>
-        <TextInput
+        <TextInputMask
           style={styles.input}
-          onChangeText={setCalibrateWeight}
-          value={calibrateWeight}
+          onBlur={onCalibrateWeightValidate}
+          onChangeText={onCalibrateWeightChangeText}
+          value={calibrateWeightFormatted}
+          mask={"[0999]{.}[999]"}
+          placeholder={t("wizard.calibrate.weight.calibrateWeightPlaceholder")}
           keyboardType={"numeric"}
-          returnKeyType="next"
-          maxLength={8}
+          autoCapitalize={"characters"}
+          autoCompleteType={"off"}
+          autoCorrect={false}
+          returnKeyType={"next"}
         />
+        { !!calibrateWeightError && <>
+          <View style={styles.spacerHalf} />
+          <Text style={styles.error}>{calibrateWeightError}</Text>
+        </>}
+
         <View style={styles.spacer} />
 
         { !isNaN(parsedCalibrateWeight) && parsedCalibrateWeight > 0 &&
