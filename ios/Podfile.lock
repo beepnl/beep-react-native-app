@@ -73,6 +73,7 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
+  - InputMask (6.1.0)
   - iOSDFULibrary (4.11.1):
     - ZIPFoundation (= 0.9.11)
   - libevent (2.1.12)
@@ -298,6 +299,10 @@ PODS:
     - RCTTypeSafety
     - React
     - ReactCommon/turbomodule/core
+  - react-native-text-input-mask (3.1.4):
+    - InputMask (~> 6.1.0)
+    - React-Core
+    - React-RCTText
   - React-perflogger (0.68.2)
   - React-RCTActionSheet (0.68.2):
     - React-Core/RCTActionSheetHeaders (= 0.68.2)
@@ -435,6 +440,7 @@ DEPENDENCIES:
   - react-native-file-access (from `../node_modules/react-native-file-access`)
   - react-native-nordic-dfu (from `../node_modules/react-native-nordic-dfu`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-text-input-mask (from `../node_modules/react-native-text-input-mask`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -471,6 +477,7 @@ SPEC REPOS:
     - Flipper-RSocket
     - FlipperKit
     - fmt
+    - InputMask
     - iOSDFULibrary
     - libevent
     - OpenSSL-Universal
@@ -523,6 +530,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-nordic-dfu"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-text-input-mask:
+    :path: "../node_modules/react-native-text-input-mask"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -585,6 +594,7 @@ SPEC CHECKSUMS:
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 476ee3e89abb49e07f822b48323c51c57124b572
+  InputMask: 71d291dc54d2deaeac6512afb6ec2304228c0bb7
   iOSDFULibrary: 3500ac00451aa7d8ec48a752e91099669a2c1d27
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
@@ -605,6 +615,7 @@ SPEC CHECKSUMS:
   react-native-file-access: 8c7b3c8935f7f33e31e16439b5882caa620cc493
   react-native-nordic-dfu: 9a4cfa2b940cd12025616feed8271b7c5043113d
   react-native-safe-area-context: ebf8c413eb8b5f7c392a036a315eb7b46b96845f
+  react-native-text-input-mask: 36a546b378fadd2efe1b7484a859d34bc2c80395
   React-perflogger: a18b4f0bd933b8b24ecf9f3c54f9bf65180f3fe6
   React-RCTActionSheet: 547fe42fdb4b6089598d79f8e1d855d7c23e2162
   React-RCTAnimation: bc9440a1c37b06ae9ebbb532d244f607805c6034
@@ -633,4 +644,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9e2974da6376e71fc0eb2a2f068d68a4dfaf06db
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.3
