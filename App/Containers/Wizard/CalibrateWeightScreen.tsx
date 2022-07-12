@@ -8,7 +8,7 @@ import { useTypedSelector } from 'App/Stores';
 
 // Styles
 import styles from './styles'
-import { Colors, Fonts, Images, Metrics } from '../../Theme';
+import { ApplicationStyles, Fonts } from '../../Theme';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
@@ -25,10 +25,11 @@ import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { CHANNELS, WeightModel } from '../../Models/WeightModel';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import TextInputMask from 'react-native-text-input-mask';
+import Modal from 'react-native-modal';
 
 type PAGE = "tare" | "calibrate"
 
@@ -51,6 +52,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const [isModalVisible, setModalVisible] = useState(false)
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
   const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
@@ -154,13 +156,31 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
 
   const onTarePress = () => {
     if (pairedPeripheral) {
-      setState("sampling")
-      setReadings([])
-      setOffset(0)
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
+      const weightSensorDefinition = weightSensorDefinitions[0]
+      if (weightSensorDefinition?.offset > 0 && weightSensorDefinition?.multiplier > 0) {
+        setModalVisible(true)
+      } else {
+        startTare()
+      }
     }
   }
   
+  const hideModal = () => {
+    setModalVisible(false)
+  }
+
+  const startTare = () => {
+    setState("sampling")
+    setReadings([])
+    setOffset(0)
+    BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
+  }
+
+  const onRecalibrateConfirmPress = () => {
+    setModalVisible(false)
+    startTare()
+  }
+
   const onCalibratePress = () => {
     if (pairedPeripheral) {
       setState("sampling")
@@ -311,6 +331,33 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
         </TouchableOpacity>
       }
     </View>
+
+    <Modal
+      isVisible={isModalVisible}
+      onBackdropPress={hideModal}
+      onBackButtonPress={hideModal}
+      useNativeDriver={true}
+      backdropOpacity={0.3}
+    >
+      <View style={ApplicationStyles.modalContainer}>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("wizard.calibrate.weight.confirmTitle")}</Text>
+        <View style={styles.spacer} />
+        <View style={styles.itemContianer}>
+          <Text style={styles.itemText}>{t("wizard.calibrate.weight.confirmMessage")}</Text>
+          <View style={styles.spacerDouble} />
+          <View style={ApplicationStyles.buttonsContainer}>
+            <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={onRecalibrateConfirmPress}>
+              <Text style={styles.text}>{t("wizard.calibrate.weight.confirmOkButton")}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={hideModal}>
+              <Text style={styles.text}>{t("common.btnCancel")}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.spacerHalf} />
+        </View>
+      </View>
+    </Modal>
+
   </>)
 }
 
