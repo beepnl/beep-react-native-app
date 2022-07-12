@@ -20,6 +20,7 @@ import { WeightModel } from '../../Models/WeightModel';
 
 export enum BeepBaseTypes {
   CLEAR = 'CLEAR',
+  BLE_FAILURE = 'BLE_FAILURE',
   SET_PAIRED_PERIPHERAL = 'SET_PAIRED_PERIPHERAL',
   SET_DEVICE = 'SET_DEVICE',
   SET_FIRMWARE_VERSION = 'SET_FIRMWARE_VERSION',
@@ -45,6 +46,7 @@ export enum BeepBaseTypes {
 
 interface C extends ActionCreators {
   clear: () => { type: BeepBaseTypes.CLEAR };
+  bleFailure: ((error: any) => { type: BeepBaseTypes.BLE_FAILURE })
   setPairedPeripheral: (peripheral: PairedPeripheralModel) => { type: BeepBaseTypes.SET_PAIRED_PERIPHERAL };
   setDevice: (device: DeviceModel) => { type: BeepBaseTypes.SET_DEVICE };
   setFirmwareVersion: (firmwareVersion: FirmwareVersionModel) => { type: BeepBaseTypes.SET_FIRMWARE_VERSION };
@@ -70,6 +72,7 @@ interface C extends ActionCreators {
 
 const CreatedActions = createActions( {
   clear: null,
+  bleFailure: ['error'],
   setPairedPeripheral: ['peripheral'],
   setDevice: ['device'],
   setFirmwareVersion: ['firmwareVersion'],

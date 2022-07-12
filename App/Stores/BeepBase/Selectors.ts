@@ -2,6 +2,10 @@ import { AppState } from 'App/Stores'
 import { LogFileFrameModel } from '../../Models/LogFileFrameModel'
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel'
 
+export const getError = (state: AppState) => {
+  return state.beepBase.error
+}
+
 export const getPairedPeripheral = (state: AppState) => {
   return state.beepBase.pairedPeripheral
 }

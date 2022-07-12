@@ -16,6 +16,7 @@ import { TemperatureModel } from "../../Models/TemperatureModel"
 import { WeightModel } from "../../Models/WeightModel"
 
 export interface BeepBaseState {
+  error: any
   pairedPeripheral: PairedPeripheralModel | undefined
   device: DeviceModel | undefined
   firmwareVersion: FirmwareVersionModel | undefined
@@ -38,6 +39,7 @@ export interface BeepBaseState {
 }
 
 export const INITIAL_STATE: BeepBaseState = {
+  error: undefined,
   pairedPeripheral: undefined,
   device: undefined,
   firmwareVersion: undefined,

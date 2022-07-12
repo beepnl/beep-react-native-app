@@ -5,6 +5,13 @@ import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel'
 
 export const clear = (state: BeepBaseState, payload: any) => INITIAL_STATE
 
+export const bleFailure = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    error: payload.error
+  }
+}
+
 export const setPairedPeripheral = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
@@ -160,6 +167,7 @@ export const setClock = (state: BeepBaseState, payload: any) => {
 
 export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.CLEAR]: clear,
+  [BeepBaseTypes.BLE_FAILURE]: bleFailure,
   [BeepBaseTypes.SET_PAIRED_PERIPHERAL]: setPairedPeripheral,
   [BeepBaseTypes.SET_DEVICE]: setDevice,
   [BeepBaseTypes.SET_FIRMWARE_VERSION]: setFirmwareVersion,

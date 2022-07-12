@@ -13,8 +13,7 @@ import styles from './RootScreenStyle'
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthStack, AppStack } from './AppNavigation';
 import { navigationRef } from '../../Services/NavigationService';
-import { NativeModules, NativeEventEmitter, ToastAndroid, Platform } from "react-native";
-import BleManager, { Peripheral } from 'react-native-ble-manager'
+import { NativeModules, NativeEventEmitter, Text } from "react-native";
 import BleHelpers from '../../Helpers/BleHelpers';
 import moment from 'moment'
 import i18n from '../../Localization';
@@ -23,7 +22,8 @@ import api from 'App/Services/ApiService'
 // Data
 import StartupActions from 'App/Stores/Startup/Actions'
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
-import { getError } from 'App/Stores/Api/Selectors';
+import { getError as getApiError } from 'App/Stores/Api/Selectors';
+import { getError as getBleError } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { PairedPeripheralModel } from 'App/Models/PairedPeripheral';
 import { getToken } from 'App/Stores/User/Selectors';
@@ -43,12 +43,11 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const languageCode = useTypedSelector<string>(getLanguageCode)
-  const [isScanning, setIsScanning] = useState(false)
   const dropDownAlert = useRef<DropdownAlert>(null);
-  const error = useSelector(getError)
+  const apiError: any = useTypedSelector<any>(getApiError)
+  const bleError: string = useTypedSelector<any>(getBleError)
   const token: string = useTypedSelector<string>(getToken)
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  // const pairedPeripherals: Array<PairedPeripheralModel> = useTypedSelector<Array<PairedPeripheralModel>>(getPairedPeripherals)
   const { appState } = useAppState();
 
   useEffect(() => {
@@ -83,7 +82,6 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     }
     
     return (() => {
-      // BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
       BleManagerConnectPeripheralSubscription && BleManagerConnectPeripheralSubscription.remove()
       BleManagerDisconnectPeripheralSubscription && BleManagerDisconnectPeripheralSubscription.remove()
     })
@@ -91,7 +89,6 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   
   useEffect(() => {
     if (peripheral && appState == "active") {
-      let scanning = false    //also need a local flag because useState setter is async
       BleHelpers.isConnected(peripheral.id).then((isConnected : boolean) => {
         if (peripheral.isConnected != isConnected) {
           const updated = {
@@ -110,12 +107,18 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   }, [languageCode])
 
   useEffect(() => {
-    if (error && dropDownAlert?.current) {
-      const apiMessage = error.message
-      const message = t(`error.${error.problem}`, apiMessage)
+    if (apiError && dropDownAlert?.current) {
+      const apiMessage = apiError.message
+      const message = t(`error.${apiError.problem}`, apiMessage)
       dropDownAlert.current.alertWithType('error', t("common.error"), message);
     }
-  }, [error])
+  }, [apiError])
+
+  useEffect(() => {
+    if (bleError && dropDownAlert?.current) {
+      dropDownAlert.current.alertWithType('error', t("common.error"), bleError);
+    }
+  }, [bleError])
 
   return (
     <View style={styles.mainContainer}>

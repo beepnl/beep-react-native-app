@@ -24,6 +24,7 @@ import { LoRaWanAppKeyParser } from '../Models/LoRaWanAppKeyModel';
 import { ApplicationConfigParser } from '../Models/ApplicationConfigModel';
 import { BatteryParser } from '../Models/BatteryModel';
 import { ClockModel } from '../Models/ClockModel';
+import { ResponseModel } from '../Models/ResponseModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -108,6 +109,7 @@ export default class BleHelpers {
   static BleManagerDidUpdateValueForTXLogCharacteristicSubscription: EmitterSubscription
 
   static enableBluetooth() {
+    store.dispatch(BeepBaseActions.bleFailure(undefined))
     switch (Platform.OS) {
       case "ios":
         return new Promise<void>((resolve) => {
@@ -120,7 +122,9 @@ export default class BleHelpers {
       case "android":
         return  BleManager.enableBluetooth()
         .catch((error) => {
-          console.log("The user did not enable bluetooth. Error:", error);
+          const message = "The user did not enable bluetooth. Error: " + error
+          console.log(message)
+          store.dispatch(BeepBaseActions.bleFailure(message))
         });
     }
   }
@@ -171,21 +175,25 @@ export default class BleHelpers {
   }
 
   static connectPeripheral(peripheralId: string) {
+    store.dispatch(BeepBaseActions.bleFailure(undefined))
     return BleManager.connect(peripheralId).then(() => {
       console.log("Connected to " + peripheralId)
       return delay(500).then(() => {
         return BleHelpers.retrieveServices(peripheralId)
         .catch((error) => {
-          console.log(error);
+          console.log(error)
+          store.dispatch(BeepBaseActions.bleFailure(error))
         })
       })
     })
     .catch((error) => {
-      console.log(error);
+      console.log(error)
+      store.dispatch(BeepBaseActions.bleFailure(error))
     })
   }
 
   static scanPeripheralByName(startsWith: string): Promise<Peripheral> {
+    store.dispatch(BeepBaseActions.bleFailure(undefined))
     const TIME_OUT = 10   //seconds
     let isScanning = false
 
@@ -221,10 +229,13 @@ export default class BleHelpers {
         }).catch(err => {
           isScanning = false
           console.error(err)
+          store.dispatch(BeepBaseActions.bleFailure(err))
         })
       })
       .catch((error) => {
-        console.log("The user refuse to enable bluetooth", error);
+        isScanning = false
+        console.log("The user refuse to enable bluetooth", error)
+        store.dispatch(BeepBaseActions.bleFailure(error))
       });
     })
   }
@@ -251,6 +262,10 @@ export default class BleHelpers {
       switch (command) {
         case COMMANDS.RESPONSE:
           console.log("BLE response", data)
+          model = ResponseModel.parse(data)
+          if (model.code > 0) {
+            store.dispatch(BeepBaseActions.bleFailure(model.toString()))
+          }
           break
 
         case COMMANDS.READ_FIRMWARE_VERSION:
@@ -311,20 +326,24 @@ export default class BleHelpers {
           store.dispatch(BeepBaseActions.setAudio(model))
           break
 
+        //hardware id
         case COMMANDS.READ_ATECC_READ_ID:
           model = new AteccParser({ data }).parse()
           store.dispatch(BeepBaseActions.setHardwareId(model))
           break
 
+        //flash log file
         case COMMANDS.READ_MX_FLASH:
           console.log(data)
           break
 
+        //flash log file size
         case COMMANDS.SIZE_MX_FLASH:
           model = LogFileSizeModel.parse(data)
           store.dispatch(BeepBaseActions.setLogFileSize(model))
           break
 
+        //clock
         case COMMANDS.READ_CLOCK:
           model = ClockModel.parse(data)
           store.dispatch(BeepBaseActions.setClock(model))
@@ -370,6 +389,7 @@ export default class BleHelpers {
   }
 
   static retrieveServices(peripheralId: string) {
+    store.dispatch(BeepBaseActions.bleFailure(undefined))
     console.log("BleHelpers retrieveServices")
     return delay(500).then(() => {
       return BleManager.retrieveServices(peripheralId).then((peripheralInfo) => {
@@ -388,7 +408,9 @@ export default class BleHelpers {
         })
       })
       .catch((error) => {
-        console.log("Failed to retrieve services of " + peripheralId + ". Error: " + error);
+        const message = "Failed to retrieve services of " + peripheralId + ". Error: " + error
+        console.log(message)
+        store.dispatch(BeepBaseActions.bleFailure(message))
       })
     })
   }
@@ -442,10 +464,13 @@ export default class BleHelpers {
   }
 
   static readBatteryLevel(peripheralId: string) {
+    store.dispatch(BeepBaseActions.bleFailure(undefined))
     return BleHelpers.read(peripheralId, BATTERY_SERVICE, BATTERY_LEVEL_CHARACTERISTIC).then((value: any) => {
       const buffer: Buffer = Buffer.from(value)
       const model = new BatteryParser({ data: buffer }).parse()
       store.dispatch(BeepBaseActions.setBattery(model))
+    }).catch(error => {
+      store.dispatch(BeepBaseActions.bleFailure(error))
     })
   }
 
@@ -454,6 +479,7 @@ export default class BleHelpers {
   }
 
   static write(peripheralId: string, command: any, params?: any) {
+    store.dispatch(BeepBaseActions.bleFailure(undefined))
 
     const isString = function(value: any) {
       return typeof value === 'string' || value instanceof String
@@ -503,7 +529,8 @@ export default class BleHelpers {
       console.log("Written data: " + BleHelpers.byteToHexString([...buffer]));
     })
     .catch((error) => {
-      console.log(error);
+      console.log(error)
+      store.dispatch(BeepBaseActions.bleFailure(error))
     });
   }
 }
