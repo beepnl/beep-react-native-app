@@ -2,6 +2,7 @@ import { put, call, select, all, take } from 'redux-saga/effects'
 import ApiActions from 'App/Stores/Api/Actions'
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import UserActions from 'App/Stores/User/Actions'
+import AuthActions from 'App/Stores/Auth/Actions'
 import api from 'App/Services/ApiService'
 import { DeviceModel } from '../Models/DeviceModel'
 import { FirmwareModel } from '../Models/FirmwareModel'
@@ -13,9 +14,50 @@ import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENAB
 import { APP_EUI, TTNModel } from '../Models/TTNModel'
 import { BeepBaseTypes } from '../Stores/BeepBase/Actions'
 import { CHANNELS } from '../Models/AudioModel'
+import { getRefreshToken } from '../Stores/User/Selectors'
+
+function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Parameters<Fn>) {
+  const response = yield fn(...args)
+  if (response.status == 401 || response.status == 403) {
+    //token expired
+    console.log("token expired!", response)
+    
+    //refresh token
+    const refreshToken = yield select(getRefreshToken)
+    if (!refreshToken) {
+      //no refresh token, logout user
+      console.log("no refresh token")
+      yield put(AuthActions.logout())
+      return { ok: false, data: "Authorization token expired" }
+    }
+    //Beep API has no support for refresh tokens
+    // const refreshResponse = yield call(api.refreshToken, refreshToken)
+    const refreshResponse = { ok: false }
+    if (refreshResponse.ok && refreshResponse.data?.token) {
+      //refresh successful
+      console.log("refresh successful!", refreshResponse)
+      const { token, refresh_token } = refreshResponse.data
+      yield call(api.setKey, token)
+      yield put(UserActions.setToken(token, refresh_token))
+      
+      //redo request with new token
+      const redoResponse = yield fn(...args)
+      if (redoResponse.code == 401) {
+        //request failed after refresh, logout user
+        yield put(AuthActions.logout())
+      }
+      return redoResponse
+    } else {
+      //refresh failed, logout user
+      console.log("refresh failed")
+      yield put(AuthActions.logout())
+    }
+  }
+  return response
+}
 
 export function* getDevices(action: any) {
-  const response = yield call(api.getDevices)
+  const response = yield guardedRequest(api.getDevices)
   if (response && response.ok) {
     const devices: Array<DeviceModel> = []
     response.data?.map((item: any) => devices.push(new DeviceModel(item)))
@@ -31,7 +73,7 @@ export function* checkDeviceRegistration(action: any) {
   const { peripheralId, hardwareId } = action
 
   //search for existing device
-  const deviceResponse = yield call(api.getDevice, hardwareId.id)
+  const deviceResponse = yield guardedRequest(api.getDevice, hardwareId.id)
   if (deviceResponse && deviceResponse.ok && deviceResponse.data) {
     if (deviceResponse.data.info) {
       //info field has error code
@@ -65,7 +107,7 @@ export function* registerDevice(action: any) {
   yield put(ApiActions.setRegisterState("registering"))
 
   const { peripheralId, requestParams } = action
-  const registerResponse = yield call(api.registerDevice, requestParams)
+  const registerResponse = yield guardedRequest(api.registerDevice, requestParams)
   if (registerResponse && registerResponse.ok) {
     yield put(ApiActions.setRegisterState("registered"))
     const device = new DeviceModel(registerResponse.data)
@@ -132,7 +174,7 @@ export function* configureLoRaAutomatic(action: any) {
     }
   }
   
-  const response = yield call(api.createTtnDevice, hardwareId.toString(), requestParams)
+  const response = yield guardedRequest(api.createTtnDevice, hardwareId.toString(), requestParams)
   if (response && response.ok) {
     //retrieve keys from api's TTN registration
     const ttn = new TTNModel(response.data)
@@ -209,7 +251,7 @@ export function* initializeWeightSensor(action: any) {
 
 export function* getSensorDefinitions(action: any) {
   const { device } = action
-  const response = yield call(api.getSensorDefinitions, device.id)
+  const response = yield guardedRequest(api.getSensorDefinitions, device.id)
   if (response && response.ok) {
     const sensorDefinitions: Array<SensorDefinitionModel> = []
     response.data?.map((item: any) => sensorDefinitions.push(new SensorDefinitionModel(item)))
@@ -222,7 +264,7 @@ export function* getSensorDefinitions(action: any) {
 
 export function* createSensorDefinition(action: any) {
   const { requestParams } = action
-  const response = yield call(api.createSensorDefinition, requestParams)
+  const response = yield guardedRequest(api.createSensorDefinition, requestParams)
   if (response && response.ok) {
     //TODO: update device with defs from response
   } else {
@@ -242,7 +284,7 @@ export function* updateSensorDefinition(action: any) {
   if (sensorDefinition.offset != undefined) requestParams.offset = sensorDefinition.offset
   if (sensorDefinition.multiplier != undefined) requestParams.multiplier = sensorDefinition.multiplier
   
-  const response = yield call(api.updateSensorDefinition, sensorDefinition.id, requestParams)
+  const response = yield guardedRequest(api.updateSensorDefinition, sensorDefinition.id, requestParams)
   if (response && response.ok) {
     const sensorDefinition = new SensorDefinitionModel(response.data)
     yield put(BeepBaseActions.updateSensorDefinition(sensorDefinition))

@@ -4,6 +4,10 @@ export const getToken = (state: AppState) => {
   return state.user.token
 }
 
+export const getRefreshToken = (state: AppState) => {
+  return state.user.refreshToken
+}
+
 export const getUser = (state: AppState) => {
   return state.user.user
 }

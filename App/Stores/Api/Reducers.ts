@@ -31,7 +31,7 @@ export const setLoRaConfigState = (state: ApiState, payload: any) => {
 export const apiFailure = (state: ApiState, payload: any) => {
   const { response } = payload
   const api = response && response.data
-  const message = api.message || api.errors || api
+  const message = api?.message || api?.errors || api
   return {
     ...state,
     error: {
