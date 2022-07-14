@@ -13,6 +13,7 @@ import { Colors } from '../../Theme';
 // Utils
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import RNFS, { UploadBeginCallbackResult, UploadFileItem, UploadProgressCallbackResult, UploadResult } from 'react-native-fs';
+import ApiService from '../../Services/ApiService';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
@@ -52,6 +53,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const [uploadProgress, setUploadProgress] = useState(0)
   const [state, setState] = useState<STATE>("idle")
   const [error, setError] = useState("")
+  const useProduction = useTypedSelector<boolean>(getUseProduction)
         
   useEffect(() => {
     dispatch(BeepBaseActions.setLogFileProgress(0))
@@ -69,7 +71,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
       //download finished, upload to api
       setState("uploading")
       RNFS.uploadFiles({
-        toUrl: ApiService.LOG_FILE_UPLOAD_URL,
+        toUrl: ApiService.getLogFileUploadUrl(useProduction),
         files: [{ 
           name: "file", 
           filename: BleHelpers.LOG_FILE_NAME,
