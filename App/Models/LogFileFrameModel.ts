@@ -21,22 +21,3 @@ export class LogFileFrameModel {
     return null
   }
 }
-
-// export class LogFileParser {
-//   frame: number
-//   data: Buffer;
-
-//   constructor(props: any) {
-//     this.frame = props.frame
-//     this.data = props.data
-//   }
-
-//   parse(value: any): LogFileFrameModel {
-//     let data, frame
-//     if (this.data?.length > 0) {
-//       frame = this.data.readInt16BE()
-//       data = this.data.subarray(2)
-//     }
-//     return new LogFileFrameModel({ frame, data })
-//   }
-// }

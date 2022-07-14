@@ -376,15 +376,21 @@ export default class BleHelpers {
     })
   }
 
+  static lastFrame: number = -1
+
   static handleLogFileCharacteristic({ value, peripheral }) {
     const buffer: Buffer = Buffer.from(value)
     const model = LogFileFrameModel.parse(buffer)
     if (model) {
-      store.dispatch(BeepBaseActions.addLogFileFrame(model))
-      RNFS.appendFile(BleHelpers.LOG_FILE_PATH, model.data.toString("hex"))
-      .catch((err) => {
-        console.log("Error writing log file frame", err);
-      });
+      //skip frames with equal frame numbers, see https://github.com/innoveit/react-native-ble-manager/issues/577
+      if (model.frame != BleHelpers.lastFrame) {
+        store.dispatch(BeepBaseActions.addLogFileFrame(model))
+        BleHelpers.lastFrame = model.frame
+        RNFS.appendFile(BleHelpers.LOG_FILE_PATH, model.data.toString("hex"))
+        .catch((err) => {
+          console.log("Error writing log file frame", err);
+        });
+      }
     }
   }
 
