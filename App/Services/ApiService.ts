@@ -5,7 +5,7 @@ const TEST_URL = 'https://test.beep.nl/api'
 const BASE_URL = 'https://api.beep.nl/api'
 const ASSETS_URL = "https://assets.beep.nl"
 const LOG_FILE_UPLOAD_URL = BASE_URL + "/sensors/flashlog"
-const LORA_SENSORS_URL = BASE_URL + "/lora_sensors"
+const LORA_SENSORS_URL = "/lora_sensors"
 
 const api = create({
   baseURL: BASE_URL,
@@ -28,6 +28,10 @@ function setBaseUrl(useProduction: boolean) {
 
 function getBaseUrl(useProduction: boolean) {
   return useProduction ? BASE_URL : TEST_URL
+}
+
+function getLoRaSensorsUrl(useProduction: boolean) {
+  return getBaseUrl(useProduction) + LORA_SENSORS_URL
 }
 
 const apiAssets = create({
@@ -108,5 +112,5 @@ export default {
   getBaseUrl,
   setBaseUrl,
   LOG_FILE_UPLOAD_URL,
-  LORA_SENSORS_URL,
+  getLoRaSensorsUrl,
 }

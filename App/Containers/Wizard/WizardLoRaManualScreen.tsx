@@ -23,6 +23,7 @@ import { getLoRaWanState } from '../../Stores/BeepBase/Selectors';
 import { LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
 import { getLoRaConfigState } from '../../Stores/Api/Selectors';
 import { LoRaConfigState } from '../../Stores/Api/InitialState';
+import { getUseProduction } from '../../Stores/User/Selectors';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
@@ -43,6 +44,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const useProduction = useTypedSelector<boolean>(getUseProduction)
   const fromSensorScreen = route.params?.fromSensorScreen
   const state: LoRaConfigState = useTypedSelector<LoRaConfigState>(getLoRaConfigState)
   const retry = useRef(RETRY_COUNT)
@@ -148,7 +150,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
 
       <View style={styles.itemContainer}>
-        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{ApiService.LORA_SENSORS_URL}</Text>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{ApiService.getLoRaSensorsUrl(useProduction)}</Text>
       </View>
 
       <View style={styles.spacerDouble} />
