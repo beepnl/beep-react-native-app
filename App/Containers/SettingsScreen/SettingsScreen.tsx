@@ -38,7 +38,7 @@ const SettingsScreen: FunctionComponent<Props> = ({
   const token: string = useTypedSelector<string>(getToken)
   const user: UserModel = useTypedSelector<UserModel>(getUser)
   const jsVersion =  nodePackage.version
-  const [useProduction, _setUseProduction] = useState(useTypedSelector<UserModel>(getUseProduction))
+  const [useProduction, _setUseProduction] = useState(useTypedSelector<boolean>(getUseProduction))
   const setUseProduction = (value: boolean) => {
     _setUseProduction(value)
     useProductionRef.current = value
