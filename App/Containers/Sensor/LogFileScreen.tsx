@@ -179,9 +179,9 @@ const LogFileScreen: FunctionComponent<Props> = ({
         </View>
         <View style={styles.spacer} />
         <View>
-          <Text style={[styles.text]}>{`${Math.round(downloadProgress * 100)} %`}</Text>
+          <Text style={[styles.text]}>{`${Math.floor(downloadProgress * 100)} %`}</Text>
           <View style={styles.spacer} />
-          <Text style={[styles.text]}>{`${Math.round(uploadProgress * 100)} %`}</Text>
+          <Text style={[styles.text]}>{`${Math.floor(uploadProgress * 100)} %`}</Text>
         </View>
       </View>
 
