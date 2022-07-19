@@ -161,6 +161,11 @@ const LogFileScreen: FunctionComponent<Props> = ({
       >
         <Text style={styles.text}>{t("logFile.downloadLogFile")}</Text>
       </TouchableOpacity>
+
+      <View style={styles.spacer} />
+
+      <Text style={styles.instructions}>{t(`logFile.instructions${ state == "downloading" || state == "uploading" || state == "erasing" ? "InProgress" : "" }`)}</Text>
+      
       
       <View style={styles.spacerDouble} />
       <Text style={styles.label}>{t("logFile.progress")}</Text>
