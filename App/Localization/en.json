@@ -326,8 +326,8 @@
     "progress": "Progress",
     "download": "Download",
     "upload": "Upload",
-    "finishedTitle": "Finished",
-    "finishedMessage": ""
+    "timeout": "BEEP base did not respond in a timely fashion",
+    "finishedMessage": "Upload finished!"
   },
   "firmware": {
     "screenTitle": "Firmware",

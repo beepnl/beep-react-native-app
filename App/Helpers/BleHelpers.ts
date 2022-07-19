@@ -262,9 +262,24 @@ export default class BleHelpers {
       switch (command) {
         case COMMANDS.RESPONSE:
           console.log("BLE response", data)
-          model = ResponseModel.parse(data)
-          if (model.code > 0) {
-            store.dispatch(BeepBaseActions.bleFailure(model.toString()))
+          const response = ResponseModel.parse(data)
+          if (response.code > 0) {
+            switch (response.command) {
+              case COMMANDS.READ_MX_FLASH:
+                  //00 00 0E 0F
+                  if (response.code == 0x00E0F) {
+                    console.log("Download ready")
+                    //TODO: notify log file screen?
+                  }
+                break;
+
+              case COMMANDS.ERASE_MX_FLASH:
+              break;
+
+              default:
+                store.dispatch(BeepBaseActions.bleFailure(response.toString()))
+                break;
+            }
           }
           break
 
@@ -343,6 +358,12 @@ export default class BleHelpers {
           store.dispatch(BeepBaseActions.setLogFileSize(model))
           break
 
+        //erase flash log file
+        case COMMANDS.ERASE_MX_FLASH:
+          model = EraseLogFileModel.parse(data)
+          store.dispatch(BeepBaseActions.setLogFileSize(model))
+          break
+
         //clock
         case COMMANDS.READ_CLOCK:
           model = ClockModel.parse(data)
@@ -352,9 +373,13 @@ export default class BleHelpers {
     }
   }
 
+  static lastFrame: number = -1
+
   static initLogFile() {
+    BleHelpers.lastFrame = -1
+
     //delete old log file
-    RNFS.exists(BleHelpers.LOG_FILE_PATH).then((exists: boolean) => {
+    return RNFS.exists(BleHelpers.LOG_FILE_PATH).then((exists: boolean) => {
       if (exists) {
         RNFS.unlink(BleHelpers.LOG_FILE_PATH)
         .then(() => {
@@ -375,8 +400,6 @@ export default class BleHelpers {
       console.log("Error copying to SD card", error)
     })
   }
-
-  static lastFrame: number = -1
 
   static handleLogFileCharacteristic({ value, peripheral }) {
     const buffer: Buffer = Buffer.from(value)

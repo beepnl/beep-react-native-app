@@ -1,0 +1,35 @@
+// {
+//   "lines_received":2,
+//   "bytes_received":80927,
+//   "log_size_bytes":null,
+//   "log_has_timestamps":1571,
+//   "log_saved":true,
+//   "log_parsed":true,
+//   "log_messages":1599,
+//   "erase_mx_flash":-1,
+//   "erase":false,
+//   "erase_type":
+//   "fatfs"
+// }
+
+// When the response is 200 OK and erase_mx_flash > -1, provide the ERASE_MX_FLASH 
+// BLE command (0x21) to the BEEP base with the last byte being the HEX value of the
+// erase_mx_flash value (0 = 0x00, 1 = 0x01, i.e.0x2100, or 0x2101,
+// i.e. erase_type:"fatfs", or erase_type:"full")
+
+export type ERASE_KIND = ""
+export class UploadResponseModel {
+  eraseMxFlash: number | undefined
+
+  constructor(props: any) {
+    this.eraseMxFlash = props.erase_mx_flash
+  }
+
+  shouldErase(): boolean {
+    return this.eraseMxFlash ? this.eraseMxFlash > -1 : false
+  }
+
+  getEraseType(): number {
+    return this.eraseMxFlash!
+  }
+}

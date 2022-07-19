@@ -8,12 +8,13 @@ import { useNavigation } from '@react-navigation/native';
 
 // Styles
 import styles from './styles'
-import { Colors } from '../../Theme';
+import { ApplicationStyles, Colors, Fonts } from '../../Theme';
 
 // Utils
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import RNFS, { UploadBeginCallbackResult, UploadFileItem, UploadProgressCallbackResult, UploadResult } from 'react-native-fs';
 import ApiService from '../../Services/ApiService';
+import useTimeout from '../../Helpers/useTimeout';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
@@ -21,22 +22,23 @@ import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { getLogFileSize } from 'App/Stores/BeepBase/Selectors'
 import { LogFileSizeModel } from '../../Models/LogFileSizeModel';
-import { getCombinedLogFileFrames } from 'App/Stores/BeepBase/Selectors'
 import { getLogFileProgress } from 'App/Stores/BeepBase/Selectors'
+import { getUseProduction } from '../../Stores/User/Selectors';
+import { UploadResponseModel } from '../../Models/UploadResponseModel';
 
 // Components
-import { Text, View, PermissionsAndroid, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
-import ApiService from '../../Services/ApiService';
 import * as Progress from 'react-native-progress';
+import Modal from 'react-native-modal';
 
 type STATE = 
   "idle" |
   "downloading" |
   "uploading" |
   "completed" |
+  "erasing" |
   "failed"
 
 interface Props {
@@ -47,6 +49,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const [isModalVisible, setModalVisible] = useState(false)
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const logFileSize: LogFileSizeModel = useTypedSelector<LogFileSizeModel>(getLogFileSize)
   const logFileProgress: number = useTypedSelector<number>(getLogFileProgress)
@@ -55,19 +58,27 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const [error, setError] = useState("")
   const useProduction = useTypedSelector<boolean>(getUseProduction)
         
+  const TIMEOUT = 10000
+
   useEffect(() => {
-    dispatch(BeepBaseActions.setLogFileProgress(0))
+    dispatch(BeepBaseActions.setLogFileSize(undefined))
+    dispatch(BeepBaseActions.clearLogFileFrames())
     if (peripheral) {
       BleHelpers.write(peripheral.id, COMMANDS.SIZE_MX_FLASH)
     }  
   }, []);
+
+  useTimeout(() => {
+    setState("failed")
+    setError(t("logFile.timeout"))
+  }, state == "downloading" && logFileProgress == 0 ? TIMEOUT : null
+  )
 
   useEffect(() => {
     if (logFileProgress > 0 && logFileProgress === logFileSize?.value()) {
       //download finished, copy to SD card
       // BleHelpers.exportLogFile()   //when uncommenting, also uncomment permission request in onDownloadLogFilePress()
 
-      // dispatch(BeepBaseActions.setLogFileProgress(0))
       //download finished, upload to api
       setState("uploading")
       RNFS.uploadFiles({
@@ -90,9 +101,17 @@ const LogFileScreen: FunctionComponent<Props> = ({
         progress: (response: UploadProgressCallbackResult) => setUploadProgress(response.totalBytesSent / response.totalBytesExpectedToSend)
       }).promise.then((response: UploadResult) => {
         if (response.statusCode == 200) {
-          console.log('FILES UPLOADED!'); // response.statusCode, response.headers, response.body
-          setState("completed")
+          console.log('FILES UPLOADED!', response); // response.statusCode, response.headers, response.body
           setUploadProgress(1)
+          const parsedJson = JSON.parse(response.body)
+          const uploadResponse = new UploadResponseModel(parsedJson)
+          if (uploadResponse.shouldErase()) {
+            setState("erasing")
+            BleHelpers.write(peripheral.id, COMMANDS.ERASE_MX_FLASH, uploadResponse.getEraseType())
+          } else {
+            setState("completed")
+            setModalVisible(true)
+          }
         } else {
           console.log('SERVER ERROR');
           setUploadProgress(0)
@@ -121,6 +140,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
     if (logFileSize) {
       setUploadProgress(0)
       setState("downloading")
+      setError("")
       dispatch(BeepBaseActions.clearLogFileFrames())
       if (peripheral) {
         BleHelpers.initLogFile().then(() => {
@@ -133,6 +153,14 @@ const LogFileScreen: FunctionComponent<Props> = ({
   let downloadProgress = logFileProgress / logFileSize?.value()
   if (isNaN(downloadProgress)) {
     downloadProgress = 0
+  }
+
+  const hideModal = () => {
+    setModalVisible(false)
+    dispatch(BeepBaseActions.clearLogFileFrames())
+    setUploadProgress(0)
+    setState("idle")
+    setError("")
   }
 
   return (<>
@@ -157,7 +185,13 @@ const LogFileScreen: FunctionComponent<Props> = ({
       <TouchableOpacity
         style={styles.button} 
         onPress={onDownloadLogFilePress} 
-        disabled={logFileSize == undefined || logFileSize.value() == 0 || state == "downloading" || state == "uploading"}
+        disabled={
+          logFileSize == undefined || 
+          logFileSize.value() == 0 || 
+          state == "downloading" || 
+          state == "uploading" ||
+          state == "erasing"
+        }
       >
         <Text style={styles.text}>{t("logFile.downloadLogFile")}</Text>
       </TouchableOpacity>
@@ -165,7 +199,6 @@ const LogFileScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
 
       <Text style={styles.instructions}>{t(`logFile.instructions${ state == "downloading" || state == "uploading" || state == "erasing" ? "InProgress" : "" }`)}</Text>
-      
       
       <View style={styles.spacerDouble} />
       <Text style={styles.label}>{t("logFile.progress")}</Text>
@@ -209,6 +242,30 @@ const LogFileScreen: FunctionComponent<Props> = ({
       </>}
 
     </ScrollView>
+
+    <Modal
+      isVisible={isModalVisible}
+      onBackdropPress={hideModal}
+      onBackButtonPress={hideModal}
+      useNativeDriver={true}
+      backdropOpacity={0.3}
+    >
+      <View style={ApplicationStyles.modalContainer}>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("logFile.screenTitle")}</Text>
+        <View style={styles.spacer} />
+        <View style={styles.itemContianer}>
+          <Text style={styles.itemText}>{t("logFile.finishedMessage")}</Text>
+          <View style={styles.spacerDouble} />
+          <View style={ApplicationStyles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={hideModal}>
+              <Text style={styles.text}>{t("common.btnOk")}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.spacerHalf} />
+        </View>
+      </View>
+    </Modal>
+
   </>)
 }
 

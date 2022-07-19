@@ -33,7 +33,7 @@ export class ResponseModel {
   }
 
   toString() {
-    return `Command code: ${this.command}. Error message: %{this.message}`
+    return `Command code: ${this.command}. Error message: ${this.message}`
   }
 
   static parse(rawData: any) {
