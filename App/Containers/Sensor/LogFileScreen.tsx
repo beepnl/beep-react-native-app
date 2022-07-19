@@ -123,8 +123,9 @@ const LogFileScreen: FunctionComponent<Props> = ({
       setState("downloading")
       dispatch(BeepBaseActions.clearLogFileFrames())
       if (peripheral) {
-        BleHelpers.initLogFile()
-        BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
+        BleHelpers.initLogFile().then(() => {
+          BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
+        })
       }
     }
   }
