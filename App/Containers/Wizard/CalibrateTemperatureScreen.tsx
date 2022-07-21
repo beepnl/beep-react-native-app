@@ -124,6 +124,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
           style={styles.input}
           onChangeText={names[index].setValue}
           value={names[index].value}
+          maxLength={100}
           returnKeyType="next"
           // blurOnSubmit={false}
           // onSubmitEditing={() => inputPasswordRef?.current?.focus()}

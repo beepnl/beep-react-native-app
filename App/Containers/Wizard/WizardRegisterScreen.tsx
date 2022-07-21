@@ -129,6 +129,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
           style={styles.input}
           onChangeText={setName}
           value={name}
+          maxLength={100}
           returnKeyType="next"
         />
         <View style={styles.spacerDouble} />
