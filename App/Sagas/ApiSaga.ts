@@ -159,6 +159,14 @@ export function* registerDevice(action: any) {
   }
 }
 
+export function* readLoraState(action: any) {
+  const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
+  yield call(BleHelpers.write, peripheral.id, COMMANDS.READ_LORAWAN_STATE)
+  yield call(BleHelpers.write, peripheral.id, COMMANDS.READ_LORAWAN_DEVEUI)
+  yield call(BleHelpers.write, peripheral.id, COMMANDS.READ_LORAWAN_APPEUI)
+  yield call(BleHelpers.write, peripheral.id, COMMANDS.READ_LORAWAN_APPKEY)
+}
+
 export function* configureLoRaAutomatic(action: any) {
   yield put(ApiActions.setLoRaConfigState("registeringApi"))
 
@@ -206,6 +214,7 @@ export function* configureLoRaManual(action: any) {
   yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, devEUI)
   yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
   yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+  yield call(readLoraState, action)
   yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
 }
 
