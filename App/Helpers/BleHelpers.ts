@@ -25,6 +25,8 @@ import { ApplicationConfigParser } from '../Models/ApplicationConfigModel';
 import { BatteryParser } from '../Models/BatteryModel';
 import { ClockModel } from '../Models/ClockModel';
 import { ResponseModel } from '../Models/ResponseModel';
+import { getLogFileSize } from '../Stores/BeepBase/Selectors';
+import { EraseLogFileModel } from '../Models/EraseLogFileModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -268,8 +270,9 @@ export default class BleHelpers {
               case COMMANDS.READ_MX_FLASH:
                   //00 00 0E 0F
                   if (response.code == 0x00E0F) {
-                    console.log("Download ready")
-                    //TODO: notify log file screen?
+                    console.log("Download ready, received response code 0x00E0F")
+                    const logFileSize = getLogFileSize(store.getState())
+                    store.dispatch(BeepBaseActions.setLogFileProgress(logFileSize.data))
                   }
                 break;
 
@@ -279,6 +282,15 @@ export default class BleHelpers {
               default:
                 store.dispatch(BeepBaseActions.bleFailure(response.toString()))
                 break;
+            }
+          } else {
+            //NRF_SUCCESS
+            switch (response.command) {
+              case COMMANDS.READ_MX_FLASH:
+                console.log("Download ready, received NRF_SUCCESS")
+                const logFileSize = getLogFileSize(store.getState())
+                store.dispatch(BeepBaseActions.setLogFileProgress(logFileSize.data))
+                break
             }
           }
           break
