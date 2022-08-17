@@ -24,7 +24,6 @@ export class UploadResponseModel {
 
   constructor(props: any) {
     this.eraseMxFlash = props.erase_mx_flash
-    this.eraseMxFlash = 1
   }
 
   shouldErase(): boolean {
