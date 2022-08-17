@@ -142,6 +142,13 @@ export const addLogFileFrame = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setEraseLogFileProgress = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    eraseLogFileProgress: payload.progress
+  }
+}
+
 export const clearLogFileFrames = (state: BeepBaseState, payload: any) => {
   return {
     ...state,
@@ -185,6 +192,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.SET_LOG_FILE_SIZE]: setLogFileSize,
   [BeepBaseTypes.SET_LOG_FILE_PROGRESS]: setLogFileProgress,
   [BeepBaseTypes.ADD_LOG_FILE_FRAME]: addLogFileFrame,
+  [BeepBaseTypes.SET_ERASE_LOG_FILE_PROGRESS]: setEraseLogFileProgress,
   [BeepBaseTypes.CLEAR_LOG_FILE_FRAMES]: clearLogFileFrames,
   [BeepBaseTypes.SET_BATTERY]: setBattery,
   [BeepBaseTypes.SET_CLOCK]: setClock,

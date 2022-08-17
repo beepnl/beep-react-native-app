@@ -33,7 +33,7 @@ export class EraseLogFileModel {
   }
 
   toString() {
-    return `Command code: ${this.command}. Error message: ${this.message}`
+    return `Erase log data error message: ${this.message}`
   }
 
   static parse(rawData: any) {

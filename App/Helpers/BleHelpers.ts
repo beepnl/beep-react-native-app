@@ -277,7 +277,10 @@ export default class BleHelpers {
                 break;
 
               case COMMANDS.ERASE_MX_FLASH:
-              break;
+                //fatfs mode error code or full mode timeout
+                const eraseLogFileModel = EraseLogFileModel.parse(data)
+                store.dispatch(BeepBaseActions.bleFailure(eraseLogFileModel.toString()))
+                break;
 
               default:
                 store.dispatch(BeepBaseActions.bleFailure(response.toString()))
@@ -291,6 +294,10 @@ export default class BleHelpers {
                 const logFileSize = getLogFileSize(store.getState())
                 store.dispatch(BeepBaseActions.setLogFileProgress(logFileSize.data))
                 break
+
+              case COMMANDS.ERASE_MX_FLASH:
+                store.dispatch(BeepBaseActions.setEraseLogFileProgress(1))
+              break
             }
           }
           break
@@ -372,8 +379,8 @@ export default class BleHelpers {
 
         //erase flash log file
         case COMMANDS.ERASE_MX_FLASH:
-          model = EraseLogFileModel.parse(data)
-          store.dispatch(BeepBaseActions.setLogFileSize(model))
+          // model = EraseLogFileModel.parse(data)
+          // store.dispatch(BeepBaseActions.setEraseLogFileProgress(0))
           break
 
         //clock

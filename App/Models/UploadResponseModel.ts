@@ -17,19 +17,28 @@
 // erase_mx_flash value (0 = 0x00, 1 = 0x01, i.e.0x2100, or 0x2101,
 // i.e. erase_type:"fatfs", or erase_type:"full")
 
-export type ERASE_KIND = ""
+export type ERASE_TYPE = "none" | "quick" | "full"
+
 export class UploadResponseModel {
   eraseMxFlash: number | undefined
 
   constructor(props: any) {
     this.eraseMxFlash = props.erase_mx_flash
+    this.eraseMxFlash = 1
   }
 
   shouldErase(): boolean {
-    return this.eraseMxFlash ? this.eraseMxFlash > -1 : false
+    return this.eraseMxFlash != undefined ? this.eraseMxFlash > -1 : false
   }
 
-  getEraseType(): number {
+  getEraseCode(): number {
     return this.eraseMxFlash!
+  }
+
+  getEraseType(): ERASE_TYPE {
+    if (this.eraseMxFlash != undefined) {
+      return this.eraseMxFlash == 0 ? "quick" : "full"
+    }
+    return "none"
   }
 }

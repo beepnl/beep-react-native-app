@@ -84,6 +84,10 @@ export const getCombinedLogFileFrames = (state: AppState) => {
   return Buffer.concat(buffers)
 }
 
+export const getEraseLogFileProgress = (state: AppState) => {
+  return state.beepBase.eraseLogFileProgress
+}
+
 export const getBatteryPercentage = (state: AppState) => {
   return state.beepBase.batteryPercentage
 }

@@ -326,8 +326,10 @@
     "progress": "Progress",
     "download": "Download",
     "upload": "Upload",
+    "erase": "Erase",
     "timeout": "BEEP base did not respond in a timely fashion",
-    "finishedMessage": "Upload finished!"
+    "uploadedMessage": "Upload finished",
+    "erasedMessage": "Erase successful"
   },
   "firmware": {
     "screenTitle": "Firmware",

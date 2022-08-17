@@ -15,6 +15,7 @@ import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import RNFS, { UploadBeginCallbackResult, UploadFileItem, UploadProgressCallbackResult, UploadResult } from 'react-native-fs';
 import ApiService from '../../Services/ApiService';
 import useTimeout from '../../Helpers/useTimeout';
+import useInterval from '../../Helpers/useInterval';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
@@ -23,8 +24,9 @@ import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { getLogFileSize } from 'App/Stores/BeepBase/Selectors'
 import { LogFileSizeModel } from '../../Models/LogFileSizeModel';
 import { getLogFileProgress } from 'App/Stores/BeepBase/Selectors'
+import { getEraseLogFileProgress } from 'App/Stores/BeepBase/Selectors'
 import { getUseProduction } from '../../Stores/User/Selectors';
-import { UploadResponseModel } from '../../Models/UploadResponseModel';
+import { ERASE_TYPE, UploadResponseModel } from '../../Models/UploadResponseModel';
 
 // Components
 import { Text, View, TouchableOpacity } from 'react-native';
@@ -53,6 +55,9 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const logFileSize: LogFileSizeModel = useTypedSelector<LogFileSizeModel>(getLogFileSize)
   const logFileProgress: number = useTypedSelector<number>(getLogFileProgress)
+  const eraseLogFileProgress: number = useTypedSelector<number>(getEraseLogFileProgress)
+  const [eraseType, setEraseType] = useState<ERASE_TYPE>("none")
+  const [fullEraseStart, setFullEraseStart] = useState<Date>()
   const [uploadProgress, setUploadProgress] = useState(0)
   const [state, setState] = useState<STATE>("idle")
   const [error, setError] = useState("")
@@ -71,8 +76,12 @@ const LogFileScreen: FunctionComponent<Props> = ({
   useTimeout(() => {
     setState("failed")
     setError(t("logFile.timeout"))
-  }, state == "downloading" && logFileProgress == 0 ? TIMEOUT : null
-  )
+  }, state == "downloading" && logFileProgress == 0 ? TIMEOUT : null)
+
+  useInterval(() => {
+    const diff = new Date().valueOf() - fullEraseStart?.valueOf()
+    dispatch(BeepBaseActions.setEraseLogFileProgress(diff / 1000 / 250))
+  }, state == "erasing" && eraseType == "full" ? (__DEV__ ? 5000 : 1000) : null)
 
   useEffect(() => {
     if (logFileProgress > 0 && logFileProgress === logFileSize?.value()) {
@@ -107,7 +116,13 @@ const LogFileScreen: FunctionComponent<Props> = ({
           const uploadResponse = new UploadResponseModel(parsedJson)
           if (uploadResponse.shouldErase()) {
             setState("erasing")
-            BleHelpers.write(peripheral.id, COMMANDS.ERASE_MX_FLASH, uploadResponse.getEraseType())
+            const eraseCode = uploadResponse.getEraseCode()
+            BleHelpers.write(peripheral.id, COMMANDS.ERASE_MX_FLASH, eraseCode)
+            const et = uploadResponse.getEraseType()
+            setEraseType(et)
+            if (et == "full") {
+              setFullEraseStart(new Date())
+            }
           } else {
             setState("completed")
             setModalVisible(true)
@@ -130,6 +145,13 @@ const LogFileScreen: FunctionComponent<Props> = ({
     }    
   }, [logFileProgress]);
 
+  useEffect(() => {
+    if (eraseLogFileProgress == 1) {
+      setState("completed")
+      setModalVisible(true)
+    }
+  }, [eraseLogFileProgress]);
+
   const onGetLogFileSizePress = () => {
     if (peripheral) {
       BleHelpers.write(peripheral.id, COMMANDS.SIZE_MX_FLASH)
@@ -137,11 +159,13 @@ const LogFileScreen: FunctionComponent<Props> = ({
   }
 
   const onDownloadLogFilePress = async () => {
+    onGetLogFileSizePress()
     if (logFileSize) {
       setUploadProgress(0)
       setState("downloading")
       setError("")
       dispatch(BeepBaseActions.clearLogFileFrames())
+      dispatch(BeepBaseActions.setEraseLogFileProgress(0))
       if (peripheral) {
         BleHelpers.initLogFile().then(() => {
           BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
@@ -159,6 +183,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
     setModalVisible(false)
     dispatch(BeepBaseActions.clearLogFileFrames())
     setUploadProgress(0)
+    dispatch(BeepBaseActions.setEraseLogFileProgress(0))
     setState("idle")
     setError("")
   }
@@ -209,18 +234,24 @@ const LogFileScreen: FunctionComponent<Props> = ({
           <Text style={[styles.text]}>{t("logFile.download")}</Text>
           <View style={styles.spacer} />
           <Text style={[styles.text]}>{t("logFile.upload")}</Text>
+          <View style={styles.spacer} />
+          <Text style={[styles.text]}>{t("logFile.erase")}</Text>
         </View>
         <View style={styles.spacer} />
         <View>
           <Progress.Bar progress={downloadProgress} width={150} height={20} color={Colors.yellow} borderColor={Colors.black} borderRadius={8} />
           <View style={styles.spacer} />
           <Progress.Bar progress={uploadProgress} width={150} height={20} color={Colors.yellow} borderColor={Colors.black} borderRadius={8} />
+          <View style={styles.spacer} />
+          <Progress.Bar progress={eraseLogFileProgress} width={150} height={20} color={Colors.yellow} borderColor={Colors.black} borderRadius={8} />
         </View>
         <View style={styles.spacer} />
         <View>
           <Text style={[styles.text]}>{`${Math.floor(downloadProgress * 100)} %`}</Text>
           <View style={styles.spacer} />
           <Text style={[styles.text]}>{`${Math.floor(uploadProgress * 100)} %`}</Text>
+          <View style={styles.spacer} />
+          <Text style={[styles.text]}>{`${Math.floor(eraseLogFileProgress * 100)} %`}</Text>
         </View>
       </View>
 
@@ -254,7 +285,11 @@ const LogFileScreen: FunctionComponent<Props> = ({
         <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("logFile.screenTitle")}</Text>
         <View style={styles.spacer} />
         <View style={styles.itemContianer}>
-          <Text style={styles.itemText}>{t("logFile.finishedMessage")}</Text>
+          <Text style={styles.itemText}>{t("logFile.uploadedMessage")}</Text>
+          { eraseLogFileProgress == 1 && <>
+            <View style={styles.spacer} />
+            <Text style={styles.itemText}>{t("logFile.erasedMessage")}</Text>
+          </>}
           <View style={styles.spacerDouble} />
           <View style={ApplicationStyles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={hideModal}>

@@ -34,6 +34,7 @@ export interface BeepBaseState {
   logFileSize: LogFileSizeModel | undefined
   logFileProgress: number
   logFileFrames: Array<LogFileFrameModel>
+  eraseLogFileProgress: number
   batteryPercentage: number | undefined
   clock: ClockModel | undefined
 }
@@ -57,6 +58,7 @@ export const INITIAL_STATE: BeepBaseState = {
   logFileSize: undefined,
   logFileProgress: 0,
   logFileFrames: [],
+  eraseLogFileProgress: 0,
   batteryPercentage: undefined,
   clock: undefined,
 }

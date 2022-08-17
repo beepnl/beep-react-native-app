@@ -39,6 +39,7 @@ export enum BeepBaseTypes {
   SET_LOG_FILE_SIZE = 'SET_LOG_FILE_SIZE',
   SET_LOG_FILE_PROGRESS = 'SET_LOG_FILE_PROGRESS',
   ADD_LOG_FILE_FRAME = 'ADD_LOG_FILE_FRAME',
+  SET_ERASE_LOG_FILE_PROGRESS = 'SET_ERASE_LOG_FILE_PROGRESS',
   CLEAR_LOG_FILE_FRAMES = 'CLEAR_LOG_FILE_FRAMES',
   SET_BATTERY = 'SET_BATTERY',
   SET_CLOCK = 'SET_CLOCK',
@@ -67,6 +68,7 @@ interface C extends ActionCreators {
   setLogFileSize: (size: LogFileSizeModel) => { type: BeepBaseTypes.SET_LOG_FILE_SIZE };
   setLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_LOG_FILE_PROGRESS };
   addLogFileFrame: (frame: LogFileFrameModel) => { type: BeepBaseTypes.ADD_LOG_FILE_FRAME };
+  setEraseLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_ERASE_LOG_FILE_PROGRESS };
   clearLogFileFrame: () => { type: BeepBaseTypes.CLEAR_LOG_FILE_FRAMES };
 }
 
@@ -93,6 +95,7 @@ const CreatedActions = createActions( {
   setLogFileSize: ['size'],
   setLogFileProgress: ['progress'],
   addLogFileFrame: ['frame'],
+  setEraseLogFileProgress: ['progress'],
   clearLogFileFrames: null,
 } );
 
