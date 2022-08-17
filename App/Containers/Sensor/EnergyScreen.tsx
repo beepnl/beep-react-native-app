@@ -52,8 +52,9 @@ const EnergyScreen: FunctionComponent<Props> = ({
 
   const getInterval = () => {
     if (applicationConfig) {
-      if (applicationConfig.measurementInterval < INTERVALS.length) {
-        return INTERVALS[applicationConfig.measurementInterval].description
+      const interval = INTERVALS.find(interval => interval.duration == applicationConfig.measurementInterval)
+      if (interval) {
+        return interval.description
       }
 
       return t("sensor.energy.intervalMinutes", { interval: applicationConfig.measurementInterval })
