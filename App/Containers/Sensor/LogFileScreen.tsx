@@ -186,6 +186,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
     dispatch(BeepBaseActions.setEraseLogFileProgress(0))
     setState("idle")
     setError("")
+    onGetLogFileSizePress()
   }
 
   return (<>
