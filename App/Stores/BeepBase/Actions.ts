@@ -16,6 +16,7 @@ import { LoRaWanStateModel } from '../../Models/LoraWanStateModel';
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
+import { TiltModel } from '../../Models/TiltModel';
 import { WeightModel } from '../../Models/WeightModel';
 
 export enum BeepBaseTypes {
@@ -43,6 +44,7 @@ export enum BeepBaseTypes {
   CLEAR_LOG_FILE_FRAMES = 'CLEAR_LOG_FILE_FRAMES',
   SET_BATTERY = 'SET_BATTERY',
   SET_CLOCK = 'SET_CLOCK',
+  SET_TILT = 'SET_TILT',
 }
 
 interface C extends ActionCreators {
@@ -65,6 +67,7 @@ interface C extends ActionCreators {
   setAudio: (audio: AudioModel) => { type: BeepBaseTypes.SET_AUDIO };
   setBattery: (battery: BatteryModel) => { type: BeepBaseTypes.SET_BATTERY };
   setClock: (clock: ClockModel) => { type: BeepBaseTypes.SET_CLOCK };
+  setTilt: (tilt: TiltModel) => { type: BeepBaseTypes.SET_TILT };
   setLogFileSize: (size: LogFileSizeModel) => { type: BeepBaseTypes.SET_LOG_FILE_SIZE };
   setLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_LOG_FILE_PROGRESS };
   addLogFileFrame: (frame: LogFileFrameModel) => { type: BeepBaseTypes.ADD_LOG_FILE_FRAME };
@@ -92,6 +95,7 @@ const CreatedActions = createActions( {
   setAudio: ['audio'],
   setBattery: ['percentage'],
   setClock: ['clock'],
+  setTilt: ['tilt'],
   setLogFileSize: ['size'],
   setLogFileProgress: ['progress'],
   addLogFileFrame: ['frame'],

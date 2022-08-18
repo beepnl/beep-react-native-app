@@ -171,6 +171,13 @@ export const setClock = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setTilt = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    tilt: payload.tilt
+  }
+}
+
 export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.CLEAR]: clear,
   [BeepBaseTypes.BLE_FAILURE]: bleFailure,
@@ -196,4 +203,5 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.CLEAR_LOG_FILE_FRAMES]: clearLogFileFrames,
   [BeepBaseTypes.SET_BATTERY]: setBattery,
   [BeepBaseTypes.SET_CLOCK]: setClock,
+  [BeepBaseTypes.SET_TILT]: setTilt,
 })

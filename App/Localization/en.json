@@ -257,6 +257,7 @@
       "lora": "LoRa",
       "energy": "Energy",
       "clock": "Clock",
+      "tilt": "Tilt",
       "logFile": "Download data",
       "firmware": "Firmware",
     }
@@ -264,6 +265,7 @@
   "sensor": {
     "sampling": "Sampling data...",
     "currentReading": "Current reading",
+    "settings": "Settings",
     "calibration": "Calibration",
     "configure": "Configure",
     "temperature": {
@@ -313,6 +315,13 @@
       "seconds": "seconds",
       "syncInstructions": "The Synchronize button synchronizes the clock of the BEEP base with the clock of your phone.",
       "syncButton": "Synchronize clock"
+    },
+    "tilt": {
+      "screenTitle": "Tilt",
+      "tiltSensor": "Tilt sensor",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "instructions": "When the tilt sensor is enabled, the BEEP base can be turned off by placing it to its side vertically.\n\nWhen the tilt sensor is disabled, the BEEP base will no longer respond to tilt changes and will remain in a permanent 'on' state."
     }
   },
   "logFile": {

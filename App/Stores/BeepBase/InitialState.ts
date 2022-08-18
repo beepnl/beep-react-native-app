@@ -13,6 +13,7 @@ import { LoRaWanStateModel } from "../../Models/LoraWanStateModel"
 import { PairedPeripheralModel } from "../../Models/PairedPeripheralModel"
 import { SensorDefinitionModel } from "../../Models/SensorDefinitionModel"
 import { TemperatureModel } from "../../Models/TemperatureModel"
+import { TiltModel } from "../../Models/TiltModel"
 import { WeightModel } from "../../Models/WeightModel"
 
 export interface BeepBaseState {
@@ -37,6 +38,7 @@ export interface BeepBaseState {
   eraseLogFileProgress: number
   batteryPercentage: number | undefined
   clock: ClockModel | undefined
+  tilt: TiltModel | undefined
 }
 
 export const INITIAL_STATE: BeepBaseState = {
@@ -61,4 +63,5 @@ export const INITIAL_STATE: BeepBaseState = {
   eraseLogFileProgress: 0,
   batteryPercentage: undefined,
   clock: undefined,
+  tilt: undefined,
 }

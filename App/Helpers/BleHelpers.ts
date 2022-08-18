@@ -27,6 +27,7 @@ import { ClockModel } from '../Models/ClockModel';
 import { ResponseModel } from '../Models/ResponseModel';
 import { getLogFileSize } from '../Stores/BeepBase/Selectors';
 import { EraseLogFileModel } from '../Models/EraseLogFileModel';
+import { TiltModel } from '../Models/TiltModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -58,6 +59,7 @@ export const COMMANDS = {
   WRITE_BUZZER_DEFAULT_TUNE : 0x91,
   WRITE_BUZZER_CUSTOM_TUNE : 0x92,
   READ_SQ_MIN_STATE : 0x13,
+  WRITE_SQ_MIN_STATE : 0x93,
   READ_LORAWAN_STATE : 0x14,
   WRITE_LORAWAN_STATE : 0x94,
   READ_LORAWAN_DEVEUI : 0x15,
@@ -316,6 +318,12 @@ export default class BleHelpers {
         case COMMANDS.READ_APPLICATION_CONFIG:
           model = new ApplicationConfigParser({ data }).parse()
           store.dispatch(BeepBaseActions.setApplicationConfig(model))
+          break
+
+        //Tilt sensor
+        case COMMANDS.READ_SQ_MIN_STATE:
+          model = TiltModel.parse(data)
+          store.dispatch(BeepBaseActions.setTilt(model))
           break
 
         //LoRaWan state

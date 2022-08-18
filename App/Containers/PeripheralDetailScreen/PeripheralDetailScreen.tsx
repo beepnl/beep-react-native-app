@@ -55,6 +55,11 @@ const MENU_ITEMS: Array<MenuItem> = [
     icon: <IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />,
   },
   {
+    title: "peripheralDetail.items.tilt",
+    screen: "TiltScreen",
+    icon: <IconMaterialCommunityIcons name="rotate-right-variant" size={30} color={Colors.black} />,
+  },
+  {
     title: "peripheralDetail.items.lora",
     screen: "LoRaScreen",
     icon: <IconIonicons name="ios-radio-outline" size={30} color={Colors.black} style={{ transform: [{ rotate: '90deg'}] }} />,

@@ -95,3 +95,7 @@ export const getBatteryPercentage = (state: AppState) => {
 export const getClock = (state: AppState) => {
   return state.beepBase.clock
 }
+
+export const getTilt = (state: AppState) => {
+  return state.beepBase.tilt
+}
