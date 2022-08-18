@@ -193,6 +193,7 @@ export function* configureLoRaAutomatic(action: any) {
     yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, ttn.devEUI)
     yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, ttn.appKey)
     yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+    yield call(readLoraState, action)
     yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
   } else {
     yield put(ApiActions.setLoRaConfigState("failedToRegister"))
