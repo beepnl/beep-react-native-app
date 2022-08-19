@@ -348,6 +348,7 @@
     "other": "Other versions",
     "test": "Test versions",
     "install": "Download and install",
+    "progress": "Installing",
     "ENABLING_DFU_MODE": "Initializing BEEP base for firmware upload",
     "CONNECTING": "Reconnecting for upload",
     "DEVICE_DISCONNECTING": "Disconnecting",

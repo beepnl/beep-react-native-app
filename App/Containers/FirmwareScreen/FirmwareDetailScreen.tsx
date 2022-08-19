@@ -19,8 +19,6 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { getFirmwaresStable } from 'App/Stores/Api/Selectors'
-import { getFirmwaresTest } from 'App/Stores/Api/Selectors'
 import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
 import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 import { FirmwareModel } from '../../Models/FirmwareModel';
@@ -30,6 +28,7 @@ import { Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ScrollView } from 'react-native-gesture-handler';
+import * as Progress from 'react-native-progress';
 
 export type FirmwareDetailScreenNavigationParams = {
   firmware: FirmwareModel,
@@ -45,7 +44,6 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const firmware: FirmwareModel = route.params?.firmware
-  const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const [dfuProgress, setDfuProgress] = useState(0)
   const [dfuState, setDfuState] = useState("")
   const [dfuTransferResult, setDfuTransferResult] = useState("")
@@ -56,9 +54,12 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
     DFUEmitter.addListener(
       "DFUProgress",
       ({ percent, currentPart, partsTotal, avgSpeed, speed }) => {
-        // console.log("DFU progress: " + percent + "%");
-        if (percent != undefined) {
-          setDfuProgress(percent)
+        if (percent != undefined && currentPart != undefined) {
+          const maxPercent = 100 / (partsTotal ?? 1)
+          const offset = (currentPart - 1) * maxPercent
+          const scaledPercent = percent / (partsTotal ?? 1)
+          const progress = offset + scaledPercent
+          setDfuProgress(progress / 100)
         }
       }
     );
@@ -151,10 +152,32 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
         
         <View style={styles.spacerDouble} />
 
-        <Text style={[styles.text]}>{`Progress: ${dfuProgress} %`}</Text>
+        <View style={{ flexDirection: "row", flex: 1, justifyContent: "space-between", alignItems: "center" }}>
+          <View>
+            <Text style={[styles.text]}>{t("firmware.progress")}</Text>
+          </View>
+          <View style={styles.spacer} />
+          <View>
+            <Progress.Bar progress={dfuProgress} width={150} height={20} color={Colors.yellow} borderColor={Colors.black} borderRadius={8} />
+          </View>
+          <View style={styles.spacer} />
+          <View>
+            <Text style={[styles.text]}>{`${Math.floor(dfuProgress * 100)} %`}</Text>
+          </View>
+        </View>
+
+        <View style={styles.spacer} />
+
+        { !!dfuState &&
+          <Text style={[styles.instructions]}>{t(`firmware.${dfuState}`)}</Text>
+        }
+
+        <View style={styles.spacer} />
+
+        {/* <Text style={[styles.text]}>{`Progress: ${dfuProgress} %`}</Text>
         <Text style={[styles.text]}>{`State: ${dfuState}`}</Text>
         <Text style={[styles.text]}>{`Transfer result: ${dfuTransferResult}`}</Text>
-        <Text style={[styles.text]}>{`Reconnect retry: ${dfuReconnectRetry}`}</Text>
+        <Text style={[styles.text]}>{`Reconnect retry: ${dfuReconnectRetry}`}</Text> */}
 
       </ScrollView>
     </View>
