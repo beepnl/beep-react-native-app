@@ -21,6 +21,8 @@ import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
 import { CHANNELS } from '../../Models/WeightModel';
+import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
+import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
 
 // Components
 import { Text, View, TouchableOpacity } from 'react-native';
@@ -35,54 +37,64 @@ import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommun
 type MenuItem = { 
   title: string, 
   screen: string,
-  icon: React.ComponentType<any> | React.ReactElement<any> | null, 
+  icon: React.ComponentType<any> | React.ReactElement<any> | null,
+  supported: boolean,
 }
 
-const MENU_ITEMS: Array<MenuItem> = [
+const getMenuItems = (firmwareVersion?: FirmwareVersionModel): Array<MenuItem> => [
   {
     title: "peripheralDetail.items.temperature",
     screen: "TemperatureScreen",
     icon: <IconFontAwesome name="thermometer-2" size={30} color={Colors.black} />,
+    supported: true,
   },
   {
     title: "peripheralDetail.items.weight",
     screen: "WeightScreen",
     icon: <IconMaterialCommunityIcons name="scale" size={30} color={Colors.black} />,
+    supported: true,
   },
   {
     title: "peripheralDetail.items.audio",
     screen: "AudioScreen",
     icon: <IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />,
+    supported: true,
   },
   {
     title: "peripheralDetail.items.tilt",
     screen: "TiltScreen",
     icon: <IconMaterialCommunityIcons name="rotate-right-variant" size={30} color={Colors.black} />,
+    supported: firmwareVersion ? firmwareVersion.supportsFeature("tilt") : false,
   },
   {
     title: "peripheralDetail.items.lora",
     screen: "LoRaScreen",
     icon: <IconIonicons name="ios-radio-outline" size={30} color={Colors.black} style={{ transform: [{ rotate: '90deg'}] }} />,
+    supported: true,
   },
   {
     title: "peripheralDetail.items.energy",
     screen: "EnergyScreen",
     icon: <IconMaterialCommunityIcons name="battery-charging-wireless-70" size={30} color={Colors.black} />,
+    supported: true,
   },
   {
     title: "peripheralDetail.items.clock",
     screen: "ClockScreen",
     icon: <IconMaterialCommunityIcons name="clock-outline" size={30} color={Colors.black} />,
+    supported: firmwareVersion ? firmwareVersion.supportsFeature("clock") : false,
   },
   {
     title: "peripheralDetail.items.logFile",
     screen: "LogFileScreen",
     icon: <IconMaterialCommunityIcons name="download" size={30} color={Colors.black} />,
+    supported: firmwareVersion ? firmwareVersion.supportsFeature("logDownload") : false,
   },
   {
     title: "peripheralDetail.items.firmware",
     screen: "FirmwareScreen",
     icon: <IconFontAwesome name="microchip" size={30} color={Colors.black} />,
+    supported: true,
   },
 ]
 
@@ -101,6 +113,8 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const device: DeviceModel = route.params?.device
   const peripheralEqualsDevice = peripheral?.deviceId === device?.id
+  const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
+  const [menuItems, setMenuItems] = useState<Array<MenuItem>>(getMenuItems())
   const [error, setError] = useState("")
   const [busy, setBusy] = useState(false)
   const isConnected = peripheral && peripheral.isConnected
@@ -133,12 +147,18 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       dispatch(BeepBaseActions.setDevice(device))
       
       //get latest sensor readings
+      BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
       const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
       BleHelpers.write(peripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
     }
   }, [isConnected])
+
+  useEffect(() => {
+    const menuItems = getMenuItems(firmwareVersion)
+    setMenuItems(menuItems)
+  }, [firmwareVersion])
 
   const connect = () => {
     setBusy(true)
@@ -227,7 +247,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
       { isConnected && <>
         <Text style={styles.label}>{t("peripheralDetail.details")}</Text>
-        { MENU_ITEMS.map((item: MenuItem) => <NavigationButton key={item.title} title={t(`${item.title}`)} Icon={item.icon} onPress={() => item.screen && navigation.navigate(item.screen)} />) }
+        { menuItems.map((item: MenuItem) => item.supported && <NavigationButton key={item.title} title={t(`${item.title}`)} Icon={item.icon} onPress={() => item.screen && navigation.navigate(item.screen)} />) }
       </>}
 
       <View style={styles.spacer} />

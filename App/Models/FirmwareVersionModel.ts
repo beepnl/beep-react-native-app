@@ -1,19 +1,35 @@
-import DateTimeHelper from "../Helpers/DateTimeHelpers"
+import { SemVer } from "semver"
+
+export type FEATURE = "tilt" | "clock" | "logDownload"
 
 export class FirmwareVersionModel {
   major: number = 0
   minor: number = 0
   revision: number = 0
-  timestamp: Date = new Date()
+  version: SemVer
 
   constructor(props: any) {
     this.major = Number(props.major)
     this.minor = Number(props.minor)
     this.revision = Number(props.revision)
+    this.version = new SemVer(`${props.major}.${props.minor}.${props.revision}`)
   }
 
   toString() {
     return `${this.major}.${this.minor}.${this.revision}`
+  }
+
+  supportsFeature(feature: FEATURE) {
+    switch (feature) {
+      case "tilt":
+        return this.version.compare("1.4.0") >= 0
+
+      case "clock":
+        return this.version.compare("1.5.0") >= 0
+
+      case "logDownload":
+        return this.version.compare("1.5.9") >= 0
+    }
   }
 }
 
