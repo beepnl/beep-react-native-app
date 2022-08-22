@@ -39,7 +39,7 @@ const TemperatureScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const temperatureSensors: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
   const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getTemperatureSensorDefinitions)
-  const isCalibrated = temperatureSensors.length == temperatureSensorDefinitions.length
+  const isCalibrated = temperatureSensors.length <= temperatureSensorDefinitions.length
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -57,7 +57,7 @@ const TemperatureScreen: FunctionComponent<Props> = ({
 
   useInterval(() => {
     refresh()
-  }, 5000)
+  }, __DEV__ ? 60000 : 5000)
 
   const onConfigurePress = () => {
     navigation.navigate("CalibrateTemperatureScreen")
