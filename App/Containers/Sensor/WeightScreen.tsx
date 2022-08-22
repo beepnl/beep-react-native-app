@@ -45,22 +45,20 @@ const WeightScreen: FunctionComponent<Props> = ({
   const refresh = () => {
     if (pairedPeripheral) {
       //read weight sensor
-      // BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel?.bitmask, 10])
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel?.bitmask, 10])
     }
   }
 
   useEffect(() => {
-    // if (pairedPeripheral) {
+    if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel?.bitmask, 10])
-    //   BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
-    // }
-    refresh()
+    }
   }, [])
 
   useInterval(() => {
     refresh()
-  }, 5000)
+  }, __DEV__ ? 20000 : 10000)
 
   const onConfigurePress = () => {
     navigation.navigate("CalibrateWeightScreen")
