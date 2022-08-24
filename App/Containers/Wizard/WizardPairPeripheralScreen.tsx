@@ -46,7 +46,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const [isScanning, setIsScanning] = useState(false);
-  const scannedPeripherals = new Map<string, Peripheral>();
+  const scannedPeripherals = new Map<string, ListItem>();
   const [list, setList] = useState<Array<ListItem>>([])
   const [bondedPeripherals, setBondedPeripherals] = useState<Array<ListItem>>([])
   const [connectingPeripheral, setConnectingPeripheral] = useState<Peripheral | null>(null)
@@ -83,7 +83,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       BleManager.scan([], 10, false).then((results) => {
         console.log('Scanning...')
         setIsScanning(true)
-        setList(bondedPeripherals)
+        // setList(bondedPeripherals)
       }).catch(err => {
         console.error(err)
         setError(err)
@@ -129,11 +129,12 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       //filter list based on name
       if (peripheral.name.startsWith(BLE_NAME_PREFIX)) {
         scannedPeripherals.set(peripheral.id, { ...peripheral, origin: "scanned" });
-        // setList(Array.from(scannedPeripherals.values()));
-        setList([...bondedPeripherals, ...Array.from(scannedPeripherals.values())])
+        setList(Array.from(scannedPeripherals.values()))
+        // setList([...bondedPeripherals, ...Array.from(scannedPeripherals.values())])
       }
     }
   }
+
   const onPeripheralPress = (peripheral: Peripheral) => {
     setConnectingPeripheral(peripheral)
     dispatch(BeepBaseActions.setFirmwareVersion(undefined))
@@ -241,7 +242,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
 
       <FlatList
-        data={list}
+        data={[...bondedPeripherals, ...list]}
         renderItem={({ item }) => 
           <NavigationButton 
             title={item.name} 
@@ -252,7 +253,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
             selected={item == connectingPeripheral} 
           />
         }
-        keyExtractor={item => item.id}
+        keyExtractor={item => `${item.id}${item.origin}`}
       />
 
       { (!isScanning && connectingPeripheral == null) && <>
