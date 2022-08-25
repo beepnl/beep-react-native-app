@@ -48,7 +48,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const [isScanning, setIsScanning] = useState(false);
   const scannedPeripherals = new Map<string, ListItem>();
   const [list, setList] = useState<Array<ListItem>>([])
-  const [bondedPeripherals, setBondedPeripherals] = useState<Array<ListItem>>([])
+  const bondedPeripherals = new Map<string, ListItem>();
   const [connectingPeripheral, setConnectingPeripheral] = useState<Peripheral | null>(null)
   const [error, setError] = useState("")
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
@@ -64,9 +64,12 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     //initialize scan result with all previously bonded peripherals
     BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
       const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
-      const bondedPeripherals: Array<ListItem> = filtered.map((peripheral: Peripheral) => ({ ...peripheral, origin: "bonded" }))
-      setBondedPeripherals(bondedPeripherals)
+      filtered.forEach(p => {
+        bondedPeripherals.set(p.id, { ...p, origin: "bonded" })
+      });
     })
+    
+    startScan()
     
     return (() => {
       isScanning && BleManager.stopScan()
@@ -78,12 +81,12 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
 
   const scan = () => {
     setError("")
+    setList(Array.from(bondedPeripherals.values()))
     if (!isScanning) {
       setConnectingPeripheral(null)
       BleManager.scan([], 10, false).then((results) => {
         console.log('Scanning...')
         setIsScanning(true)
-        // setList(bondedPeripherals)
       }).catch(err => {
         console.error(err)
         setError(err)
@@ -110,8 +113,6 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     }
   }
 
-  useEffect(startScan, [bondedPeripherals])
-
   const handleStopScan = () => {
     console.log('Scan is stopped')
     setIsScanning(false)
@@ -129,8 +130,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       //filter list based on name
       if (peripheral.name.startsWith(BLE_NAME_PREFIX)) {
         scannedPeripherals.set(peripheral.id, { ...peripheral, origin: "scanned" });
-        setList(Array.from(scannedPeripherals.values()))
-        // setList([...bondedPeripherals, ...Array.from(scannedPeripherals.values())])
+        const mergedMap = new Map(function*() { yield* bondedPeripherals; yield* scannedPeripherals; }())
+        setList(Array.from(mergedMap.values()))
       }
     }
   }
@@ -191,10 +192,10 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     } else if (connectingPeripheral != null) {
       message = t("wizard.pair.connecting")
     } else {
-      if (list.length == 0) {
+      if (scannedPeripherals.size == 0) {
         message = t("wizard.pair.scanResult_zero")
       } else {
-        message = t("wizard.pair.scanResult", { count: list.length })
+        message = t("wizard.pair.scanResult", { count: scannedPeripherals.size })
       }
     }
   }
@@ -203,10 +204,13 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     navigation.navigate("WizardRegisterScreen")
   }
 
-  const getIcon = (peripheral: ListItem): React.ComponentType<any> | React.ReactElement<any> | null => {
-    const iconName = peripheral.origin == "bonded" ? "settings" : "bluetooth"
+  const getIcon = (peripheralItem: ListItem): React.ComponentType<any> | React.ReactElement<any> | null => {
+    const iconName = peripheralItem.origin == "bonded" ? "settings" : "bluetooth"
     let color
-    if (peripheral == connectingPeripheral && firmwareVersion && hardwareVersion) {
+    if (
+      (peripheralItem == connectingPeripheral && firmwareVersion && hardwareVersion) ||
+      (peripheral?.id == peripheralItem?.id)
+    ) {
       color = Colors.bluetooth
     } else {
       color = Colors.lightGrey
@@ -242,7 +246,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
 
       <FlatList
-        data={[...bondedPeripherals, ...list]}
+        data={list}
         renderItem={({ item }) => 
           <NavigationButton 
             title={item.name} 
