@@ -135,9 +135,6 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         ...peripheral, 
         deviceId: device.id
       }))
-
-      //refresh sensor definitions for sensor detail screens
-      dispatch(ApiActions.getSensorDefinitions(device))
     }
   }, [device])
 
@@ -145,7 +142,13 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
     if (isConnected) {
       //update current device
       dispatch(BeepBaseActions.setDevice(device))
-      
+
+      //refresh sensor definitions for sensor detail screens
+      dispatch(ApiActions.getSensorDefinitions(device))
+
+      //beep the buzzer
+      BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
+
       //get latest sensor readings
       BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
@@ -153,7 +156,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
       BleHelpers.write(peripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
     }
-  }, [isConnected])
+  }, [peripheral, isConnected])
 
   useEffect(() => {
     const menuItems = getMenuItems(firmwareVersion)
