@@ -38,7 +38,7 @@ const TemperatureScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const temperatureSensors: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
-  const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getTemperatureSensorDefinitions)
+  const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>((state: any) => getTemperatureSensorDefinitions(state, temperatureSensors.length))
   const isCalibrated = temperatureSensors.length <= temperatureSensorDefinitions.length
 
   const refresh = () => {

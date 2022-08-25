@@ -50,8 +50,8 @@ export const getSensorDefinitions = (state: AppState) => {
   return state.beepBase.sensorDefinitions
 }
 
-export const getTemperatureSensorDefinitions = (state: AppState) => {
-  return state.beepBase.sensorDefinitions.filter((sensorDefinition: SensorDefinitionModel) => sensorDefinition.isTemperatureSensor())
+export const getTemperatureSensorDefinitions = (state: AppState, count: number) => {
+  return state.beepBase.sensorDefinitions.filter((sensorDefinition: SensorDefinitionModel) => sensorDefinition.isTemperatureSensor()).splice(0, count)
 }
 
 export const getWeightSensorDefinitions = (state: AppState) => {

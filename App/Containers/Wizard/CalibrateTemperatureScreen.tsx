@@ -39,13 +39,13 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  const temperatures: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
-  const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getTemperatureSensorDefinitions)
-  const names = temperatures.map((temperatureModel: TemperatureModel, index: number) => {
+  const temperatureSensors: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
+  const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>((state: any) => getTemperatureSensorDefinitions(state, temperatureSensors.length))
+  const names = temperatureSensors.map((temperatureModel: TemperatureModel, index: number) => {
     const [value, setValue] = useState(`Temperature sensor ${index + 1}`)
     return { value, setValue }
   })
-  const sensorLocations = temperatures.map((temperatureModel: TemperatureModel, index: number) => {
+  const sensorLocations = temperatureSensors.map((temperatureModel: TemperatureModel, index: number) => {
     const [value, setValue] = useState(true)
     return { value, setValue }
   })
@@ -60,7 +60,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     //this screen is an edit screen for the temperature sensors so we
     //need to overwrite sensor definition props with values from api
-    if (temperatures.length === temperatureSensorDefinitions.length) {
+    if (temperatureSensors.length === temperatureSensorDefinitions.length) {
       temperatureSensorDefinitions.forEach((sensorDefinition: SensorDefinitionModel, index: number) => {
         names[index].setValue(sensorDefinition.name)
         sensorLocations[index].setValue(!!sensorDefinition.isInside)
@@ -82,7 +82,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   }, __DEV__ ? 20000 : 2000)
 
   const onFinishPress = () => {
-    temperatures.forEach((temperatureModel: TemperatureModel, index: number) => {
+    temperatureSensors.forEach((temperatureModel: TemperatureModel, index: number) => {
       const name = names[index].value
       const isInside = sensorLocations[index].value
       const temperatureSensorDefinition = temperatureSensorDefinitions[index]
@@ -114,7 +114,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacerDouble} />
 
-      { temperatures.map((temperatureModel: TemperatureModel, index: number) => <View key={index}>
+      { temperatureSensors.map((temperatureModel: TemperatureModel, index: number) => <View key={index}>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-evenly" }}>
           <IconFontAwesome name="thermometer-2" size={40} color={Colors.black} />
           <Text style={styles.textBig}>{temperatureModel.toString()}</Text>
