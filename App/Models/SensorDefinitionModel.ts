@@ -1,3 +1,5 @@
+import moment from "moment"
+
 /*
   {
     "id":6510,
@@ -31,6 +33,7 @@
 export class SensorDefinitionModel {
   id: string
   deviceId: string
+  updatedAt: moment.Moment
   name: string
   isInside: boolean | undefined
   offset: number
@@ -42,8 +45,9 @@ export class SensorDefinitionModel {
 
   constructor(props: any) {
     this.id = props.id.toString()
-    this.name = props.name
     this.deviceId = props.device_id
+    this.updatedAt = moment.utc(props.updated_at, 'YYYY-MM-DD hh:mm:ss')
+    this.name = props.name
     this.isInside = props.inside != undefined ? props.inside : undefined
     this.offset = props.offset
     this.multiplier = props.multiplier
@@ -51,7 +55,7 @@ export class SensorDefinitionModel {
     this.outputMeasurementId = props.output_measurement_id
     this.inputAbbreviation = props.input_abbr
     this.outputAbbreviation = props.output_abbr
-    }
+  }
 
   isTemperatureSensor() {
     return this.inputAbbreviation?.startsWith("t_")

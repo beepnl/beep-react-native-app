@@ -265,6 +265,10 @@ export function* getSensorDefinitions(action: any) {
   if (response && response.ok) {
     const sensorDefinitions: Array<SensorDefinitionModel> = []
     response.data?.map((item: any) => sensorDefinitions.push(new SensorDefinitionModel(item)))
+
+    //sort on updated desc
+    sensorDefinitions.sort((a: SensorDefinitionModel, b: SensorDefinitionModel) => b.updatedAt.valueOf() - a.updatedAt.valueOf())
+
     //store in beep base store because it belongs to the currently connected beep base
     yield put(BeepBaseActions.setSensorDefinitions(sensorDefinitions))
   } else {
