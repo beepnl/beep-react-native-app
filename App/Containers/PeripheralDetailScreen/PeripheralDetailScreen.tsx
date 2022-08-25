@@ -176,7 +176,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       })
     }).catch(() => {
       //peripheral not found
-      setError("Peripheral not found")
+      setError(t("peripheralDetail.notFound"))
       //in case we have an invisible connection in the BLE layer try to disconnect
       BleHelpers.disconnectAllPeripherals()
       setBusy(false)
@@ -241,7 +241,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
       </>}
 
-      { !!busy && <Text style={styles.text}>Scanning...</Text> }
+      { !!busy && <Text style={styles.text}>{t("peripheralDetail.scanning")}</Text> }
 
       { !!error && <>
         <Text style={[styles.text, styles.error]}>{error}</Text>

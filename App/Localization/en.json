@@ -249,6 +249,8 @@
     },
     "instructions": "Wake up your BEEP base by pressing the button shortly (v3.3 and newer) or by holding the magnet next to the microphone plug (older versions). Then press the Connect above to read out the device details and change several settings. Settings can also be changed using ‘Configure new BEEP base’.",
     "bleRSSI": "Signal strength: {{rssi}} dBm",
+    "scanning": "Connecting...",
+    "notFound": "BEEP base did not respond",
     "details": "Device details",
     "items": {
       "temperature": "Temperature",
