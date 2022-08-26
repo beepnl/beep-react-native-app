@@ -63,6 +63,20 @@ const TemperatureScreen: FunctionComponent<Props> = ({
     navigation.navigate("CalibrateTemperatureScreen")
   }
 
+  let message = ""
+  if (temperatureSensors.length == 0) {
+    //no hardware sensor
+    message = t("sensor.noSensor")
+  } else if (!isCalibrated) {
+    //hardware sensor count differs from sensor definition count
+    if (temperatureSensorDefinitions.length == 0) {
+      //no definition in api db
+      message = t("sensor.noSensorDefinition")
+    } else if (temperatureSensors.length > temperatureSensorDefinitions.length) {
+      message = t("sensor.newSensor")
+    }
+  }
+
   return (<>
     <ScreenHeader title={t("sensor.temperature.screenTitle")} back />
 
@@ -83,6 +97,11 @@ const TemperatureScreen: FunctionComponent<Props> = ({
           </View>
           <View style={styles.spacerDouble} />
       </View>)}
+
+      { !!message && <>
+        <View style={styles.spacerDouble} />
+        <Text style={styles.text}>{message}</Text>        
+      </>}
 
       <View style={[styles.spacer, { flex: 1 }]} />
 

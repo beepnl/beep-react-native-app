@@ -270,6 +270,9 @@
     "settings": "Settings",
     "calibration": "Calibration",
     "configure": "Configure",
+    "noSensor": "No sensors found",
+    "noSensorDefinition": "No sensor definitions found. Please configure the sensor(s) first",
+    "newSensor": "New sensor found. Please configure the sensor first",
     "temperature": {
       "screenTitle": "Temperature",
       "location": "Sensor location: ",
