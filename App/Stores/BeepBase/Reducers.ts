@@ -6,6 +6,7 @@ import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel'
 export const clear = (state: BeepBaseState, payload: any) => INITIAL_STATE
 
 export const bleFailure = (state: BeepBaseState, payload: any) => {
+  console.log("BLE Failure", payload.error)
   return {
     ...state,
     error: payload.error
