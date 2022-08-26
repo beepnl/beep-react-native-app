@@ -82,10 +82,33 @@ export const setLoRaWanAppKey = (state: BeepBaseState, payload: any) => {
   }
 }
 
+function getSensorDefinitionsByType(sensorDefinitions: SensorDefinitionModel[], filterFunction: (sensorDefinition: SensorDefinitionModel) => boolean): Array<SensorDefinitionModel> {
+  //filter all sensor definitions on temperature sensor type
+  const filtered = sensorDefinitions.filter(filterFunction)
+  //group by input abbreviation
+  const tsdByInputAbbr = new Map<string, SensorDefinitionModel>()
+  filtered.forEach((tsd: SensorDefinitionModel) => {
+    if (!tsdByInputAbbr.has(tsd.inputAbbreviation)) {
+      tsdByInputAbbr.set(tsd.inputAbbreviation, tsd)
+    }
+  })
+  //flatten
+  const flattened = Array.from(tsdByInputAbbr.values())
+  //sort on input abbreviation
+  flattened.sort((a: SensorDefinitionModel, b: SensorDefinitionModel) => a.inputAbbreviation < b.inputAbbreviation ? -1 : 1)
+  return flattened
+}
+
 export const setSensorDefinitions = (state: BeepBaseState, payload: any) => {
+  const sensorDefinitions = payload.sensorDefinitions
+  const temperatureSensorDefinitions = getSensorDefinitionsByType(sensorDefinitions, (sensorDefinition: SensorDefinitionModel) => sensorDefinition.isTemperatureSensor())
+  const weightSensorDefinitions = getSensorDefinitionsByType(sensorDefinitions, (sensorDefinition: SensorDefinitionModel) => sensorDefinition.isWeightSensor())
+  
   return {
     ...state,
-    sensorDefinitions: payload.sensorDefinitions
+    sensorDefinitions,
+    temperatureSensorDefinitions,
+    weightSensorDefinitions,
   }
 }
 

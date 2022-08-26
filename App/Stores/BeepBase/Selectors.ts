@@ -1,6 +1,5 @@
 import { AppState } from 'App/Stores'
 import { LogFileFrameModel } from '../../Models/LogFileFrameModel'
-import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel'
 
 export const getError = (state: AppState) => {
   return state.beepBase.error
@@ -50,12 +49,17 @@ export const getSensorDefinitions = (state: AppState) => {
   return state.beepBase.sensorDefinitions
 }
 
-export const getTemperatureSensorDefinitions = (state: AppState, count: number) => {
-  return state.beepBase.sensorDefinitions.filter((sensorDefinition: SensorDefinitionModel) => sensorDefinition.isTemperatureSensor()).splice(0, count)
+export const getTemperatureSensorDefinitions = (state: AppState, count?: number) => {
+  const sensorDefinitions = state.beepBase.temperatureSensorDefinitions
+  if (count != undefined) {
+    return sensorDefinitions.slice(0, count)
+  }
+  return sensorDefinitions
 }
 
 export const getWeightSensorDefinitions = (state: AppState) => {
-  return state.beepBase.sensorDefinitions.filter((sensorDefinition: SensorDefinitionModel) => sensorDefinition.isWeightSensor())
+  const sensorDefinitions = state.beepBase.weightSensorDefinitions
+  return sensorDefinitions.slice(0, 1)  //always return one weight sensor
 }
 
 export const getTemperatures = (state: AppState) => {

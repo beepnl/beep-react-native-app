@@ -29,6 +29,8 @@ export interface BeepBaseState {
   loRaWanAppEUI: LoRaWanAppEUIModel | undefined
   loRaWanAppKey: LoRaWanAppKeyModel | undefined
   sensorDefinitions: Array<SensorDefinitionModel>
+  temperatureSensorDefinitions: Array<SensorDefinitionModel>
+  weightSensorDefinitions: Array<SensorDefinitionModel>
   temperatures: Array<TemperatureModel>
   weight: WeightModel | undefined
   audio: AudioModel | undefined
@@ -54,6 +56,8 @@ export const INITIAL_STATE: BeepBaseState = {
   loRaWanAppEUI: undefined,
   loRaWanAppKey: undefined,
   sensorDefinitions: [],
+  temperatureSensorDefinitions: [],
+  weightSensorDefinitions: [],
   temperatures: [],
   weight: undefined,
   audio: undefined,
