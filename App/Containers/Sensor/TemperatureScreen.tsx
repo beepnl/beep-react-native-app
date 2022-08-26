@@ -57,7 +57,7 @@ const TemperatureScreen: FunctionComponent<Props> = ({
 
   useInterval(() => {
     refresh()
-  }, __DEV__ ? 60000 : 5000)
+  }, __DEV__ ? 20000 : 5000)
 
   const onConfigurePress = () => {
     navigation.navigate("CalibrateTemperatureScreen")
