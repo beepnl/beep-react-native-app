@@ -14,6 +14,7 @@ import { Colors, Fonts, Metrics } from '../../Theme';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import useInterval from '../../Helpers/useInterval';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Data
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
@@ -22,20 +23,25 @@ import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { getTemperatureSensorDefinitions } from '../../Stores/BeepBase/Selectors';
+import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 
-interface Props {
-  navigation: StackNavigationProp,
+export type SensorScreenNavigationParams = {
+  device: DeviceModel,
 }
 
+type Props = NativeStackScreenProps<SensorScreenNavigationParams>
+
 const TemperatureScreen: FunctionComponent<Props> = ({
+  route,
   navigation,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const device: DeviceModel = route.params?.device
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const temperatureSensors: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
   const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>((state: any) => getTemperatureSensorDefinitions(state, temperatureSensors.length))
