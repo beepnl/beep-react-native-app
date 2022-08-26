@@ -15,6 +15,7 @@ import { APP_EUI, TTNModel } from '../Models/TTNModel'
 import { BeepBaseTypes } from '../Stores/BeepBase/Actions'
 import { CHANNELS } from '../Models/AudioModel'
 import { getRefreshToken } from '../Stores/User/Selectors'
+import { navigate } from '../Services/NavigationService'
 
 function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Parameters<Fn>) {
   const response = yield fn(...args)
@@ -220,10 +221,10 @@ export function* configureLoRaManual(action: any) {
 }
 
 export function* initializeTemperatureSensors(action: any) {
-  const { device, temperatures } = action
+  const { device, temperatureSensors, navigateToScreen } = action
   yield call(getSensorDefinitions, action)
   const temperatureSensorDefinitions: Array<SensorDefinitionModel> = getTemperatureSensorDefinitions(yield select())
-  yield all(temperatures.map((temperatureModel: any, index: number) => {
+  yield all(temperatureSensors.map((temperatureModel: any, index: number) => {
     const sensorAbbr = `t_${index}`
     const sensorDefinition = temperatureSensorDefinitions.find(temperatureSensorDefinition => temperatureSensorDefinition.inputAbbreviation === sensorAbbr)
     if (!sensorDefinition) {
@@ -237,6 +238,9 @@ export function* initializeTemperatureSensors(action: any) {
       return call(createSensorDefinition, { requestParams })
     }
   }))
+  if (navigateToScreen) {
+    navigate(navigateToScreen)
+  }
 }
 
 export function* initializeWeightSensor(action: any) {

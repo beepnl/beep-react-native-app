@@ -39,7 +39,7 @@ const CreatedActions = createActions({
   setLoRaConfigState: ['loRaConfigState'],
   setDevices: ['devices'],
 
-  initializeTemperatureSensors: ['device', 'temperatures'],
+  initializeTemperatureSensors: ['device', 'temperatureSensors', 'navigateToScreen'],
   initializeWeightSensor: ['device', 'weight'],
   createSensorDefinition: ['requestParams'],
   getSensorDefinitions: ['device'],

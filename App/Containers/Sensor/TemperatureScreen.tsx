@@ -17,6 +17,7 @@ import useInterval from '../../Helpers/useInterval';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Data
+import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
 import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
@@ -66,7 +67,11 @@ const TemperatureScreen: FunctionComponent<Props> = ({
   }, __DEV__ ? 20000 : 5000)
 
   const onConfigurePress = () => {
-    navigation.navigate("CalibrateTemperatureScreen")
+    if (!isCalibrated) {
+      dispatch(ApiActions.initializeTemperatureSensors(device, temperatureSensors, "CalibrateTemperatureScreen"))
+    } else {
+      navigation.navigate("CalibrateTemperatureScreen")
+    }
   }
 
   let message = ""
