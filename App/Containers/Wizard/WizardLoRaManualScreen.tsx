@@ -19,11 +19,14 @@ import ApiService from '../../Services/ApiService';
 import ApiActions from 'App/Stores/Api/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { getLoRaWanState } from '../../Stores/BeepBase/Selectors';
+import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState } from '../../Stores/BeepBase/Selectors';
 import { LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
 import { getLoRaConfigState } from '../../Stores/Api/Selectors';
 import { LoRaConfigState } from '../../Stores/Api/InitialState';
 import { getUseProduction } from '../../Stores/User/Selectors';
+import { LoRaWanDeviceEUIModel } from '../../Models/LoRaWanDeviceEUIModel';
+import { LoRaWanAppEUIModel } from '../../Models/LoRaWanAppEUIModel';
+import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
@@ -47,19 +50,22 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
   const useProduction = useTypedSelector<boolean>(getUseProduction)
   const fromSensorScreen = route.params?.fromSensorScreen
   const state: LoRaConfigState = useTypedSelector<LoRaConfigState>(getLoRaConfigState)
+  const loRaWanDeviceEUI: LoRaWanDeviceEUIModel = useTypedSelector<LoRaWanDeviceEUIModel>(getLoRaWanDeviceEUI)
+  const loRaWanAppEUI: LoRaWanAppEUIModel = useTypedSelector<LoRaWanAppEUIModel>(getLoRaWanAppEUI)
+  const loRaWanAppKey: LoRaWanAppKeyModel = useTypedSelector<LoRaWanAppKeyModel>(getLoRaWanAppKey)
   const retry = useRef(RETRY_COUNT)
 
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const loRaWanState: LoRaWanStateModel = useTypedSelector<LoRaWanStateModel>(getLoRaWanState)
 
-  const [devEui, setDevEui] = useState("")
-  const [devEuiFormatted, setDevEuiFormatted] = useState("")
+  const [devEui, setDevEui] = useState(loRaWanDeviceEUI.devEUI)
+  const [devEuiFormatted, setDevEuiFormatted] = useState(loRaWanDeviceEUI.formatted)
   const [devEuiError, setDevEuiError] = useState("")
-  const [appEui, setAppEui] = useState("")
-  const [appEuiFormatted, setAppEuiFormatted] = useState("")
+  const [appEui, setAppEui] = useState(loRaWanAppEUI.appEUI)
+  const [appEuiFormatted, setAppEuiFormatted] = useState(loRaWanAppEUI.formatted)
   const [appEuiError, setAppEuiError] = useState("")
-  const [appKey, setAppKey] = useState("")
-  const [appKeyFormatted, setAppKeyFormatted] = useState("")
+  const [appKey, setAppKey] = useState(loRaWanAppKey.appKey)
+  const [appKeyFormatted, setAppKeyFormatted] = useState(loRaWanAppKey.formatted)
   const [appKeyError, setAppKeyError] = useState("")
   
   const onDevEuiChangeText = (formatted: string, extracted?: string | undefined) => {
