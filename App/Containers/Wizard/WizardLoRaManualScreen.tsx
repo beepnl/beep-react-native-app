@@ -121,7 +121,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
   }, (state == "checkingConnectivity") && (retry.current > 0) ? 5000 : null)
 
   useEffect(() => {
-    if (loRaWanState?.hasJoined) {
+    if (state == "checkingConnectivity" && loRaWanState?.hasJoined) {
       dispatch(ApiActions.setLoRaConfigState("connected"))
     }
   }, [loRaWanState])
@@ -244,7 +244,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacerDouble} />
 
-      { state != "connected" &&
+      { state != "connected" && state != "writingCredentials" && state != "checkingConnectivity" &&
         <TouchableOpacity style={styles.button} onPress={onSetCredentialsPress} disabled={!keysAreValid && state != "writingCredentials" && state != "checkingConnectivity"}>
           <Text style={styles.text}>{t("wizard.lora.manual.setCredentialsButton")}</Text>
         </TouchableOpacity>
