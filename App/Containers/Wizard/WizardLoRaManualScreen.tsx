@@ -102,6 +102,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
   }
 
   useEffect(() => {
+    dispatch(ApiActions.setLoRaConfigState("none"))
     BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_STATE)
   }, [])
 

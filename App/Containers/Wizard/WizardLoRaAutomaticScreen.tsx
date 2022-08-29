@@ -53,6 +53,7 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   const loRaWanState: LoRaWanStateModel = useTypedSelector<LoRaWanStateModel>(getLoRaWanState)
 
   useEffect(() => {
+    dispatch(ApiActions.setLoRaConfigState("none"))
     BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_STATE)
   }, [])
 
