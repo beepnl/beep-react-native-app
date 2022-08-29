@@ -14,7 +14,7 @@ export const loginSuccess = (state: AuthState, payload: any) => ({
 
 export const loginFailure = (state: AuthState, payload: any) => {
   const { response } = payload
-  const { message } = response?.data
+  const message = response?.data?.message || response?.problem
   return {
     ...state,
     error: message,
