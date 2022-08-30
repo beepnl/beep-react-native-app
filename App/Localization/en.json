@@ -305,6 +305,7 @@
       "screenTitle": "Energy",
       "battery": "Battery",
       "capacity": "Capacity: ",
+      "voltage": "Voltage: ",
       "usage": "Energy usage",
       "interval": "Measurement interval: ",
       "intervalMinutes": "{{interval}} minutes",

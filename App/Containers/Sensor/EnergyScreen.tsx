@@ -14,18 +14,18 @@ import { Colors, Fonts, Metrics } from '../../Theme';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import useInterval from '../../Helpers/useInterval';
+import BatteryHelper from '../../Helpers/BatteryHelper';
 
 // Data
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral, getBatteryPercentage } from 'App/Stores/BeepBase/Selectors'
 import { getApplicationConfig } from '../../Stores/BeepBase/Selectors';
+import { BatteryModel } from '../../Models/BatteryModel';
 
 // Components
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import { ApplicationConfigModel } from '../../Models/ApplicationConfigModel';
-import BatteryHelper from '../../Helpers/BatteryHelper';
-import { BatteryModel } from '../../Models/BatteryModel';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -38,7 +38,7 @@ const EnergyScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const applicationConfig: ApplicationConfigModel = useTypedSelector<ApplicationConfigModel>(getApplicationConfig)
-  const batteryPercentage: BatteryModel = useTypedSelector<BatteryModel>(getBatteryPercentage)
+  const battery: BatteryModel = useTypedSelector<BatteryModel>(getBatteryPercentage)
 
   const INTERVALS = [1440, 720, 360, 180, 120, 60, 30, 20, 15, 10, 5, 1].map((duration: number) => ({ duration, description: t(`wizard.energy.interval.${duration}`) }))
 
@@ -46,7 +46,9 @@ const EnergyScreen: FunctionComponent<Props> = ({
     //read config from device
     if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_APPLICATION_CONFIG)
-      BleHelpers.readBatteryLevel(pairedPeripheral.id)
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_nRF_ADC_CONVERSION)
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_nRF_ADC_CONVERSION)
+      // BleHelpers.readBatteryLevel(pairedPeripheral.id)
     }
   }, [])
 
@@ -80,7 +82,11 @@ const EnergyScreen: FunctionComponent<Props> = ({
       <View style={styles.itemContainer}>
         <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.energy.capacity")}</Text>
-          <Text style={styles.text}>{batteryPercentage ? batteryPercentage.toString() : "-"}</Text>
+          <Text style={styles.text}>{battery ? battery.toString() : "-"}</Text>
+        </View>
+        <View style={styles.itemRow}>
+          <Text style={styles.text}>{t("sensor.energy.voltage")}</Text>
+          <Text style={styles.text}>{battery ? battery.getVoltage() : "-"}</Text>
         </View>
       </View>
 

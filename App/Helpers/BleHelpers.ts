@@ -22,12 +22,13 @@ import { LoRaWanDeviceEUIParser } from '../Models/LoRaWanDeviceEUIModel';
 import { LoRaWanAppEUIParser } from '../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyParser } from '../Models/LoRaWanAppKeyModel';
 import { ApplicationConfigParser } from '../Models/ApplicationConfigModel';
-import { BatteryParser } from '../Models/BatteryModel';
+// import { BatteryParser } from '../Models/BatteryServiceModel';
 import { ClockModel } from '../Models/ClockModel';
 import { ResponseModel } from '../Models/ResponseModel';
 import { getLogFileSize } from '../Stores/BeepBase/Selectors';
 import { EraseLogFileModel } from '../Models/EraseLogFileModel';
 import { TiltModel } from '../Models/TiltModel';
+import { BatteryModel } from '../Models/BatteryModel';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -396,6 +397,12 @@ export default class BleHelpers {
           model = ClockModel.parse(data)
           store.dispatch(BeepBaseActions.setClock(model))
           break
+
+        //battery (old mode, not using Battery Service)
+        case COMMANDS.READ_nRF_ADC_CONVERSION:
+          model = BatteryModel.parse(data)
+          store.dispatch(BeepBaseActions.setBattery(model))
+          break
       }
     }
   }
@@ -520,14 +527,14 @@ export default class BleHelpers {
   }
 
   static readBatteryLevel(peripheralId: string) {
-    store.dispatch(BeepBaseActions.bleFailure(undefined))
-    return BleHelpers.read(peripheralId, BATTERY_SERVICE, BATTERY_LEVEL_CHARACTERISTIC).then((value: any) => {
-      const buffer: Buffer = Buffer.from(value)
-      const model = new BatteryParser({ data: buffer }).parse()
-      store.dispatch(BeepBaseActions.setBattery(model))
-    }).catch(error => {
-      store.dispatch(BeepBaseActions.bleFailure(error))
-    })
+    // store.dispatch(BeepBaseActions.bleFailure(undefined))
+    // return BleHelpers.read(peripheralId, BATTERY_SERVICE, BATTERY_LEVEL_CHARACTERISTIC).then((value: any) => {
+    //   const buffer: Buffer = Buffer.from(value)
+    //   const model = new BatteryParser({ data: buffer }).parse()
+    //   store.dispatch(BeepBaseActions.setBattery(model))
+    // }).catch(error => {
+    //   store.dispatch(BeepBaseActions.bleFailure(error))
+    // })
   }
 
   static read(peripheralId: string, serviceUUID: string, characteristicUUID: string) {
