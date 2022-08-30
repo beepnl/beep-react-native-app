@@ -43,10 +43,27 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const applicationConfig: ApplicationConfigModel = useTypedSelector<ApplicationConfigModel>(getApplicationConfig)
   const [sliderIndex, setSliderIndex] = useState([8])
-  const measureToSendRatio = 1    //currently not able to change this using the app
+  const [measureToSendRatios, setMeasureToSendRatios] = useState([applicationConfig.measureToSendRatio])
 
   const INTERVALS = [1440, 720, 360, 180, 120, 60, 30, 20, 15, 10, 5, 1].map((duration: number) => ({ duration, description: t(`wizard.energy.interval.${duration}`) }))
 
+  const setMeasureToSendRatio = (values: Array<number>) => {
+    //convert linear scale into lograthimic exponent
+    const value = values[0]
+    const exponent = 0.52   //was 0.42
+    const curve = Math.pow(10, exponent)
+    const originalMin = 1
+    const originalMax = 255
+    const mappedOutputMin = 1
+    const mappedOutputMax = 255
+    const originalRange = originalMax - originalMin;
+    const newRange = mappedOutputMax - mappedOutputMin;
+    const zeroRefCurVal = value - originalMin
+    const normalizedCurVal = zeroRefCurVal / originalRange
+    const rangedValue = Math.round((Math.pow(normalizedCurVal, curve) * newRange) + mappedOutputMin)
+    setMeasureToSendRatios([rangedValue])
+  }
+  
   useEffect(() => {
     //read config from device
     if (pairedPeripheral) {
@@ -57,7 +74,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   const updateFirmware = () => {
     const params = Buffer.alloc(3)
     let i = 0
-    params.writeUint8(measureToSendRatio, i++)
+    params.writeUint8(measureToSendRatios[0], i++)
     params.writeUInt16BE(INTERVALS[sliderIndex[0]].duration, i++)
     BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_APPLICATION_CONFIG, params)
   }
@@ -73,7 +90,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   const getAveragePower = () => {
     if (applicationConfig) {
       const measurementInterval = INTERVALS[sliderIndex[0]].duration
-      const consumption = BatteryHelper.energyConsumptionMilliWattPerHour(applicationConfig.measureToSendRatio, measurementInterval)
+      const consumption = BatteryHelper.energyConsumptionMilliWattPerHour(measureToSendRatios[0], measurementInterval)
       return `${consumption.toFixed(2)} mW`
     }
     return "-"
@@ -82,7 +99,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   const getBatteryLife = () => {
     if (applicationConfig) {
       const measurementInterval = INTERVALS[sliderIndex[0]].duration
-      const estimatedBatteryLife = BatteryHelper.estimatedBatteryLifeDays(BATTERY_CAPACITY_MILLI_AMPS, applicationConfig.measureToSendRatio, measurementInterval)
+      const estimatedBatteryLife = BatteryHelper.estimatedBatteryLifeDays(BATTERY_CAPACITY_MILLI_AMPS, measureToSendRatios[0], measurementInterval)
       return estimatedBatteryLife.toFixed(0)
     }
     return "-"
@@ -126,6 +143,40 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
         />
         <View style={styles.spacer} />
         <Text style={styles.text}>{t("wizard.energy.minInterval")}</Text>
+
+        <View style={styles.spacerDouble} />
+      </View>
+
+      <View style={styles.spacerDouble} />
+
+      <View style={styles.itemContainer}>
+        <Text style={styles.itemText}>{t("wizard.energy.measureToSendRatio")}</Text>
+        <View style={styles.spacer} />
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{`${measureToSendRatios}`}</Text>
+      </View>
+
+      <View style={styles.spacerHalf} />
+
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginHorizontal: Metrics.baseMargin }}>
+        <View style={styles.spacerDouble} />
+        <Text style={styles.text}>{"1"}</Text>
+        <View style={styles.spacer} />
+        <MultiSlider
+          sliderLength={200}
+          values={measureToSendRatios}
+          onValuesChange={setMeasureToSendRatio}
+          min={1}
+          max={255}
+          enabledOne={true}
+          enabledTwo={false}
+          trackStyle={trackStyle}
+          markerStyle={markerStyle}
+          pressedMarkerStyle={pressedMarkerStyle}
+          selectedStyle={trackStyle}
+        />
+        <View style={styles.spacer} />
+        <Text style={styles.text}>{"255"}</Text>
+        {/* <Text style={styles.text}>{t("wizard.energy.minInterval")}</Text> */}
 
         <View style={styles.spacerDouble} />
       </View>
