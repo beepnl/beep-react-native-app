@@ -43,7 +43,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const applicationConfig: ApplicationConfigModel = useTypedSelector<ApplicationConfigModel>(getApplicationConfig)
   const [sliderIndex, setSliderIndex] = useState([8])
-  const [measureToSendRatios, setMeasureToSendRatios] = useState([applicationConfig.measureToSendRatio])
+  const [measureToSendRatios, setMeasureToSendRatios] = useState([applicationConfig?.measureToSendRatio ?? 1])
 
   const INTERVALS = [1440, 720, 360, 180, 120, 60, 30, 20, 15, 10, 5, 1].map((duration: number) => ({ duration, description: t(`wizard.energy.interval.${duration}`) }))
 
