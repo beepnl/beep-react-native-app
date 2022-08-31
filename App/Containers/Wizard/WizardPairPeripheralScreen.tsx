@@ -44,7 +44,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const [isScanning, setIsScanning] = useState(false);
   const scannedPeripherals = new Map<string, ListItem>();
   const [list, setList] = useState<Array<ListItem>>([])
@@ -151,12 +151,17 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       BleManager.connect(peripheral.id).then(() => {
         console.log("Connected to " + peripheral.name)
 
-        //store in settings
-        const pairedPeripheral = new PairedPeripheralModel({
+        //if connected to another peripheral clear beep base store
+        if (pairedPeripheral?.id != peripheral.id) {
+          dispatch(BeepBaseActions.clear())
+        }
+
+        //set paired peripheral in beep base store
+        const newPairedPeripheral = new PairedPeripheralModel({
           id: peripheral.id,
           name: peripheral.name,
         })
-        dispatch(BeepBaseActions.setPairedPeripheral(pairedPeripheral))
+        dispatch(BeepBaseActions.setPairedPeripheral(newPairedPeripheral))
 
         //services are needed to subscribe to notifications
         BleHelpers.retrieveServices(peripheral.id).then(() => {
@@ -175,7 +180,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     })
   }
 
-  const showNext = !!peripheral && peripheral.isConnected && firmwareVersion
+  const showNext = !!pairedPeripheral && pairedPeripheral.isConnected && firmwareVersion
   let showProgress = isScanning || (connectingPeripheral != null)
   if (showNext) {
     showProgress = false
@@ -209,7 +214,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     let color
     if (
       (peripheralItem == connectingPeripheral && firmwareVersion && hardwareVersion) ||
-      (peripheral?.id == peripheralItem?.id)
+      (pairedPeripheral?.id == peripheralItem?.id)
     ) {
       color = Colors.bluetooth
     } else {
