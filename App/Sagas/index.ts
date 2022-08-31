@@ -20,7 +20,7 @@ import {
   initializeWeightSensor,
   createSensorDefinition,
   getSensorDefinitions,
-  updateSensorDefinition,
+  updateApiSensorDefinition,
   getFirmwares,
 } from './ApiSaga'
 
@@ -40,7 +40,7 @@ export default function* root() {
     takeEvery(ApiTypes.INITIALIZE_TEMPERATURE_SENSORS, initializeTemperatureSensors),
     takeEvery(ApiTypes.INITIALIZE_WEIGHT_SENSOR, initializeWeightSensor),
     takeEvery(ApiTypes.CREATE_SENSOR_DEFINITION, createSensorDefinition),
-    takeEvery(ApiTypes.UPDATE_API_SENSOR_DEFINITION, updateSensorDefinition),
+    takeEvery(ApiTypes.UPDATE_API_SENSOR_DEFINITION, updateApiSensorDefinition),
     takeLatest(ApiTypes.GET_FIRMWARES, getFirmwares),
   ])
 }

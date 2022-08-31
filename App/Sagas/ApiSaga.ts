@@ -290,7 +290,7 @@ export function* createSensorDefinition(action: any) {
   }
 }
 
-export function* updateSensorDefinition(action: any) {
+export function* updateApiSensorDefinition(action: any) {
   const { sensorDefinition } = action
 
   const requestParams: any = {

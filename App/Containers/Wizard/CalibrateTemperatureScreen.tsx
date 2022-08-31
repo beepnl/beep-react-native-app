@@ -42,11 +42,15 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   const temperatureSensors: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
   const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>((state: any) => getTemperatureSensorDefinitions(state, temperatureSensors.length))
   const names = temperatureSensors.map((temperatureModel: TemperatureModel, index: number) => {
-    const [value, setValue] = useState(`Temperature sensor ${index + 1}`)
+    const sensorAbbr = `t_${index}`
+    const sensorDefinition = temperatureSensorDefinitions.find(temperatureSensorDefinition => temperatureSensorDefinition.inputAbbreviation === sensorAbbr)
+    const [value, setValue] = useState(sensorDefinition?.name || `Temperature sensor ${index + 1}`)
     return { value, setValue }
   })
   const sensorLocations = temperatureSensors.map((temperatureModel: TemperatureModel, index: number) => {
-    const [value, setValue] = useState(true)
+    const sensorAbbr = `t_${index}`
+    const sensorDefinition = temperatureSensorDefinitions.find(temperatureSensorDefinition => temperatureSensorDefinition.inputAbbreviation === sensorAbbr)
+    const [value, setValue] = useState(sensorDefinition?.isInside ?? true)
     return { value, setValue }
   })
 

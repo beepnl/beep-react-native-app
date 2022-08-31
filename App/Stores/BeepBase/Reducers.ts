@@ -116,10 +116,7 @@ export const setSensorDefinitions = (state: BeepBaseState, payload: any) => {
 export const updateSensorDefinition = (state: BeepBaseState, payload: any) => {
   const { sensorDefinition } = payload
   const sensorDefinitions = state.sensorDefinitions.map((sd: SensorDefinitionModel) => sd.id === sensorDefinition.id ? sensorDefinition : sd)
-  return {
-    ...state,
-    sensorDefinitions
-  }
+  return setSensorDefinitions(state, { sensorDefinitions })
 }
 
 export const setTemperatures = (state: BeepBaseState, payload: any) => {
