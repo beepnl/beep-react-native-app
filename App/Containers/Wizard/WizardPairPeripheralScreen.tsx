@@ -130,7 +130,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       //filter list based on name
       if (peripheral.name.startsWith(BLE_NAME_PREFIX)) {
         scannedPeripherals.set(peripheral.id, { ...peripheral, origin: "scanned" });
-        const mergedMap = new Map(function*() { yield* bondedPeripherals; yield* scannedPeripherals; }())
+        const mergedMap = new Map(function*() { yield* scannedPeripherals; yield* bondedPeripherals; }())
         setList(Array.from(mergedMap.values()))
       }
     }
