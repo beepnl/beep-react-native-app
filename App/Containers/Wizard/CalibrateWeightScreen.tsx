@@ -298,7 +298,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
       <View style={styles.spacerDouble} />
 
       {/* Debug */}
-      <Text style={styles.label}>State:</Text>
+      {/* <Text style={styles.label}>State:</Text>
       <Text style={styles.text}>{state}</Text>
 
       <View style={styles.spacerDouble} />
@@ -314,7 +314,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
       <View style={styles.spacerDouble} />
      
       <Text style={styles.label}>Multiplier:</Text>
-      <Text style={styles.text}>{multiplier}</Text>
+      <Text style={styles.text}>{multiplier}</Text> */}
       
     </ScrollView>
 
