@@ -22,6 +22,7 @@ import { getUseProduction } from '../../Stores/User/Selectors';
 // Components
 import { Text, View, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Bee from '../../Components/Bee';
 
 interface Props {
 }
@@ -59,40 +60,18 @@ const LoginScreen: FunctionComponent<Props> = ({
     setBeeVisible(false)
   }
 
-  const BEE_SIZE = 125
-
   return (
     <SafeAreaView style={styles.mainContainer}>
+      {[1,2,3,4,5,6].map((i, index) => <Bee key={index} style={{ position: "absolute", top: Math.random() * Metrics.screenHeight }} size={((Math.random() * 40) - 20) + 40} width={Metrics.clientWidth} />) }
 
       <ScrollView style={styles.container}>
         <View style={styles.spacerDouble} />
 
         <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 300, margin: Metrics.baseMargin }} source={Images.beepLogo} resizeMode="contain" />
-        { beeVisible &&
-          <TouchableOpacity 
-            style={{
-              position: "absolute", 
-              left: Math.random() * (Metrics.clientWidth - BEE_SIZE),
-              top: Math.random() * (300 - BEE_SIZE),
-            }}
-            onPress={onBeePress}
-          >
-            <Image 
-              style={{ 
-                width: BEE_SIZE, 
-                height: null,
-                aspectRatio: 498 / 420,
-                transform: [{ rotate: `${Math.random() * 360}deg`}],
-              }}
-              source={Images.beeAnimation} 
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        }
 
         <TextInput
           ref={inputUsernameRef}
-          style={styles.input}
+          style={[styles.input, { backgroundColor: "#FFFFFFDD" }]}
           placeholder={t("login.username")}
           onChangeText={setUsername}
           value={username}
@@ -108,7 +87,7 @@ const LoginScreen: FunctionComponent<Props> = ({
 
         <TextInput
           ref={inputPasswordRef}
-          style={styles.input}
+          style={[styles.input, { backgroundColor: "#FFFFFFDD" }]}
           placeholder={t("login.password")}
           onChangeText={setPassword}
           maxLength={100}
