@@ -27,6 +27,8 @@ import Bee from '../../Components/Bee';
 interface Props {
 }
 
+const BEES = [1,2,3,4,5,6].map((i, index) => <Bee key={index} style={{ position: "absolute", top: Math.random() * Metrics.screenHeight }} size={((Math.random() * 40) - 20) + 40} width={Metrics.clientWidth} />)
+
 const LoginScreen: FunctionComponent<Props> = ({
 }) => {
   const { t } = useTranslation();
@@ -62,7 +64,8 @@ const LoginScreen: FunctionComponent<Props> = ({
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      {[1,2,3,4,5,6].map((i, index) => <Bee key={index} style={{ position: "absolute", top: Math.random() * Metrics.screenHeight }} size={((Math.random() * 40) - 20) + 40} width={Metrics.clientWidth} />) }
+
+      { BEES }
 
       <ScrollView style={styles.container}>
         <View style={styles.spacerDouble} />
