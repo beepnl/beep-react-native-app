@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
 
 // Hooks
 import { useTranslation } from 'react-i18next';
@@ -46,9 +46,9 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const [isScanning, setIsScanning] = useState(false);
-  const scannedPeripherals = new Map<string, ListItem>();
+  const scannedPeripherals = useRef(new Map<string, ListItem>())
+  const bondedPeripherals = useRef(new Map<string, ListItem>())
   const [list, setList] = useState<Array<ListItem>>([])
-  const bondedPeripherals = new Map<string, ListItem>();
   const [connectingPeripheral, setConnectingPeripheral] = useState<Peripheral | null>(null)
   const [error, setError] = useState("")
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
@@ -65,7 +65,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
       const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
       filtered.forEach(p => {
-        bondedPeripherals.set(p.id, { ...p, origin: "bonded" })
+        bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded" })
       });
     })
     
@@ -81,7 +81,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
 
   const scan = () => {
     setError("")
-    setList(Array.from(bondedPeripherals.values()))
+    setList(Array.from(bondedPeripherals.current?.values()))
     if (!isScanning) {
       setConnectingPeripheral(null)
       BleManager.scan([], 10, false).then((results) => {
@@ -129,8 +129,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       }
       //filter list based on name
       if (peripheral.name.startsWith(BLE_NAME_PREFIX)) {
-        scannedPeripherals.set(peripheral.id, { ...peripheral, origin: "scanned" });
-        const mergedMap = new Map(function*() { yield* scannedPeripherals; yield* bondedPeripherals; }())
+        scannedPeripherals.current?.set(peripheral.id, { ...peripheral, origin: "scanned" });
+        const mergedMap = new Map(function*() { yield* scannedPeripherals.current; yield* bondedPeripherals.current; }())
         setList(Array.from(mergedMap.values()))
       }
     }
@@ -197,10 +197,10 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     } else if (connectingPeripheral != null) {
       message = t("wizard.pair.connecting")
     } else {
-      if (scannedPeripherals.size == 0) {
+      if (scannedPeripherals.current?.size == 0) {
         message = t("wizard.pair.scanResult_zero")
       } else {
-        message = t("wizard.pair.scanResult", { count: scannedPeripherals.size })
+        message = t("wizard.pair.scanResult", { count: scannedPeripherals.current?.size })
       }
     }
   }
