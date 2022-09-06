@@ -14,7 +14,7 @@ export class LogFileSizeModel {
   }
 
   getTimestamp() {
-    return `${DateTimeHelper.formatTime(this.timestamp)}`
+    return `${DateTimeHelper.formatDateTime(this.timestamp)}`
   }
 
   value() {
