@@ -139,7 +139,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   }, [device])
 
   useEffect(() => {
-    if (isConnected) {
+    if (peripheralEqualsDevice && isConnected) {
       //update current device
       dispatch(BeepBaseActions.setDevice(device))
 
