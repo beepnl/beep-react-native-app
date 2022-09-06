@@ -29,7 +29,7 @@ export default class DateTimeHelper {
   }
 
   static formatDateTime(date) {
-    return moment(date).format("D MMM YYYY [om] H:mm:ss")
+    return moment(date).format("D MMM YYYY H:mm:ss")
   }
 
   static formatDateTimeISO(date) {
