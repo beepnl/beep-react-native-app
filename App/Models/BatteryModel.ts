@@ -23,9 +23,9 @@ export class BatteryModel {
     let mvCPU = 0
     let percentage = 0
     if (rawData?.length >= 5) {
-      mvBattery = rawData.readInt16BE()
-      mvCPU = rawData.readInt16BE()
-      percentage = rawData.readInt8()
+      mvBattery = rawData.readInt16BE(0)
+      mvCPU = rawData.readInt16BE(2)
+      percentage = rawData.readInt8(4)
     }
     return new BatteryModel({ mvBattery, mvCPU, percentage })
   }
