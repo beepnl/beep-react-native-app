@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -38,6 +38,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const temperatureSensors: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
   const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>((state: any) => getTemperatureSensorDefinitions(state, temperatureSensors.length))
@@ -56,7 +57,9 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
 
   const refresh = () => {
     if (pairedPeripheral) {
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
       //read temperature sensors
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_STATE)
       BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
     }
   }
@@ -75,15 +78,13 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
     }
 
     if (pairedPeripheral) {
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_STATE)
     }
-
-    refresh()
   }, [])
 
   useInterval(() => {
     refresh()
-  }, __DEV__ ? 20000 : 2000)
+  }, isFocused ? (__DEV__ ? 20000 : 5000) : null)
 
   const onFinishPress = () => {
     temperatureSensors.forEach((temperatureModel: TemperatureModel, index: number) => {

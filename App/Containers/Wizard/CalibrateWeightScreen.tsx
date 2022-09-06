@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -52,6 +52,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
   const [isModalVisible, setModalVisible] = useState(false)
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
@@ -87,7 +88,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
 
   useInterval(() => {
     refresh()
-  }, __DEV__ ? 5000 : 5000)
+  }, isFocused ? (__DEV__ ? 5000 : 5000) : null)
 
   useEffect(() => {
     if (state == "sampling" && weight) {

@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -35,6 +35,7 @@ const WeightScreen: FunctionComponent<Props> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const weightSensor: WeightModel = useTypedSelector<WeightModel>(getWeight)
   const weightSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getWeightSensorDefinitions)
@@ -58,7 +59,7 @@ const WeightScreen: FunctionComponent<Props> = ({
 
   useInterval(() => {
     refresh()
-  }, __DEV__ ? 20000 : 10000)
+  }, isFocused ? (__DEV__ ? 20000 : 10000) : null)
 
   const onConfigurePress = () => {
     navigation.navigate("CalibrateWeightScreen")
