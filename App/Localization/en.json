@@ -338,7 +338,7 @@
     "timestamp": "Last checked on: ",
     "downloadLogFile": "Download all data",
     "instructions": "Download log data from the BEEP base memory and upload it to the BEEP app. Downloading your data will take about 5 minutes. Please do not close the app in between.",
-    "instructionsInProgress": "Please do not close the app while downloading, uploading or erasing data.",
+    "instructionsInProgress": "Downloading...\n\nPlease do not close the app while downloading, uploading or erasing data.",
     "progress": "Progress",
     "download": "Download",
     "upload": "Upload",
