@@ -49,12 +49,14 @@ export class DeviceModel {
   hardwareId: string
   devEUI: string
   sensorDefinitions: Array<SensorDefinitionModel>
+  owner: boolean
 
   constructor(props: any) {
     this.id = props.id.toString() || ""
     this.name = props.name
     this.hardwareId = props.hardware_id
     this.devEUI = props.key
+    this.owner = !!props.owner
 
     this.sensorDefinitions = []
     if (Array.isArray(props.sensor_definitions)) {
