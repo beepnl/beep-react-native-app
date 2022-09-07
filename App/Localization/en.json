@@ -186,7 +186,7 @@
     },
     "energy": {
       "screenTitle": "Energy",
-      "description": "Choose an optimum between how often measurements are taken and the energy consumed.",
+      "description": "Set measurement and LoRa transmission interval",
       "takeEvery": "Take measurements every",
       "maxInterval": "1x/day",
       "minInterval": "1x/min",
@@ -204,7 +204,8 @@
         "5": "5 minutes",
         "1": "minute"
       },
-      "measureToSendRatio": "Measurement to send ratio",
+      "measureToSendRatio": "LoRa transmission ratio",
+      "instructions": "The measurement interval dictates how often measurements are stored on the BEEP base.\n\nThe measurement to send ratio dictates the amount of measurements that are transmitted via LoRa: e.g. if the ratio is 4:1 and the interval is set to 15 min, the measurements will be transmitted once per hour.",
       "averagePower": "Average power: ",
       "estimatedBatteryLife": "Estimated battery life: ",
       "estimatedBatteryLifeValue": "{{days}} days  ⃰",
@@ -312,7 +313,7 @@
       "intervalMinutes": "{{interval}} minutes",
       "measureToSendRatio": "Measurement to send ratio: ",
       "averagePower": "Average power: ",
-      "instructions": "The measurement interval dictates how often measurements are taken.\n\nThe measurement to send ratio dictates how often measurements are sent: e.g. if the ratio is 3:1, only one in three measurements will be uploaded."
+      "instructions": "The measurement interval dictates how often measurements are stored on the BEEP base.\n\nThe measurement to send ratio dictates the amount of measurements that are transmitted via LoRa: e.g. if the ratio is 4:1 and the interval is set to 15 min, the measurements will be transmitted once per hour."
     },
     "clock": {
       "screenTitle": "Clock",
