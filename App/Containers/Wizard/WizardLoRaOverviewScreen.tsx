@@ -12,7 +12,7 @@ import { Colors, Fonts, Images, Metrics } from '../../Theme';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '../../Helpers/BleHelpers';
 import useInterval from '../../Helpers/useInterval';
 
 // Data
@@ -47,7 +47,6 @@ const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
   const loRaWanDeviceEUI: LoRaWanDeviceEUIModel = useTypedSelector<LoRaWanDeviceEUIModel>(getLoRaWanDeviceEUI)
   const loRaWanAppEUI: LoRaWanAppEUIModel = useTypedSelector<LoRaWanAppEUIModel>(getLoRaWanAppEUI)
   const loRaWanAppKey: LoRaWanAppKeyModel = useTypedSelector<LoRaWanAppKeyModel>(getLoRaWanAppKey)
-  const [isDetailsCollapsed, setDetailsCollapsed] = useState(true)
 
   useEffect(() => {
     //read state from device
@@ -119,6 +118,14 @@ const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
           </View>
         </View>
       </View>
+
+      <View style={styles.spacerDouble} />
+      <View style={styles.centeredContainer}>
+        <Text style={styles.text}>{t("wizard.lora.newDeviceName")}</Text>
+        <View style={styles.spacer} />
+        <Text style={[styles.text, { ...Fonts.style.bold }]}>{`${BLE_NAME_PREFIX}${loRaWanDeviceEUI?.devEUI.toUpperCase().slice(-4)}`}</Text>
+      </View>
+      <View style={styles.spacerDouble} />
 
       { loRaWanState?.hasJoined && <>
         { renderDetails() }
