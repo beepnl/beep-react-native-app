@@ -22,5 +22,6 @@ export default {
   grey: "#575556",
   white: "#F4F6F6",
   shadow: "#363536",
-  green: "#55DD55"
+  green: "#44CC44",
+  red: "#DD1111"
 }

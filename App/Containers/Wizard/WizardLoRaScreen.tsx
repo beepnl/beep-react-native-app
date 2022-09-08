@@ -28,10 +28,9 @@ import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
-import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Collapsible from 'react-native-collapsible';
 import Modal from 'react-native-modal';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -129,8 +128,14 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
     <ScrollView style={styles.container}>
 
       <View style={styles.itemContainer}>
-        <Text style={[styles.itemText, styles.label]}>{t("wizard.lora.loraState")}</Text>
-        <Text style={styles.itemText}>{getStateText()}</Text>
+        <Text style={styles.itemText}>{t("wizard.lora.loraState")}</Text>
+        <View style={styles.spacer} />
+        <View style={styles.centeredContainer}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <IconIonicons name="ios-radio-outline" size={30} color={ (loRaWanState?.isEnabled && loRaWanState?.hasJoined) ? Colors.green : Colors.red } style={{ transform: [{ rotate: '90deg'}] }} />
+            <Text style={styles.itemText}>{getStateText()}</Text>
+          </View>
+        </View>
       </View>
 
       <TouchableOpacity onPress={() => setDetailsCollapsed(!isDetailsCollapsed)}>

@@ -27,6 +27,7 @@ import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
 // Components
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -100,8 +101,11 @@ const LoRaScreen: FunctionComponent<Props> = ({
 
       <Text style={styles.label}>{t("sensor.lora.status")}</Text>
       <View style={styles.spacer} />
-      <View style={styles.itemContainer}>
-        <Text style={styles.itemText}>{getStateText()}</Text>
+      <View style={styles.centeredContainer}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <IconIonicons name="ios-radio-outline" size={30} color={ (loRaWanState?.isEnabled && loRaWanState?.hasJoined) ? Colors.green : Colors.red } style={{ transform: [{ rotate: '90deg'}] }} />
+          <Text style={styles.itemText}>{getStateText()}</Text>
+        </View>
       </View>
 
       <View style={styles.spacerDouble} />
