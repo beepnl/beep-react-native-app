@@ -20,6 +20,7 @@ interface ScreenHeaderProps {
   disabled?: boolean,
   selected?: boolean,
   Icon?: React.ComponentType<any> | React.ReactElement<any> | null,
+  IconRight?: React.ComponentType<any> | React.ReactElement<any> | null,
   onPress?: () => void,
 }
 
@@ -30,12 +31,13 @@ const NavigationButton: FunctionComponent<ScreenHeaderProps> = ({
   disabled = false,
   selected = false,
   Icon,
+  IconRight,
   onPress,
 }) => {
 
-  const renderIcon = () => {
-    if (Icon) {
-      const icon = React.isValidElement(Icon) ? (Icon) : (<Icon />)
+  const renderIcon = (I: React.ComponentType<any> | React.ReactElement<any>) => {
+    if (I) {
+      const icon = React.isValidElement(I) ? (I) : (<I />)
       return icon
     }
     return <View style={ApplicationStyles.spacer} />
@@ -43,16 +45,18 @@ const NavigationButton: FunctionComponent<ScreenHeaderProps> = ({
 
   return (
     <TouchableOpacity key={title} style={styles.container} onPress={onPress} disabled={disabled} >
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={ApplicationStyles.spacerHalf} />
         <View style={{ width: 30, alignItems: "center" }}>
-          { renderIcon() }
+          { !!Icon && renderIcon(Icon) }
         </View>
         <View style={ApplicationStyles.spacer} />
         <View>
           <Text style={[styles.title, selected && { color: Colors.darkYellow }]}>{title}</Text>
           { subTitle && <Text style={[styles.subTitle, selected && { color: Colors.darkYellow }]}>{subTitle}</Text> }
         </View>
+        <View style={ApplicationStyles.spacer} />
+        { !!IconRight && renderIcon(IconRight) }
       </View>
       { showArrow && !disabled && <IconMaterialCommunity name="chevron-right" size={30} color={Colors.lightGrey} /> }
     </TouchableOpacity>
@@ -72,7 +76,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    ...ApplicationStyles.text
+    ...ApplicationStyles.text,
   },
 
   subTitle: {

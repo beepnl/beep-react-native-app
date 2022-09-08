@@ -20,6 +20,7 @@ export default {
   lightYellow: "rgba(248, 177, 50, 0.1)",
   darkYellow: "#db8f07",
   grey: "#575556",
+  lighterGrey: "#AAAAAA",
   white: "#F4F6F6",
   shadow: "#363536",
   green: "#44CC44",

@@ -88,6 +88,7 @@ const HomeScreen: FunctionComponent<Props> = ({
               <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.bluetooth} /> :
               <Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="cover" />
             }
+            IconRight={!device.owner ? <IconMaterialIcons name={"group"} size={30} color={Colors.lighterGrey} /> : undefined }
             onPress={() => onDevicePress(device)} 
           />
         )}
