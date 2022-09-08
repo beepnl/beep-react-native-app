@@ -106,7 +106,7 @@ const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
   return (<>
     <ScreenHeader title={t("wizard.lora.screenTitle")} back />
 
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.container}>
 
       <View style={styles.itemContainer}>
         <Text style={[styles.itemText, styles.label]}>{t("wizard.lora.loraState")}</Text>
@@ -127,6 +127,8 @@ const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
         <TouchableOpacity style={styles.button} onPress={onNextPress}>
           <Text style={styles.text}>{t("common.btnNext")}</Text>
         </TouchableOpacity>
+
+        <View style={styles.spacer} />
       </>}
 
     </ScrollView>
