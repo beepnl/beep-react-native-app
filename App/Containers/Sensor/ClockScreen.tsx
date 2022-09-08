@@ -37,6 +37,10 @@ const ClockScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const clockSensor: ClockModel = useTypedSelector<ClockModel>(getClock)
 
+  useEffect(() => {
+    refresh()
+  }, [])
+
   const refresh = () => {
     if (pairedPeripheral) {
       //read clock sensor
@@ -44,14 +48,11 @@ const ClockScreen: FunctionComponent<Props> = ({
     }
   }
 
-  useInterval(() => {
-    refresh()
-  }, __DEV__ ? 5000 : 1000)
-
   const onSyncPress = () => {
     const params = Buffer.alloc(4)
     params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)   //adding 1500 ms for processing and communication delay
     BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_CLOCK, params)
+    refresh()
   }
 
   return (<>
