@@ -309,6 +309,7 @@
       "battery": "Battery",
       "capacity": "Capacity: ",
       "voltage": "Voltage: ",
+      "warning": "Warning: low battery!",
       "usage": "Energy usage",
       "interval": "Measurement interval: ",
       "intervalMinutes": "{{interval}} minutes",

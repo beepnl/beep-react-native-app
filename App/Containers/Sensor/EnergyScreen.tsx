@@ -26,6 +26,7 @@ import { BatteryModel } from '../../Models/BatteryModel';
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import { ApplicationConfigModel } from '../../Models/ApplicationConfigModel';
+import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -88,6 +89,13 @@ const EnergyScreen: FunctionComponent<Props> = ({
           <Text style={styles.text}>{t("sensor.energy.voltage")}</Text>
           <Text style={styles.text}>{battery ? battery.getVoltage() : "-"}</Text>
         </View>
+        { battery.mvBattery < 2900 &&
+          <View style={[styles.itemRow, { alignItems: "center", justifyContent: "center" }]}>
+            <IconIonicons name="warning" size={30} color={Colors.black} />
+            <View style={styles.spacerHalf} />
+            <Text style={styles.text}>{t("sensor.energy.warning")}</Text>
+          </View>
+        }
       </View>
 
       <View style={styles.spacerDouble} />
