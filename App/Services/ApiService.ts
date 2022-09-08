@@ -30,8 +30,8 @@ function getBaseUrl(useProduction: boolean) {
   return useProduction ? BASE_URL : TEST_URL
 }
 
-function getLogFileUploadUrl(useProduction: boolean) {
-  return getBaseUrl(useProduction) + LOG_FILE_UPLOAD_URL
+function getLogFileUploadUrl(useProduction: boolean, logFileSize: number) {
+  return getBaseUrl(useProduction) + LOG_FILE_UPLOAD_URL + "?log_size_bytes=" + logFileSize.toString()
 }
 
 function getLoRaSensorsUrl(useProduction: boolean) {

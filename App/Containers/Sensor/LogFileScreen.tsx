@@ -81,7 +81,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
   useInterval(() => {
     const diff = new Date().valueOf() - fullEraseStart?.valueOf()
     dispatch(BeepBaseActions.setEraseLogFileProgress(diff / 1000 / 250))
-  }, state == "erasing" && eraseType == "full" ? (__DEV__ ? 5000 : 1000) : null)
+  }, (state == "erasing" && eraseType == "full") ? (__DEV__ ? 5000 : 1000) : null)
 
   useEffect(() => {
     if (logFileProgress > 0 && logFileProgress === logFileSize?.value()) {
@@ -91,7 +91,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
       //download finished, upload to api
       setState("uploading")
       RNFS.uploadFiles({
-        toUrl: ApiService.getLogFileUploadUrl(useProduction),
+        toUrl: ApiService.getLogFileUploadUrl(useProduction, logFileSize?.value()),
         files: [{ 
           name: "file", 
           filename: BleHelpers.LOG_FILE_NAME,
