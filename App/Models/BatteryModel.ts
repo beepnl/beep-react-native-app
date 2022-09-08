@@ -15,7 +15,7 @@ export class BatteryModel {
   }
 
   getVoltage() {
-    return `${this.mvBattery} mV`
+    return `${this.mvBattery / 1000} V`
   }
 
   static parse(rawData: Buffer) {
