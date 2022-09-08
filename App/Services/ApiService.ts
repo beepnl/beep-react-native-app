@@ -10,10 +10,10 @@ const LORA_SENSORS_URL = "/lora_sensors"
 const api = create({
   baseURL: BASE_URL,
   headers: {
-    Accept: 'application/json',
+    'Accept': 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-cache',
     'X-ClientId': Platform.OS
-    // 'Content-Type': 'application/x-www-form-urlencoded',
   },
   timeout: 10000,
 })
