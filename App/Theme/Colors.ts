@@ -22,16 +22,5 @@ export default {
   grey: "#575556",
   white: "#F4F6F6",
   shadow: "#363536",
-
-  buttonUpColor1: "#FFFFFF",    //button
-  buttonUpColor2: "#F4F6F6",    //button
-  buttonUpColor3: "#DDDDDD",    //button
-  buttonUpColor4: "#97C21F",    //icon
-  buttonUpColor5: "#575556",    //icon
-  buttonDownColor1: "#AED15E",  //button
-  buttonDownColor2: "#97C21F",  //button
-  buttonDownColor3: "#68A548",  //button
-  buttonDownColor4: "#F4F6F6",    //icon
-  buttonDownColor5: "#575556",    //icon
-
+  green: "#55DD55"
 }
