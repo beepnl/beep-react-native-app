@@ -73,6 +73,7 @@ export const AppStack = () => {
       <Stack.Screen name="CalibrateWeightScreen" component={CalibrateWeightScreen} />
       <Stack.Screen name="AudioScreen" component={AudioScreen} />
       <Stack.Screen name="EnergyScreen" component={EnergyScreen} />
+      <Stack.Screen name="WizardEnergyScreen" component={WizardEnergyScreen} />
       <Stack.Screen name="TiltScreen" component={TiltScreen} />
       <Stack.Screen name="ClockScreen" component={ClockScreen} />
       <Stack.Screen name="LoRaScreen" component={LoRaScreen} />

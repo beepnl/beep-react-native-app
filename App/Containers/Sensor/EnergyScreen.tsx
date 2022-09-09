@@ -53,6 +53,10 @@ const EnergyScreen: FunctionComponent<Props> = ({
     }
   }, [])
 
+  const onConfigurePress = () => {
+    navigation.navigate("WizardEnergyScreen", { fromSensorScreen: true })
+  }
+
   const getInterval = () => {
     if (applicationConfig) {
       const interval = INTERVALS.find(interval => interval.duration == applicationConfig.measurementInterval)
@@ -121,7 +125,15 @@ const EnergyScreen: FunctionComponent<Props> = ({
 
       <Text style={styles.instructions}>{t("sensor.energy.instructions")}</Text>
 
+      <View style={[styles.spacer, { flex: 1 }]} />
+
     </ScrollView>
+
+    <View style={styles.footerContainer}>
+      <TouchableOpacity style={styles.button} onPress={onConfigurePress} >
+        <Text style={styles.text}>{t("sensor.configure")}</Text>
+      </TouchableOpacity>
+    </View>
   </>)
 }
 

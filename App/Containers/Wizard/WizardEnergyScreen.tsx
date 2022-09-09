@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback } from 'reac
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { CommonActions, RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -33,13 +33,16 @@ const BATTERY_CAPACITY_MILLI_AMPS = 750
 
 interface Props {
   navigation: StackNavigationProp,
+  route: RouteProp<any, any>,
 }
 
 const WizardEnergyScreen: FunctionComponent<Props> = ({
   navigation,
+  route,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const fromSensorScreen = route.params?.fromSensorScreen
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const applicationConfig: ApplicationConfigModel = useTypedSelector<ApplicationConfigModel>(getApplicationConfig)
   const [sliderIndex, setSliderIndex] = useState([8])
@@ -71,6 +74,17 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
     }
   }, [])
 
+  useEffect(() => {
+    if (applicationConfig) {
+      const intervalIndex = INTERVALS.findIndex(interval => interval.duration == applicationConfig.measurementInterval)
+      if (intervalIndex) {
+        setSliderIndex([intervalIndex])
+      }
+
+      setMeasureToSendRatios([applicationConfig.measureToSendRatio])
+    }
+  }, [applicationConfig])
+
   const updateFirmware = () => {
     const params = Buffer.alloc(3)
     let i = 0
@@ -83,8 +97,15 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
     //update firmware
     updateFirmware()
 
-    //next step in wizard
-    navigation.navigate("WizardCongratulationsScreen")
+    if (fromSensorScreen) {
+      navigation.goBack()
+
+      //refresh audio sensor on previous screen
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_APPLICATION_CONFIG])
+    } else {
+      //next step in wizard
+      navigation.navigate("WizardCongratulationsScreen")
+    }
   }
 
   const getAveragePower = () => {
@@ -195,7 +216,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
 
     <View style={styles.itemContainer}>
       <TouchableOpacity style={styles.button} onPress={onNextPress}>
-        <Text style={styles.text}>{t("common.btnNext")}</Text>
+        <Text style={styles.text}>{fromSensorScreen ? t("common.btnFinish") : t("common.btnNext")}</Text>
       </TouchableOpacity>
     </View>
   </>)

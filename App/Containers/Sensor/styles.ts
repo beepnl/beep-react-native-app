@@ -26,5 +26,9 @@ export default StyleSheet.create({
     textAlign: "center",
   },
 
+  footerContainer: {
+    padding: Metrics.baseMargin,
+    marginBottom: Metrics.baseMargin,
+  },
 
 })
