@@ -89,7 +89,7 @@ const EnergyScreen: FunctionComponent<Props> = ({
           <Text style={styles.text}>{t("sensor.energy.voltage")}</Text>
           <Text style={styles.text}>{battery ? battery.getVoltage() : "-"}</Text>
         </View>
-        { battery.mvBattery < 2900 &&
+        { battery?.mvBattery < 2900 &&
           <View style={[styles.itemRow, { alignItems: "center", justifyContent: "center" }]}>
             <IconIonicons name="warning" size={30} color={Colors.black} />
             <View style={styles.spacerHalf} />
