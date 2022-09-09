@@ -13,6 +13,7 @@ import { Colors, Images } from '../../Theme';
 // Utils
 import BleHelpers from '../../Helpers/BleHelpers';
 import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
+import { tidy, arrange, desc } from '@tidyjs/tidy';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
@@ -29,6 +30,8 @@ import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+type ListItem = DeviceModel & { isConnected: boolean }
+
 interface Props {
 }
 
@@ -39,11 +42,21 @@ const HomeScreen: FunctionComponent<Props> = ({
   const navigation = useNavigation();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const devices: Array<DeviceModel> = useTypedSelector<Array<DeviceModel>>(getDevices)
+  const [listItems, setListItems] = useState<Array<ListItem>>([])
+
   const [isRefreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     setRefreshing(false)
-  }, [devices])
+
+    //sort devices for list
+    const items = devices.map((device: DeviceModel) => ({ ...device, isConnected: pairedPeripheral?.deviceId === device.id }))
+    const sortedItems = tidy(items, arrange([
+      desc("isConnected"),                    //connected devices on top
+      desc("owner")                           //devices from other groups at the bottom
+    ]))
+    setListItems(sortedItems)
+  }, [devices, pairedPeripheral])
 
   const onRefresh = () => {
     setRefreshing(true)
@@ -80,11 +93,11 @@ const HomeScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
 
       <ScrollView style={styles.devicesContainer} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />} >
-        { devices.map((device: DeviceModel, index: number) => 
+        { listItems.map((device: ListItem, index: number) => 
           <NavigationButton 
             key={index} 
             title={device.name} 
-            Icon={pairedPeripheral?.deviceId === device.id ?
+            Icon={device.isConnected ?
               <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.bluetooth} /> :
               <Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="cover" />
             }

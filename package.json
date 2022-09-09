@@ -19,6 +19,7 @@
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
     "@rnhooks/device-orientation": "^0.0.2",
+    "@tidyjs/tidy": "^2.5.1",
     "@types/ramda": "^0.26.33",
     "@types/react-redux": "^7.1.1",
     "@types/redux": "^3.6.31",
