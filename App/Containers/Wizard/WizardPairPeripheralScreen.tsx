@@ -15,6 +15,7 @@ import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/v
 import BleManager, { Peripheral } from 'react-native-ble-manager'
 import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '../../Helpers/BleHelpers';
 import { Platform } from 'react-native'
+import { tidy, arrange, desc } from '@tidyjs/tidy';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
@@ -33,7 +34,7 @@ import NavigationButton from '../../Components/NavigationButton';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
-type ListItem = Peripheral & { origin: "bonded" | "scanned" }
+type ListItem = Peripheral & { origin: "bonded" | "scanned", isConnected: boolean }
 
 interface Props {
   navigation: StackNavigationProp,
@@ -65,8 +66,9 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
       const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
       filtered.forEach(p => {
-        bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded" })
+        bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded", isConnected: p.id == pairedPeripheral?.id })
       });
+      refreshList()
     })
     
     startScan()
@@ -79,9 +81,13 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     })
   }, [])
 
+  useEffect(() => {
+    refreshList()
+  }, [pairedPeripheral])
+
   const scan = () => {
     setError("")
-    setList(Array.from(bondedPeripherals.current?.values()))
+    refreshList()
     if (!isScanning) {
       setConnectingPeripheral(null)
       BleManager.scan([], 10, false).then((results) => {
@@ -129,11 +135,20 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       }
       //filter list based on name
       if (peripheral.name.startsWith(BLE_NAME_PREFIX)) {
-        scannedPeripherals.current?.set(peripheral.id, { ...peripheral, origin: "scanned" });
-        const mergedMap = new Map(function*() { yield* scannedPeripherals.current; yield* bondedPeripherals.current; }())
-        setList(Array.from(mergedMap.values()))
+        scannedPeripherals.current?.set(peripheral.id, { ...peripheral, origin: "scanned", isConnected: peripheral.id == pairedPeripheral?.id });
+        refreshList()
       }
     }
+  }
+
+  const refreshList = () => {
+    const scanned: Array<ListItem> = Array.from(scannedPeripherals.current.values())
+    const bonded = Array.from(bondedPeripherals.current.values()).filter(p => scanned.findIndex(i => i.id == p.id) == -1)
+    const merged = scanned.concat(bonded)
+    const sorted = tidy(merged, arrange([
+      desc("isConnected"),                    //connected devices on top
+    ]))
+    setList(sorted)
   }
 
   const onPeripheralPress = (peripheral: Peripheral) => {
@@ -205,18 +220,34 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     }
   }
 
+  const getSubTitle = (peripheralItem: ListItem): string => {
+    if (peripheralItem == connectingPeripheral) {
+      if (firmwareVersion && hardwareVersion) {
+        return t("wizard.pair.subtitleConnected", { firmware: firmwareVersion.toString(), hardware: hardwareVersion.toString() })
+      } else {
+        return t("wizard.pair.subtitleTapToConnect")
+      }
+    } else if (peripheralItem.id == pairedPeripheral?.id) {
+      if (!(firmwareVersion && hardwareVersion)) {
+        return t("wizard.pair.subtitleTapToConnect")
+      }
+    }
+    return t("wizard.pair.subtitleNotConnected") 
+  }
+
   const onNextPress = () => {
     navigation.navigate("WizardRegisterScreen")
   }
 
   const getIcon = (peripheralItem: ListItem): React.ComponentType<any> | React.ReactElement<any> | null => {
-    const iconName = peripheralItem.origin == "bonded" ? "settings" : "bluetooth"
+    let iconName = peripheralItem.origin == "bonded" ? "settings" : "bluetooth"
     let color
     if (
       (peripheralItem == connectingPeripheral && firmwareVersion && hardwareVersion) ||
       (pairedPeripheral?.id == peripheralItem?.id)
     ) {
       color = Colors.bluetooth
+      iconName = "bluetooth"
     } else {
       color = Colors.lightGrey
     }
@@ -255,7 +286,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         renderItem={({ item }) => 
           <NavigationButton 
             title={item.name} 
-            subTitle={item == connectingPeripheral && firmwareVersion && hardwareVersion ? t("wizard.pair.subtitleConnected", { firmware: firmwareVersion.toString(), hardware: hardwareVersion.toString() }) : t("wizard.pair.subtitleNotConnected") }
+            subTitle={getSubTitle(item)}
             onPress={() => onPeripheralPress(item)}
             showArrow={false} 
             Icon={getIcon(item)}
