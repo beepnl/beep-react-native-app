@@ -57,7 +57,6 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
 
   const refresh = () => {
     if (pairedPeripheral) {
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
       //read temperature sensors
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_STATE)
       BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
