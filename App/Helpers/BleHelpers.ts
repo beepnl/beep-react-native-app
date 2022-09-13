@@ -286,6 +286,18 @@ export default class BleHelpers {
                 break;
 
               default:
+                if (response.code == 8) {
+                  //invalid state, retry
+                  if (BleHelpers.lastWrite != undefined) {
+                    const { peripheralId, command, params } = BleHelpers.lastWrite
+                    if (peripheralId && command && command == response.command) {
+                      setTimeout(() => {
+                        BleHelpers.write(peripheralId, command, params)
+                        BleHelpers.lastWrite = undefined
+                      }, 500)
+                    }
+                  }
+                }
                 store.dispatch(BeepBaseActions.bleFailure(response.toString()))
                 break;
             }
@@ -540,8 +552,12 @@ export default class BleHelpers {
   static read(peripheralId: string, serviceUUID: string, characteristicUUID: string) {
     return BleManager.read(peripheralId, serviceUUID, characteristicUUID)
   }
+  
+  static lastWrite: { peripheralId: string, command: any, params?: any } | undefined = undefined
 
   static write(peripheralId: string, command: any, params?: any) {
+    BleHelpers.lastWrite = { peripheralId, command, params }
+
     store.dispatch(BeepBaseActions.bleFailure(undefined))
 
     const isString = function(value: any) {
@@ -552,16 +568,16 @@ export default class BleHelpers {
       return obj != null && obj.constructor != null && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
     }
 
-    const isLittleEndian = (function () {
-      let t32 = new Uint32Array(1);
-      let t8 = new Uint8Array(t32.buffer);
-      t8[0] = 0x0A;
-      t8[1] = 0x0B;
-      t8[2] = 0x0C;
-      t8[3] = 0x0D;
-      return t32[0] === 0x0D0C0B0A;
-    })();
-    const isBigEndian = !isLittleEndian;
+    // const isLittleEndian = (function () {
+    //   let t32 = new Uint32Array(1);
+    //   let t8 = new Uint8Array(t32.buffer);
+    //   t8[0] = 0x0A;
+    //   t8[1] = 0x0B;
+    //   t8[2] = 0x0C;
+    //   t8[3] = 0x0D;
+    //   return t32[0] === 0x0D0C0B0A;
+    // })();
+    // const isBigEndian = !isLittleEndian;
 
     let buffer: Buffer
     const arrayCommand = Array.isArray(command) ? command : [command]
