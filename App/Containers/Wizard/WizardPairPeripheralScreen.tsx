@@ -195,6 +195,10 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     })
   }
 
+  const onNextPress = () => {
+    navigation.navigate("WizardRegisterScreen")
+  }
+
   const showNext = !!pairedPeripheral && pairedPeripheral.isConnected && firmwareVersion
   let showProgress = isScanning || (connectingPeripheral != null)
   if (showNext) {
@@ -223,33 +227,40 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const getSubTitle = (peripheralItem: ListItem): string => {
     if (peripheralItem == connectingPeripheral) {
       if (firmwareVersion && hardwareVersion) {
+        //connected
         return t("wizard.pair.subtitleConnected", { firmware: firmwareVersion.toString(), hardware: hardwareVersion.toString() })
       } else {
-        return t("wizard.pair.subtitleTapToConnect")
+        //connecting
+        return t("wizard.pair.subtitleConnecting")
       }
     } else if (peripheralItem.id == pairedPeripheral?.id) {
       if (!(firmwareVersion && hardwareVersion)) {
+        //semi connected. There is an active BLE connection but we still need to retrieve firmware and hardware versions
         return t("wizard.pair.subtitleTapToConnect")
       }
     }
     return t("wizard.pair.subtitleNotConnected") 
   }
 
-  const onNextPress = () => {
-    navigation.navigate("WizardRegisterScreen")
-  }
-
   const getIcon = (peripheralItem: ListItem): React.ComponentType<any> | React.ReactElement<any> | null => {
-    let iconName = peripheralItem.origin == "bonded" ? "settings" : "bluetooth"
+    const isScanResult = peripheralItem.origin != "bonded"
+    const isConnected = (peripheralItem == connectingPeripheral && firmwareVersion && hardwareVersion) ||
+                        (pairedPeripheral?.id == peripheralItem?.id)
+
+    let iconName
     let color
-    if (
-      (peripheralItem == connectingPeripheral && firmwareVersion && hardwareVersion) ||
-      (pairedPeripheral?.id == peripheralItem?.id)
-    ) {
-      color = Colors.bluetooth
+    if (isConnected) {
       iconName = "bluetooth"
+      color = Colors.bluetooth
     } else {
-      color = Colors.lightGrey
+      if (isScanResult) {
+        iconName = "bluetooth"
+        color = Colors.black
+      } else {
+        iconName = "bluetooth"
+        // iconName = "settings"
+        color = Colors.lightGrey
+      }
     }
 
     return <Icon name={iconName} size={30} color={color} />

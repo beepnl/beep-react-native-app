@@ -53,9 +53,10 @@
       "connecting": "Connecting...",
       "connected": "Connected",
       "retry": "Retry scan",
-      "subtitleConnected": "Firmware: v{{firmware}}  Hardware: v{{hardware}}",
       "subtitleNotConnected": "Not connected",
-      "subtitleTapToConnect": "Connected, tap to select"
+      "subtitleTapToConnect": "Connected, tap to select",
+      "subtitleConnecting": "Connecting...",
+      "subtitleConnected": "Firmware: v{{firmware}}  Hardware: v{{hardware}}"
     },
     "register": {
       "screenTitle": "Register",
