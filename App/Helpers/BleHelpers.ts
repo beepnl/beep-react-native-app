@@ -29,6 +29,7 @@ import { getLogFileSize } from '../Stores/BeepBase/Selectors';
 import { EraseLogFileModel } from '../Models/EraseLogFileModel';
 import { TiltModel } from '../Models/TiltModel';
 import { BatteryModel } from '../Models/BatteryModel';
+import Bottleneck from 'bottleneck';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -552,6 +553,12 @@ export default class BleHelpers {
   static read(peripheralId: string, serviceUUID: string, characteristicUUID: string) {
     return BleManager.read(peripheralId, serviceUUID, characteristicUUID)
   }
+
+  //limit calls to write() with these settings:
+  static limiter = new Bottleneck({
+    maxConcurrent: 1,                       // max 1 call at a time
+    minTime: 500                            // wait for x ms minimum before next call
+  })
   
   static lastWrite: { peripheralId: string, command: any, params?: any } | undefined = undefined
 
@@ -598,18 +605,20 @@ export default class BleHelpers {
     //   buffer.swap16()
     // }
 
-    return BleManager.write(
-      peripheralId,
-      BEEP_SERVICE,
-      CONTROL_POINT_CHARACTERISTIC,
-      [...buffer]
+    return BleHelpers.limiter.schedule(() => 
+      BleManager.write(
+        peripheralId,
+        BEEP_SERVICE,
+        CONTROL_POINT_CHARACTERISTIC,
+        [...buffer]
+      )
+      .then(() => {
+        console.log(Date.now() + " Written data: " + BleHelpers.byteToHexString([...buffer]));
+      })
+      .catch((error) => {
+        console.log(error)
+        store.dispatch(BeepBaseActions.bleFailure(error))
+      })
     )
-    .then(() => {
-      console.log("Written data: " + BleHelpers.byteToHexString([...buffer]));
-    })
-    .catch((error) => {
-      console.log(error)
-      store.dispatch(BeepBaseActions.bleFailure(error))
-    });
   }
 }
