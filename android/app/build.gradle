@@ -134,8 +134,8 @@ android {
         applicationId "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 30
-        versionName "1.9.90"
+        versionCode 31
+        versionName "1.9.91"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
