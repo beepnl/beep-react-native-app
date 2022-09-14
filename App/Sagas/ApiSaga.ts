@@ -180,6 +180,7 @@ export function* configureLoRaAutomatic(action: any) {
     lorawan_device: {
       dev_eui: device.devEUI,
       app_key: appKey,
+      create_ttn_device: true,
     }
   }
   
