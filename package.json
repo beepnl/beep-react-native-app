@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.0.19",
+  "version": "1.9.90",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
