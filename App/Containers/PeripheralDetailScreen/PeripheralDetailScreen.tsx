@@ -129,7 +129,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   }, [])
 
   useEffect(() => {
-    if (peripheralEqualsDevice && device) {
+    if (peripheralEqualsDevice && device && peripheral.deviceId != device.id) {
       //sync current device id into paired peripheral
       dispatch(BeepBaseActions.setPairedPeripheral({ 
         ...peripheral, 
