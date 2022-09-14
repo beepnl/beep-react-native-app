@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="it.vandillen.beep">
+  package="appinventor.ai_app_beep_nl.BEEP_commissioning_V06">
 
     <uses-permission android:name="android.permission.INTERNET" />
 

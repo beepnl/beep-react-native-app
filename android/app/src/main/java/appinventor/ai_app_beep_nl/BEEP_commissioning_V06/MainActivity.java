@@ -1,4 +1,4 @@
-package it.vandillen.beep;
+package appinventor.ai_app_beep_nl.BEEP_commissioning_V06;
 
 import com.facebook.react.ReactActivity;
 import android.os.Bundle;
