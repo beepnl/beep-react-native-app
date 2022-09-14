@@ -291,11 +291,13 @@ export default class BleHelpers {
                   //invalid state, retry
                   if (BleHelpers.lastWrite != undefined) {
                     const { peripheralId, command, params } = BleHelpers.lastWrite
+                    //only retry same command that failed
                     if (peripheralId && command && command == response.command) {
-                      setTimeout(() => {
-                        BleHelpers.write(peripheralId, command, params)
+                      //call write again (scheduled)
+                      // BleHelpers.write(peripheralId, command, params).finally(() => {
+                        //clear retry info (max 1 retry)
                         BleHelpers.lastWrite = undefined
-                      }, 500)
+                      // })
                     }
                   }
                 }
