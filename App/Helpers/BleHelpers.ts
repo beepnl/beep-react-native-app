@@ -152,8 +152,8 @@ export default class BleHelpers {
     console.log("BleManager start");
     return BleManager.start({
       showAlert: true,
-      restoreIdentifierKey: "it.vandillen.beep.restoreIdentifierKey",
-      queueIdentifierKey: "it.vandillen.beep.queueIdentifierKey",
+      restoreIdentifierKey: "nl.beep.BEEP.restoreIdentifierKey",
+      queueIdentifierKey: "nl.beep.BEEP.queueIdentifierKey",
     }).then(async () => {
       //request usage of Bluetooth on Android (iOS is handled by OS via info.plist entry)
       if (Platform.OS === 'android' && Platform.Version >= 31) {
