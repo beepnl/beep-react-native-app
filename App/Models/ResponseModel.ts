@@ -37,10 +37,10 @@ export class ResponseModel {
   toString() {
     switch (this.command) {
       case COMMANDS.WRITE_DS18B20_CONVERSION:
-        return `Temperature sensor error. Please check if the temperature sensor is connected and working properly. Error message: ${this.message}`
+        return `Temperature sensor error. Please check if the temperature sensor is connected and working properly. Error code ${this.code}.`
     
       case COMMANDS.WRITE_HX711_CONVERSION:
-        return `Weight sensor error. Please check if the weight sensor is connected and working properly. Error message: ${this.message}`
+        return `Weight sensor error. Please check if the weight sensor is connected and working properly. Error code ${this.code}.`
     
       default:
         return `Command code: 0x${this.command.toString(16).toUpperCase()}. Error message: ${this.message}`
