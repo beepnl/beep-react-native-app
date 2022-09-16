@@ -232,18 +232,48 @@ export function* configureLoRaAutomatic(action: any) {
 }
 
 export function* configureLoRaManual(action: any) {
-  yield put(ApiActions.setLoRaConfigState("writingCredentials"))
+  yield put(ApiActions.setLoRaConfigState("registeringApi"))
+
+  const device: DeviceModel = getDevice(yield select())
 
   const { devEUI, appEui, appKey } = action
   const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
 
-  //write lora credentials to peripheral
-  yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, appEui)
-  yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, devEUI)
-  yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
-  yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
-  yield call(readLoraState, action)
-  yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
+  //update devEUI on device in db
+  const deviceUpdateParams = {
+    id: device.id,
+    key: devEUI,
+    hardware_id: device.hardwareId,
+  }
+  const updateDeviceResponse = yield guardedRequest(api.updateDevice, device.id, deviceUpdateParams)
+  if (updateDeviceResponse && updateDeviceResponse.ok) {
+    yield put(ApiActions.setLoRaConfigState("writingCredentials"))
+  
+    //write lora credentials to peripheral
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, appEui)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, devEUI)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+
+    //read back from device into redux store
+    yield call(readLoraState, action)
+
+    //update device model in beep base store
+    const newDevice = {
+      ...device,
+      devEUI,
+    }
+    yield put(BeepBaseActions.setDevice(newDevice))
+
+    //refresh user device list
+    yield call(getDevices, null)
+    
+    //next wizard state
+    yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
+  } else {
+    yield put(ApiActions.setLoRaConfigState("failedToRegister"))
+    yield put(ApiActions.apiFailure(updateDeviceResponse))
+  }
 }
 
 export function* initializeTemperatureSensors(action: any) {
