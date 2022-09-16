@@ -194,43 +194,16 @@ const ApplicationStyles = {
     color: Colors.darkGrey,
   },
 
-  textButton: {
-    ...Fonts.style.regular,
-    height: Metrics.buttonHeight,
-    color: Colors.link,
-  },
-
   link: {
     ...Fonts.style.regular,
     textDecorationLine: 'underline',
     color: Colors.link,
   },
 
-  textLight: {
-    fontSize: 14,
-    color: Colors.text,
-  },
-
-  textLightItalic: {
-    fontStyle: "italic",
-    fontSize: 14,
-    color: Colors.text,
-  },
-
   centeredText: {
-    fontSize: 14,
-    paddingHorizontal: Metrics.baseMargin,
+    ...Fonts.style.regular,
     color: Colors.text,
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
-    textAlign: "center",
-  },
-
-  centeredTextLight: {
-    fontSize: 14,
     paddingHorizontal: Metrics.baseMargin,
-    color: Colors.text,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",

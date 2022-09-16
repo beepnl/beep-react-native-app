@@ -185,7 +185,9 @@
         "setCredentialsButton": "Set credentials"
       },
       "descriptionJoined": "You have successfully configured your LoRa connection. The BEEP base is now able to upload its measurements.",
-      "newDeviceName": "The new name of the BEEP base is"
+      "deviceName": "The name of the BEEP base is:",
+      "oldBluetoothName": "The old Bluetooth name of the BEEP base was:",
+      "newBluetoothName": "The new Bluetooth name of the BEEP base is:"
     },
     "energy": {
       "screenTitle": "Energy",

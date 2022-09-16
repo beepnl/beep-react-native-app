@@ -48,6 +48,7 @@ export class DeviceModel {
   name: string
   hardwareId: string
   devEUI: string
+  previousDevEUI: string
   sensorDefinitions: Array<SensorDefinitionModel>
   owner: boolean
 
@@ -56,6 +57,7 @@ export class DeviceModel {
     this.name = props.name
     this.hardwareId = props.hardware_id
     this.devEUI = props.key
+    this.previousDevEUI = props.key
     this.owner = !!props.owner
 
     this.sensorDefinitions = []
@@ -67,6 +69,14 @@ export class DeviceModel {
   static getBleName(instance: DeviceModel) {
     if (instance) {
       const suffix = instance.devEUI.slice(-4).toUpperCase()
+      return BLE_NAME_PREFIX + suffix
+    }
+    return ""
+  }
+
+  static getPreviousBleName(instance: DeviceModel) {
+    if (instance) {
+      const suffix = instance.previousDevEUI.slice(-4).toUpperCase()
       return BLE_NAME_PREFIX + suffix
     }
     return ""

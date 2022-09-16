@@ -24,9 +24,14 @@ export const setPairedPeripheral = (state: BeepBaseState, payload: any) => {
 }
 
 export const setDevice = (state: BeepBaseState, payload: any) => {
+  const oldDevice = state.device
+  const newDevice = {
+    ...payload.device,
+    previousDevEUI: oldDevice?.devEUI ?? payload.device.devEUI,
+  }
   return {
     ...state,
-    device: payload.device
+    device: newDevice
   }
 }
 
