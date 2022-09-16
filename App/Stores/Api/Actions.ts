@@ -33,7 +33,7 @@ const CreatedActions = createActions({
   getDevices: null,
   checkDeviceRegistration: ['peripheralId', 'hardwareId'],
   registerDevice: ['peripheralId', 'requestParams'],
-  configureLoRaAutomatic: ['appKey'],
+  configureLoRaAutomatic: ['appKey', 'devEUI'],
   configureLoRaManual: ['devEUI', 'appEui', 'appKey'],
   setRegisterState: ['registerState'],
   setLoRaConfigState: ['loRaConfigState'],

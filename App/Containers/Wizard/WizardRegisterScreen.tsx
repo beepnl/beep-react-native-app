@@ -81,6 +81,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
       name,
       firmware_version: firmwareVersion.toString(),
       hardware_version: hardwareVersion.toString(),
+      create_ttn_device: true,
     }
     dispatch(ApiActions.registerDevice(peripheral.id, requestParams))
   }

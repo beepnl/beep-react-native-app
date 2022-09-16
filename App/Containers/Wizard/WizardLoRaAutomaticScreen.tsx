@@ -48,6 +48,7 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   const [startPressed, setStartPressed] = useState(false)
   
   const appKey = useRef(generateKey(32))
+  const devEUI = useRef(generateKey(16))
 
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const loRaWanState: LoRaWanStateModel = useTypedSelector<LoRaWanStateModel>(getLoRaWanState)
@@ -73,7 +74,7 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
 
   const onStartPress = () => {
     setStartPressed(true)
-    dispatch(ApiActions.configureLoRaAutomatic(appKey.current))
+    dispatch(ApiActions.configureLoRaAutomatic(appKey.current, devEUI.current))
     retry.current = RETRY_COUNT
   }
 
