@@ -34,7 +34,6 @@ const LoginScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [beeVisible, setBeeVisible] = useState(true)
   const useProduction = useTypedSelector<boolean>(getUseProduction)
   const error = useTypedSelector<string | undefined>(getError)
 
@@ -56,10 +55,6 @@ const LoginScreen: FunctionComponent<Props> = ({
 
   const onCreateAccountPress = () => {
     OpenExternalHelpers.openUrl(`https://app.beep.nl/sign-up`)
-  }
-
-  const onBeePress = () => {
-    setBeeVisible(false)
   }
 
   return (
