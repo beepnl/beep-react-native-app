@@ -8,7 +8,7 @@ import { useTypedSelector } from 'App/Stores';
 
 // Styles
 import styles from './styles'
-import { ApplicationStyles, Fonts } from '../../Theme';
+import { ApplicationStyles, Colors, Fonts } from '../../Theme';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
@@ -276,6 +276,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
           value={calibrateWeightFormatted}
           mask={"[0999]{.}[999]"}
           placeholder={t("wizard.calibrate.weight.calibrateWeightPlaceholder")}
+          placeholderTextColor={Colors.placeholder}
           keyboardType={"numeric"}
           autoCapitalize={"characters"}
           autoCompleteType={"off"}

@@ -129,6 +129,7 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
         <TextInput
           style={styles.input}
           onChangeText={setName}
+          placeholderTextColor={Colors.placeholder}
           value={name}
           maxLength={100}
           returnKeyType="next"

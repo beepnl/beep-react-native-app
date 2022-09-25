@@ -11,7 +11,7 @@ export default {
   alertValid: "#44CC44",
   alertInvalid: "#EE2222",
   bluetooth: "#0004F7",
-  placeholder: "rgba(0, 58, 128, 0.5)",
+  placeholder: "#999999",
   statusBar: "#575556",
   link: "#74A2E2",
 
