@@ -58,14 +58,14 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const loRaWanState: LoRaWanStateModel = useTypedSelector<LoRaWanStateModel>(getLoRaWanState)
 
-  const [devEui, setDevEui] = useState(loRaWanDeviceEUI.devEUI)
-  const [devEuiFormatted, setDevEuiFormatted] = useState(loRaWanDeviceEUI.formatted)
+  const [devEui, setDevEui] = useState(loRaWanDeviceEUI?.devEUI)
+  const [devEuiFormatted, setDevEuiFormatted] = useState(loRaWanDeviceEUI?.formatted)
   const [devEuiError, setDevEuiError] = useState("")
-  const [appEui, setAppEui] = useState(loRaWanAppEUI.appEUI)
-  const [appEuiFormatted, setAppEuiFormatted] = useState(loRaWanAppEUI.formatted)
+  const [appEui, setAppEui] = useState(loRaWanAppEUI?.appEUI)
+  const [appEuiFormatted, setAppEuiFormatted] = useState(loRaWanAppEUI?.formatted)
   const [appEuiError, setAppEuiError] = useState("")
-  const [appKey, setAppKey] = useState(loRaWanAppKey.appKey)
-  const [appKeyFormatted, setAppKeyFormatted] = useState(loRaWanAppKey.formatted)
+  const [appKey, setAppKey] = useState(loRaWanAppKey?.appKey)
+  const [appKeyFormatted, setAppKeyFormatted] = useState(loRaWanAppKey?.formatted)
   const [appKeyError, setAppKeyError] = useState("")
   
   const onDevEuiChangeText = (formatted: string, extracted?: string | undefined) => {
