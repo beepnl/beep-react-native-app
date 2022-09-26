@@ -207,6 +207,13 @@ export const setTilt = (state: BeepBaseState, payload: any) => {
   }
 }
 
+export const setDfuUpdating = (state: BeepBaseState, payload: any) => {
+  return {
+    ...state,
+    isDfuUpdating: payload.isDfuUpdating
+  }
+}
+
 export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.CLEAR]: clear,
   [BeepBaseTypes.BLE_FAILURE]: bleFailure,
@@ -233,4 +240,5 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.SET_BATTERY]: setBattery,
   [BeepBaseTypes.SET_CLOCK]: setClock,
   [BeepBaseTypes.SET_TILT]: setTilt,
+  [BeepBaseTypes.SET_DFU_UPDATING]: setDfuUpdating,
 })

@@ -103,3 +103,7 @@ export const getClock = (state: AppState) => {
 export const getTilt = (state: AppState) => {
   return state.beepBase.tilt
 }
+
+export const getDfuUpdating = (state: AppState) => {
+  return state.beepBase.isDfuUpdating
+}

@@ -17,6 +17,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
+import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
@@ -67,7 +68,25 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
     DFUEmitter.addListener("DFUStateChanged", ({ state }) => {
       // console.log("DFU State:", state);
       if (state != undefined) {
+        //track internal state for UI updates
         setDfuState(state)
+
+        //update 'dfu is updating flag' in store for error drop down visibility logic
+        let isUpdating
+        switch (state) {
+          case "ENABLING_DFU_MODE":
+          case "CONNECTING":
+          case "DEVICE_DISCONNECTING":
+          case "DFU_PROCESS_STARTING":
+          case "DFU_COMPLETED":
+            isUpdating = true
+            break;
+
+          case "DFU_FAILED":
+            isUpdating = false
+            break;
+        }
+        dispatch(BeepBaseActions.setDfuUpdating(isUpdating))
       }
     });
   }, []);
@@ -78,6 +97,7 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
     console.log("onInstallFirmwarePress")
     setBusy(true)
     setDfuTransferResult("")
+    setDfuProgress(0)
     setDfuReconnectRetry(0)
     const destination = RNFS.CachesDirectoryPath + "/firmware.zip"
     console.log("destination", destination)
@@ -111,6 +131,7 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
                 //reconnect successful
                 retry = RETRY_COUNT
                 BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+                dispatch(BeepBaseActions.setDfuUpdating(false))
               } else {
                 await BleHelpers.connectPeripheral(peripheralId)
               }
@@ -120,6 +141,7 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
           })
           .catch((error) => {
             console.log("error in startDFU", error)
+            dispatch(BeepBaseActions.setDfuUpdating(false))
             setDfuTransferResult(error)
           })
           .finally(() => {

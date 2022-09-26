@@ -41,6 +41,7 @@ export interface BeepBaseState {
   batteryPercentage: number | undefined
   clock: ClockModel | undefined
   tilt: TiltModel | undefined
+  isDfuUpdating: boolean
 }
 
 export const INITIAL_STATE: BeepBaseState = {
@@ -68,4 +69,5 @@ export const INITIAL_STATE: BeepBaseState = {
   batteryPercentage: undefined,
   clock: undefined,
   tilt: undefined,
+  isDfuUpdating: false,
 }

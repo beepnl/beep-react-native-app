@@ -45,6 +45,7 @@ export enum BeepBaseTypes {
   SET_BATTERY = 'SET_BATTERY',
   SET_CLOCK = 'SET_CLOCK',
   SET_TILT = 'SET_TILT',
+  SET_DFU_UPDATING = 'SET_DFU_UPDATING',
 }
 
 interface C extends ActionCreators {
@@ -73,6 +74,7 @@ interface C extends ActionCreators {
   addLogFileFrame: (frame: LogFileFrameModel) => { type: BeepBaseTypes.ADD_LOG_FILE_FRAME };
   setEraseLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_ERASE_LOG_FILE_PROGRESS };
   clearLogFileFrame: () => { type: BeepBaseTypes.CLEAR_LOG_FILE_FRAMES };
+  setDfuUpdating: (isDfuUpdating: boolean) => { type: BeepBaseTypes.SET_DFU_UPDATING };
 }
 
 const CreatedActions = createActions( {
@@ -101,6 +103,7 @@ const CreatedActions = createActions( {
   addLogFileFrame: ['frame'],
   setEraseLogFileProgress: ['progress'],
   clearLogFileFrames: null,
+  setDfuUpdating: ['isDfuUpdating'],
 } );
 
 export default CreatedActions.Creators as C;

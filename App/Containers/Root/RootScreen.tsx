@@ -24,6 +24,7 @@ import StartupActions from 'App/Stores/Startup/Actions'
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { getError as getApiError } from 'App/Stores/Api/Selectors';
 import { getError as getBleError } from 'App/Stores/BeepBase/Selectors';
+import { getDfuUpdating } from 'App/Stores/BeepBase/Selectors';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { PairedPeripheralModel } from 'App/Models/PairedPeripheral';
 import { getToken } from 'App/Stores/User/Selectors';
@@ -49,6 +50,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   const token: string = useTypedSelector<string>(getToken)
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const { appState } = useAppState();
+  const isDfuUpdating: boolean = useTypedSelector<any>(getDfuUpdating)
 
   useEffect(() => {
     dispatch(StartupActions.startup())
@@ -115,7 +117,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   }, [apiError])
 
   useEffect(() => {
-    if (bleError && dropDownAlert?.current) {
+    if (bleError && (!isDfuUpdating) && dropDownAlert?.current) {
       dropDownAlert.current.alertWithType('error', t("common.error"), bleError);
     }
   }, [bleError])
