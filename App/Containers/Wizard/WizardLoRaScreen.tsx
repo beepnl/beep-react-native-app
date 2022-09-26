@@ -178,11 +178,13 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
       <View style={styles.spacerDouble} />
     </ScrollView>
 
-    <View style={styles.itemContainer}>
-      <TouchableOpacity style={styles.button} onPress={onSkipPress}>
-        <Text style={styles.text}>{t("common.btnSkip")}</Text>
-      </TouchableOpacity>
-    </View>
+    { !fromSensorScreen &&
+      <View style={styles.itemContainer}>
+        <TouchableOpacity style={styles.button} onPress={onSkipPress}>
+          <Text style={styles.text}>{t("common.btnSkip")}</Text>
+        </TouchableOpacity>
+      </View>
+    }
 
     <Modal
       isVisible={isModalVisible}
