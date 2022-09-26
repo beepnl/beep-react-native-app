@@ -58,19 +58,20 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
     if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, weightChannel?.bitmask, 3])
       BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
     }
   }
 
   useInterval(() => {
     refresh()
-  }, __DEV__ ? 60000 : 5000)
+  }, __DEV__ ? 10000 : 3000)
 
   useEffect(() => {
     //initialize sensors
     if (pairedPeripheral) {
       BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, weightChannel?.bitmask, 1])
+      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, weightChannel?.bitmask, 3])
     }
 
     refresh()
