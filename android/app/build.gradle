@@ -134,7 +134,7 @@ android {
         applicationId "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 34
+        versionCode 35
         versionName "2.0.1"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
@@ -153,6 +153,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('../keystores/android.keystore')
+            storePassword 'android'
+            keyAlias 'androidkey'
+            keyPassword 'android'
+        }
     }
     buildTypes {
         debug {
@@ -161,7 +167,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
