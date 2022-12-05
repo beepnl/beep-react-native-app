@@ -77,7 +77,7 @@ const AudioScreen: FunctionComponent<Props> = ({
         // show list of spectrum values
         <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.audio.spectrum")}</Text>
-          <Text style={styles.text}>{audioSensor ? audioSensor.bins : "-"}</Text>
+          <Text style={styles.text}>{audioSensor ? audioSensor.spectrum : "-"}</Text>
         </View>
       </View>
 
