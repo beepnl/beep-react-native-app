@@ -33,7 +33,7 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 type PAGE = "plug" | "frequencies"
 
-const BIN_RESOLUTION = 3.937752016
+const BIN_RESOLUTION = 1 // 1000 / 100
 const FREQUENCY_STEP = 50
 export const getFrequencyByBin = (bin: number) => Math.round((bin * 2 * BIN_RESOLUTION)/ FREQUENCY_STEP) * FREQUENCY_STEP
 
@@ -164,7 +164,7 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
               values={bins}
               onValuesChange={setBins}
               min={1}
-              max={12}
+              max={100}
               enabledOne={true}
               enabledTwo={false}
               trackStyle={trackStyle}

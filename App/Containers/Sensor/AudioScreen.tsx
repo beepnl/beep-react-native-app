@@ -73,6 +73,12 @@ const AudioScreen: FunctionComponent<Props> = ({
           <Text style={styles.text}>{t("sensor.audio.bins")}</Text>
           <Text style={styles.text}>{audioSensor ? audioSensor.bins : "-"}</Text>
         </View>
+
+        // show list of spectrum values
+        <View style={styles.itemRow}>
+          <Text style={styles.text}>{t("sensor.audio.spectrum")}</Text>
+          <Text style={styles.text}>{audioSensor ? audioSensor.bins : "-"}</Text>
+        </View>
       </View>
 
       <View style={[styles.spacer, { flex: 1 }]} />

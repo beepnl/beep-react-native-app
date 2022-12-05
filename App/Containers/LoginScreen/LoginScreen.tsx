@@ -46,6 +46,7 @@ const LoginScreen: FunctionComponent<Props> = ({
   const onLoginPress = () => {
     if (username && password) {
       dispatch(AuthActions.login(username.trim(), password))
+      FirebaseCrashlytics.getInstance().setUserId(username)
     }
   }
 
