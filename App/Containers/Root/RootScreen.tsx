@@ -63,6 +63,12 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
           isConnected: true,
         }
         dispatch(BeepBaseActions.setPairedPeripheral(updated))
+
+        // sync clock on connect
+        const params = Buffer.alloc(4)
+        params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0) 
+        BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_CLOCK, params)
+
       }
     });
 
