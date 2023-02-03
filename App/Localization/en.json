@@ -149,13 +149,17 @@
         "enabled": "Enabled",
         "disabled": "Disabled"
       },
-      "subTitle": "Configuring your LoRa",
+      "subTitle": "Configuring your LoRa connection",
       "descriptionAutomatic": "The recommended method is using automatic configuration. This will register your BEEP base with The Things Network (TTN) and automatically register it with BEEP.",
       "automaticButton": "Automatic configuration",
-      "descriptionManual": "Alternatively you can manually configure your LoRa network connection, for instance when you want to use your own LoRa network provider.",
+      "descriptionManual": "Alternatively, configure your LoRa network connection manually.",
       "manualButton": "Manual configuration",
-      "skipTitle": "Are you sure ?",
+      "descriptionDisable": "Disable LoRa connectivity for lower energy consumption.",
+      "disableButton": "Disable",
+      "skipTitle": "Skip LoRa configuration?",
       "skipMessage": "Your BEEP base is not connected to any LoRa network and will not be able to upload its measurements.",
+      "NextTitle": "Skip LoRa configuration?",
+      "NextMessage": "Your BEEP base is not connected to any LoRa network and will not be able to upload its measurements.",
       "automatic": {
         "screenTitle": "LoRa automatic",
         "description": "Automatic configuration will register your BEEP base with The Things Network (TTN).\n\nAfter registration it will automatically connect to the TTN LoRa network and start uploading its measurements.",
@@ -166,6 +170,7 @@
           "writingCredentials": "Writing credentials to device...",
           "checkingConnectivity": "Checking LoRa connectivity...",
           "connected": "Successfully connected",
+          "isDisabled": "Disabled",
           "failedToRegister": "Failed to register with TTN",
           "failedToConnect": "Failed to connect"
         }
