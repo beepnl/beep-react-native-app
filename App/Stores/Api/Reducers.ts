@@ -28,6 +28,15 @@ export const setLoRaConfigState = (state: ApiState, payload: any) => {
   }
 }
 
+export const setDisableLoRa = (state: ApiState, payload: any) => {
+  const { disableLoRa } = payload  
+  return {
+    ...state,
+    error: undefined,
+    disableLoRa
+  }
+}
+
 export const apiFailure = (state: ApiState, payload: any) => {
   const { response } = payload
   const api = response && response.data
@@ -49,5 +58,6 @@ export const reducer = createReducer(API_INITIAL_STATE, {
   [ApiTypes.SET_FIRMWARES]: setFirmwares,
   [ApiTypes.SET_REGISTER_STATE]: setRegisterState,
   [ApiTypes.SET_LO_RA_CONFIG_STATE]: setLoRaConfigState,
+  [ApiTypes.SET_DISABLE_LORA]: setDisableLoRa,
   [ApiTypes.API_FAILURE]: apiFailure,
 })

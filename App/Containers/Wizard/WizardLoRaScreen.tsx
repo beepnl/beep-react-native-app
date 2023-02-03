@@ -16,11 +16,11 @@ import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import useInterval from '../../Helpers/useInterval';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
+import ApiActions from 'App/Stores/Api/Actions';
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors';
 import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState } from '../../Stores/BeepBase/Selectors';
-import { LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
+import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_DISABLED, BITMASK_ENABLED, LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
 import { LoRaWanDeviceEUIModel } from '../../Models/LoRaWanDeviceEUIModel';
 import { LoRaWanAppEUIModel } from '../../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
@@ -31,6 +31,9 @@ import ScreenHeader from '../../Components/ScreenHeader';
 import Collapsible from 'react-native-collapsible';
 import Modal from 'react-native-modal';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
+import { setLoRaWanState } from '../../Stores/BeepBase/Reducers';
+import { setLoRaConfigState } from '../../Stores/Api/Reducers';
+import { disableLoRa } from '../../Stores/Api/Reducers';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -65,20 +68,29 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
   const onAutomaticPress = () => {
     navigation.navigate("WizardLoRaAutomaticScreen", { fromSensorScreen })
   }
-  
+
   const onManualPress = () => {
     navigation.navigate("WizardLoRaManualScreen", { fromSensorScreen })
   }
-  
-  const onSkipPress = () => {
+
+  const onDisablePress = () => {
+    if (pairedPeripheral) {
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_LORAWAN_STATE, 0)
+      dispatch(ApiActions.setDisableLoRa())
+      dispatch(ApiActions.setLoRaConfigState("isDisabled"))
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_STATE)
+    }
+  }
+
+  const onNextPress = () => {
     if (loRaWanState?.hasJoined) {
-      onSkipConfirmPress()
+      onNextConfirmPress()
     } else {
       setModalVisible(true)
     }
   }
 
-  const onSkipConfirmPress = () => {
+  const onNextConfirmPress = () => {
     setModalVisible(false)
     navigation.navigate("WizardEnergyScreen")
   }
@@ -132,7 +144,7 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
         <View style={styles.spacer} />
         <View style={styles.centeredContainer}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <IconIonicons name="ios-radio-outline" size={30} color={ (loRaWanState?.isEnabled && loRaWanState?.hasJoined) ? Colors.green : Colors.red } style={{ transform: [{ rotate: '90deg'}] }} />
+            <IconIonicons name="ios-radio-outline" size={30} color={(loRaWanState?.isEnabled && loRaWanState?.hasJoined) ? Colors.green : Colors.red} style={{ transform: [{ rotate: '90deg' }] }} />
             <Text style={styles.itemText}>{getStateText()}</Text>
           </View>
         </View>
@@ -142,7 +154,7 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
         <Text style={[styles.link, { alignSelf: "center" }]}>{t(`wizard.lora.${isDetailsCollapsed ? "show" : "hide"}Details`)}</Text>
       </TouchableOpacity>
       <Collapsible collapsed={isDetailsCollapsed}>
-        { renderDetails() }
+        {renderDetails()}
       </Collapsible>
 
       <View style={styles.spacer} />
@@ -176,12 +188,24 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
       </TouchableOpacity>
 
       <View style={styles.spacerDouble} />
+
+      <View style={styles.itemContainer}>
+        <Text style={styles.text}>{t("wizard.lora.descriptionDisable")}</Text>
+      </View>
+
+      <View style={styles.spacer} />
+
+      <TouchableOpacity style={styles.button} onPress={onDisablePress}>
+        <Text style={styles.text}>{t("wizard.lora.disableButton")}</Text>
+      </TouchableOpacity>
+
+      <View style={styles.spacerDouble} />
     </ScrollView>
 
-    { !fromSensorScreen &&
+    {!fromSensorScreen &&
       <View style={styles.itemContainer}>
-        <TouchableOpacity style={styles.button} onPress={onSkipPress}>
-          <Text style={styles.text}>{t("common.btnSkip")}</Text>
+        <TouchableOpacity style={styles.button} onPress={onNextPress}>
+          <Text style={styles.text}>{t("common.btnNext")}</Text>
         </TouchableOpacity>
       </View>
     }
@@ -194,14 +218,14 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
       backdropOpacity={0.3}
     >
       <View style={ApplicationStyles.modalContainer}>
-        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("wizard.lora.skipTitle")}</Text>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("wizard.lora.NextTitle")}</Text>
         <View style={styles.spacer} />
-        <View style={styles.itemContianer}>
-          <Text style={styles.itemText}>{t("wizard.lora.skipMessage")}</Text>
+        <View style={styles.itemContainer}>
+          <Text style={styles.itemText}>{t("wizard.lora.NextMessage")}</Text>
           <View style={styles.spacerDouble} />
           <View style={ApplicationStyles.buttonsContainer}>
-            <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={onSkipConfirmPress}>
-              <Text style={styles.text}>{t("common.btnSkip")}</Text>
+            <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={onNextConfirmPress}>
+              <Text style={styles.text}>{t("common.btnNext")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={hideModal}>
               <Text style={styles.text}>{t("common.btnCancel")}</Text>
