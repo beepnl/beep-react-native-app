@@ -16,6 +16,7 @@ import { BeepBaseTypes } from '../Stores/BeepBase/Actions'
 import { CHANNELS } from '../Models/AudioModel'
 import { getRefreshToken } from '../Stores/User/Selectors'
 import { navigate } from '../Services/NavigationService'
+import { isNull } from 'lodash'
 
 function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Parameters<Fn>) {
   const response = yield fn(...args)
@@ -87,12 +88,26 @@ export function* checkDeviceRegistration(action: any) {
     } else {
       //no info field means we have a search result
       if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
-        //device is already in db
+        // device is already in db
+        // 
+        // device may not have a devEUI yet, so
+        // check for empty devEUI before writing to NVM
+        
+        if device.devEUI == null)
+        {
+          yield put(ApiActions.setRegisterState("failed"))
+          yield put(ApiActions.setRegisterState("notYetRegistered"))
+          console.log("Registration failed. Please contact support@beep.nl")
+          // generate devEUI and PATCH device here?
+        }
+
         yield put(ApiActions.setRegisterState("alreadyRegistered"))
         const device = new DeviceModel(deviceResponse.data[0])
         yield put(BeepBaseActions.setDevice(device))
+
         //update firmware with LoRa devEUI. This will also rename the BLE name
-        yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+        yield call(BleHelpers.write, peripheralId COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+
       } else {
         //device not found
         yield put(ApiActions.setRegisterState("notYetRegistered"))
