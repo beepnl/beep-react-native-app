@@ -54,11 +54,10 @@ function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Pa
       yield put(AuthActions.logout())
     }
   }
-  else if(response.status == 500)
-    {
-      console.error("Server error (500).")
-    }
-
+  else if(response.status == 500 || response.status == 400 ){
+      console.error("Server error")
+      console.log("server error", response)
+  }
   return response
 }
 
@@ -92,16 +91,14 @@ export function* checkDeviceRegistration(action: any) {
     } else {
       //no info field means we have a search result
       if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
-        // device is already in db
-        // 
-        // device may not have a devEUI yet, so
-        // check for empty devEUI before writing to NVM
+
+        // device found but may not have a devEUI
         
-        if (deviceReponse.devEUI == null)
+        if (deviceResponse.devEUI == null)
         {
           yield put(ApiActions.setRegisterState("failed"))
           yield put(ApiActions.setRegisterState("notYetRegistered"))
-          console.log("Registration failed (device exists but devEUI is not defined")
+          console.log("Registration failed (device exists but devEUI is not defined)")
         }
 
         yield put(ApiActions.setRegisterState("alreadyRegistered"))
@@ -109,7 +106,7 @@ export function* checkDeviceRegistration(action: any) {
         yield put(BeepBaseActions.setDevice(device))
 
         //update firmware with LoRa devEUI. This will also rename the BLE name
-        yield call(BleHelpers.write, peripheralId COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+        yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
 
       } else {
         //device not found
@@ -293,7 +290,6 @@ export function* configureLoRaManual(action: any) {
     yield put(ApiActions.apiFailure(updateDeviceResponse))
   }
 }
-
 
 export function* disableLoRa(action: any) {
 
