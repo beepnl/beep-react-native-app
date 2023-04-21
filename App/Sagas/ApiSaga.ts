@@ -16,7 +16,6 @@ import { BeepBaseTypes } from '../Stores/BeepBase/Actions'
 import { CHANNELS } from '../Models/AudioModel'
 import { getRefreshToken } from '../Stores/User/Selectors'
 import { navigate } from '../Services/NavigationService'
-import { isNull } from 'lodash'
 
 function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Parameters<Fn>) {
   const response = yield fn(...args)
@@ -55,6 +54,11 @@ function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Pa
       yield put(AuthActions.logout())
     }
   }
+  else if(response.status == 500)
+    {
+      console.error("Server error (500).")
+    }
+
   return response
 }
 
@@ -93,12 +97,11 @@ export function* checkDeviceRegistration(action: any) {
         // device may not have a devEUI yet, so
         // check for empty devEUI before writing to NVM
         
-        if device.devEUI == null)
+        if (deviceReponse.devEUI == null)
         {
           yield put(ApiActions.setRegisterState("failed"))
           yield put(ApiActions.setRegisterState("notYetRegistered"))
-          console.log("Registration failed. Please contact support@beep.nl")
-          // generate devEUI and PATCH device here?
+          console.log("Registration failed (device exists but devEUI is not defined")
         }
 
         yield put(ApiActions.setRegisterState("alreadyRegistered"))
