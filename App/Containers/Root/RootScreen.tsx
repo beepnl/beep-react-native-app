@@ -72,12 +72,17 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
         }
         dispatch(BeepBaseActions.setPairedPeripheral(updated))
 
+        /*
+        if (peripheral)
+            {
         params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
         BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
             //console.log('clock synced from rootscreen')
             if (dropDownAlert?.current) {       
                 dropDownAlert.current.alertWithType('success', 'Clock sync', 'Internal clock has been synchronized', params);
               }
+            }
+        */
       }
     });
 
@@ -116,6 +121,8 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
           }
           dispatch(BeepBaseActions.setPairedPeripheral(updated))
 
+          if (peripheral)
+          {    
       params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
       BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
           //console.log('clock synced from rootscreen')
@@ -123,6 +130,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
               dropDownAlert.current.alertWithType('success', 'Clock sync', 'Internal clock has been synchronized', params);
             }
         }
+      }
       })
     }
   }, [peripheral, appState])
