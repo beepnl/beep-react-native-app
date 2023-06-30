@@ -140,6 +140,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     moment.locale(languageCode)
   }, [languageCode])
   
+  /*
   useEffect(() => {
     if (apiError && dropDownAlert?.current) {
       const apiMessage = apiError.message
@@ -153,6 +154,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       dropDownAlert.current.alertWithType('error', t("common.error"), bleError);
     }
   }, [bleError])
+  */
 
   return (
     <View style={styles.mainContainer}>
