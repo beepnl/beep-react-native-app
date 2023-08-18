@@ -28,7 +28,7 @@ function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Pa
     if (!refreshToken) {
       //no refresh token, logout user
       console.log("no refresh token")
-      yield put(AuthActions.logout())
+      //yield put(AuthActions.logout())
       return { ok: false, data: "Authorization token expired" }
     }
     //Beep API has no support for refresh tokens
@@ -45,13 +45,13 @@ function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Pa
       const redoResponse = yield fn(...args)
       if (redoResponse.code == 401) {
         //request failed after refresh, logout user
-        yield put(AuthActions.logout())
+        // yield put(AuthActions.logout())
       }
       return redoResponse
     } else {
       //refresh failed, logout user
       console.log("refresh failed")
-      yield put(AuthActions.logout())
+      // yield put(AuthActions.logout())
     }
   }
   else if(response.status == 500 || response.status == 400 ){
