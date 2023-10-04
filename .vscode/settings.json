@@ -1,0 +1,4 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "nrf-connect.toolchain.path": "PATH"
+}

@@ -109,7 +109,8 @@ export const BATTERY_LEVEL_CHARACTERISTIC = "00002a19-0000-1000-8000-00805f9b34f
 export default class BleHelpers {
 
   static LOG_FILE_NAME = "BeepBaseLogFile.txt"
-  static LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME
+  static LOG_FILE_NUMBER = 0
+  static LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME + "_" + BleHelpers.LOG_FILE_NUMBER.toString;
 
   static BleManagerDidUpdateValueForControlPointCharacteristicSubscription: EmitterSubscription
   static BleManagerDidUpdateValueForTXLogCharacteristicSubscription: EmitterSubscription
@@ -427,9 +428,11 @@ export default class BleHelpers {
   static initLogFile() {
     BleHelpers.lastFrame = -1
 
-    //delete old log file
+    // keep old log file and increment log file number instead of deleting
     return RNFS.exists(BleHelpers.LOG_FILE_PATH).then((exists: boolean) => {
       if (exists) {
+
+        /*
         RNFS.unlink(BleHelpers.LOG_FILE_PATH)
         .then(() => {
           console.log("Existing log file deleted");
@@ -437,6 +440,8 @@ export default class BleHelpers {
         .catch((err) => {
           console.log("Error initLogFile.unlink", err.message);
         });
+        */
+        BleHelpers.LOG_FILE_NUMBER = (BleHelpers.LOG_FILE_NUMBER + 1);
       }
     })
     .catch((err) => {

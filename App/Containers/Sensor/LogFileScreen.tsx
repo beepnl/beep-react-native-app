@@ -83,10 +83,10 @@ const LogFileScreen: FunctionComponent<Props> = ({
     dispatch(BeepBaseActions.setEraseLogFileProgress(diff / 1000 / 250))
   }, (state == "erasing" && eraseType == "full") ? (__DEV__ ? 5000 : 1000) : null)
 
-  useEffect(() => {
+  useEffect(() => {onDownloadLogFilePress
     if (logFileProgress > 0 && logFileProgress === logFileSize?.value()) {
       //download finished, copy to SD card
-      // BleHelpers.exportLogFile()   //when uncommenting, also uncomment permission request in onDownloadLogFilePress()
+      BleHelpers.exportLogFile()   //when uncommenting, also uncomment permission request in onDownloadLogFilePress()
 
       //download finished, upload to api
       setState("uploading")
@@ -130,8 +130,9 @@ const LogFileScreen: FunctionComponent<Props> = ({
         } else {
           console.log('SERVER ERROR');
           setUploadProgress(0)
-          setState("failed")
-          setError(`${response.statusCode}: ${response.body}`)
+          setState("failed") 
+          setError(("Upload failed: log file saved locally as " + BleHelpers.LOG_FILE_NAME))
+          //setError(`${response.statusCode}: ${response.body}`)
         }
       })
       .catch((err) => {
