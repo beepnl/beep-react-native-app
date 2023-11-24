@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/orlo/beep-react/beep-react-native-app/build",
+  "command": "/usr/bin/g++ -I/home/orlo/beep-react/beep-react-native-app/node_modules/react-native/ReactCommon/jsi/jsi/.. -g -Wno-non-virtual-dtor -std=gnu++14 -o CMakeFiles/jsi.dir/jsi.o -c /home/orlo/beep-react/beep-react-native-app/node_modules/react-native/ReactCommon/jsi/jsi/jsi.cpp",
+  "file": "/home/orlo/beep-react/beep-react-native-app/node_modules/react-native/ReactCommon/jsi/jsi/jsi.cpp"
+}
+]
