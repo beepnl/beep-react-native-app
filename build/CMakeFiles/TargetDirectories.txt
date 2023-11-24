@@ -1,0 +1,7 @@
+/home/orlo/beep-react/beep-react-native-app/build/CMakeFiles/install/strip.dir
+/home/orlo/beep-react/beep-react-native-app/build/CMakeFiles/install/local.dir
+/home/orlo/beep-react/beep-react-native-app/build/CMakeFiles/jsi.dir
+/home/orlo/beep-react/beep-react-native-app/build/CMakeFiles/edit_cache.dir
+/home/orlo/beep-react/beep-react-native-app/build/CMakeFiles/rebuild_cache.dir
+/home/orlo/beep-react/beep-react-native-app/build/CMakeFiles/install.dir
+/home/orlo/beep-react/beep-react-native-app/build/CMakeFiles/list_install_components.dir
