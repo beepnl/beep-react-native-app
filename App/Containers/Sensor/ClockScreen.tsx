@@ -36,6 +36,7 @@ const ClockScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const clockSensor: ClockModel = useTypedSelector<ClockModel>(getClock)
+  const bool RTC_installed = false
 
   useEffect(() => {
     refresh()
@@ -45,6 +46,7 @@ const ClockScreen: FunctionComponent<Props> = ({
     if (pairedPeripheral) {
       //read clock sensor
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_CLOCK)
+      RTC_installed = ClockModel.checkRTC()
     }
   }
 
@@ -89,9 +91,15 @@ const ClockScreen: FunctionComponent<Props> = ({
       <TouchableOpacity style={styles.button} onPress={onSyncPress} >
         <Text style={styles.text}>{t("sensor.clock.syncButton")}</Text>
       </TouchableOpacity>
+      
 
     </View>
   </>)
 }
+
+      // todo: show RTC status  in view
+      /*
+      <Text style={styles.text}>{ RTC_installed    
+      */  
 
 export default ClockScreen
