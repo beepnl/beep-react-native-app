@@ -58,3 +58,7 @@ buck-out/
 # CocoaPods
 /ios/Pods/
 android/app/release/output-metadata.json
+android/.project
+android/.settings/org.eclipse.buildship.core.prefs
+android/.project
+android/.settings/org.eclipse.buildship.core.prefs
