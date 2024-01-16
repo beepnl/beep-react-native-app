@@ -51,7 +51,8 @@ const HomeScreen: FunctionComponent<Props> = ({
 
     //sort devices for list
     const items = devices.map((device: DeviceModel) => ({ ...device, isConnected: pairedPeripheral?.deviceId === device.id }))
-    const sortedItems = tidy(items, arrange([
+    const AZitems = items.sort
+    const sortedItems = tidy(AZitems, arrange([
       desc("isConnected"),                    //connected devices on top
       desc("owner")                           //devices from other groups at the bottom
     ]))
