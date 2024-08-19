@@ -5,7 +5,7 @@ i18n
   .init({
     fallbackLng: 'en',
     lng: 'en',
-    supportedLngs: 'en',
+    // supportedLngs: 'en',
     debug: __DEV__,
     compatibilityJSON: "v3",
     interpolation: {

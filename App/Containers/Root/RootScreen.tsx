@@ -14,7 +14,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AuthStack, AppStack } from './AppNavigation';
 import { navigationRef } from '../../Services/NavigationService';
 import { NativeModules, NativeEventEmitter, Text } from "react-native";
-import BleHelpers from '../../Helpers/BleHelpers';
+//import BleHelpers from '../../Helpers/BleHelpers';
 import moment from 'moment'
 import i18n from '../../Localization';
 import api from 'App/Services/ApiService'
@@ -25,10 +25,16 @@ import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { getError as getApiError } from 'App/Stores/Api/Selectors';
 import { getError as getBleError } from 'App/Stores/BeepBase/Selectors';
 import { getDfuUpdating } from 'App/Stores/BeepBase/Selectors';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { PairedPeripheralModel } from 'App/Models/PairedPeripheral';
 import { getToken } from 'App/Stores/User/Selectors';
 import { getLanguageCode } from 'App/Stores/Settings/Selectors';
+
+import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+import useInterval from '../../Helpers/useInterval';
+//import { ClockModel } from '../../Models/ClockModel';
+
+// Data
+import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
+import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 
 // Components
 import { View } from 'react-native'
@@ -51,6 +57,8 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const { appState } = useAppState();
   const isDfuUpdating: boolean = useTypedSelector<any>(getDfuUpdating)
+  const isConnected = peripheral && peripheral.isConnected
+  const params = Buffer.alloc(4)
 
   useEffect(() => {
     dispatch(StartupActions.startup())
@@ -63,6 +71,18 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
           isConnected: true,
         }
         dispatch(BeepBaseActions.setPairedPeripheral(updated))
+
+        /*
+        if (peripheral)
+            {
+        params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
+        BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
+            //console.log('clock synced from rootscreen')
+            if (dropDownAlert?.current) {       
+                dropDownAlert.current.alertWithType('success', 'Clock sync', 'Internal clock has been synchronized', params);
+              }
+            }
+        */
       }
     });
 
@@ -74,6 +94,8 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
           isConnected: false,
         }
         dispatch(BeepBaseActions.setPairedPeripheral(updated))
+
+
       }
     });
 
@@ -82,13 +104,13 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     if (token) {
       api.setToken(token)
     }
-    
+
     return (() => {
       BleManagerConnectPeripheralSubscription && BleManagerConnectPeripheralSubscription.remove()
       BleManagerDisconnectPeripheralSubscription && BleManagerDisconnectPeripheralSubscription.remove()
     })
   }, [])
-  
+
   useEffect(() => {
     if (peripheral && appState == "active") {
       BleHelpers.isConnected(peripheral.id).then((isConnected : boolean) => {
@@ -98,7 +120,17 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
             isConnected,
           }
           dispatch(BeepBaseActions.setPairedPeripheral(updated))
+
+          if (peripheral)
+          {    
+      params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
+      BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
+          //console.log('clock synced from rootscreen')
+          if (dropDownAlert?.current) {       
+              dropDownAlert.current.alertWithType('success', 'Clock sync', 'Internal clock has been synchronized', params);
+            }
         }
+      }
       })
     }
   }, [peripheral, appState])
@@ -107,7 +139,8 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     i18n.changeLanguage(languageCode)
     moment.locale(languageCode)
   }, [languageCode])
-
+  
+  /*
   useEffect(() => {
     if (apiError && dropDownAlert?.current) {
       const apiMessage = apiError.message
@@ -121,6 +154,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       dropDownAlert.current.alertWithType('error', t("common.error"), bleError);
     }
   }, [bleError])
+  */
 
   return (
     <View style={styles.mainContainer}>

@@ -136,7 +136,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
 
   const onSetCredentialsPress = () => {
     if (keysAreValid) {
-      dispatch(ApiActions.configureLoRaManual(devEui, appEui, appKey))
+      dispatch(ApiActions.configureLoRaManual(devEui, appEui, appKey.toUpperCase()))
       retry.current = RETRY_COUNT
     }
   }

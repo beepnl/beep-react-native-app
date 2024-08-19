@@ -16,5 +16,3 @@ const CreatedActions = createActions( {
 } );
 
 export default CreatedActions.Creators as C;
-
- 

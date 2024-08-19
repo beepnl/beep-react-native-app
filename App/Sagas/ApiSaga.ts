@@ -10,7 +10,7 @@ import { SensorDefinitionModel } from '../Models/SensorDefinitionModel'
 import { getDevice, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
 import BleHelpers, { COMMANDS } from '../Helpers/BleHelpers'
 import { PairedPeripheralModel } from '../Models/PairedPeripheralModel'
-import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
+import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_DISABLED, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
 import { APP_EUI, TTNModel } from '../Models/TTNModel'
 import { BeepBaseTypes } from '../Stores/BeepBase/Actions'
 import { CHANNELS } from '../Models/AudioModel'
@@ -28,7 +28,7 @@ function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Pa
     if (!refreshToken) {
       //no refresh token, logout user
       console.log("no refresh token")
-      yield put(AuthActions.logout())
+      //yield put(AuthActions.logout())
       return { ok: false, data: "Authorization token expired" }
     }
     //Beep API has no support for refresh tokens
@@ -45,14 +45,18 @@ function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Pa
       const redoResponse = yield fn(...args)
       if (redoResponse.code == 401) {
         //request failed after refresh, logout user
-        yield put(AuthActions.logout())
+        // yield put(AuthActions.logout())
       }
       return redoResponse
     } else {
       //refresh failed, logout user
       console.log("refresh failed")
-      yield put(AuthActions.logout())
+      // yield put(AuthActions.logout())
     }
+  }
+  else if(response.status == 500 || response.status == 400 ){
+      console.error("Server error")
+      console.log("server error", response)
   }
   return response
 }
@@ -87,12 +91,23 @@ export function* checkDeviceRegistration(action: any) {
     } else {
       //no info field means we have a search result
       if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
-        //device is already in db
+
+        // device found but may not have a devEUI
+        
+        if (deviceResponse.devEUI == null)
+        {
+          yield put(ApiActions.setRegisterState("failed"))
+          yield put(ApiActions.setRegisterState("notYetRegistered"))
+          console.log("Registration failed (device exists but devEUI is not defined)")
+        }
+
         yield put(ApiActions.setRegisterState("alreadyRegistered"))
         const device = new DeviceModel(deviceResponse.data[0])
         yield put(BeepBaseActions.setDevice(device))
+
         //update firmware with LoRa devEUI. This will also rename the BLE name
         yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+
       } else {
         //device not found
         yield put(ApiActions.setRegisterState("notYetRegistered"))
@@ -274,6 +289,20 @@ export function* configureLoRaManual(action: any) {
     yield put(ApiActions.setLoRaConfigState("failedToRegister"))
     yield put(ApiActions.apiFailure(updateDeviceResponse))
   }
+}
+
+export function* disableLoRa(action: any) {
+
+  const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
+
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_DISABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+
+    //read back from device into redux store
+    yield call(readLoraState, action)
+
+    //next wizard state
+    yield put(ApiActions.setLoRaConfigState("isDisabled"))
+
 }
 
 export function* initializeTemperatureSensors(action: any) {

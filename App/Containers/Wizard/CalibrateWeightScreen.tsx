@@ -73,8 +73,8 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const [multiplier, setMultiplier] = useState(0)
 
   const REQUIRED_CONSECUTIVE_READINGS = 3
-  const TARE_ALLOWED_PERCENTUAL_DEVIATION = 0.3
-  const CALIBRATE_ALLOWED_PERCENTUAL_DEVIATION = 1.0
+  const TARE_ALLOWED_PERCENTUAL_DEVIATION = 111.0
+  const CALIBRATE_ALLOWED_PERCENTUAL_DEVIATION = 112.5
   const ALLOWED_CONSECUTIVE_DEVIATION_ERRORS = 3
   const TIMEOUT = 60000
 
@@ -148,6 +148,9 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
               }
             }
             setState(`${page}Completed`)
+            console.log('Calibration completed with offset = ', offset)
+            console.log('Calibration completed with multiplier = ', multiplier)
+
             setResetTimer(false)
           }
         }
@@ -220,11 +223,15 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
     //update api sensor definition
     const weightSensorDefinition = weightSensorDefinitions[0]
     if (weightSensorDefinition) {
+      console.log('offset =', offset)
+      console.log('multiplier =', multiplier)
+
       const param = {
         ...weightSensorDefinition,
         offset,
         multiplier,
       }
+      // TO DO: don't PATCH but PUT all defs
       dispatch(ApiActions.updateApiSensorDefinition(param))
     }
 
