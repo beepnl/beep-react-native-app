@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug iOS default",
+      "request": "launch",
+      "type": "reactnative",
+      "cwd": "${workspaceFolder}",
+      "platform": "ios"
+    },
+    {
       "name": "Run Android",
       "request": "launch",
       "type": "reactnative",
@@ -13,7 +20,15 @@
       "platform": "android"
     },
     {
-      "name": "Debug Android Maarten's Samsung",
+      "name": "Debug Android S7",
+      "request": "launch",
+      "type": "reactnative",
+      "cwd": "${workspaceFolder}",
+      "target": "98863847324f584d46",
+      "platform": "android"
+    },
+    {
+      "name": "Debug Android Maarten's Samsung S20+",
       "cwd": "${workspaceFolder}",
       "type": "reactnative",
       "request": "launch",
@@ -21,7 +36,15 @@
       "platform": "android"
     },
     {
-      "name": "Debug iOS iPhone 12 Pro Max",
+      "name": "Debug Android Maarten's Samsung S24+",
+      "cwd": "${workspaceFolder}",
+      "type": "reactnative",
+      "request": "launch",
+      "target": "R3CX80C1M7T",
+      "platform": "android"
+    },
+    {
+      "name": "Debug iOS iPhone 13 Pro Max",
       "cwd": "${workspaceFolder}",
       "type": "reactnative",
       "request": "launch",
@@ -30,7 +53,7 @@
         "<node_internals>/**/*.js"
       ],
       "outputCapture": "std",
-      "target": "iPhone 12 Pro Max",
+      "target": "iPhone 13 Pro Max",
     },
     {
       "name": "Debug iOS iPad Pro (12.9-inch)",
