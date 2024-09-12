@@ -7942,10 +7942,10 @@ react-native-animatable@1.3.3:
   dependencies:
     prop-types "^15.7.2"
 
-react-native-ble-manager@^8.4.3:
-  version "8.4.3"
-  resolved "https://registry.yarnpkg.com/react-native-ble-manager/-/react-native-ble-manager-8.4.3.tgz#c73ee86a5c32ab6d72147c67f02d46404e81ac66"
-  integrity sha512-AIfJddGslc9uWTd3KGL+tIcJwvkslL/xidGlRCowN4C5BnEf7o+1H1YHm1SMLOT9TwQWj2Cx4CLwOchs3/95Ug==
+react-native-ble-manager@11.5.2:
+  version "11.5.2"
+  resolved "https://registry.yarnpkg.com/react-native-ble-manager/-/react-native-ble-manager-11.5.2.tgz#32c2e1132e455ebd77a6dbfb0d6cb7355f719e49"
+  integrity sha512-z+Ap68vkhVDH+ao449l4MOmM8zRBz7iGVLdRPAvDVxXbizsrJFJngLdpnFe/wIjQo4DCLI8JgnefBr+kBkEhPg==
 
 react-native-collapsible@^1.6.0:
   version "1.6.0"
