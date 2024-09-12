@@ -184,13 +184,20 @@ export default class BleHelpers {
     store.dispatch(BeepBaseActions.bleFailure(undefined))
     return BleManager.connect(peripheralId).then(() => {
       console.log("Connected to " + peripheralId)
-      return delay(500).then(() => {
-        return BleHelpers.retrieveServices(peripheralId)
-        .catch((error) => {
-          console.log(error)
-          store.dispatch(BeepBaseActions.bleFailure(error))
+      console.log("Requesting MTU...")
+      return BleManager.requestMTU(peripheralId, 247 - 5).then((mtu) => {
+        console.log("MTU size changed to " + mtu + " bytes");
+        return delay(500).then(() => {
+          return BleHelpers.retrieveServices(peripheralId)
+          .catch((error) => {
+            console.log(error)
+            store.dispatch(BeepBaseActions.bleFailure(error))
+          })
         })
       })
+      .catch((error) => {
+        console.log(error);
+      });
     })
     .catch((error) => {
       console.log(error)
