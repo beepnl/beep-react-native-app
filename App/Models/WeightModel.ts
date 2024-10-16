@@ -56,21 +56,49 @@ export class WeightParser {
           i += 3
           continue
         }
-  
+        
         //read 24bit signed value
+        const data_32bit_unsigned = Buffer.alloc(4);
+        data_32bit_unsigned.fill(0);
+        const data_32bit_signed = Buffer.alloc(4);
+        data_32bit_signed.fill(0);
+
+        console.log(data)
         let byte1 = this.data.readUInt8(i++)
+        console.log(byte1)
         const signed = byte1 & 0b10000000
         if (signed) {
           byte1 &= 0b01111111
+          console.log("value is signed, two's complement of first byte is:")
+          console.log(byte1)
         }
+        
         const byte2 = this.data.readUInt8(i++)
         const byte3 = this.data.readUInt8(i++)
-        let combined = (byte1<<16) | (byte2<<8) | (byte3)
-        if (signed) {
-          combined = -combined
+        
+        // let combined = (byte1<<16) | (byte2<<8) | (byte3)
+        // should the sign bit of byte1 be excluded?
+        if (!signed) {
+          data_32bit_unsigned.writeUInt8(byte1, 1)
+          data_32bit_unsigned.writeUInt8(byte2, 2)
+          data_32bit_unsigned.writeUInt8(byte3, 3)
+          channel.value = data_32bit_unsigned.readUInt32BE(0)
+          console.log("24-bit value is postive, converting following value..")
+          console.log(channel.value);
+          console.log("..to zero-padded UInt32:")
+          console.log(data_32bit_unsigned);
         }
-        channel.value = combined
-  
+        else{
+          data_32bit_signed.writeUInt8(byte1, 1)
+          data_32bit_signed.writeUInt8(byte2, 2)
+          data_32bit_signed.writeUInt8(byte3, 3)
+          console.log("24-bit value is postive, converting following value..")
+          console.log(channel.value);
+          console.log("..to zero-padded Int32:")
+          channel.value = data_32bit_signed.readInt32BE(0)
+          channel.value = -channel.value
+        }
+        
         data.push(channel)
       }
     }
