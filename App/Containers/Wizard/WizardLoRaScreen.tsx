@@ -20,7 +20,7 @@ import ApiActions from 'App/Stores/Api/Actions';
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors';
 import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState } from '../../Stores/BeepBase/Selectors';
-import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_DISABLED, BITMASK_ENABLED, LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
+import { LoRaWanStateModel } from 'App/Models/LoraWanStateModel';
 import { LoRaWanDeviceEUIModel } from '../../Models/LoRaWanDeviceEUIModel';
 import { LoRaWanAppEUIModel } from '../../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
@@ -31,9 +31,6 @@ import ScreenHeader from '../../Components/ScreenHeader';
 import Collapsible from 'react-native-collapsible';
 import Modal from 'react-native-modal';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import { setLoRaWanState } from '../../Stores/BeepBase/Reducers';
-import { setLoRaConfigState } from '../../Stores/Api/Reducers';
-import { disableLoRa } from '../../Stores/Api/Reducers';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -75,10 +72,7 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
 
   const onDisablePress = () => {
     if (pairedPeripheral) {
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_LORAWAN_STATE, 0)
       dispatch(ApiActions.setDisableLoRa())
-      dispatch(ApiActions.setLoRaConfigState("isDisabled"))
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_STATE)
     }
   }
 

@@ -27,7 +27,7 @@ interface C extends ActionCreators {
   setFirmwares: (firmwares: Array<FirmwareModel>) => { type: ApiTypes.SET_FIRMWARES };
   setRegisterState: (registerState: RegisterState) => { type: ApiTypes.SET_REGISTER_STATE }
   setLoRaConfigState: (loRaConfigState: RegisterState) => { type: ApiTypes.SET_LO_RA_CONFIG_STATE }
-  setDisableLoRa: (disableLoRa: RegisterState) => { type: ApiTypes.SET_DISABLE_LORA }
+  setDisableLoRa: () => { type: ApiTypes.SET_DISABLE_LORA }
   apiFailure: (response: any) => { type: ApiTypes.API_FAILURE };
 }
 
@@ -38,7 +38,7 @@ const CreatedActions = createActions({
   configureLoRaAutomatic: ['appKey', 'devEUI'],
   configureLoRaManual: ['devEUI', 'appEui', 'appKey'],
   setRegisterState: ['registerState'],
-  setDisableLoRa: ['disableLoRa'],
+  setDisableLoRa: null,
   setLoRaConfigState: ['loRaConfigState'],
   setDevices: ['devices'],
 

@@ -28,14 +28,7 @@ export const setLoRaConfigState = (state: ApiState, payload: any) => {
   }
 }
 
-export const setDisableLoRa = (state: ApiState, payload: any) => {
-  const { disableLoRa } = payload  
-  return {
-    ...state,
-    error: undefined,
-    disableLoRa
-  }
-}
+export const setDisableLoRa = (state: ApiState, payload: any) => state
 
 export const apiFailure = (state: ApiState, payload: any) => {
   const { response } = payload

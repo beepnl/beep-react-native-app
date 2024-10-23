@@ -10,7 +10,7 @@ import { SensorDefinitionModel } from '../Models/SensorDefinitionModel'
 import { getDevice, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
 import BleHelpers, { COMMANDS } from '../Helpers/BleHelpers'
 import { PairedPeripheralModel } from '../Models/PairedPeripheralModel'
-import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_DISABLED, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
+import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
 import { APP_EUI, TTNModel } from '../Models/TTNModel'
 import { BeepBaseTypes } from '../Stores/BeepBase/Actions'
 import { CHANNELS } from '../Models/AudioModel'
@@ -278,17 +278,11 @@ export function* configureLoRaManual(action: any) {
 
 
 export function* disableLoRa(action: any) {
-
   const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
+  yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
 
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_DISABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
-
-    //read back from device into redux store
-    yield call(readLoraState, action)
-
-    //next wizard state
-    yield put(ApiActions.setLoRaConfigState("isDisabled"))
-
+  //read back from device into redux store
+  yield call(readLoraState, action)
 }
 
 export function* initializeTemperatureSensors(action: any) {
