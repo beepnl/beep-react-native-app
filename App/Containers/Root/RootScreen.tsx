@@ -14,7 +14,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AuthStack, AppStack } from './AppNavigation';
 import { navigationRef } from '../../Services/NavigationService';
 import { NativeModules, NativeEventEmitter, Text } from "react-native";
-import BleHelpers from '../../Helpers/BleHelpers';
+import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import moment from 'moment'
 import i18n from '../../Localization';
 import api from 'App/Services/ApiService'
@@ -63,6 +63,14 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
           isConnected: true,
         }
         dispatch(BeepBaseActions.setPairedPeripheral(updated))
+
+        const params = Buffer.alloc(4)
+        params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
+        BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
+        //console.log('clock synced from rootscreen')
+        if (dropDownAlert?.current) {       
+          dropDownAlert.current.alertWithType('success', t("root.clockSyncTitle"), t("root.clockSyncMessage"));
+        }
       }
     });
 

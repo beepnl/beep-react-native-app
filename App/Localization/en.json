@@ -9,6 +9,10 @@
     "btnFinish": "Finish",
     "btnSkip": "Skip"
   },
+  "root": {
+    "clockSyncTitle" : "Clock sync",
+    "clockSyncMessage" : "Internal clock has been synchronized"
+  },
   "menu": {
     "itemSettings": "Settings"
   },
