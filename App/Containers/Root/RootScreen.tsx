@@ -63,14 +63,6 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
           isConnected: true,
         }
         dispatch(BeepBaseActions.setPairedPeripheral(updated))
-
-        const params = Buffer.alloc(4)
-        params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
-        BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
-        //console.log('clock synced from rootscreen')
-        if (dropDownAlert?.current) {       
-          dropDownAlert.current.alertWithType('success', t("root.clockSyncTitle"), t("root.clockSyncMessage"));
-        }
       }
     });
 
@@ -110,6 +102,17 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       })
     }
   }, [peripheral, appState])
+
+  useEffect(() => {
+    if (peripheral?.isConnected) {
+      const params = Buffer.alloc(4)
+      params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
+      BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
+      if (dropDownAlert?.current) {       
+        dropDownAlert.current.alertWithType('success', t("root.clockSyncTitle"), t("root.clockSyncMessage"));
+      }
+    }
+  }, [peripheral])
 
   useEffect(() => {
     i18n.changeLanguage(languageCode)
