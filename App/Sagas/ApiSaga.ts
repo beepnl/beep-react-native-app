@@ -90,9 +90,17 @@ export function* checkDeviceRegistration(action: any) {
         //device is already in db
         yield put(ApiActions.setRegisterState("alreadyRegistered"))
         const device = new DeviceModel(deviceResponse.data[0])
-        yield put(BeepBaseActions.setDevice(device))
-        //update firmware with LoRa devEUI. This will also rename the BLE name
-        yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+
+        // device may not have a devEUI yet, so check for empty devEUI before writing to NVM
+        if (device.devEUI != null) {
+          yield put(BeepBaseActions.setDevice(device))
+          //update firmware with LoRa devEUI. This will also rename the BLE name
+          yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+        } else {
+          yield put(ApiActions.setRegisterState("failed"))
+          console.log("Registration failed. Please contact support@beep.nl")
+          yield put(ApiActions.apiFailure(deviceResponse))
+        }
       } else {
         //device not found
         yield put(ApiActions.setRegisterState("notYetRegistered"))
