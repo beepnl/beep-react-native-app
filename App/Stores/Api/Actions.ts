@@ -8,7 +8,7 @@ export enum ApiTypes {
   REGISTER_DEVICE = 'REGISTER_DEVICE',
   SET_REGISTER_STATE = 'SET_REGISTER_STATE',
   SET_LO_RA_CONFIG_STATE = 'SET_LO_RA_CONFIG_STATE',
-  SET_DISABLE_LORA = 'SET_DISABLE_LORA',
+  SET_DISABLE_LO_RA = 'SET_DISABLE_LO_RA',
   CONFIGURE_LO_RA_AUTOMATIC = 'CONFIGURE_LO_RA_AUTOMATIC',
   CONFIGURE_LO_RA_MANUAL = 'CONFIGURE_LO_RA_MANUAL',
   SET_DEVICES = 'SET_DEVICES',
@@ -27,7 +27,7 @@ interface C extends ActionCreators {
   setFirmwares: (firmwares: Array<FirmwareModel>) => { type: ApiTypes.SET_FIRMWARES };
   setRegisterState: (registerState: RegisterState) => { type: ApiTypes.SET_REGISTER_STATE }
   setLoRaConfigState: (loRaConfigState: RegisterState) => { type: ApiTypes.SET_LO_RA_CONFIG_STATE }
-  setDisableLoRa: () => { type: ApiTypes.SET_DISABLE_LORA }
+  setDisableLoRa: () => { type: ApiTypes.SET_DISABLE_LO_RA }
   apiFailure: (response: any) => { type: ApiTypes.API_FAILURE };
 }
 

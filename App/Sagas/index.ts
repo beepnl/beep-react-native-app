@@ -22,6 +22,7 @@ import {
   getSensorDefinitions,
   updateApiSensorDefinition,
   getFirmwares,
+  disableLoRa,
 } from './ApiSaga'
 
 export default function* root() {
@@ -34,6 +35,7 @@ export default function* root() {
     takeLatest(ApiTypes.GET_DEVICES, getDevices),
     takeLatest(ApiTypes.CHECK_DEVICE_REGISTRATION, checkDeviceRegistration),
     takeLatest(ApiTypes.REGISTER_DEVICE, registerDevice),
+    takeLatest(ApiTypes.SET_DISABLE_LO_RA, disableLoRa),
     takeLatest(ApiTypes.CONFIGURE_LO_RA_AUTOMATIC, configureLoRaAutomatic),
     takeLatest(ApiTypes.CONFIGURE_LO_RA_MANUAL, configureLoRaManual),
     takeLatest(ApiTypes.GET_SENSOR_DEFINITIONS, getSensorDefinitions),

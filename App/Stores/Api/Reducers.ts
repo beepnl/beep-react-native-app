@@ -51,6 +51,6 @@ export const reducer = createReducer(API_INITIAL_STATE, {
   [ApiTypes.SET_FIRMWARES]: setFirmwares,
   [ApiTypes.SET_REGISTER_STATE]: setRegisterState,
   [ApiTypes.SET_LO_RA_CONFIG_STATE]: setLoRaConfigState,
-  [ApiTypes.SET_DISABLE_LORA]: setDisableLoRa,
+  [ApiTypes.SET_DISABLE_LO_RA]: setDisableLoRa,
   [ApiTypes.API_FAILURE]: apiFailure,
 })
