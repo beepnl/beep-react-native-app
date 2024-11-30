@@ -174,6 +174,72 @@ const LogFileScreen: FunctionComponent<Props> = ({
     }
   }
 
+  const onDownloadAllLogFilesPress = async () => {
+    onGetLogFileSizePress()
+    if (logFileSize) {
+      setUploadProgress(0)
+      setState("uploading")
+      let i = 0;
+      for(i < BleHelpers.LOG_FILE_NUMBER; i++;)
+      {
+      RNFS.uploadFiles({
+        toUrl: ApiService.getLogFileUploadUrl(useProduction, logFileSize?.value()),
+        files: [{ 
+              name: "file", 
+              filename: BleHelpers.LOG_FILE_NAME,
+              filepath: RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME + i.toString,
+              filetype: "text/plain"
+            } as UploadFileItem],
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${ApiService.getToken()}`
+        },
+        fields: {
+          "id": peripheral.deviceId,
+        },
+        begin: (response: UploadBeginCallbackResult) => setUploadProgress(0),
+        progress: (response: UploadProgressCallbackResult) => setUploadProgress(response.totalBytesSent / response.totalBytesExpectedToSend)
+      }).promise.then((response: UploadResult) => {
+        if (response.statusCode == 200) {
+          console.log('FILES UPLOADED!', response); // response.statusCode, response.headers, response.body
+          setUploadProgress(1)
+          const parsedJson = JSON.parse(response.body)
+          const uploadResponse = new UploadResponseModel(parsedJson)
+          if (uploadResponse.shouldErase()) {
+            setState("erasing")
+            const eraseCode = uploadResponse.getEraseCode()
+            BleHelpers.write(peripheral.id, COMMANDS.ERASE_MX_FLASH, eraseCode)
+            const et = uploadResponse.getEraseType()
+            setEraseType(et)
+            if (et == "full") {
+              setFullEraseStart(new Date())
+            }
+          } else {
+            setState("completed")
+            setModalVisible(true)
+          }
+        } else {
+          console.log('SERVER ERROR');
+          setUploadProgress(0)
+          setState("failed")
+          setError(`${response.statusCode}: ${response.body}`)
+        }
+      })
+      .catch((err) => {
+          setUploadProgress(0)
+          setError(err.description)
+          if (err.description === "cancelled") {
+            // cancelled by user
+          }
+          console.log(err);
+        });
+      |}
+      
+    }
+  } 
+
+
   let downloadProgress = logFileProgress / logFileSize?.value()
   if (isNaN(downloadProgress)) {
     downloadProgress = 0
@@ -204,6 +270,10 @@ const LogFileScreen: FunctionComponent<Props> = ({
         <View style={styles.itemRow}>
           <Text style={styles.label}>{t("logFile.timestamp")}<Text style={styles.text}>{logFileSize?.getTimestamp()}</Text></Text>
         </View>
+        <View style={styles.spacer} />
+        <View style={styles.itemContainer}>         
+           <Text style={styles.label}>{t("logFile.previouslyStoredLogFiles")}<Text style={styles.text}>{BleHelpers.LOG_FILE_NUMBER?.toString()}</Text></Text>
+        </View>
       </View>
 
       <View style={styles.spacerDouble} />
@@ -222,6 +292,20 @@ const LogFileScreen: FunctionComponent<Props> = ({
         <Text style={styles.text}>{t("logFile.downloadLogFile")}</Text>
       </TouchableOpacity>
 
+
+      <TouchableOpacity
+        style={styles.button} 
+        onPress={onDownloadAllLogFilesPress} 
+        disabled={
+          logFileSize == undefined || 
+          logFileSize.value() == 0 || 
+          state == "downloading" || 
+          state == "uploading" ||
+          state == "erasing"
+        }
+      >
+        <Text style={styles.text}>{t("logFile.downloadAllLogFiles")}</Text>
+      </TouchableOpacity>
       <View style={styles.spacer} />
 
       <Text style={styles.instructions}>{t(`logFile.instructions${ state == "downloading" || state == "uploading" || state == "erasing" ? "InProgress" : "" }`)}</Text>

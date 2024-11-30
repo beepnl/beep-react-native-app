@@ -1,0 +1,375 @@
+{
+  "common": {
+    "appTitle": "BEEP base",
+    "error": "Error",
+    "btnOk": "OK",
+    "btnCancel": "Cancel",
+    "btnStart": "Start",
+    "btnNext": "Next",
+    "btnFinish": "Finish",
+    "btnSkip": "Skip"
+  },
+  "menu": {
+    "itemSettings": "Settings"
+  },
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "testEnvironmentWarning": "Warning: using Test environment",
+    "login": "Sign in",
+    "forgotPassword": "I forgot my password",
+    "signUp": "Create an account",
+    "error": {
+      "invalid_user": "Invalid username or password"
+    }
+  },
+  "wizard": {
+    "screenTitle": "Configuration",
+    "assemble": {
+      "screenTitle": "Assemble",
+      "step1": "1. Make sure that the BEEP base that you want to configure is nearby and powered.",
+      "step2": "2. Get out the 3.5mm sample microphone plug and plug in the microphone.",
+      "nb": "NB: You can plug in the rubber pads to support your hive later."
+    },
+    "wakeUp": {
+      "screenTitle": "Wake up",
+      "buttonTitle": "For BEEP base model version 3.3 and newer",
+      "button": "Activate the Bluetooth by pressing the button shortly.",
+      "magnetTitle": "For older model versions",
+      "magnet": "Use the magnet and hold it next to the microphone plug.",
+      "allTitle": "For all models",
+      "all": "Two short beeps will indicate that Bluetooth is activated."
+    },
+    "pair": {
+      "screenTitle": "Connect",
+      "description": "Below you find a list with BEEP bases that were found. Click on a BEEP base to connect to it and have it play a sound.\n\nWhen you are certain you have selected the correct device, press Next.",
+      "defaultPin": "The default pincode is: 123456",
+      "scanResult_zero": "No new BEEP bases found",
+      "scanResult": "Found one new BEEP base",
+      "scanResult_plural": "Found {{count}} new BEEP bases",
+      "scanning": "Searching for new BEEP bases...",
+      "noResult": "No devices found.",
+      "select": "Select a device",
+      "connecting": "Connecting...",
+      "connected": "Connected",
+      "retry": "Retry scan",
+      "subtitleNotConnected": "Not connected",
+      "subtitleTapToConnect": "Connected, tap to select",
+      "subtitleConnecting": "Connecting...",
+      "subtitleConnected": "Firmware: v{{firmware}}  Hardware: v{{hardware}}"
+    },
+    "register": {
+      "screenTitle": "Register",
+      "state": {
+        "none": "...",
+        "hardwareId": "Retrieving hardware ID of BEEP base...",
+        "checking": "Checking registration status...",
+        "notYetRegistered": "This BEEP base is not yet registered.\n\nIn order to configure this BEEP base, it must be registered to your BEEP account.\n\nAfter successful registration, it will be reset to factory default settings.",
+        "registering": "Registering BEEP base...",
+        "registered": "This BEEP base is successfully registered to your account.",
+        "factoryReset": "Resetting to factory defaults...",
+        "alreadyRegistered": "This BEEP base is already registered to your account.",
+        "failed": "Could not register this BEEP base.",
+        "deviceAlreadyLinkedToAnotherAccount": "This BEEP base is already registered to another account.\n\nAsk the person you acquired your BEEP base from to transfer it to you."
+      },
+      "name": "Name",
+      "namePlaceholder": "Name your BEEP base",
+      "registerButton": "Register this BEEP base to your account",
+    },
+    "calibrate": {
+      "screenTitle": "Calibrate",
+      "description": "Inspect each of the sensors below in order to configure and calibrate them.",
+      "retrievingTemperature": "Temperature...",
+      "retrievingWeight": "Weight...",
+      "retrievingAudio": "Audio...",
+      "temperature": {
+        "screenTitle": "Temperature",
+        "step1": "1. Warm up one of the sensors in your hand and check which sensor temperature is increasing.",
+        "step2": "2. Name that sensor e.g. \"inside brood layer\".",
+        "step3": "3. Attach a label to the sensor cable.",
+        "location": "Sensor location",
+        "inside": "Inside hive",
+        "outside": "Outside hive"
+      },
+      "weight": {
+        "screenTitle": "Calibrate weight",
+        "tareButton": "Measure tare",
+        "calibrateButton": "Calibrate",
+        "calibrateWeightPlaceholder": "Weight in kg",
+        "calibrateWeightError": "Invalid weight",
+        "retryButton": "Retry",
+        "confirmTitle": "Are you sure ?",
+        "confirmMessage": "It appears that your weight sensor has already been tared.\n\nYou should only tare without any weight on the BEEP base, so never do this when it is installed under a hive.\n\nDo you really want to tare again?",
+        "confirmOkButton": "I'm sure",
+        "page": {
+          "tare": "In order to calibrate the weight sensor, we must first determine the tare weight, or zero value.\n\nMake sure nothing is on the scale and press the button below to set the tare weight.",
+          "calibrate": "Enter your exact weight in kg below, step on the scale and press the calibrate button below.",
+        },
+        "state": {
+          "sampling": "Sampling weight sensor...",
+          "timeout": "Weight sensor did not respond in time",
+          "tareIdle": "",
+          "tareCompleted": "Successfully determined tare weight.",
+          "tareDeviationTooLarge": "Please make sure that there is nothing placed on top of the scale, and that you do not apply any weight while the weight sensor is being sampled.",
+          "calibrateIdle": "",
+          "calibrateCompleted": "Successfully completed calibration.",
+          "calibrateDeviationTooLarge": "Please remain still on the scale, while the weight sensor is being sampled."
+        }
+      },
+      "audio": {
+        "screenTitle": "Audio channel",
+        "plug": {
+          "description": "Check the specifications of your microphone and select the ring/tip to which the signal line is connected."
+        },
+        "frequencies": {
+          "description": "Specify the observed frequency range.\n\nThe observed range will be divided into the number of bins you specify.",
+          "startFrequency": "Start frequency: ",
+          "endFrequency": "End frequency: ",
+          "bins": "Amount of bins: "
+        }
+      }
+    },
+    "lora": {
+      "screenTitle": "LoRa network",
+      "loraState": "LoRa state of BEEP base",
+      "showDetails": "Show details",
+      "hideDetails": "Hide details",
+      "state": {
+        "reading": "Reading from BEEP base",
+        "disabled": "Disabled",
+        "enabledJoined": "Enabled and joined to network",
+        "enabledNotJoined": "Enabled, but not joined to any network"
+      },
+      "details": {
+        "deviceEUI": "Device EUI",
+        "appEUI": "App EUI",
+        "appKey": "Application key",
+        "ADR": "Adaptive data rate",
+        "DCL": "Duty cycle limitation",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "subTitle": "Configuring your LoRa",
+      "descriptionAutomatic": "The recommended method is using automatic configuration. This will register your BEEP base with The Things Network (TTN) and automatically register it with BEEP.",
+      "automaticButton": "Automatic configuration",
+      "descriptionManual": "Alternatively you can manually configure your LoRa network connection, for instance when you want to use your own LoRa network provider.",
+      "manualButton": "Manual configuration",
+      "skipTitle": "Are you sure ?",
+      "skipMessage": "Your BEEP base is not connected to any LoRa network and will not be able to upload its measurements.",
+      "automatic": {
+        "screenTitle": "LoRa automatic",
+        "description": "Automatic configuration will register your BEEP base with The Things Network (TTN).\n\nAfter registration it will automatically connect to the TTN LoRa network and start uploading its measurements.",
+        "startButton": "Start automatic configuration",
+        "state": {
+          "none": "",
+          "registeringApi": "Registering device with TTN...",
+          "writingCredentials": "Writing credentials to device...",
+          "checkingConnectivity": "Checking LoRa connectivity...",
+          "connected": "Successfully connected",
+          "failedToRegister": "Failed to register with TTN",
+          "failedToConnect": "Failed to connect"
+        }
+      },
+      "manual": {
+        "screenTitle": "LoRa manual",
+        "description": "1. Register your device with your LoRa network provider.\n\n2. Make sure your LoRa provider has the HTTP integration set to the following endpoint:",
+        "devEui": "Dev EUI",
+        "devEuiPlaceholder": "16 hexadecimal characters",
+        "devEuiError": "Invalid Dev EUI",
+        "appEui": "Application EUI",
+        "appEuiPlaceholder": "16 hexadecimal characters",
+        "appEuiError": "Invalid Application EUI",
+        "appKey": "Application key",
+        "appKeyPlaceholder": "32 hexadecimal characters",
+        "appKeyError": "Invalid Application key",
+        "setCredentialsButton": "Set credentials"
+      },
+      "descriptionJoined": "You have successfully configured your LoRa connection. The BEEP base is now able to upload its measurements.",
+      "deviceName": "The name of the BEEP base is:",
+      "oldBluetoothName": "The old Bluetooth name of the BEEP base was:",
+      "newBluetoothName": "The new Bluetooth name of the BEEP base is:"
+    },
+    "energy": {
+      "screenTitle": "Energy",
+      "description": "Set measurement and LoRa transmission interval",
+      "takeEvery": "Take measurements every",
+      "maxInterval": "1x/day",
+      "minInterval": "1x/min",
+      "interval": {
+        "1440": "day",
+        "720": "12 hours",
+        "360": "6 hours",
+        "180": "3 hours",
+        "120": "2 hours",
+        "60": "1 hour",
+        "30": "30 minutes",
+        "20": "20 minutes",
+        "15": "15 minutes",
+        "10": "10 minutes",
+        "5": "5 minutes",
+        "1": "minute"
+      },
+      "measureToSendRatio": "LoRa transmission ratio",
+      "instructions": "The measurement interval dictates how often measurements are stored on the BEEP base.\n\nThe measurement to send ratio dictates the amount of measurements that are transmitted via LoRa: e.g. if the ratio is 4:1 and the interval is set to 15 min, the measurements will be transmitted once per hour.",
+      "averagePower": "Average power: ",
+      "estimatedBatteryLife": "Estimated battery life: ",
+      "estimatedBatteryLifeValue": "{{days}} days  ⃰",
+      "disclaimer": "  ⃰Based on using 2 x 1.5V AAA batteries with a capacity of 750mAh."
+    },
+    "congratulations": {
+      "screenTitle": "Congratulations",
+      "description": "You have successfully completed the configuration of your BEEP base!\n\nYou may now install your BEEP base into your apiary.",
+      "installButton": "How do I physically install my BEEP base?",
+      "registerButton": "How do I link my BEEP base to a specific hive in the BEEP web app?"
+    }
+  },
+  "home": {
+    "screenTitle": "My BEEP bases",
+    "introduction": "Below you find a list of BEEP bases that are currently associated with your account.",
+    "startWizard": "Configure new BEEP base",
+    "help": "Need help?"
+  },
+  "settings": {
+    "account": "Account",
+    "username": "E-mail: ",
+    "development": "Development",
+    "environment": "Use environment",
+    "test": "Test",
+    "production": "Production",
+    "apiBaseUrl": "API base URL: ",
+    "logout": "Sign out",
+    "app": "App",
+    "versionJS": "App version: "
+  },
+  "peripheralDetail": {
+    "screenTitle": "Base detail",
+    "deviceName": "Device name: ",
+    "bleName": "Bluetooth name: ",
+    "bleStatus": "Bluetooth status: ",
+    "bleConnectionStatus": {
+      "true": "Connected",
+      "false": "Disconnected"
+    },
+    "bleConnect": {
+      "true": "Connect",
+      "false": "Disconnect"
+    },
+    "instructions": "Wake up your BEEP base by pressing the button shortly (v3.3 and newer) or by holding the magnet next to the microphone plug (older versions). Then press the Connect above to read out the device details and change several settings. Settings can also be changed using ‘Configure new BEEP base’.",
+    "bleRSSI": "Signal strength: {{rssi}} dBm",
+    "scanning": "Connecting...",
+    "notFound": "BEEP base did not respond",
+    "details": "Device details",
+    "items": {
+      "temperature": "Temperature",
+      "weight": "Weight",
+      "audio": "Audio",
+      "lora": "LoRa",
+      "energy": "Energy",
+      "clock": "Clock",
+      "tilt": "Tilt",
+      "logFile": "Download data",
+      "firmware": "Firmware",
+    }
+  },
+  "sensor": {
+    "sampling": "Sampling data...",
+    "currentReading": "Current reading",
+    "settings": "Settings",
+    "calibration": "Calibration",
+    "configure": "Configure",
+    "noSensor": "No sensors found",
+    "noSensorDefinition": "No sensor definitions found. Please configure the sensor(s) first",
+    "newSensor": "New sensor found. Please configure the sensor first",
+    "temperature": {
+      "screenTitle": "Temperature",
+      "location": "Sensor location: ",
+      "inside": "Inside hive",
+      "outside": "Outside hive"
+    },
+    "weight": {
+      "screenTitle": "Weight",
+      "sensorName": "Weight",
+      "raw": "Raw value",
+      "offset": "Offset",
+      "multiplier": "Multiplier"
+    },
+    "audio": {
+      "screenTitle": "Audio",
+      "channel": "Audio channel",
+      "startFrequency": "Start frequency",
+      "stopFrequency": "Stop frequency",
+      "bins": "Amount of bins"
+    },
+    "lora": {
+      "screenTitle": "LoRa network",
+      "status": "Status",
+      "settings": "Settings",
+      "reset": "Reset LoRa stack",
+      "resetInstructions": "This resets the LoRa stack, but does not erase any LoRa settings such as the Dev EUI, App EUI or App key.\nIt will reconnect your BEEP base to the LoRa network.",
+      "resetting": "Resetting LoRa stack..."
+    },
+    "energy": {
+      "screenTitle": "Energy",
+      "battery": "Battery",
+      "capacity": "Capacity: ",
+      "voltage": "Voltage: ",
+      "warning": "Warning: low battery!",
+      "usage": "Energy usage",
+      "interval": "Measurement interval: ",
+      "intervalMinutes": "{{interval}} minutes",
+      "measureToSendRatio": "Measurement to send ratio: ",
+      "averagePower": "Average power: ",
+      "instructions": "The measurement interval dictates how often measurements are stored on the BEEP base.\n\nThe measurement to send ratio dictates the amount of measurements that are transmitted via LoRa: e.g. if the ratio is 4:1 and the interval is set to 15 min, the measurements will be transmitted once per hour."
+    },
+    "clock": {
+      "screenTitle": "Clock",
+      "date": "Date: ",
+      "time": "Time: ",
+      "drift": "Drift: ",
+      "seconds": "seconds",
+      "syncInstructions": "The Synchronize button synchronizes the clock of the BEEP base with the clock of your phone.",
+      "syncButton": "Synchronize clock"
+    },
+    "tilt": {
+      "screenTitle": "Tilt",
+      "tiltSensor": "Tilt sensor",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "instructions": "When the tilt sensor is enabled, the BEEP base can be turned off by placing it to its side vertically.\n\nWhen the tilt sensor is disabled, the BEEP base will no longer respond to tilt changes and will remain in a permanent 'on' state."
+    }
+  },
+  "logFile": {
+    "screenTitle": "Download data",
+    "logFile": "Log file",
+    "logFileSize": "Log file size: ",
+    "timestamp": "Last checked on: ",
+    "downloadLogFile": "Download all data",
+    "previouslyStoredLogFiles": "Number of previously stored log files not yet uploaded:"
+    "downloadAllLogFiles": "Download all previously stored log files",
+    "instructions": "Download log data from the BEEP base memory and upload it to the BEEP app. Downloading your data will take about 5 minutes. Please do not close the app in between.",
+    "instructionsInProgress": "Downloading...\n\nPlease do not close the app while downloading, uploading or erasing data.",
+    "progress": "Progress",
+    "download": "Download",
+    "upload": "Upload",
+    "erase": "Erase",
+    "timeout": "BEEP base did not respond in a timely fashion",
+    "uploadedMessage": "Upload finished",
+    "erasedMessage": "Erase successful"
+  },
+  "firmware": {
+    "screenTitle": "Firmware",
+    "current": "Current version",
+    "latestInstalledDescription": "You have the latest version",
+    "newerAvailableDescription": "There is a newer version available",
+    "other": "Other versions",
+    "test": "Test versions",
+    "install": "Download and install",
+    "progress": "Installing",
+    "ENABLING_DFU_MODE": "Initializing BEEP base for firmware upload",
+    "CONNECTING": "Reconnecting for upload",
+    "DEVICE_DISCONNECTING": "Disconnecting",
+    "DFU_PROCESS_STARTING": "Uploading firmware...",
+    "DFU_COMPLETED": "Upload completed",
+    "DFU_FAILED": "Failed uploading firmware"
+  }
+}
