@@ -11,7 +11,7 @@ import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { LogFileSizeModel } from '../Models/LogFileSizeModel';
 import { LogFileFrameModel } from '../Models/LogFileFrameModel';
 import { FirmwareVersionParser } from '../Models/FirmwareVersionModel';
-import RNFS from 'react-native-fs';
+import RNFS, { getFSInfo } from 'react-native-fs';
 import { FileSystem } from 'react-native-file-access';
 import { AteccParser } from '../Models/AteccModel';
 import { HardwareVersionParser } from '../Models/HardwareVersionModel';
@@ -99,6 +99,15 @@ export type BluetoothState =
 "pairedNotConnected" |  // Bluetooth is on and not all paired peripherals are connected
 "noPaired"              // Bluetooth is on and there are no paired peripherals
 
+export type FSInfoResult = {
+
+  totalSpace: number;
+
+  freeSpace: number;
+
+}
+
+
 export const BLE_NAME_PREFIX = "BEEPBASE-"
 export const BEEP_SERVICE = "be4768a1-719f-4bad-5040-c6ebc5f8c31b"
 export const CONTROL_POINT_CHARACTERISTIC = "000068b0-0000-1000-8000-00805f9b34fb"
@@ -107,9 +116,15 @@ export const BATTERY_SERVICE = "0000180f-0000-1000-8000-00805f9b34fb"
 export const BATTERY_LEVEL_CHARACTERISTIC = "00002a19-0000-1000-8000-00805f9b34fb"
 
 export default class BleHelpers {
-
+  
+  static LOG_FILE_NUMBER = 0
   static LOG_FILE_NAME = "BeepBaseLogFile.txt"
-  static LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME
+
+  // read from DocumentDirectoryPath instead of from caches for persistant log storage
+  static LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME + BleHelpers.LOG_FILE_NUMBER.toString
+
+  // filename debug logging
+  // keep logs instead of unlinking anddeleting
 
   static BleManagerDidUpdateValueForControlPointCharacteristicSubscription: EmitterSubscription
   static BleManagerDidUpdateValueForTXLogCharacteristicSubscription: EmitterSubscription
@@ -184,20 +199,13 @@ export default class BleHelpers {
     store.dispatch(BeepBaseActions.bleFailure(undefined))
     return BleManager.connect(peripheralId).then(() => {
       console.log("Connected to " + peripheralId)
-      console.log("Requesting MTU...")
-      return BleManager.requestMTU(peripheralId, 247 - 5).then((mtu) => {
-        console.log("MTU size changed to " + mtu + " bytes");
-        return delay(500).then(() => {
-          return BleHelpers.retrieveServices(peripheralId)
-          .catch((error) => {
-            console.log(error)
-            store.dispatch(BeepBaseActions.bleFailure(error))
-          })
+      return delay(500).then(() => {
+        return BleHelpers.retrieveServices(peripheralId)
+        .catch((error) => {
+          console.log(error)
+          store.dispatch(BeepBaseActions.bleFailure(error))
         })
       })
-      .catch((error) => {
-        console.log(error);
-      });
     })
     .catch((error) => {
       console.log(error)
@@ -431,27 +439,30 @@ export default class BleHelpers {
 
   static lastFrame: number = -1
 
+
   static initLogFile() {
     BleHelpers.lastFrame = -1
 
     //delete old log file
     return RNFS.exists(BleHelpers.LOG_FILE_PATH).then((exists: boolean) => {
       if (exists) {
-        RNFS.unlink(BleHelpers.LOG_FILE_PATH)
-        .then(() => {
-          console.log("Existing log file deleted");
-        })
-        .catch((err) => {
-          console.log("Error initLogFile.unlink", err.message);
-        });
-      }
-    })
-    .catch((err) => {
-      console.log("Error initLogFile.exists", err.message);
-    });
-  }
+        // increase logfile_number
+        BleHelpers.LOG_FILE_NUMBER++;
 
-  static exportLogFile() {
+        console.log("logging to:")
+        console.log(BleHelpers.LOG_FILE_PATH) 
+        console.log("logfile number incremented to:")
+        console.log(BleHelpers.LOG_FILE_NUMBER)
+
+      }
+      // RNFS.unlink(BleHelpers.LOG_FILE_PATH)
+    }
+
+    )}
+  
+
+
+static exportLogFile() {
     FileSystem.cpExternal(BleHelpers.LOG_FILE_PATH, BleHelpers.LOG_FILE_NAME, "downloads").catch(error => {
       console.log("Error copying to SD card", error)
     })

@@ -234,8 +234,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
           }
           console.log(err);
         });
-      |}
-      
+      }
     }
   } 
 
