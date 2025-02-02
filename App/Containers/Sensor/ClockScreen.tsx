@@ -9,6 +9,7 @@ import { useTypedSelector } from 'App/Stores';
 // Styles
 import styles from './styles'
 import { Colors, Fonts, Metrics } from '../../Theme';
+import { StyleSheet } from 'react-native';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
@@ -24,6 +25,37 @@ import { getClock } from '../../Stores/BeepBase/Selectors';
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import { ClockModel } from '../../Models/ClockModel';
+
+const additionalStyles = StyleSheet.create({
+  clockSourceContainer: {
+    marginTop: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  rtcBorder: {
+    borderColor: '#4CAF50', // Green
+  },
+  noRtcBorder: {
+    borderColor: '#F44336', // Red
+  },
+  clockSourceText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  rtcText: {
+    color: '#4CAF50',
+  },
+  noRtcText: {
+    color: '#F44336',
+  },
+});
+
+const styles = StyleSheet.create({
+  ...existingStyles,
+  ...additionalStyles,
+});
 
 interface Props {
   navigation: StackNavigationProp,
@@ -54,6 +86,28 @@ const ClockScreen: FunctionComponent<Props> = ({
     BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_CLOCK, params)
     refresh()
   }
+      
+  const renderClockSourceIndicator = () => {
+    if (!clockSensor) return null;
+  
+    const isRtc = clockSensor.isRtcModule();
+    
+    return (
+      <View style={[
+        styles.clockSourceContainer,
+        isRtc ? styles.rtcBorder : styles.noRtcBorder
+      ]}>
+        <Text style={[
+          styles.clockSourceText,
+          isRtc ? styles.rtcText : styles.noRtcText
+        ]}>
+          {isRtc 
+            ? "RTC module installed and active"
+            : "No RTC module installed"}
+        </Text>
+      </View>
+    );
+  };
 
   return (<>
     <ScreenHeader title={t("sensor.clock.screenTitle")} back />
@@ -90,8 +144,11 @@ const ClockScreen: FunctionComponent<Props> = ({
         <Text style={styles.text}>{t("sensor.clock.syncButton")}</Text>
       </TouchableOpacity>
 
+      {renderClockSourceIndicator()}
+
     </View>
-  </>)
+  </>)    
+  
 }
 
 export default ClockScreen
