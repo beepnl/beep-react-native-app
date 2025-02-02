@@ -214,6 +214,68 @@ const ApplicationStyles = {
     color: Colors.error,
   },
 
+  clockSourceContainer: {
+    marginTop: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  rtcBorder: {
+    borderColor: '#4CAF50', // Green
+  },
+  noRtcBorder: {
+    borderColor: '#F44336', // Red
+  },
+  clockSourceText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  rtcText: {
+    color: '#4CAF50',
+  },
+  noRtcText: {
+    color: '#F44336',
+  },
+
+  storedFileRow: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.lightGrey,
+  },
+  selectedFile: {
+    backgroundColor: Colors.lightYellow,
+  },
+  fileInfo: {
+    flex: 1,
+  },
+  fileName: {
+    ...Fonts.style.normal,
+    fontSize: 16,
+  },
+  fileDetails: {
+    ...Fonts.style.normal,
+    fontSize: 14,
+    color: Colors.grey,
+  },
+  selectedFileActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+  },
+  deleteButton: {
+    backgroundColor: Colors.error,
+  },
+  spectrogramContainer: {
+    marginVertical: 16,
+    height: 240, // Spectrogram + label + padding
+  },
+  label: {
+    ...Fonts.normal,
+    color: Colors.text,
+    marginBottom: 8,
+  },
+
 }
 
 export default ApplicationStyles

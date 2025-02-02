@@ -8,8 +8,7 @@ import { useTypedSelector } from 'App/Stores';
 
 // Styles
 import styles from './styles'
-import { Colors, Fonts, Metrics } from '../../Theme';
-import { StyleSheet } from 'react-native';
+import { ApplicationStyles, Colors, Fonts, Metrics } from '../../Theme';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
@@ -31,18 +30,6 @@ import Spectrogram from 'react-native-spectrogram'
 interface Props {
   navigation: StackNavigationProp,
 }
-
-const additionalStyles = StyleSheet.create({
-  spectrogramContainer: {
-    marginVertical: 16,
-    height: 240, // Spectrogram + label + padding
-  },
-  label: {
-    ...Fonts.normal,
-    color: Colors.text,
-    marginBottom: 8,
-  },
-});
 
 const AudioScreen: FunctionComponent<Props> = ({
   navigation,
@@ -133,18 +120,11 @@ const AudioScreen: FunctionComponent<Props> = ({
               pixelsPerBin={audioSensor?.bins || 1}
             />
           </View>
-
-          {/* Configuration button */}
-          <TouchableOpacity style={styles.button} onPress={onConfigurePress}>
-            <Text style={styles.text}>{t("sensor.configure")}</Text>
-          </TouchableOpacity>
-        </View>
       <View style={[styles.spacer, { flex: 1 }]} />
 
       <TouchableOpacity style={styles.button} onPress={onConfigurePress} >
         <Text style={styles.text}>{t("sensor.configure")}</Text>
       </TouchableOpacity>
-
     </View>
   </>)
 }
