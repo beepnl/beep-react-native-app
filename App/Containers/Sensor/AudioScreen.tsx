@@ -9,6 +9,7 @@ import { useTypedSelector } from 'App/Stores';
 // Styles
 import styles from './styles'
 import { Colors, Fonts, Metrics } from '../../Theme';
+import { StyleSheet } from 'react-native';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
@@ -30,6 +31,18 @@ import Spectrogram from 'react-native-spectrogram'
 interface Props {
   navigation: StackNavigationProp,
 }
+
+const additionalStyles = StyleSheet.create({
+  spectrogramContainer: {
+    marginVertical: 16,
+    height: 240, // Spectrogram + label + padding
+  },
+  label: {
+    ...Fonts.normal,
+    color: Colors.text,
+    marginBottom: 8,
+  },
+});
 
 const AudioScreen: FunctionComponent<Props> = ({
   navigation,
@@ -135,17 +148,5 @@ const AudioScreen: FunctionComponent<Props> = ({
     </View>
   </>)
 }
-const additionalStyles = StyleSheet.create({
-  spectrogramContainer: {
-    marginVertical: 16,
-    height: 240, // Spectrogram + label + padding
-  },
-  label: {
-    ...Fonts.normal,
-    color: Colors.text,
-    marginBottom: 8,
-  },
-});
-
 
 export default AudioScreen
