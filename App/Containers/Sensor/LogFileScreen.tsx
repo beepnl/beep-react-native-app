@@ -17,6 +17,9 @@ import ApiService from '../../Services/ApiService';
 import useTimeout from '../../Helpers/useTimeout';
 import useInterval from '../../Helpers/useInterval';
 
+import { LogFileInfo, LogFileModel } from '../../Models/LogFileModel';
+import FormatHelpers from '../../Helpers/FormatHelpers';
+import DateTimeHelper from '../../Helpers/DateTimeHelpers';
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
@@ -189,6 +192,102 @@ const LogFileScreen: FunctionComponent<Props> = ({
     onGetLogFileSizePress()
   }
 
+  const [storedLogFiles, setStoredLogFiles] = useState<LogFileInfo[]>([]);
+  const [selectedLogFile, setSelectedLogFile] = useState<LogFileInfo | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  useEffect(() => {
+    dispatch(BeepBaseActions.setLogFileSize(undefined))
+    dispatch(BeepBaseActions.clearLogFileFrames())
+    loadStoredLogFiles() // Add this
+    if (peripheral) {
+      BleHelpers.write(peripheral.id, COMMANDS.SIZE_MX_FLASH)
+    }  
+  }, []);
+
+  const loadStoredLogFiles = async () => {
+    try {
+      const files = await LogFileModel.getStoredLogFiles();
+      setStoredLogFiles(files);
+    } catch (error) {
+      setError(`Failed to load stored files: ${error.message}`);
+    }
+  };
+
+  const uploadStoredLogFile = async (logFile: LogFileInfo) => {
+    setUploadProgress(0);
+    setState("uploading");
+    setError("");
+
+    try {
+      const response = await RNFS.uploadFiles({
+        toUrl: ApiService.getLogFileUploadUrl(useProduction, logFile.size),
+        files: [{ 
+          name: "file", 
+          filename: logFile.name,
+          filepath: logFile.path,
+          filetype: "text/plain"
+        }],
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${ApiService.getToken()}`
+        },
+        fields: {
+          "id": peripheral.deviceId,
+        },
+        begin: () => setUploadProgress(0),
+        progress: (response) => setUploadProgress(response.totalBytesSent / response.totalBytesExpectedToSend)
+      }).promise;
+
+      if (response.statusCode === 200) {
+        const parsedJson = JSON.parse(response.body);
+        const uploadResponse = new UploadResponseModel(parsedJson);
+        
+        if (uploadResponse.shouldErase()) {
+          setState("erasing");
+          const eraseCode = uploadResponse.getEraseCode();
+          BleHelpers.write(peripheral.id, COMMANDS.ERASE_MX_FLASH, eraseCode);
+          const et = uploadResponse.getEraseType();
+          setEraseType(et);
+          if (et === "full") {
+            setFullEraseStart(new Date());
+          }
+        } else {
+          setState("completed");
+          setModalVisible(true);
+        }
+      } else {
+        setUploadProgress(0);
+        setState("failed");
+        setError(`${response.statusCode}: ${response.body}`);
+      }
+    } catch (error) {
+      setUploadProgress(0);
+      setError(error.message);
+      setState("failed");
+    }
+  };
+
+  const confirmDelete = (logFile: LogFileInfo) => {
+    setSelectedLogFile(logFile);
+    setShowDeleteConfirm(true);
+  };
+
+  const deleteStoredLogFile = async () => {
+    if (!selectedLogFile) return;
+    
+    try {
+      await LogFileModel.deleteLogFile(selectedLogFile.path);
+      await loadStoredLogFiles();
+      setShowDeleteConfirm(false);
+      setSelectedLogFile(null);
+    } catch (error) {
+      setError(`Failed to delete file: ${error.message}`);
+    }
+  };
+
+
   return (<>
     <ScreenHeader title={t("logFile.screenTitle")} back />
 
@@ -226,6 +325,48 @@ const LogFileScreen: FunctionComponent<Props> = ({
 
       <Text style={styles.instructions}>{t(`logFile.instructions${ state == "downloading" || state == "uploading" || state == "erasing" ? "InProgress" : "" }`)}</Text>
       
+    {/* Add stored files section */}
+      <View style={styles.spacerDouble} />
+      <Text style={styles.label}>{t("logFile.storedFiles")}</Text>
+      <View style={styles.spacer} />
+      
+      {storedLogFiles.map(logFile => (
+        <TouchableOpacity
+          key={logFile.path}
+          style={[
+            styles.storedFileRow,
+            selectedLogFile?.path === logFile.path && styles.selectedFile
+          ]}
+          onPress={() => setSelectedLogFile(logFile)}
+        >
+          <View style={styles.fileInfo}>
+            <Text style={styles.fileName}>{logFile.name}</Text>
+            <Text style={styles.fileDetails}>
+              {DateTimeHelper.formatDateTime(logFile.created)} - {FormatHelpers.formatSizeAsHumanReadable(logFile.size)}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      ))}
+      
+      {selectedLogFile && (
+        <View style={styles.selectedFileActions}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => uploadStoredLogFile(selectedLogFile)}
+            disabled={state === "uploading"}
+          >
+            <Text style={styles.text}>{t("logFile.upload")}</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.button, styles.deleteButton]}
+            onPress={() => confirmDelete(selectedLogFile)}
+          >
+            <Text style={styles.text}>{t("logFile.delete")}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <View style={styles.spacerDouble} />
       <Text style={styles.label}>{t("logFile.progress")}</Text>
       <View style={styles.spacer} />
@@ -274,6 +415,37 @@ const LogFileScreen: FunctionComponent<Props> = ({
       </>}
 
     </ScrollView>
+    <Modal
+      isVisible={showDeleteConfirm}
+      onBackdropPress={() => setShowDeleteConfirm(false)}
+      onBackButtonPress={() => setShowDeleteConfirm(false)}
+      useNativeDriver={true}
+      backdropOpacity={0.3}
+    >
+      <View style={ApplicationStyles.modalContainer}>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("logFile.deleteConfirm")}</Text>
+        <View style={styles.spacer} />
+        <View style={styles.itemContainer}>
+          <Text style={styles.itemText}>{t("logFile.deleteConfirmMessage")}</Text>
+          <View style={styles.spacerDouble} />
+          <View style={ApplicationStyles.buttonContainer}>
+            <TouchableOpacity 
+              style={[styles.button, styles.deleteButton]}
+              onPress={deleteStoredLogFile}
+            >
+              <Text style={styles.text}>{t("common.btnDelete")}</Text>
+            </TouchableOpacity>
+            <View style={styles.spacer} />
+            <TouchableOpacity 
+              style={styles.button}
+              onPress={() => setShowDeleteConfirm(false)}
+            >
+              <Text style={styles.text}>{t("common.btnCancel")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
 
     <Modal
       isVisible={isModalVisible}
@@ -304,5 +476,36 @@ const LogFileScreen: FunctionComponent<Props> = ({
 
   </>)
 }
+
+const additionalStyles = StyleSheet.create({
+  storedFileRow: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.lightGrey,
+  },
+  selectedFile: {
+    backgroundColor: Colors.lightYellow,
+  },
+  fileInfo: {
+    flex: 1,
+  },
+  fileName: {
+    ...Fonts.style.normal,
+    fontSize: 16,
+  },
+  fileDetails: {
+    ...Fonts.style.normal,
+    fontSize: 14,
+    color: Colors.grey,
+  },
+  selectedFileActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+  },
+  deleteButton: {
+    backgroundColor: Colors.error,
+  },
+});
 
 export default LogFileScreen
