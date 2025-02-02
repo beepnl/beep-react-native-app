@@ -27,6 +27,8 @@ export class AudioModel {
   bins: number
   startBin: number
   stopBin : number
+  values: number[]; // Add this for spectrogram data
+
 
   constructor(props: any) {
     this.channel = props.channel
@@ -35,6 +37,7 @@ export class AudioModel {
     this.bins = props.bins
     this.startBin = props.startBin
     this.stopBin = props.stopBin
+    this.values = props.values || [];
   }
 
   toString() {
@@ -48,6 +51,22 @@ export class AudioParser {
 
   constructor(props: any) {
     this.data = props.data || Buffer.alloc(1)
+  }
+
+  // read audio values 
+  parseConversion(data: Buffer): number[] {
+    const values: number[] = [];
+    const len = data?.length;
+    
+    if (len >= 2) { // Assuming 2 bytes per bin value
+      for (let i = 0; i < len; i += 2) {
+        // Combine two bytes into a single value
+        const value = data.readUInt16LE(i);
+        values.push(value);
+      }
+    }
+    
+    return values;
   }
 
   parse(): AudioModel | undefined {
