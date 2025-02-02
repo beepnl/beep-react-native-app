@@ -477,35 +477,4 @@ const LogFileScreen: FunctionComponent<Props> = ({
   </>)
 }
 
-const additionalStyles = StyleSheet.create({
-  storedFileRow: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGrey,
-  },
-  selectedFile: {
-    backgroundColor: Colors.lightYellow,
-  },
-  fileInfo: {
-    flex: 1,
-  },
-  fileName: {
-    ...Fonts.style.normal,
-    fontSize: 16,
-  },
-  fileDetails: {
-    ...Fonts.style.normal,
-    fontSize: 14,
-    color: Colors.grey,
-  },
-  selectedFileActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-  },
-  deleteButton: {
-    backgroundColor: Colors.error,
-  },
-});
-
 export default LogFileScreen

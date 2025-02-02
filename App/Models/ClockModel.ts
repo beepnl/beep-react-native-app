@@ -26,7 +26,8 @@ export class ClockModel {
     return DateTimeHelper.formatTime(this.deviceDate)
   }
 
-  static parse(rawData: any) {
+  
+  static parse(rawData: Buffer ) {
     let data = 0
     let clockSource = null
 

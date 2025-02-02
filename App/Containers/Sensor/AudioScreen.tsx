@@ -25,7 +25,9 @@ import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import { AudioModel } from '../../Models/AudioModel';
 import { getFrequencyByBin } from '../Wizard/CalibrateAudioScreen';
-import Spectrogram from 'react-native-spectrogram'
+
+import { Dimensions } from 'react-native';
+import Spectrogram from 'react-spectrogram';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -38,45 +40,60 @@ const AudioScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const audioSensor: AudioModel = useTypedSelector<AudioModel>(getAudio)
-
-  useEffect(() => {
-    BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
-  }, [])
-
-  const onConfigurePress = () => {
-    navigation.navigate("CalibrateAudioScreen")
-  }
-  // State for spectrogram data
   const [spectrogramData, setSpectrogramData] = useState<number[]>([]);
-    
-  // Get screen width for spectrogram
-  const screenWidth = Dimensions.get('window').width;
 
-  // Set up continuous audio readings
   useEffect(() => {
+    let isSubscribed = true;
     const startAudioReadings = async () => {
       try {
         // Initial config read
-        await BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG]);
-        
-        // Start continuous readings
-        const readingInterval = setInterval(() => {
-          BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONVERSION]);
-        }, 100); // 10 Hz update rate
-
-        return () => clearInterval(readingInterval);
+        await BleHelpers.safeWrite(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG]);
+  
+        try {
+            console.error('Start audio read from TLV..', err);
+            await BleHelpers.safeWrite(pairedPeripheral.id, [COMMANDS.START_AUDIO_ADC_CONVERSION]);
+          } catch (err) {
+            console.error('Audio reading error:', err);
+            clearInterval(readingInterval);
+          }
+            // Start continuous readings
+          const readingInterval = setInterval(async () => {
+            if (!isSubscribed) return;
+            try {
+              await BleHelpers.safeWrite(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONVERSION]);
+            } catch (err) {
+              console.error('Audio reading error:', err);
+              clearInterval(readingInterval);
+            }
+          }, 1000); // update once a sec
+        return () => {
+          isSubscribed = false;
+          clearInterval(readingInterval);
+        };
       } catch (error) {
         console.error('Failed to start audio readings:', error);
       }
     };
-
+  
     startAudioReadings();
+    
+    return () => {
+      isSubscribed = false;
+    };
   }, [pairedPeripheral.id]);
 
   // Update spectrogram when audio data changes
   useEffect(() => {
-    if (audioSensor?.values) {
-      setSpectrogramData(audioSensor.values);
+    if (audioSensor?.values && Array.isArray(audioSensor.values)) {
+      try {
+        if (audioSensor.values.length > audioSensor.bins) {
+          console.warn('Audio data exceeds configured bins');
+          return;
+        }
+        setSpectrogramData(audioSensor.values);
+      } catch (error) {
+        console.error('Error updating spectrogram:', error);
+      }
     }
   }, [audioSensor]);
 

@@ -67,7 +67,7 @@ def enableProguardInReleaseBuilds = false
  * this variant is about 6MiB larger per architecture than default.
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
-
+def enableSeparateBuildPerCPUArchitecture = true
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -78,8 +78,16 @@ android {
         applicationId "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 75
-        versionName "2.11.0"
+        versionCode 81
+        versionName "2.2.0"
+    }
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk true  // If true, also generate a universal APK
+            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+        }
     }
     signingConfigs {
         debug {
@@ -88,21 +96,30 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+     
+     
+         release {
+             storeFile file('../keystores/android.keystore')
+             storePassword 'android'
+             keyAlias 'androidkey'
+             keyPassword 'android'
+         }
     }
-    buildTypes {
+    
+    
+buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            }
         }
     }
-}
-
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")

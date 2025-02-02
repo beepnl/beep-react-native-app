@@ -20,30 +20,16 @@ export const CHANNELS: Array<Channel> = [
   },
 ]
 
-export class AudioModel {
-  channel: Channel
-  gain: number
-  volume: number
-  bins: number
-  startBin: number
-  stopBin : number
-  values: number[]; // Add this for spectrogram data
-
-
-  constructor(props: any) {
-    this.channel = props.channel
-    this.gain = props.gain
-    this.volume = props.volume
-    this.bins = props.bins
-    this.startBin = props.startBin
-    this.stopBin = props.stopBin
-    this.values = props.values || [];
-  }
-
-  toString() {
-    return this.channel?.name
-  }
-
+export interface AudioModel {
+  channel: {
+    name: string;
+  };
+  startBin: number;
+  stopBin: number;
+  bins: number;
+  values: number[];
+  gain?: number;
+  volume?: number;
 }
 
 export class AudioParser {
@@ -80,7 +66,7 @@ export class AudioParser {
       const bins = this.data.readUInt8(i++)
       const startBin = this.data.readUInt8(i++)
       const stopBin = this.data.readUInt8(i++)
-      return new AudioModel({ channel, gain, volume, bins, startBin, stopBin })
+      return { channel, gain, volume, bins, startBin, stopBin, values: [] }
     }
   }
 }

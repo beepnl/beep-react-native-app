@@ -10,5 +10,16 @@
     "ios/Pods/Headers/Public/RCT-Folly/folly/lang",
     "ios/Pods/Headers/Private/Flipper-Folly/folly/lang",
     "ios/Pods/Headers/Private/RCT-Folly/folly/lang"
-  ]
+  ],
+  "editor.fontFamily": "Terminess Nerd Font Mono",
+  "editor.fontSize": 11,
+  "files.autoSave": "onFocusChange",
+  "chat.editor.fontSize": 10  ,
+  "markdown.preview.fontFamily": "Terminess Nerd Font Mono",
+  "markdown.preview.fontSize": 10 ,
+  "terminal.integrated.fontLigatures.enabled": false,
+  "terminal.integrated.fontSize": 10,
+  "debug.console.fontSize": 10,
+  "notebook.output.fontFamily": "Terminess Nerd Font Mono",
+  "chat.editor.fontFamily": "Terminess Nerd Font Mono"
 }
