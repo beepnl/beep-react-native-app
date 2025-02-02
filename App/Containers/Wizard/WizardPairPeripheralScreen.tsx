@@ -146,11 +146,12 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     const bonded = Array.from(bondedPeripherals.current.values()).filter(p => scanned.findIndex(i => i.id == p.id) == -1)
     const merged = scanned.concat(bonded)
     const sorted = tidy(merged, arrange([
-      desc("isConnected"),                    //connected devices on top
+      desc("isConnected"),                    // connected devices on top
+      (a, b) => (a.name || '').localeCompare(b.name || '') // alphanumeric sort by name
     ]))
     setList(sorted)
   }
-
+  
   const onPeripheralPress = (peripheral: Peripheral) => {
     setConnectingPeripheral(peripheral)
     dispatch(BeepBaseActions.setFirmwareVersion(undefined))
