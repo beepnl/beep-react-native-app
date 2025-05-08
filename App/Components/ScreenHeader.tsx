@@ -42,7 +42,9 @@ const ScreenHeader: FunctionComponent<ScreenHeaderProps> = ({
   const navigation = useNavigation()
   
   const onBackPressInternal = () => {
-    navigation.goBack()
+    if (navigation.canGoBack()) {
+      navigation.goBack()
+    }
     onBackPress && onBackPress()
   }
 

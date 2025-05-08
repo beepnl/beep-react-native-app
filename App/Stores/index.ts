@@ -6,6 +6,7 @@ import { reducer as AuthReducer } from './Auth/Reducers'
 import { reducer as SettingsReducer } from './Settings/Reducers'
 import { reducer as UserReducer } from './User/Reducers'
 import { reducer as BeepBaseReducer } from './BeepBase/Reducers'
+import { reducer as GlobalReducer } from './Global/Reducers'
 import { TypedUseSelectorHook, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { persistReducer, createMigrate } from 'redux-persist'
@@ -56,6 +57,7 @@ const rootReducer = combineReducers({
   settings: persistReducer(settingsPersistConfig, SettingsReducer),
   user: persistReducer(userPersistConfig, UserReducer),
   beepBase: BeepBaseReducer,
+  global: GlobalReducer,
 })
 
 export type AppState = ReturnType<typeof rootReducer>

@@ -17,10 +17,11 @@ import { tidy, arrange, desc } from '@tidyjs/tidy';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
-import BeepBaseActions from 'App/Stores/BeepBase/Actions'
+import GlobalActions from 'App/Stores/Global/Actions'
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { getDevices } from 'App/Stores/User/Selectors'
+import { getAppMode } from 'App/Stores/Global/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
@@ -29,6 +30,7 @@ import ScreenHeader from '../../Components/ScreenHeader';
 import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { AppMode } from 'App/Stores/Global/InitialState';
 
 type ListItem = DeviceModel & { isConnected: boolean }
 
@@ -43,8 +45,25 @@ const HomeScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const devices: Array<DeviceModel> = useTypedSelector<Array<DeviceModel>>(getDevices)
   const [listItems, setListItems] = useState<Array<ListItem>>([])
-
+  const appMode: AppMode = useTypedSelector<AppMode>(getAppMode)
   const [isRefreshing, setRefreshing] = useState(false)
+
+  const [isScreenMounted, setScreenIsMounted] = useState(false);
+
+  useEffect(() => {
+    setScreenIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isScreenMounted && appMode.mode === "app") {
+      const { screen, params } = appMode.params
+      console.log("screen", screen)
+      console.log("params", params)
+      if (screen) {
+        navigation.navigate(screen as never, params as never)
+      }
+    }
+  }, [isScreenMounted, appMode, navigation])
 
   useEffect(() => {
     setRefreshing(false)
@@ -75,8 +94,14 @@ const HomeScreen: FunctionComponent<Props> = ({
     OpenExternalHelpers.openUrl("https://beepsupport.freshdesk.com/en/support/solutions/folders/60000479696")
   }
 
+  const onBackPress = () => {
+    if (!navigation.canGoBack() && appMode.mode == "app") {
+      dispatch(GlobalActions.setAppMode({ mode: "web" }))
+    }
+  }
+
   return (<>
-    <ScreenHeader title={t("home.screenTitle")} menu />
+    <ScreenHeader title={t("home.screenTitle")} menu back onBackPress={onBackPress} />
 
     <View style={styles.container}>
       <View style={styles.spacer} />

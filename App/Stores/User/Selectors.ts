@@ -19,3 +19,7 @@ export const getUseProduction = (state: AppState) => {
 export const getDevices = (state: AppState) => {
   return state.user.devices
 }
+
+export const getAppMode = (state: AppState) => {
+  return state.user.appMode
+}

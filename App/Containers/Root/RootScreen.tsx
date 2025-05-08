@@ -22,6 +22,7 @@ import api from 'App/Services/ApiService'
 // Data
 import StartupActions from 'App/Stores/Startup/Actions'
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
+import GlobalActions from 'App/Stores/Global/Actions'
 import { getError as getApiError } from 'App/Stores/Api/Selectors';
 import { getError as getBleError } from 'App/Stores/BeepBase/Selectors';
 import { getDfuUpdating } from 'App/Stores/BeepBase/Selectors';
@@ -29,10 +30,15 @@ import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { PairedPeripheralModel } from 'App/Models/PairedPeripheral';
 import { getToken } from 'App/Stores/User/Selectors';
 import { getLanguageCode } from 'App/Stores/Settings/Selectors';
+import { getAppMode } from 'App/Stores/Global/Selectors';
+import { AppMode } from 'App/Stores/Global/InitialState';
 
 // Components
 import { View } from 'react-native'
 import DropdownAlert from 'react-native-dropdownalert';
+import WebView from 'react-native-webview';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from 'App/Theme';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -51,6 +57,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const { appState } = useAppState();
   const isDfuUpdating: boolean = useTypedSelector<any>(getDfuUpdating)
+  const appMode: AppMode = useTypedSelector<AppMode>(getAppMode)
 
   useEffect(() => {
     dispatch(StartupActions.startup())
@@ -133,11 +140,75 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     }
   }, [bleError])
 
+  const ACTION_NEW_BEEP_BASE = "NewBeepBase";
+  const ACTION_EDIT_BEEP_BASE = "EditBeepBase";
+
+  const injectedJavaScriptBeforeContentLoaded = `
+    (function() {
+      // New button
+      const newButton = document.createElement("button");
+      newButton.innerText = "New";
+      newButton.style.position = "fixed";
+      newButton.style.top = "5px";
+      newButton.style.right = "100px";
+      newButton.style.zIndex = "9999";
+      newButton.style.padding = "10px";
+      newButton.style.background = "blue";
+      newButton.style.color = "white";
+      newButton.style.border = "none";
+      newButton.style.borderRadius = "5px";
+      newButton.style.fontSize = "16px";
+      newButton.onclick = function() {
+        window.ReactNativeWebView.postMessage("${ACTION_NEW_BEEP_BASE}");
+      };
+      document.addEventListener("DOMContentLoaded", function() {
+        document.body.appendChild(newButton);
+      });
+
+      //set auth token from native into web view local storage for single sign on
+      const TOKEN_KEY = 'auth.beepToken';
+      let tk = window.localStorage.getItem(TOKEN_KEY);
+      if (tk) {
+        tk = tk.replaceAll('"', '');    //token is mistakenly stored with quotes
+      }
+      if (tk != '${token}') {
+        window.localStorage.setItem(TOKEN_KEY, '"${token}"');
+        window.location.reload();
+      }
+    })();
+  `;
+
+  const handleWebViewMessage = (event: any) => {
+    switch (event.nativeEvent.data) {
+      case ACTION_NEW_BEEP_BASE:
+        dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "Wizard" } }))
+        break;
+      case ACTION_EDIT_BEEP_BASE:
+        dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "PeripheralDetailScreen", devEUI: "49b55e035a658a3d" } })) //TODO: get devEUI from webview
+        break;
+      default:
+        break;
+    }
+  };
+
+  console.log("appMode", appMode)
+
   return (
     <View style={styles.mainContainer}>
       <NavigationContainer ref={navigationRef}>
         { !token && <AuthStack /> }
-        { !!token && <AppStack /> }
+        { !!token && 
+            <SafeAreaView style={{ flex: 1, backgroundColor: Colors.yellow }} edges={["top"]}>
+              <WebView
+                style={{ flex: 1 }}
+                source={{ uri: "https://app.beep.nl" }}
+                javaScriptEnabled={true}
+                injectedJavaScriptBeforeContentLoaded={injectedJavaScriptBeforeContentLoaded}
+                onMessage={handleWebViewMessage}
+              />
+            </SafeAreaView>
+        }
+        { !!token && appMode.mode === "app" && <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}><AppStack /></View> }
       </NavigationContainer>
       <DropdownAlert ref={dropDownAlert} />
     </View>
