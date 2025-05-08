@@ -165,6 +165,26 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
         document.body.appendChild(newButton);
       });
 
+      // Edit button
+      const editButton = document.createElement("button");
+      editButton.innerText = "Edit Beep base";
+      editButton.style.position = "fixed";
+      editButton.style.top = "10px";
+      editButton.style.right = "10px";
+      editButton.style.zIndex = "9999";
+      editButton.style.padding = "10px";
+      editButton.style.background = "blue";
+      editButton.style.color = "white";
+      editButton.style.border = "none";
+      editButton.style.borderRadius = "5px";
+      editButton.style.fontSize = "16px";
+      editButton.onclick = function() {
+        window.ReactNativeWebView.postMessage("${ACTION_EDIT_BEEP_BASE}");
+      };
+      document.addEventListener("DOMContentLoaded", function() {
+        document.body.appendChild(editButton);
+      });
+
       //set auth token from native into web view local storage for single sign on
       const TOKEN_KEY = 'auth.beepToken';
       let tk = window.localStorage.getItem(TOKEN_KEY);
