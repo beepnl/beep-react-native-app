@@ -68,7 +68,7 @@ export class DeviceModel {
 
   static getBleName(instance: DeviceModel) {
     if (instance) {
-      const suffix = instance.devEUI.slice(-4).toUpperCase()
+      const suffix = instance.devEUI?.slice(-4).toUpperCase() || ""
       return BLE_NAME_PREFIX + suffix
     }
     return ""
@@ -76,7 +76,7 @@ export class DeviceModel {
 
   static getPreviousBleName(instance: DeviceModel) {
     if (instance) {
-      const suffix = instance.previousDevEUI.slice(-4).toUpperCase()
+      const suffix = instance.previousDevEUI?.slice(-4).toUpperCase() || ""
       return BLE_NAME_PREFIX + suffix
     }
     return ""

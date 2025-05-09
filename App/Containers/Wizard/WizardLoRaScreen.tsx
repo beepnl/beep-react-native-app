@@ -31,6 +31,7 @@ import ScreenHeader from '../../Components/ScreenHeader';
 import Collapsible from 'react-native-collapsible';
 import Modal from 'react-native-modal';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -197,11 +198,13 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
     </ScrollView>
 
     {!fromSensorScreen &&
-      <View style={styles.itemContainer}>
-        <TouchableOpacity style={styles.button} onPress={onNextPress}>
-          <Text style={styles.text}>{t("common.btnNext")}</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+        <View style={styles.itemContainer}>
+          <TouchableOpacity style={styles.button} onPress={onNextPress}>
+            <Text style={styles.text}>{t("common.btnNext")}</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     }
 
     <Modal

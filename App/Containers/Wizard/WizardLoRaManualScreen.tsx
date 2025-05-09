@@ -33,6 +33,7 @@ import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import useInterval from '../../Helpers/useInterval';
 import TextInputMask from 'react-native-text-input-mask';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const RETRY_COUNT = 8
 
@@ -258,11 +259,13 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
     </ScrollView>
 
     { state == "connected" &&
-      <View style={styles.itemContainer}>
-        <TouchableOpacity style={styles.button} onPress={onNextPress}>
-          <Text style={styles.text}>{t("common.btnNext")}</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+        <View style={styles.itemContainer}>
+          <TouchableOpacity style={styles.button} onPress={onNextPress}>
+            <Text style={styles.text}>{t("common.btnNext")}</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     }
   </>)
 }

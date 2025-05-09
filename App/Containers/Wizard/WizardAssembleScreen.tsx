@@ -16,6 +16,7 @@ import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/v
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -52,11 +53,13 @@ const WizardAssembleScreen: FunctionComponent<Props> = ({
 
     </ScrollView>
     
-    <View style={styles.itemContainer}>
-      <TouchableOpacity style={styles.button} onPress={onNextPress}>
-        <Text style={styles.text}>{t("common.btnNext")}</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+      <View style={styles.itemContainer}>
+        <TouchableOpacity style={styles.button} onPress={onNextPress}>
+          <Text style={styles.text}>{t("common.btnNext")}</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   </>)
 }
 

@@ -30,6 +30,7 @@ import { DeviceModel } from '../../Models/DeviceModel';
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -155,13 +156,15 @@ const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
 
     </ScrollView>
 
-    { loRaWanState?.hasJoined && <>
-      <View style={styles.itemContainer}>
-        <TouchableOpacity style={styles.button} onPress={onNextPress}>
-          <Text style={styles.text}>{t("common.btnNext")}</Text>
-        </TouchableOpacity>
-      </View>
-    </>}
+    { loRaWanState?.hasJoined &&
+      <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+        <View style={styles.itemContainer}>
+          <TouchableOpacity style={styles.button} onPress={onNextPress}>
+            <Text style={styles.text}>{t("common.btnNext")}</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    }
 
   </>)
 }

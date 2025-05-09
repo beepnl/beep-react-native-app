@@ -42,6 +42,8 @@ import { Colors } from 'App/Theme';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
+type Env = "prod" | "test"
+
 interface RootScreenBaseProps {
   startup?: typeof StartupActions.startup;
 }
@@ -58,6 +60,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   const { appState } = useAppState();
   const isDfuUpdating: boolean = useTypedSelector<any>(getDfuUpdating)
   const appMode: AppMode = useTypedSelector<AppMode>(getAppMode)
+  const [env, setEnv] = useState<Env>("prod")
 
   useEffect(() => {
     dispatch(StartupActions.startup())
@@ -142,6 +145,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
 
   const ACTION_NEW_BEEP_BASE = "NewBeepBase";
   const ACTION_EDIT_BEEP_BASE = "EditBeepBase";
+  const ACTION_SWITCH_ENV = "SwitchEnv";
 
   const injectedJavaScriptBeforeContentLoaded = `
     (function() {
@@ -169,7 +173,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       const editButton = document.createElement("button");
       editButton.innerText = "Edit Beep base";
       editButton.style.position = "fixed";
-      editButton.style.top = "10px";
+      editButton.style.top = "5px";
       editButton.style.right = "10px";
       editButton.style.zIndex = "9999";
       editButton.style.padding = "10px";
@@ -182,7 +186,27 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
         window.ReactNativeWebView.postMessage("${ACTION_EDIT_BEEP_BASE}");
       };
       document.addEventListener("DOMContentLoaded", function() {
-        document.body.appendChild(editButton);
+        // document.body.appendChild(editButton);
+      });
+
+      // Env button
+      const envButton = document.createElement("button");
+      envButton.innerText = "${env}";
+      envButton.style.position = "fixed";
+      envButton.style.top = "5px";
+      envButton.style.right = "10px";
+      envButton.style.zIndex = "9999";
+      envButton.style.padding = "10px";
+      envButton.style.background = "blue";
+      envButton.style.color = "white";
+      envButton.style.border = "none";
+      envButton.style.borderRadius = "5px";
+      envButton.style.fontSize = "16px";
+      envButton.onclick = function() {
+        window.ReactNativeWebView.postMessage("${ACTION_SWITCH_ENV}");
+      };
+      document.addEventListener("DOMContentLoaded", function() {
+        document.body.appendChild(envButton);
       });
 
       //set auth token from native into web view local storage for single sign on
@@ -206,6 +230,9 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       case ACTION_EDIT_BEEP_BASE:
         dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "PeripheralDetailScreen", devEUI: "49b55e035a658a3d" } })) //TODO: get devEUI from webview
         break;
+      case ACTION_SWITCH_ENV:
+        setEnv((prevEnv) => prevEnv === "prod" ? "test" : "prod")
+        break;
       default:
         break;
     }
@@ -221,7 +248,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
             <SafeAreaView style={{ flex: 1, backgroundColor: Colors.yellow }} edges={["top"]}>
               <WebView
                 style={{ flex: 1 }}
-                source={{ uri: "https://app.beep.nl" }}
+                source={{ uri: env == "prod" ? "https://app.beep.nl" : "https://app-test.beep.nl" }}
                 javaScriptEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={injectedJavaScriptBeforeContentLoaded}
                 onMessage={handleWebViewMessage}

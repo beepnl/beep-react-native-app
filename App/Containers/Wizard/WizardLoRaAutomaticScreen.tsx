@@ -28,6 +28,7 @@ import { getLoRaConfigState } from '../../Stores/Api/Selectors';
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import useInterval from '../../Helpers/useInterval';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const RETRY_COUNT = 8
 
@@ -108,9 +109,11 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
       <View style={[styles.spacer, { flex: 1 }]} />
 
       { state == "connected" &&
-        <TouchableOpacity style={styles.button} onPress={onNextPress}>
-          <Text style={styles.text}>{t("common.btnNext")}</Text>
-        </TouchableOpacity>
+        <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+          <TouchableOpacity style={styles.button} onPress={onNextPress}>
+            <Text style={styles.text}>{t("common.btnNext")}</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
       }
     </ScrollView>
   </>)

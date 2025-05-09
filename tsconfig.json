@@ -2,6 +2,14 @@
   "extends": "@tsconfig/react-native/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "sourceMap": true,
+    "outDir": "./build",
+    "moduleResolution": "node",
+    "target": "esnext",
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true
   },
   "include": [
     "**/*.ts",

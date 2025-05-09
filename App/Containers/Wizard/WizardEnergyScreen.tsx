@@ -28,6 +28,7 @@ import { getApplicationConfig } from '../../Stores/BeepBase/Selectors';
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BATTERY_CAPACITY_MILLI_AMPS = 750
 
@@ -214,11 +215,13 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
 
     </ScrollView>
 
-    <View style={styles.itemContainer}>
-      <TouchableOpacity style={styles.button} onPress={onNextPress}>
-        <Text style={styles.text}>{fromSensorScreen ? t("common.btnFinish") : t("common.btnNext")}</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+      <View style={styles.itemContainer}>
+        <TouchableOpacity style={styles.button} onPress={onNextPress}>
+          <Text style={styles.text}>{fromSensorScreen ? t("common.btnFinish") : t("common.btnNext")}</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   </>)
 }
 

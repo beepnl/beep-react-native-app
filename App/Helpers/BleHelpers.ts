@@ -101,10 +101,16 @@ export type BluetoothState =
 
 export const BLE_NAME_PREFIX = "BEEPBASE-"
 export const BEEP_SERVICE = "be4768a1-719f-4bad-5040-c6ebc5f8c31b"
-export const CONTROL_POINT_CHARACTERISTIC = "000068b0-0000-1000-8000-00805f9b34fb"
+export const CONTROL_POINT_CHARACTERISTIC = Platform.select({
+  ios: "68b0",
+  android: "000068b0-0000-1000-8000-00805f9b34fb",
+}) 
 export const LOG_FILE_CHARACTERISTIC = "be4768a3-719f-4bad-5040-c6ebc5f8c31b"
 export const BATTERY_SERVICE = "0000180f-0000-1000-8000-00805f9b34fb"
-export const BATTERY_LEVEL_CHARACTERISTIC = "00002a19-0000-1000-8000-00805f9b34fb"
+export const BATTERY_LEVEL_CHARACTERISTIC = Platform.select({
+  ios: "2a19",
+  android: "00002a19-0000-1000-8000-00805f9b34fb",
+})
 
 export default class BleHelpers {
 
@@ -184,20 +190,30 @@ export default class BleHelpers {
     store.dispatch(BeepBaseActions.bleFailure(undefined))
     return BleManager.connect(peripheralId).then(() => {
       console.log("Connected to " + peripheralId)
-      console.log("Requesting MTU...")
-      return BleManager.requestMTU(peripheralId, 247 - 5).then((mtu) => {
-        console.log("MTU size changed to " + mtu + " bytes");
+
+      const retrieveServices = () => {
         return delay(500).then(() => {
           return BleHelpers.retrieveServices(peripheralId)
           .catch((error) => {
             console.log(error)
             store.dispatch(BeepBaseActions.bleFailure(error))
-          })
-        })
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+          });
+        });
+      };
+
+      if (Platform.OS === "android") {
+        return BleManager.requestMTU(peripheralId, 247 - 5).then((mtu) => {
+          console.log("MTU size changed to " + mtu + " bytes");
+          return retrieveServices();
+        }).catch((error) => {
+          console.log(error);
+        });
+      } else {
+        //iOS kicks off an MTU exchange automatically upon connection.
+        // Devices running iOS < 10 will request an MTU size of 158.
+        // Newer devices running iOS 10 will request an MTU size of 185.
+        return retrieveServices();
+      }
     })
     .catch((error) => {
       console.log(error)
@@ -234,22 +250,37 @@ export default class BleHelpers {
         isScanning = false
       })
 
-      BleManager.enableBluetooth().then(() => {
-        console.log("The bluetooth is already enabled or the user confirmed");
-        isScanning = true
-        BleManager.scan([/*BEEP_SERVICE*/], TIME_OUT, false).then((results) => {
-          console.log('Scanning...')
-        }).catch(err => {
-          isScanning = false
-          console.error(err)
-          store.dispatch(BeepBaseActions.bleFailure(err))
-        })
-      })
-      .catch((error) => {
-        isScanning = false
-        console.log("The user refuse to enable bluetooth", error)
-        store.dispatch(BeepBaseActions.bleFailure(error))
-      });
+      switch (Platform.OS) {
+        case "android":
+          BleManager.enableBluetooth().then(() => {
+            console.log("The bluetooth is already enabled or the user confirmed");
+            isScanning = true
+            BleManager.scan([/*BEEP_SERVICE*/], TIME_OUT, false).then((results) => {
+              console.log('Scanning...')
+            }).catch(err => {
+              isScanning = false
+              console.error(err)
+              store.dispatch(BeepBaseActions.bleFailure(err))
+            })
+          })
+          .catch((error) => {
+            isScanning = false
+            console.log("The user refuse to enable bluetooth", error)
+            store.dispatch(BeepBaseActions.bleFailure(error))
+          });
+          break;
+          
+        case "ios":
+          isScanning = true
+          BleManager.scan([/*BEEP_SERVICE*/], TIME_OUT, false).then((results) => {
+            console.log('Scanning...')
+          }).catch(err => {
+            isScanning = false
+            console.error(err)
+            store.dispatch(BeepBaseActions.bleFailure(err))
+          })
+        break;
+      }
     })
   }
 

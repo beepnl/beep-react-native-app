@@ -163,7 +163,11 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
 
     BleManager.stopScan().then(() => {
       setError("")
-      BleManager.connect(peripheral.id).then(() => {
+      const peripheralId = Platform.select({
+        android: peripheral.id,
+        ios: peripheral.id.toUpperCase(),
+      })
+      BleManager.connect(peripheralId).then(() => {
         console.log("Connected to " + peripheral.name)
 
         //if connected to another peripheral clear beep base store

@@ -47,9 +47,9 @@
 		</dict>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Bluetooth wordt gebruikt voor de communicatie met de arm.</string>
+	<string>Bluetooth wordt gebruikt voor de communicatie met de BEEP Base.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Bluetooth wordt gebruikt voor de communicatie met de arm.</string>
+	<string>Bluetooth wordt gebruikt voor de communicatie met de BEEP Base.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Uw locatie wordt niet gebruikt.</string>
 	<key>UIAppFonts</key>

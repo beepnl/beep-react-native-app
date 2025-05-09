@@ -33,6 +33,7 @@ import { DeviceModel } from '../../Models/DeviceModel';
 // Components
 import { Text, View, TouchableOpacity, TextInput } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -143,15 +144,19 @@ const WizardRegisterScreen: FunctionComponent<Props> = ({
       <View style={[styles.spacer, { flex: 1 }]} />
 
       { (registerState == "registered" || registerState == "alreadyRegistered") &&
-        <TouchableOpacity style={styles.button} onPress={onNextPress}>
-          <Text style={styles.text}>{t("common.btnNext")}</Text>
-        </TouchableOpacity>
+        <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+          <TouchableOpacity style={styles.button} onPress={onNextPress}>
+            <Text style={styles.text}>{t("common.btnNext")}</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
       }
 
       { (registerState == "deviceAlreadyLinkedToAnotherAccount" || registerState == "failed") &&
-        <TouchableOpacity style={styles.button} onPress={onFinishPress}>
-          <Text style={styles.text}>{t("common.btnFinish")}</Text>
-        </TouchableOpacity>
+        <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+          <TouchableOpacity style={styles.button} onPress={onFinishPress}>
+            <Text style={styles.text}>{t("common.btnFinish")}</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
       }
 
     </View>

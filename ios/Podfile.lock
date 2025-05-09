@@ -889,7 +889,7 @@ PODS:
   - React-Mapbuffer (0.73.2):
     - glog
     - React-debug
-  - react-native-ble-manager (8.4.3):
+  - react-native-ble-manager (11.5.2):
     - React-Core
   - react-native-file-access (2.4.1):
     - React-Core
@@ -903,6 +903,10 @@ PODS:
     - InputMask (~> 6.1.0)
     - React-Core
     - React-RCTText
+  - react-native-webview (13.13.2):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
   - React-nativeconfig (0.73.2)
   - React-NativeModulesApple (0.73.2):
     - glog
@@ -1129,6 +1133,7 @@ DEPENDENCIES:
   - react-native-nordic-dfu (from `../node_modules/react-native-nordic-dfu`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-text-input-mask (from `../node_modules/react-native-text-input-mask`)
+  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -1234,6 +1239,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-text-input-mask:
     :path: "../node_modules/react-native-text-input-mask"
+  react-native-webview:
+    :path: "../node_modules/react-native-webview"
   React-nativeconfig:
     :path: "../node_modules/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -1302,7 +1309,7 @@ SPEC CHECKSUMS:
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: b361c9ef5ef3cda53f66e195599b47e1f84ffa35
   InputMask: 71d291dc54d2deaeac6512afb6ec2304228c0bb7
-  iOSDFULibrary: 3500ac00451aa7d8ec48a752e91099669a2c1d27
+  iOSDFULibrary: 1f4139c6c1bb2b2f1f7b127f67dc52504778f8be
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 9b1e7e262745fb671e33c51c1078d093bd30e322
@@ -1325,11 +1332,12 @@ SPEC CHECKSUMS:
   React-jsinspector: 03644c063fc3621c9a4e8bf263a8150909129618
   React-logger: 66b168e2b2bee57bd8ce9e69f739d805732a5570
   React-Mapbuffer: 9ee041e1d7be96da6d76a251f92e72b711c651d6
-  react-native-ble-manager: b67db4b4c9f8ce8038b4aad4fe29db98878738ea
+  react-native-ble-manager: 99d0e91ed84051f416d3f79243dcb47949e196f6
   react-native-file-access: 8c7b3c8935f7f33e31e16439b5882caa620cc493
   react-native-nordic-dfu: 9a4cfa2b940cd12025616feed8271b7c5043113d
   react-native-safe-area-context: ab8f4a3d8180913bd78ae75dd599c94cce3d5e9a
   react-native-text-input-mask: a273f7823ac4cb7189ea96873fd7b4a48b8aaaaa
+  react-native-webview: c2d9fa19042584e39792e6f33b00031a6ac964d6
   React-nativeconfig: d753fbbc8cecc8ae413d615599ac378bbf6999bb
   React-NativeModulesApple: 964f4eeab1b4325e8b6a799cf4444c3fd4eb0a9c
   React-perflogger: 29efe63b7ef5fbaaa50ef6eaa92482f98a24b97e
@@ -1362,6 +1370,6 @@ SPEC CHECKSUMS:
   Yoga: e64aa65de36c0832d04e8c7bd614396c77a80047
   ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
 
-PODFILE CHECKSUM: a974a248c0306c543331fa5eeea33f92d901c124
+PODFILE CHECKSUM: 12b2ac88e2ab5818a6f2ab5cdd67d56b6beb7361
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

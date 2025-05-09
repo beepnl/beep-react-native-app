@@ -34,6 +34,7 @@ import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Progress from 'react-native-progress';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -160,9 +161,11 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
         <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, aspectRatio: 3840/2160, height: null, margin: Metrics.baseMargin }} source={Images.beepBase} resizeMode="contain" />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={onNextPress}>
-        <Text style={styles.text}>{t("common.btnNext")}</Text>
-      </TouchableOpacity>
+      <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+        <TouchableOpacity style={styles.button} onPress={onNextPress}>
+          <Text style={styles.text}>{t("common.btnNext")}</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
     </ScrollView>
   </>)
 }

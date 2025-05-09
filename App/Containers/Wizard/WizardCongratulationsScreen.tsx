@@ -18,6 +18,7 @@ import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
 // Components
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -74,11 +75,13 @@ const WizardCongratulationsScreen: FunctionComponent<Props> = ({
 
     </ScrollView>
     
-    <View style={styles.itemContainer}>
-      <TouchableOpacity style={styles.button} onPress={onNextPress}>
-        <Text style={styles.text}>{t("common.btnFinish")}</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={{ backgroundColor: Colors.transparent }} edges={["bottom"]}>
+      <View style={styles.itemContainer}>
+        <TouchableOpacity style={styles.button} onPress={onNextPress}>
+          <Text style={styles.text}>{t("common.btnFinish")}</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   </>)
 }
 
