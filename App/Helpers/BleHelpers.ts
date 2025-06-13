@@ -22,6 +22,15 @@ import { LoRaWanDeviceEUIParser } from '../Models/LoRaWanDeviceEUIModel';
 import { LoRaWanAppEUIParser } from '../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyParser } from '../Models/LoRaWanAppKeyModel';
 import { ApplicationConfigParser } from '../Models/ApplicationConfigModel';
+import { CellularStateParser } from '../Models/CellularStateModel';
+import { CellularConfigParser } from '../Models/CellularConfigModel';
+import { CellularStatusParser } from '../Models/CellularStatusModel';
+import { CellularIMEIParser } from '../Models/CellularIMEIModel';
+import { CellularPSMParser } from '../Models/CellularPSMModel';
+import { CellularIntervalParser } from '../Models/CellularIntervalModel';
+import { CellularAPNParser } from '../Models/CellularAPNModel';
+import { CellularServerParser } from '../Models/CellularServerModel';
+import { CellularModuleParser } from '../Models/CellularModuleModel';
 // import { BatteryParser } from '../Models/BatteryServiceModel';
 import { ClockModel } from '../Models/ClockModel';
 import { ResponseModel } from '../Models/ResponseModel';
@@ -89,6 +98,24 @@ export const COMMANDS = {
   ALARM_STATUS_READ : 0x24,
   READ_CLOCK : 0x25,
   WRITE_CLOCK : 0xA5,
+  
+  // Cellular commands (CIDs 46-55) - Fixed to match firmware exactly
+  READ_CELLULAR_STATE : 0x2E,    // 46
+  WRITE_CELLULAR_STATE : 0xAE,   // 46 | 0x80
+  READ_CELLULAR_CONFIG : 0x2F,   // 47
+  WRITE_CELLULAR_CONFIG : 0xAF,  // 47 | 0x80
+  READ_CELLULAR_STATUS : 0x30,   // 48
+  WRITE_CELLULAR_SEND : 0xB1,    // 49 | 0x80 (was 0xB0)
+  READ_CELLULAR_IMEI : 0x32,     // 50 (was 0x31)
+  READ_CELLULAR_PSM : 0x33,      // 51 (was 0x32)
+  WRITE_CELLULAR_PSM : 0xB3,     // 51 | 0x80 (was 0xB2)
+  READ_CELLULAR_INTERVAL : 0x34, // 52 (was 0x33)
+  WRITE_CELLULAR_INTERVAL : 0xB4, // 52 | 0x80 (was 0xB3)
+  READ_CELLULAR_APN : 0x35,      // 53 (was 0x34)
+  WRITE_CELLULAR_APN : 0xB5,     // 53 | 0x80 (was 0xB4)
+  READ_CELLULAR_SERVER : 0x36,   // 54 (was 0x35)
+  WRITE_CELLULAR_SERVER : 0xB6,  // 54 | 0x80 (was 0xB5)
+  READ_CELLULAR_MODULE : 0x37,   // 55
 }
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -124,12 +151,11 @@ export default class BleHelpers {
     store.dispatch(BeepBaseActions.bleFailure(undefined))
     switch (Platform.OS) {
       case "ios":
+        // Note: Direct Bluetooth settings linking not available (App-Prefs:Bluetooth rejected by Apple)
+        // iOS automatically prompts users to enable Bluetooth when BLE operations are attempted
         return new Promise<void>((resolve) => {
-          Linking.openURL('App-Prefs:Bluetooth')
-          resolve()
+          resolve() // iOS handles Bluetooth enabling automatically
         })
-        // Linking.openURL('App-Prefs:Bluetooth')    //TODO: this is for iOS 10+   //TODO2:check if this gets approved by Apple
-        // break;
     
       case "android":
         return  BleManager.enableBluetooth()
@@ -186,112 +212,354 @@ export default class BleHelpers {
     })
   }
 
-  static connectPeripheral(peripheralId: string) {
+  static connectPeripheral(peripheralId: string, options: { timeout?: number, maxRetries?: number, retryDelay?: number } = {}) {
+    const { timeout = 15000, maxRetries = 3, retryDelay = 2000 } = options
     store.dispatch(BeepBaseActions.bleFailure(undefined))
-    return BleManager.connect(peripheralId).then(() => {
-      console.log("Connected to " + peripheralId)
+    
+    return new Promise((resolve, reject) => {
+      let attempt = 0
+      let connectionTimeout: NodeJS.Timeout
 
-      const retrieveServices = () => {
-        return delay(500).then(() => {
-          return BleHelpers.retrieveServices(peripheralId)
-          .catch((error) => {
-            console.log(error)
-            store.dispatch(BeepBaseActions.bleFailure(error))
-          });
-        });
-      };
+      const attemptConnection = async () => {
+        attempt++
+        console.log(`Connection attempt ${attempt}/${maxRetries + 1} to ${peripheralId}`)
+        
+        try {
+          // Check if already connected
+          const isAlreadyConnected = await BleManager.isPeripheralConnected(peripheralId, [])
+          if (isAlreadyConnected) {
+            console.log('Already connected to', peripheralId)
+            const services = await BleHelpers.retrieveServices(peripheralId)
+            resolve(services)
+            return
+          }
 
-      if (Platform.OS === "android") {
-        return BleManager.requestMTU(peripheralId, 247 - 5).then((mtu) => {
-          console.log("MTU size changed to " + mtu + " bytes");
-          return retrieveServices();
-        }).catch((error) => {
-          console.log(error);
-        });
-      } else {
-        //iOS kicks off an MTU exchange automatically upon connection.
-        // Devices running iOS < 10 will request an MTU size of 158.
-        // Newer devices running iOS 10 will request an MTU size of 185.
-        return retrieveServices();
+          // Set connection timeout
+          connectionTimeout = setTimeout(() => {
+            console.log('Connection timeout reached')
+            BleManager.disconnect(peripheralId, true).catch(() => {})
+            
+            if (attempt <= maxRetries) {
+              console.log(`Connection timeout, retrying in ${retryDelay}ms...`)
+              setTimeout(() => attemptConnection(), retryDelay)
+            } else {
+              const error = `Connection timeout after ${maxRetries + 1} attempts`
+              store.dispatch(BeepBaseActions.bleFailure(error))
+              reject(new Error(error))
+            }
+          }, timeout)
+
+          // Attempt connection
+          await BleManager.connect(peripheralId)
+          console.log("Connected to", peripheralId)
+          
+          if (connectionTimeout) {
+            clearTimeout(connectionTimeout)
+            connectionTimeout = null
+          }
+
+          // Wait for connection to stabilize
+          await delay(1000)
+          
+          // Configure MTU and retrieve services
+          const retrieveServices = () => {
+            return delay(500).then(() => {
+              return BleHelpers.retrieveServices(peripheralId)
+              .catch((error) => {
+                console.log(error)
+                store.dispatch(BeepBaseActions.bleFailure(error))
+                throw error
+              });
+            });
+          };
+
+          let services
+          if (Platform.OS === "android") {
+            try {
+              const mtu = await BleManager.requestMTU(peripheralId, 247 - 5)
+              console.log("MTU size changed to " + mtu + " bytes")
+              services = await retrieveServices()
+            } catch (mtuError) {
+              console.log('MTU request failed, continuing:', mtuError)
+              services = await retrieveServices()
+            }
+          } else {
+            //iOS kicks off an MTU exchange automatically upon connection.
+            services = await retrieveServices()
+          }
+          
+          resolve(services)
+          
+        } catch (error) {
+          console.error(`Connection attempt ${attempt} failed:`, error)
+          
+          if (connectionTimeout) {
+            clearTimeout(connectionTimeout)
+            connectionTimeout = null
+          }
+          
+          // Clean up partial connection
+          try {
+            await BleManager.disconnect(peripheralId, true)
+          } catch (disconnectError) {
+            console.log('Disconnect during cleanup failed:', disconnectError)
+          }
+          
+          if (attempt <= maxRetries) {
+            console.log(`Retrying connection in ${retryDelay}ms...`)
+            setTimeout(() => attemptConnection(), retryDelay)
+          } else {
+            const message = `Failed to connect after ${maxRetries + 1} attempts: ${error}`
+            store.dispatch(BeepBaseActions.bleFailure(message))
+            reject(new Error(message))
+          }
+        }
       }
-    })
-    .catch((error) => {
-      console.log(error)
-      store.dispatch(BeepBaseActions.bleFailure(error))
+
+      attemptConnection()
     })
   }
 
-  static scanPeripheralByName(startsWith: string): Promise<Peripheral> {
+  static scanPeripheralByName(startsWith: string, options: { timeout?: number, allowDuplicates?: boolean, maxRetries?: number } = {}): Promise<Peripheral> {
+    const { timeout = 15, allowDuplicates = false, maxRetries = 3 } = options
     store.dispatch(BeepBaseActions.bleFailure(undefined))
-    const TIME_OUT = 10   //seconds
-    let isScanning = false
-
+    
     return new Promise<Peripheral>((resolve, reject) => {
-      const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: Peripheral) => {
-        console.log('Found BLE peripheral', peripheral.id, peripheral.name);
-        if (peripheral.advertising?.isConnectable) {
+      let attempt = 0
+      let scanTimeout: NodeJS.Timeout
+      let isScanning = false
+      let foundPeripherals: Peripheral[] = []
+      let discoverySubscription: any
+      let stopScanSubscription: any
+
+      const cleanup = () => {
+        if (scanTimeout) clearTimeout(scanTimeout)
+        discoverySubscription && discoverySubscription.remove()
+        stopScanSubscription && stopScanSubscription.remove()
+        isScanning = false
+      }
+
+      const attemptScan = () => {
+        attempt++
+        console.log(`BLE scan attempt ${attempt}/${maxRetries + 1}`)
+        
+        discoverySubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: Peripheral) => {
+          console.log('Found BLE peripheral', peripheral.id, peripheral.name, 'RSSI:', peripheral.rssi)
+          
+          // Validate peripheral
+          if (!peripheral.advertising?.isConnectable) {
+            console.log('Peripheral not connectable, skipping')
+            return
+          }
+          
+          // Normalize name
           if (!peripheral.name) {
             peripheral.name = peripheral.advertising?.localName
           }
+          
+          // Check if it matches our criteria
           if (peripheral.name?.startsWith(startsWith)) {
-            BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
+            // Check for duplicates
+            if (!allowDuplicates && foundPeripherals.some(p => p.id === peripheral.id)) {
+              return
+            }
+            
+            foundPeripherals.push(peripheral)
+            
+            // For single device mode, connect to strongest signal
+            if (!allowDuplicates) {
+              cleanup()
+              BleManager.stopScan()
+              resolve(peripheral)
+            }
+          }
+        })
+
+        stopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', () => {
+          console.log('BLE scan stopped')
+          if (isScanning) {
+            if (foundPeripherals.length > 0) {
+              // Return peripheral with strongest signal
+              const bestPeripheral = foundPeripherals.reduce((prev, current) => 
+                (prev.rssi > current.rssi) ? prev : current
+              )
+              cleanup()
+              resolve(bestPeripheral)
+            } else if (attempt <= maxRetries) {
+              // Retry after delay
+              console.log(`No devices found, retrying in 2 seconds...`)
+              setTimeout(() => attemptScan(), 2000)
+            } else {
+              cleanup()
+              reject(new Error(`No BEEP devices found after ${maxRetries + 1} attempts`))
+            }
+          }
+        })
+
+        // Set scan timeout
+        scanTimeout = setTimeout(() => {
+          if (isScanning) {
+            console.log('BLE scan timeout reached')
             BleManager.stopScan()
-            resolve(peripheral)
+          }
+        }, timeout * 1000)
+
+        switch (Platform.OS) {
+          case "android":
+            BleManager.enableBluetooth().then(() => {
+              console.log("Bluetooth enabled, starting scan")
+              isScanning = true
+              foundPeripherals = []
+              
+              return BleManager.scan([BEEP_SERVICE], timeout, allowDuplicates)
+            })
+            .then(() => {
+              console.log('BLE scanning started...')
+            })
+            .catch((error) => {
+              console.error('BLE scan failed:', error)
+              isScanning = false
+              
+              if (attempt <= maxRetries) {
+                console.log(`Scan failed, retrying in 3 seconds...`)
+                setTimeout(() => attemptScan(), 3000)
+              } else {
+                cleanup()
+                const message = `Failed to start BLE scan after ${maxRetries + 1} attempts: ${error}`
+                store.dispatch(BeepBaseActions.bleFailure(message))
+                reject(new Error(message))
+              }
+            });
+            break;
+            
+          case "ios":
+            isScanning = true
+            foundPeripherals = []
+            
+            BleManager.scan([BEEP_SERVICE], timeout, allowDuplicates).then(() => {
+              console.log('BLE scanning started...')
+            }).catch((error) => {
+              console.error('BLE scan failed:', error)
+              isScanning = false
+              
+              if (attempt <= maxRetries) {
+                console.log(`Scan failed, retrying in 3 seconds...`)
+                setTimeout(() => attemptScan(), 3000)
+              } else {
+                cleanup()
+                const message = `Failed to start BLE scan: ${error}`
+                store.dispatch(BeepBaseActions.bleFailure(message))
+                reject(new Error(message))
+              }
+            })
+            break;
+        }
+      }
+
+      attemptScan()
+    })
+  }
+
+  static scanForMultipleDevices(startsWith: string, options: { 
+    timeout?: number, 
+    maxDevices?: number,
+    minRssi?: number 
+  } = {}): Promise<Peripheral[]> {
+    const { timeout = 15, maxDevices = 10, minRssi = -80 } = options
+    store.dispatch(BeepBaseActions.bleFailure(undefined))
+    
+    return new Promise<Peripheral[]>((resolve, reject) => {
+      let scanTimeout: NodeJS.Timeout
+      let foundPeripherals: Peripheral[] = []
+      let discoverySubscription: any
+      let stopScanSubscription: any
+
+      const cleanup = () => {
+        if (scanTimeout) clearTimeout(scanTimeout)
+        discoverySubscription?.remove()
+        stopScanSubscription?.remove()
+      }
+
+      discoverySubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: Peripheral) => {
+        console.log('Found peripheral:', peripheral.name, 'RSSI:', peripheral.rssi)
+        
+        if (!peripheral.advertising?.isConnectable) return
+        if (peripheral.rssi < minRssi) {
+          console.log('Peripheral RSSI too weak:', peripheral.rssi)
+          return
+        }
+        
+        if (!peripheral.name) {
+          peripheral.name = peripheral.advertising?.localName
+        }
+        
+        if (peripheral.name?.startsWith(startsWith)) {
+          // Avoid duplicates
+          if (!foundPeripherals.some(p => p.id === peripheral.id)) {
+            foundPeripherals.push(peripheral)
+            console.log(`Found BEEP device: ${peripheral.name} (${foundPeripherals.length}/${maxDevices})`)
+            
+            if (foundPeripherals.length >= maxDevices) {
+              cleanup()
+              BleManager.stopScan()
+              resolve(foundPeripherals.sort((a, b) => a.name?.localeCompare(b.name || '') || 0))
+            }
           }
         }
       })
 
-      const BleManagerStopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', () => {
-        BleManagerStopScanSubscription && BleManagerStopScanSubscription.remove()
-        if (isScanning) {
-          //if still scanning at this point no device matching filter was found
-          reject()
-        }
-        isScanning = false
+      stopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', () => {
+        cleanup()
+        // Sort alphanumerically by name
+        const sorted = foundPeripherals.sort((a, b) => a.name?.localeCompare(b.name || '') || 0)
+        resolve(sorted)
       })
+
+      scanTimeout = setTimeout(() => {
+        BleManager.stopScan()
+      }, timeout * 1000)
 
       switch (Platform.OS) {
         case "android":
-          BleManager.enableBluetooth().then(() => {
-            console.log("The bluetooth is already enabled or the user confirmed");
-            isScanning = true
-            BleManager.scan([/*BEEP_SERVICE*/], TIME_OUT, false).then((results) => {
-              console.log('Scanning...')
-            }).catch(err => {
-              isScanning = false
-              console.error(err)
-              store.dispatch(BeepBaseActions.bleFailure(err))
+          BleManager.enableBluetooth()
+            .then(() => BleManager.scan([BEEP_SERVICE], timeout, true))
+            .then(() => console.log('Scanning for multiple devices...'))
+            .catch((error) => {
+              cleanup()
+              const message = `Failed to start device scan: ${error}`
+              store.dispatch(BeepBaseActions.bleFailure(message))
+              reject(new Error(message))
             })
-          })
-          .catch((error) => {
-            isScanning = false
-            console.log("The user refuse to enable bluetooth", error)
-            store.dispatch(BeepBaseActions.bleFailure(error))
-          });
-          break;
+          break
           
         case "ios":
-          isScanning = true
-          BleManager.scan([/*BEEP_SERVICE*/], TIME_OUT, false).then((results) => {
-            console.log('Scanning...')
-          }).catch(err => {
-            isScanning = false
-            console.error(err)
-            store.dispatch(BeepBaseActions.bleFailure(err))
-          })
-        break;
+          BleManager.scan([BEEP_SERVICE], timeout, true)
+            .then(() => console.log('Scanning for multiple devices...'))
+            .catch((error) => {
+              cleanup()
+              const message = `Failed to start device scan: ${error}`
+              store.dispatch(BeepBaseActions.bleFailure(message))
+              reject(new Error(message))
+            })
+          break
       }
     })
   }
 
   static onValueForCharacteristic({ value, peripheral, characteristic, service }) {
     // console.log(`Recieved ${data} for characteristic ${characteristic}`);
-    switch (characteristic.toLowerCase()) {
-      case CONTROL_POINT_CHARACTERISTIC:
+    
+    // Normalize characteristic to handle platform differences
+    const normalizedCharacteristic = characteristic.toLowerCase().replace(/-/g, '').slice(-4)
+    const normalizedControlPoint = CONTROL_POINT_CHARACTERISTIC.toLowerCase().replace(/-/g, '').slice(-4)
+    const normalizedLogFile = LOG_FILE_CHARACTERISTIC.toLowerCase().replace(/-/g, '').slice(-4)
+    
+    switch (normalizedCharacteristic) {
+      case normalizedControlPoint:
         BleHelpers.handleControlPointCharacteristic({ value, peripheral })
         break
 
-      case LOG_FILE_CHARACTERISTIC:
+      case normalizedLogFile:
         BleHelpers.handleLogFileCharacteristic({ value, peripheral })
         break
     }
@@ -456,6 +724,52 @@ export default class BleHelpers {
           model = BatteryModel.parse(data)
           store.dispatch(BeepBaseActions.setBattery(model))
           break
+
+        // Cellular command handlers
+        case COMMANDS.READ_CELLULAR_STATE:
+          model = new CellularStateParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setCellularState(model))
+          break
+
+        case COMMANDS.READ_CELLULAR_CONFIG:
+          model = new CellularConfigParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setCellularConfig(model))
+          break
+
+        case COMMANDS.READ_CELLULAR_STATUS:
+          model = new CellularStatusParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setCellularStatus(model))
+          break
+
+        case COMMANDS.READ_CELLULAR_IMEI:
+          model = new CellularIMEIParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setCellularImei(model))
+          break
+
+        case COMMANDS.READ_CELLULAR_PSM:
+          model = new CellularPSMParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setCellularPsm(model))
+          break
+
+        case COMMANDS.READ_CELLULAR_INTERVAL:
+          model = new CellularIntervalParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setCellularInterval(model))
+          break
+
+        case COMMANDS.READ_CELLULAR_APN:
+          model = new CellularAPNParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setCellularApn(model))
+          break
+
+        case COMMANDS.READ_CELLULAR_SERVER:
+          model = new CellularServerParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setCellularServer(model))
+          break
+
+        case COMMANDS.READ_CELLULAR_MODULE:
+          model = new CellularModuleParser({ data }).parse()
+          store.dispatch(BeepBaseActions.setCellularModule(model))
+          break
       }
     }
   }
@@ -602,7 +916,12 @@ export default class BleHelpers {
   
   static lastWrite: { peripheralId: string, command: any, params?: any } | undefined = undefined
 
-  static write(peripheralId: string, command: any, params?: any) {
+  static write(peripheralId: string, command: any, params?: any, options: { 
+    maxRetries?: number, 
+    retryDelay?: number,
+    validateConnection?: boolean 
+  } = {}) {
+    const { maxRetries = 2, retryDelay = 1000, validateConnection = true } = options
     BleHelpers.lastWrite = { peripheralId, command, params }
 
     store.dispatch(BeepBaseActions.bleFailure(undefined))
@@ -645,20 +964,48 @@ export default class BleHelpers {
     //   buffer.swap16()
     // }
 
-    return BleHelpers.limiter.schedule(() => 
-      BleManager.write(
-        peripheralId,
-        BEEP_SERVICE,
-        CONTROL_POINT_CHARACTERISTIC,
-        [...buffer]
-      )
-      .then(() => {
-        console.log(Date.now() + " Written data: " + BleHelpers.byteToHexString([...buffer]));
-      })
-      .catch((error) => {
-        console.log(error)
-        store.dispatch(BeepBaseActions.bleFailure(error))
-      })
-    )
+    let attempt = 0
+    
+    const attemptWrite = async (): Promise<void> => {
+      attempt++
+      
+      try {
+        // Validate connection if requested
+        if (validateConnection) {
+          const isConnected = await BleManager.isPeripheralConnected(peripheralId, [])
+          if (!isConnected) {
+            throw new Error('Device not connected or connection invalid')
+          }
+        }
+
+        // Use the bottleneck limiter for rate limiting
+        await BleHelpers.limiter.schedule(async () => {
+          await BleManager.write(
+            peripheralId,
+            BEEP_SERVICE,
+            CONTROL_POINT_CHARACTERISTIC,
+            [...buffer]
+          )
+        })
+        
+        console.log(`${Date.now()} Written data (attempt ${attempt}): ${BleHelpers.byteToHexString([...buffer])}`)
+        
+      } catch (error) {
+        console.error(`Write attempt ${attempt} failed:`, error)
+        
+        if (attempt <= maxRetries) {
+          console.log(`Retrying write in ${retryDelay}ms...`)
+          await delay(retryDelay)
+          return attemptWrite()
+        } else {
+          const message = `Failed to write after ${maxRetries + 1} attempts: ${error}`
+          console.error(message)
+          store.dispatch(BeepBaseActions.bleFailure(message))
+          throw new Error(message)
+        }
+      }
+    }
+
+    return attemptWrite()
   }
 }

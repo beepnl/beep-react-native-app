@@ -7,7 +7,7 @@ import api from 'App/Services/ApiService'
 import { DeviceModel } from '../Models/DeviceModel'
 import { FirmwareModel } from '../Models/FirmwareModel'
 import { SensorDefinitionModel } from '../Models/SensorDefinitionModel'
-import { getDevice, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
+import { getDevice, getFirmwareVersion, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
 import BleHelpers, { COMMANDS } from '../Helpers/BleHelpers'
 import { PairedPeripheralModel } from '../Models/PairedPeripheralModel'
 import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
@@ -155,10 +155,13 @@ export function* registerDevice(action: any) {
     params.writeUint8(70, i++)                    //stop bin
     yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_AUDIO_ADC_CONFIG, params)
 
-    //CLOCK TODO: check if feature is supported in firmware
-    params = Buffer.alloc(4)
-    params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
-    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_CLOCK, params)
+    // Sync clock - check if firmware supports clock sync feature
+    const firmwareVersion = yield select(getFirmwareVersion)
+    if (firmwareVersion && firmwareVersion.supportsFeature('clock')) {
+      params = Buffer.alloc(4)
+      params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
+      yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_CLOCK, params)
+    }
 
     //refresh user device list
     yield call(getDevices, null)

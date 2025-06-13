@@ -228,7 +228,10 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
         dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "Wizard" } }))
         break;
       case ACTION_EDIT_BEEP_BASE:
-        dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "PeripheralDetailScreen", devEUI: "49b55e035a658a3d" } })) //TODO: get devEUI from webview
+        // TODO: Parse devEUI from webview message data instead of using hardcoded value
+        // Expected format: { action: "EditBeepBase", devEUI: "actual_device_eui" }
+        const devEUI = "49b55e035a658a3d" // Temporary hardcoded fallback
+        dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "PeripheralDetailScreen", devEUI } }))
         break;
       case ACTION_SWITCH_ENV:
         setEnv((prevEnv) => prevEnv === "prod" ? "test" : "prod")

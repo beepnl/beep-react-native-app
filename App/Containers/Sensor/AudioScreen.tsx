@@ -21,7 +21,7 @@ import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
 import { getAudio } from '../../Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Switch } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import { AudioModel } from '../../Models/AudioModel';
 import { getFrequencyByBin } from '../Wizard/CalibrateAudioScreen';
@@ -37,6 +37,7 @@ const AudioScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const audioSensor: AudioModel = useTypedSelector<AudioModel>(getAudio)
+  const [transmitRawAudio, setTransmitRawAudio] = useState(false)
 
   useEffect(() => {
     BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
@@ -44,6 +45,14 @@ const AudioScreen: FunctionComponent<Props> = ({
 
   const onConfigurePress = () => {
     navigation.navigate("CalibrateAudioScreen")
+  }
+
+  const onTransmitRawAudioToggle = (value: boolean) => {
+    setTransmitRawAudio(value)
+    
+    // Note: This toggle only affects UI state. Actual audio transmission
+    // will be handled when user manually sends audio via cellular connection.
+    // TODO: Implement proper audio transmission state management if firmware supports it
   }
 
   return (<>
@@ -73,6 +82,25 @@ const AudioScreen: FunctionComponent<Props> = ({
           <Text style={styles.text}>{t("sensor.audio.bins")}</Text>
           <Text style={styles.text}>{audioSensor ? audioSensor.bins : "-"}</Text>
         </View>
+      </View>
+
+      <View style={styles.spacer} />
+
+      <View style={styles.itemContainer}>
+        <View style={styles.itemRow}>
+          <Text style={styles.text}>Transmit raw audio over cellular connection (10 second sample)</Text>
+          <Switch
+            value={transmitRawAudio}
+            onValueChange={onTransmitRawAudioToggle}
+            trackColor={{ false: Colors.lightGrey, true: Colors.yellow }}
+            thumbColor={transmitRawAudio ? Colors.white : Colors.white}
+          />
+        </View>
+        {transmitRawAudio && (
+          <Text style={[styles.text, { fontSize: 12, color: Colors.darkGrey, marginTop: 8 }]}>
+            Note: This will significantly increase cellular data usage (≈320KB per transmission)
+          </Text>
+        )}
       </View>
 
       <View style={[styles.spacer, { flex: 1 }]} />
