@@ -1,4 +1,5 @@
 import { COMMANDS } from "../Helpers/BleHelpers"
+import { Buffer } from 'buffer'
 
 const ERRORS = [
   "Successful command",                                 //0
@@ -50,9 +51,11 @@ export class ResponseModel {
   static parse(rawData: any) {
     let command = 0
     let code = 0
-    if (rawData?.length >= 5) {
-      command = rawData.readUInt8(0)
-      code = rawData.readUInt32BE(1)
+    // Ensure we have a proper Buffer
+    const buffer = Buffer.isBuffer(rawData) ? rawData : Buffer.from(rawData)
+    if (buffer?.length >= 5) {
+      command = buffer.readUInt8(0)
+      code = buffer.readUInt32BE(1)
     }
     return new ResponseModel({ command, code })
   }

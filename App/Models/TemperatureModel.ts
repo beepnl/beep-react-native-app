@@ -1,4 +1,5 @@
 import DateTimeHelper from "../Helpers/DateTimeHelpers"
+import { Buffer } from 'buffer'
 
 export class TemperatureModel {
   data: Buffer
@@ -20,7 +21,8 @@ export class TemperatureParser {
   data: Buffer;
 
   constructor(props: any) {
-    this.data = props.data || Buffer.alloc(1)
+    // Ensure data is a proper Buffer instance
+    this.data = Buffer.isBuffer(props.data) ? props.data : Buffer.from(props.data || [])
   }
 
   parse(): Array<TemperatureModel> {

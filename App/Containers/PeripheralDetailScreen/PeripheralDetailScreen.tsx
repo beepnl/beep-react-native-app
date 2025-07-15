@@ -11,6 +11,7 @@ import { Colors } from '../../Theme';
 
 // Utils
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+import { BleLogger } from '../../Helpers/BleLogger';
 import { Peripheral } from 'react-native-ble-manager';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -140,20 +141,32 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
   useEffect(() => {
     if (peripheralEqualsDevice && isConnected) {
+      BleLogger.log(`[BLE] Device connected in PeripheralDetailScreen, performing initial setup`)
+      
       //update current device
+      BleLogger.log(`[BLE] Setting current device in store: ${device.name}`)
       dispatch(BeepBaseActions.setDevice(device))
 
       //refresh sensor definitions for sensor detail screens
+      BleLogger.log(`[BLE] Fetching sensor definitions for device`)
       dispatch(ApiActions.getSensorDefinitions(device))
 
       //beep the buzzer
+      BleLogger.log(`[BLE] Sending buzzer beep command`)
       BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
 
       //get latest sensor readings
+      BleLogger.log(`[BLE] Requesting firmware version`)
       BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+      
+      BleLogger.log(`[BLE] Starting temperature sensor conversion`)
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
+      
       const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
+      BleLogger.log(`[BLE] Starting weight sensor conversion on channel: ${channel}`)
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
+      
+      BleLogger.log(`[BLE] Reading audio ADC config`)
       BleHelpers.write(peripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
     }
   }, [peripheral, isConnected])
@@ -184,11 +197,14 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   }
 
   const onToggleConnectionPress = () => {
+    BleLogger.log(`[BLE] Toggle connection pressed - Current state: ${isConnected ? 'connected' : 'disconnected'}`)
     setError("")
     if (isConnected) {
+      BleLogger.log(`[BLE] Disconnecting from ${peripheral?.name} (${peripheral?.id})`)
       BleHelpers.disconnectPeripheral(peripheral)
       dispatch(BeepBaseActions.setPairedPeripheral({ ...peripheral, isConnected: false }))
     } else {
+      BleLogger.log(`[BLE] Starting connection process`)
       connect()
     }
 

@@ -1,0 +1,286 @@
+BLE Debug Log - Started at 2025-07-15T20:11:38.336Z
+Device: android 31
+App Document Directory: /data/user/0/appinventor.ai_app_beep_nl.BEEP_commissioning_V06/files
+===========================================
+
+[2025-07-15T20:11:38.428Z] [BLE] BleManager started successfully
+[2025-07-15T20:11:38.433Z] [BLE] Android 12+: Requesting Bluetooth permissions...
+[2025-07-15T20:11:40.583Z] [BLE] Permission BLUETOOTH_SCAN: granted
+[2025-07-15T20:11:40.750Z] [BLE] Permission BLUETOOTH_CONNECT: granted
+[2025-07-15T20:12:12.735Z] [BLE] Retrieving services for peripheral: FE:34:FC:E0:EF:63
+[2025-07-15T20:12:12.766Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-15T20:12:13.374Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-15T20:12:13.967Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa5, Params: hv�
+[2025-07-15T20:12:13.998Z] [BLE] Calling BleManager.retrieveServices...
+[2025-07-15T20:12:14.024Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-15T20:12:14.609Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-15T20:12:14.613Z] [BLE] Services retrieved successfully for FE:34:FC:E0:EF:63. Service count: 6
+[2025-07-15T20:12:14.729Z] [BLE] Notification subscribed for CONTROL POINT characteristic on FE:34:FC:E0:EF:63
+[2025-07-15T20:12:14.732Z] [BLE] Starting notification for LOG FILE characteristic on FE:34:FC:E0:EF:63...
+[2025-07-15T20:12:14.810Z] [BLE] Write successful - 1752610334810 - Data: A56876B61F
+[2025-07-15T20:12:14.829Z] [BLE] Response data: 165,0,0,0,0
+[2025-07-15T20:12:14.901Z] [BLE] Notification subscribed for LOG FILE characteristic on FE:34:FC:E0:EF:63
+[2025-07-15T20:12:14.903Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x91, Params: 2
+[2025-07-15T20:12:14.906Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x1, Params: undefined
+[2025-07-15T20:12:14.907Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x2, Params: undefined
+[2025-07-15T20:12:15.270Z] [BLE] Write successful - 1752610335270 - Data: 9102
+[2025-07-15T20:12:15.273Z] [BLE] Response data: 145,0,0,0,0
+[2025-07-15T20:12:15.273Z] [BLE] Response data: 145,0,0,0,0
+[2025-07-15T20:12:15.755Z] [BLE] Write successful - 1752610335755 - Data: 01
+[2025-07-15T20:12:16.253Z] [BLE] Write successful - 1752610336253 - Data: 02
+[2025-07-15T20:12:17.253Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xe, Params: undefined
+[2025-07-15T20:12:17.495Z] [BLE] Write successful - 1752610337495 - Data: 0E
+[2025-07-15T20:12:17.920Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x95, Params: b70afb776088C357
+[2025-07-15T20:12:18.263Z] [BLE] Write successful - 1752610338262 - Data: 95B70AFB776088C357
+[2025-07-15T20:12:18.266Z] [BLE] Response data: 149,0,0,0,0
+[2025-07-15T20:12:18.266Z] [BLE] Response data: 149,0,0,0,0
+[2025-07-15T20:12:28.979Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:12:28.981Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:28.984Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:28.985Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:28.987Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:28.988Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:28.990Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-15T20:12:30.328Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-15T20:12:31.183Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-15T20:12:31.790Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-15T20:12:31.993Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:32.037Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:32.073Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:32.112Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:32.175Z] [BLE] Write successful - 1752610352175 - Data: 84FF
+[2025-07-15T20:12:32.179Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:12:32.179Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:12:32.690Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:32.691Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:32.709Z] [BLE] Write successful - 1752610352708 - Data: 8A0103
+[2025-07-15T20:12:33.081Z] [BLE] Write successful - 1752610353080 - Data: 04
+[2025-07-15T20:12:33.670Z] [BLE] SWrite successful - 1752610353670 - Data: 0A
+[2025-07-15T20:12:34.067Z] [BLE] Write successful - 1752610354067 - Data: 8A0103
+[2025-07-15T20:12:34.250Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:34.252Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:34.656Z] [BLE] Write successful - 1752610354656 - Data: 0B
+[2025-07-15T20:12:34.991Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:35.028Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:35.056Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:35.083Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:35.113Z] [BLE] Write successful - 1752610355113 - Data: 04
+[2025-07-15T20:12:35.707Z] [BLE] Write successful - 1752610355706 - Data: 0A
+[2025-07-15T20:12:36.202Z] [BLE] Write successful - 1752610356202 - Data: 8A0103
+[2025-07-15T20:12:36.205Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:36.205Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:36.787Z] [BLE] Write successful - 1752610356787 - Data: 0B
+[2025-07-15T20:12:37.178Z] [BLE] Write successful - 1752610357177 - Data: 04
+[2025-07-15T20:12:37.763Z] [BLE] Write successful - 1752610357763 - Data: 0A
+[2025-07-15T20:12:37.995Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:38.039Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:38.067Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:38.094Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:38.148Z] [BLE] Write successful - 1752610358148 - Data: 8A0103
+[2025-07-15T20:12:38.154Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:38.155Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:38.736Z] [BLE] Write successful - 1752610358735 - Data: 0B
+[2025-07-15T20:12:39.322Z] [BLE] Write successful - 1752610359322 - Data: 04
+[2025-07-15T20:12:39.713Z] [BLE] Write successful - 1752610359713 - Data: 0A
+[2025-07-15T20:12:40.299Z] [BLE] Write successful - 1752610360299 - Data: 8A0103
+[2025-07-15T20:12:40.303Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:40.303Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:40.688Z] [BLE] Write successful - 1752610360687 - Data: 0B
+[2025-07-15T20:12:40.998Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:41.034Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:41.061Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:41.088Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:41.468Z] [BLE] Write successful - 1752610361467 - Data: 04
+[2025-07-15T20:12:41.857Z] [BLE] Write successful - 1752610361857 - Data: 0A
+[2025-07-15T20:12:42.443Z] [BLE] Write successful - 1752610362442 - Data: 8A0103
+[2025-07-15T20:12:42.446Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:42.447Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:43.028Z] [BLE] Write successful - 1752610363027 - Data: 0B
+[2025-07-15T20:12:44.001Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:44.037Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:44.069Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:44.096Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:44.393Z] [BLE] Write successful - 1752610364392 - Data: 04
+[2025-07-15T20:12:44.978Z] [BLE] Write successful - 1752610364978 - Data: 0A
+[2025-07-15T20:12:45.365Z] [BLE] Write successful - 1752610365365 - Data: 8A0103
+[2025-07-15T20:12:45.369Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:45.369Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:45.953Z] [BLE] Write successful - 1752610365953 - Data: 0B
+[2025-07-15T20:12:47.005Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:47.042Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:47.070Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:47.102Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:47.585Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x14, Params: undefined
+[2025-07-15T20:12:47.588Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x15, Params: undefined
+[2025-07-15T20:12:47.590Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x16, Params: undefined
+[2025-07-15T20:12:47.591Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x17, Params: undefined
+[2025-07-15T20:12:47.696Z] [BLE] Write successful - 1752610367696 - Data: 04
+[2025-07-15T20:12:48.099Z] [BLE] Write successful - 1752610368099 - Data: 0A
+[2025-07-15T20:12:48.487Z] [BLE] Write successful - 1752610368487 - Data: 8A0103
+[2025-07-15T20:12:48.492Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:48.492Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:49.074Z] [BLE] Write successful - 1752610369073 - Data: 0B
+[2025-07-15T20:12:49.463Z] [BLE] Write successful - 1752610369463 - Data: 14
+[2025-07-15T20:12:50.007Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:50.048Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:50.077Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:50.107Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:50.243Z] [BLE] Write successful - 1752610370243 - Data: 15
+[2025-07-15T20:12:50.633Z] [BLE] Write successful - 1752610370632 - Data: 16
+[2025-07-15T20:12:51.220Z] [BLE] Write successful - 1752610371219 - Data: 17
+[2025-07-15T20:12:51.803Z] [BLE] Write successful - 1752610371803 - Data: 04
+[2025-07-15T20:12:52.193Z] [BLE] Write successful - 1752610372192 - Data: 0A
+[2025-07-15T20:12:52.778Z] [BLE] Write successful - 1752610372777 - Data: 8A0103
+[2025-07-15T20:12:52.781Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:52.782Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:53.011Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:53.056Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:53.087Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:53.120Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:53.228Z] [BLE] Write successful - 1752610373228 - Data: 0B
+[2025-07-15T20:12:53.753Z] [BLE] Write successful - 1752610373752 - Data: 04
+[2025-07-15T20:12:54.141Z] [BLE] Write successful - 1752610374141 - Data: 0A
+[2025-07-15T20:12:54.727Z] [BLE] Write successful - 1752610374727 - Data: 8A0103
+[2025-07-15T20:12:54.731Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:54.731Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:55.315Z] [BLE] Write successful - 1752610375314 - Data: 0B
+[2025-07-15T20:12:56.014Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:56.054Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:56.088Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:56.118Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:56.675Z] [BLE] Write successful - 1752610376674 - Data: 04
+[2025-07-15T20:12:57.068Z] [BLE] Write successful - 1752610377068 - Data: 0A
+[2025-07-15T20:12:57.511Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x1d, Params: undefined
+[2025-07-15T20:12:57.851Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:57.853Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:12:57.877Z] [BLE] Write successful - 1752610377877 - Data: 8A0103
+[2025-07-15T20:12:58.239Z] [BLE] Write successful - 1752610378238 - Data: 0B
+[2025-07-15T20:12:58.441Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x9d, Params:  
+[2025-07-15T20:12:58.628Z] [BLE] Write successful - 1752610378628 - Data: 1D
+[2025-07-15T20:12:59.020Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-15T20:12:59.051Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:12:59.088Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:12:59.118Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:12:59.407Z] [BLE] Write successful - 1752610379407 - Data: 9D01000F
+[2025-07-15T20:12:59.411Z] [BLE] Response data: 157,0,0,0,0
+[2025-07-15T20:12:59.412Z] [BLE] Response data: 157,0,0,0,0
+[2025-07-15T20:12:59.797Z] [BLE] Write successful - 1752610379797 - Data: 04
+[2025-07-15T20:13:00.186Z] [BLE] Write successful - 1752610380185 - Data: 0A
+[2025-07-15T20:13:02.918Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:02.920Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:03.100Z] [BLE] Write successful - 1752610383099 - Data: 8A0103
+[2025-07-15T20:13:03.503Z] [BLE] Write successful - 1752610383502 - Data: 0B
+[2025-07-15T20:13:04.244Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x91, Params: 2
+[2025-07-15T20:13:04.247Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x1, Params: undefined
+[2025-07-15T20:13:04.249Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:13:04.250Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,10, Params: undefined
+[2025-07-15T20:13:04.251Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-15T20:13:04.867Z] [BLE] Write successful - 1752610384867 - Data: 9102
+[2025-07-15T20:13:04.873Z] [BLE] Response data: 145,0,0,0,0
+[2025-07-15T20:13:04.873Z] [BLE] Response data: 145,0,0,0,0
+[2025-07-15T20:13:05.258Z] [BLE] Write successful - 1752610385258 - Data: 01
+[2025-07-15T20:13:05.844Z] [BLE] Write successful - 1752610385843 - Data: 84FF
+[2025-07-15T20:13:05.849Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:13:05.849Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:13:06.233Z] [BLE] Write successful - 1752610386232 - Data: 8A010A
+[2025-07-15T20:13:06.239Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:06.240Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:06.818Z] [BLE] Write successful - 1752610386818 - Data: 0B
+[2025-07-15T20:13:08.454Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x1, Params: undefined
+[2025-07-15T20:13:08.961Z] [BLE] Write successful - 1752610388960 - Data: 01
+[2025-07-15T20:13:23.835Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-15T20:13:24.369Z] [BLE] Write successful - 1752610404369 - Data: 8A0103
+[2025-07-15T20:13:24.374Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:24.374Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:28.221Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,10, Params: undefined
+[2025-07-15T20:13:28.655Z] [BLE] Write successful - 1752610408655 - Data: 8A010A
+[2025-07-15T20:13:28.659Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:28.660Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:31.237Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:13:31.287Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,10, Params: undefined
+[2025-07-15T20:13:31.583Z] [BLE] Write successful - 1752610411583 - Data: 0A
+[2025-07-15T20:13:32.167Z] [BLE] Write successful - 1752610412166 - Data: 8A010A
+[2025-07-15T20:13:32.171Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:32.172Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:36.192Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:13:36.249Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,10, Params: undefined
+[2025-07-15T20:13:36.653Z] [BLE] Write successful - 1752610416652 - Data: 0A
+[2025-07-15T20:13:37.044Z] [BLE] Write successful - 1752610417043 - Data: 8A010A
+[2025-07-15T20:13:37.049Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:37.050Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:41.146Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-15T20:13:41.196Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,10, Params: undefined
+[2025-07-15T20:13:41.529Z] [BLE] Write successful - 1752610421528 - Data: 0A
+[2025-07-15T20:13:42.113Z] [BLE] Write successful - 1752610422113 - Data: 8A010A
+[2025-07-15T20:13:42.117Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:42.117Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-15T20:13:45.425Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x25, Params: undefined
+[2025-07-15T20:13:45.815Z] [BLE] Write successful - 1752610425815 - Data: 25
+[2025-07-15T20:13:47.043Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa5, Params: hv�|
+[2025-07-15T20:13:47.048Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x25, Params: undefined
+[2025-07-15T20:13:47.376Z] [BLE] Write successful - 1752610427375 - Data: A56876B67C
+[2025-07-15T20:13:47.381Z] [BLE] Response data: 165,0,0,0,0
+[2025-07-15T20:13:47.381Z] [BLE] Response data: 165,0,0,0,0
+[2025-07-15T20:13:47.962Z] [BLE] Write successful - 1752610427962 - Data: 25
+[2025-07-15T20:13:59.371Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:13:59.859Z] [BLE] Write successful - 1752610439859 - Data: 03
+[2025-07-15T20:14:04.390Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:04.419Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:04.929Z] [BLE] Write successful - 1752610444928 - Data: 03
+[2025-07-15T20:14:05.320Z] [BLE] Write successful - 1752610445319 - Data: 84FF
+[2025-07-15T20:14:05.325Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:05.325Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:09.361Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:09.390Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:09.802Z] [BLE] Write successful - 1752610449801 - Data: 03
+[2025-07-15T20:14:10.194Z] [BLE] Write successful - 1752610450193 - Data: 84FF
+[2025-07-15T20:14:10.200Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:10.200Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:14.334Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:14.363Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:14.679Z] [BLE] Write successful - 1752610454678 - Data: 03
+[2025-07-15T20:14:15.263Z] [BLE] Write successful - 1752610455263 - Data: 84FF
+[2025-07-15T20:14:15.270Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:15.270Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:19.304Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:19.327Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:19.748Z] [BLE] Write successful - 1752610459748 - Data: 03
+[2025-07-15T20:14:20.140Z] [BLE] Write successful - 1752610460140 - Data: 84FF
+[2025-07-15T20:14:20.145Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:20.145Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:24.278Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:24.317Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:24.623Z] [BLE] Write successful - 1752610464623 - Data: 03
+[2025-07-15T20:14:25.207Z] [BLE] Write successful - 1752610465207 - Data: 84FF
+[2025-07-15T20:14:25.214Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:25.214Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:29.250Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:29.278Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:29.693Z] [BLE] Write successful - 1752610469692 - Data: 03
+[2025-07-15T20:14:30.085Z] [BLE] Write successful - 1752610470084 - Data: 84FF
+[2025-07-15T20:14:30.090Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:30.090Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:34.221Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:34.253Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:34.565Z] [BLE] Write successful - 1752610474564 - Data: 03
+[2025-07-15T20:14:35.152Z] [BLE] Write successful - 1752610475152 - Data: 84FF
+[2025-07-15T20:14:35.158Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:35.158Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:39.194Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:39.219Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:39.637Z] [BLE] Write successful - 1752610479637 - Data: 03
+[2025-07-15T20:14:40.027Z] [BLE] Write successful - 1752610480027 - Data: 84FF
+[2025-07-15T20:14:40.033Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:40.033Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:44.166Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:44.192Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:44.515Z] [BLE] Write successful - 1752610484514 - Data: 03
+[2025-07-15T20:14:45.100Z] [BLE] Write successful - 1752610485100 - Data: 84FF
+[2025-07-15T20:14:45.108Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:45.108Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:49.140Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x3, Params: undefined
+[2025-07-15T20:14:49.167Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-15T20:14:49.782Z] [BLE] Write successful - 1752610489782 - Data: 03
+[2025-07-15T20:14:50.167Z] [BLE] Write successful - 1752610490166 - Data: 84FF
+[2025-07-15T20:14:50.170Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-15T20:14:50.171Z] [BLE] Response data: 132,0,0,0,0

@@ -1,4 +1,5 @@
 import { ceil } from "lodash"
+import { Buffer } from 'buffer'
 
 export const BITMASK_DISABLED = 0
 export const BITMASK_ENABLED = 1 
@@ -29,7 +30,8 @@ export class LoRaWanStateParser {
   data: Buffer;
 
   constructor(props: any) {
-    this.data = props.data || Buffer.alloc(1)
+    const rawData = props.data
+    this.data = Buffer.isBuffer(rawData) ? rawData : Buffer.from(rawData || [])
   }
 
   parse(): LoRaWanStateModel | undefined {

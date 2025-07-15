@@ -1,4 +1,5 @@
 import DateTimeHelper from "../Helpers/DateTimeHelpers"
+import { Buffer } from 'buffer'
 
 export class ClockModel {
   deviceDate: Date
@@ -25,9 +26,10 @@ export class ClockModel {
   }
 
   static parse(rawData: any) {
+    const buffer = Buffer.isBuffer(rawData) ? rawData : Buffer.from(rawData || [])
     let data = 0
-    if (rawData?.length >= 4) {
-      data = rawData.readUInt32BE()
+    if (buffer?.length >= 4) {
+      data = buffer.readUInt32BE()
     }
     return new ClockModel({ data })
   }

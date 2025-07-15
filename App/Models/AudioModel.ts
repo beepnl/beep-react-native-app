@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 export type ChannelName = "IN3LM" | "IN2RP" | "IN2LP"
 
 export type Channel = {
@@ -47,7 +49,8 @@ export class AudioParser {
   data: Buffer;
 
   constructor(props: any) {
-    this.data = props.data || Buffer.alloc(1)
+    const rawData = props.data
+    this.data = Buffer.isBuffer(rawData) ? rawData : Buffer.from(rawData || [])
   }
 
   parse(): AudioModel | undefined {
@@ -56,7 +59,7 @@ export class AudioParser {
       let i = 0
       const channelByte = this.data.readUInt8(i++)
       const channel = CHANNELS.find(ch => ch.bitmask == channelByte)
-      const gain = this.data.readUint8(i++)
+      const gain = this.data.readUInt8(i++)
       const volume = this.data.readInt8(i++)
       const bins = this.data.readUInt8(i++)
       const startBin = this.data.readUInt8(i++)

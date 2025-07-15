@@ -12,6 +12,7 @@ import { Colors, Images } from '../../Theme';
 
 // Utils
 import BleHelpers from '../../Helpers/BleHelpers';
+import { BleLogger } from '../../Helpers/BleLogger';
 import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
 import { tidy, arrange, desc } from '@tidyjs/tidy';
 
@@ -24,7 +25,7 @@ import { getDevices } from 'App/Stores/User/Selectors'
 import { DeviceModel } from '../../Models/DeviceModel';
 
 // Components
-import { Text, View, TouchableOpacity, Button, ScrollView, RefreshControl, Image } from 'react-native';
+import { Text, View, TouchableOpacity, Button, ScrollView, RefreshControl, Image, Alert } from 'react-native';
 import ScreenHeader from '../../Components/ScreenHeader';
 import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -68,11 +69,37 @@ const HomeScreen: FunctionComponent<Props> = ({
   }
 
   const onDevicePress = (device: DeviceModel) => {
+    BleLogger.log(`[BLE] User selected device from HomeScreen: ${device.name} (${device.id})`)
     navigation.navigate("PeripheralDetailScreen", { device })
   }
 
   const onHelpPress = () => {
     OpenExternalHelpers.openUrl("https://beepsupport.freshdesk.com/en/support/solutions/folders/60000479696")
+  }
+
+  const onExportBleLogsPress = async () => {
+    try {
+      const logPath = await BleLogger.exportToDownloads()
+      if (logPath) {
+        Alert.alert(
+          t("common.success"),
+          `BLE logs exported to: ${logPath}`,
+          [{ text: t("common.ok") }]
+        )
+      } else {
+        Alert.alert(
+          t("common.error"),
+          "No BLE logs found to export",
+          [{ text: t("common.ok") }]
+        )
+      }
+    } catch (error) {
+      Alert.alert(
+        t("common.error"),
+        `Failed to export logs: ${error}`,
+        [{ text: t("common.ok") }]
+      )
+    }
   }
 
   return (<>
@@ -90,6 +117,12 @@ const HomeScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacerDouble} />
       <View style={styles.separator} />
+      <View style={styles.spacer} />
+
+      <TouchableOpacity style={[styles.button, { backgroundColor: Colors.lighterGrey }]} onPress={onExportBleLogsPress}>
+        <Text style={styles.text}>Export BLE Debug Logs</Text>
+      </TouchableOpacity>
+
       <View style={styles.spacer} />
 
       <ScrollView style={styles.devicesContainer} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />} >

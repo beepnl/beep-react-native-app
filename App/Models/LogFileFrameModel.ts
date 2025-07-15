@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 export class LogFileFrameModel {
   frame: number
   data: Buffer
@@ -10,11 +12,12 @@ export class LogFileFrameModel {
   }
 
   static parse(rawData: any) {
+    const buffer = Buffer.isBuffer(rawData) ? rawData : Buffer.from(rawData || [])
     let data, frame
-    if (rawData?.length > 1) {
-      frame = rawData.readInt16BE()
-      if (rawData.length > 2) {
-        data = rawData.subarray(2)
+    if (buffer?.length > 1) {
+      frame = buffer.readInt16BE()
+      if (buffer.length > 2) {
+        data = buffer.subarray(2)
         return new LogFileFrameModel({ frame, data })
       }
     }
