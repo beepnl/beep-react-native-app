@@ -42,6 +42,7 @@
     "react-native": "0.73.2",
     "react-native-ble-manager": "11.5.2",
     "react-native-collapsible": "^1.6.0",
+    "react-native-device-info": "^14.0.4",
     "react-native-dropdownalert": "^5.1.0",
     "react-native-file-access": "^2.4.1",
     "react-native-fs": "https://github.com/maartenvandillen/react-native-fs.git",

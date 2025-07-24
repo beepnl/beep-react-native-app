@@ -1,5 +1,6 @@
 import RNFS from 'react-native-fs'
 import { Platform, PermissionsAndroid, Share } from 'react-native'
+import DeviceInfo from 'react-native-device-info'
 
 export interface BleLogEntry {
   timestamp: string
@@ -26,9 +27,23 @@ export class BleLogger {
         BleLogger.hasPermission = true
       }
       
+      const brand = DeviceInfo.getBrand()
+      const model = DeviceInfo.getModel()
+      const systemName = await DeviceInfo.getSystemName()
+      const systemVersion = await DeviceInfo.getSystemVersion()
+      const apiLevel = await DeviceInfo.getApiLevel()
+      const buildId = await DeviceInfo.getBuildId()
+      const fingerprint = await DeviceInfo.getFingerprint()
+
       // Create or clear the log file
       const logHeader = `BLE Debug Log - Started at ${new Date().toISOString()}\n` +
                        `Device: ${Platform.OS} ${Platform.Version}\n` +
+                       `Brand: ${brand}\n` +
+                       `Model: ${model}\n` +
+                       `System: ${systemName} ${systemVersion}\n` +
+                       `API Level: ${apiLevel}\n` +
+                       `Build ID: ${buildId}\n` +
+                       `Fingerprint: ${fingerprint}\n` +
                        `App Document Directory: ${RNFS.DocumentDirectoryPath}\n` +
                        `===========================================\n\n`
       
@@ -91,7 +106,8 @@ export class BleLogger {
         BleLogger.logToFileEnabled = false
         BleLogger.hasPermission = false
       }
-    } finally {
+    }
+    finally {
       BleLogger.isWriting = false
     }
   }
