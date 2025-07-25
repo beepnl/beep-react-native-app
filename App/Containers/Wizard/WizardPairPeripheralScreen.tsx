@@ -17,7 +17,7 @@ import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '../../Helpers/BleHelpers'
 import { RNLogger } from '../../Helpers/RNLogger';
 import { BleLogger } from '../../Helpers/BleLogger';
 import { Platform } from 'react-native'
-import { tidy, arrange, desc } from '@tidyjs/tidy';
+import * as tidyJs from '@tidyjs/tidy';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
@@ -167,8 +167,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       RNLogger.log(`[RN] List item: ${p.name} (${p.id}) - Origin: ${p.origin}, Connected: ${p.isConnected}`)
     })
     
-    const sorted = tidy(merged, arrange([
-      desc("isConnected"),                    //connected devices on top
+    const sorted = tidyJs.tidy(merged, tidyJs.arrange([
+      tidyJs.desc("isConnected"),                    //connected devices on top
     ]))
     RNLogger.log(`[RN] List sorted by connection status`)
     setList(sorted)

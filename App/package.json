@@ -1,3 +1,7 @@
 {
-  "name": "App"
+  "name": "App",
+  "dependencies": {
+    "react-native-file-logger": "^0.6.1",
+    "react-native-logs": "^5.3.0"
+  }
 }

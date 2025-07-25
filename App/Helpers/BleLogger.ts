@@ -1,6 +1,6 @@
 import RNFS from 'react-native-fs'
 import { Platform, PermissionsAndroid, Share } from 'react-native'
-import DeviceInfo from 'react-native-device-info'
+import { Peripheral } from 'react-native-ble-manager';
 
 export interface BleLogEntry {
   timestamp: string
@@ -59,9 +59,18 @@ export class BleLogger {
   }
   
   // Log a message (always logs to console, optionally to file)
-  static log(message: string) {
+  """  static log(message: string) {
     // Always log to console
     console.log(message)
+
+  static logPeripheral(peripheral: Peripheral) {
+    if (peripheral) {
+      const { id, name, rssi, advertising } = peripheral;
+      const advertisingString = advertising ? JSON.stringify(advertising) : 'N/A';
+      const peripheralInfo = `[PERIPHERAL] ID: ${id}, Name: ${name}, RSSI: ${rssi}, Advertising: ${advertisingString}`;
+      BleLogger.log(peripheralInfo);
+    }
+  }""
     
     // Add to queue for file logging if enabled
     if (BleLogger.logToFileEnabled && BleLogger.hasPermission) {

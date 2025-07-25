@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
+import React, { FunctionComponent, useEffect, useState, useCallback, useRef, useMemo } from 'react'
 
 // Hooks
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,8 @@ import styles from './HomeScreenStyle'
 import { Colors, Images } from '../../Theme';
 
 import { RNLogger } from '../../Helpers/RNLogger';
+import BleHelpers from '../../Helpers/BleHelpers';
+import * as tidyJs from '@tidyjs/tidy';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
@@ -39,112 +41,87 @@ const HomeScreen: FunctionComponent<Props> = ({
   const navigation = useNavigation();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const devices: Array<DeviceModel> = useTypedSelector<Array<DeviceModel>>(getDevices)
-  const [listItems, setListItems] = useState<Array<ListItem>>([])
+  const sortedItems = useMemo(() => {
+    const items = devices.map((device: DeviceModel) => ({ ...device, isConnected: pairedPeripheral?.deviceId === device.id }));
+    return tidyJs.tidy(items, tidyJs.arrange([
+      tidyJs.desc("isConnected"),                    //connected devices on top
+      tidyJs.desc("owner")                           //devices from other groups at the bottom
+    ]));
+  }, [devices, pairedPeripheral]);
 
-  const [isRefreshing, setRefreshing] = useState(false)
+  const [listItems, setListItems] = useState<Array<ListItem>>(sortedItems);
+  const [isRefreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    setRefreshing(false)
+    setRefreshing(false);
+    setListItems(sortedItems);
+  }, [devices, pairedPeripheral, sortedItems]);
 
-    //sort devices for list
-    const items = devices.map((device: DeviceModel) => ({ ...device, isConnected: pairedPeripheral?.deviceId === device.id }))
-    const sortedItems = tidy(items, arrange([
-      desc("isConnected"),                    //connected devices on top
-      desc("owner")                           //devices from other groups at the bottom
-    ]))
-    setListItems(sortedItems)
-  }, [devices, pairedPeripheral])
-
-  const onRefresh = () => {
-    setRefreshing(true)
-    dispatch(ApiActions.getDevices())
-  }
-
-  const onStartWizardPress = () => {
-    navigation.navigate("Wizard")
-  }
-
-  const onDevicePress = (device: DeviceModel) => {
+  const onListItemPress = (device: DeviceModel) => {
     RNLogger.log(`[RN] User selected device from HomeScreen: ${device.name} (${device.id})`)
-    navigation.navigate("PeripheralDetailScreen", { device })
-  }
-
-  const onHelpPress = () => {
-    OpenExternalHelpers.openUrl("https://beepsupport.freshdesk.com/en/support/solutions/folders/60000479696")
+    navigation.navigate('PeripheralDetailScreen', { device })
   }
 
   const onExportLogsPress = async () => {
     try {
-      const logPath = await BleHelpers.exportBleLogFile()
-      if (logPath) {
-        Alert.alert(
-          t("common.success"),
-          `Logs exported to: ${logPath}`,
-          [{ text: t("common.ok") }]
-        )
+      const result = await BleHelpers.exportBleLogFile();
+      if (result) {
+        Alert.alert(t('common.success'), `Logs exported to: ${result}`,
+          [{ text: t('common.ok') }])
       } else {
-        Alert.alert(
-          t("common.error"),
-          "No logs found to export",
-          [{ text: t("common.ok") }]
-        )
+        Alert.alert(t('common.error'), 'No logs found to export',
+          [{ text: t('common.ok') }])
       }
     } catch (error) {
-      Alert.alert(
-        t("common.error"),
-        `Failed to export logs: ${error}`,
-        [{ text: t("common.ok") }]
-      )
+      Alert.alert(t('common.error'), `Failed to export logs: ${error}`,
+        [{ text: t('common.ok') }])
     }
   }
 
-  return (<>
-    <ScreenHeader title={t("home.screenTitle")} menu />
-
-    <View style={styles.container}>
-      <View style={styles.spacer} />
-      <Text style={styles.text}>{t("home.introduction")}</Text>
-
-      <View style={styles.spacerDouble} />
-      
-      <TouchableOpacity style={styles.button} onPress={onStartWizardPress}>
-        <Text style={styles.text}>{t("home.startWizard")}</Text>
-      </TouchableOpacity>
-
-      <View style={styles.spacerDouble} />
-      <View style={styles.separator} />
-      <View style={styles.spacer} />
-
-      <TouchableOpacity style={[styles.button, { backgroundColor: Colors.lighterGrey }]} onPress={onExportLogsPress}>
-        <Text style={styles.text}>Export Debug Logs</Text>
-      </TouchableOpacity>
-
-      <View style={styles.spacer} />
-
-      <ScrollView style={styles.devicesContainer} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />} >
-        { listItems.map((device: ListItem, index: number) => 
-          <NavigationButton 
-            key={index} 
-            title={device.name} 
-            Icon={device.isConnected ?
-              <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.bluetooth} /> :
-              <Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="cover" />
-            }
-            IconRight={!device.owner ? <IconMaterialIcons name={"group"} size={30} color={Colors.lighterGrey} /> : undefined }
-            onPress={() => onDevicePress(device)} 
-          />
-        )}
-      </ScrollView>
-
-      <View style={styles.spacer} />
-      <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }} onPress={onHelpPress}>
-        <IconFontAwesome name="question-circle-o" size={22} color={Colors.link} />
-        <View style={styles.spacerHalf} />
-        <Text style={[styles.text, styles.link]}>{t("home.help")}</Text>
-      </TouchableOpacity>
-      <View style={styles.spacer} />
-    </View>
-  </>)
+  return (
+    <>
+      <ScreenHeader title={t('home.screenTitle')} menu />
+      <View style={styles.container}>
+        <View style={styles.spacer} />
+        <Text style={styles.text}>{t('home.introduction')}</Text>
+        <View style={styles.spacerDouble} />
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Wizard')}>
+          <Text style={styles.text}>{t('home.startWizard')}</Text>
+        </TouchableOpacity>
+        <View style={styles.spacerDouble} />
+        <View style={styles.separator} />
+        <View style={styles.spacer} />
+        <TouchableOpacity style={[styles.button, { backgroundColor: Colors.lighterGrey }]} onPress={onExportLogsPress}>
+          <Text style={styles.text}>Export Debug Logs</Text>
+        </TouchableOpacity>
+        <View style={styles.spacer} />
+        <ScrollView 
+          style={styles.devicesContainer}
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={() => { 
+            setRefreshing(true);
+            dispatch(ApiActions.getDevices());
+          }} />}
+        >
+          {listItems.map((item, i) => (
+            <NavigationButton
+              key={i}
+              title={item.name}
+              Icon={item.isConnected ? <IconFontAwesome name="bluetooth" size={30} color={Colors.bluetooth} /> : <Image style={{width: 30, height: 30}} source={Images.beepBase} resizeMode='cover'/>}
+              IconRight={item.owner ? undefined : <IconFontAwesome name="group" size={30} color={Colors.lighterGrey} />}
+              onPress={() => onListItemPress(item)}
+            />
+          ))}
+        </ScrollView>
+        <View style={styles.spacer} />
+        <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}} onPress={() => OpenExternalHelpers.openUrl('https://beepsupport.freshdesk.com/en/support/solutions/folders/60000479696')}>
+          <IconFontAwesome name="question-circle-o" size={22} color={Colors.link} />
+          <View style={styles.spacerHalf} />
+          <Text style={[styles.text, styles.link]}>{t('home.help')}</Text>
+        </TouchableOpacity>
+        <View style={styles.spacer} />
+      </View>
+    </>
+  )
 }
 
-export default HomeScreen
+export default HomeScreen;
