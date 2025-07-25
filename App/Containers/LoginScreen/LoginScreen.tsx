@@ -11,6 +11,7 @@ import styles from './LoginScreenStyle'
 import { Colors, Images, Metrics } from '../../Theme';
 
 // Utils
+import { RNLogger } from '../../Helpers/RNLogger';
 import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
 
 // Data

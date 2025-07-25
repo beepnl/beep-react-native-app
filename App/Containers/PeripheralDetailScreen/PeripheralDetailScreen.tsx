@@ -11,6 +11,7 @@ import { Colors } from '../../Theme';
 
 // Utils
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+import { RNLogger } from '../../Helpers/RNLogger';
 import { BleLogger } from '../../Helpers/BleLogger';
 import { Peripheral } from 'react-native-ble-manager';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -141,14 +142,14 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
   useEffect(() => {
     if (peripheralEqualsDevice && isConnected) {
-      BleLogger.log(`[BLE] Device connected in PeripheralDetailScreen, performing initial setup`)
+      RNLogger.log(`[RN] Device connected in PeripheralDetailScreen, performing initial setup`)
       
       //update current device
-      BleLogger.log(`[BLE] Setting current device in store: ${device.name}`)
+      RNLogger.log(`[RN] Setting current device in store: ${device.name}`)
       dispatch(BeepBaseActions.setDevice(device))
 
       //refresh sensor definitions for sensor detail screens
-      BleLogger.log(`[BLE] Fetching sensor definitions for device`)
+      RNLogger.log(`[RN] Fetching sensor definitions for device`)
       dispatch(ApiActions.getSensorDefinitions(device))
 
       //beep the buzzer
@@ -197,14 +198,14 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   }
 
   const onToggleConnectionPress = () => {
-    BleLogger.log(`[BLE] Toggle connection pressed - Current state: ${isConnected ? 'connected' : 'disconnected'}`)
+    RNLogger.log(`[RN] Toggle connection pressed - Current state: ${isConnected ? 'connected' : 'disconnected'}`)
     setError("")
     if (isConnected) {
-      BleLogger.log(`[BLE] Disconnecting from ${peripheral?.name} (${peripheral?.id})`)
+      RNLogger.log(`[RN] Disconnecting from ${peripheral?.name} (${peripheral?.id})`)
       BleHelpers.disconnectPeripheral(peripheral)
       dispatch(BeepBaseActions.setPairedPeripheral({ ...peripheral, isConnected: false }))
     } else {
-      BleLogger.log(`[BLE] Starting connection process`)
+      RNLogger.log(`[RN] Starting connection process`)
       connect()
     }
 

@@ -10,11 +10,7 @@ import { useTypedSelector } from 'App/Stores';
 import styles from './HomeScreenStyle'
 import { Colors, Images } from '../../Theme';
 
-// Utils
-import BleHelpers from '../../Helpers/BleHelpers';
-import { BleLogger } from '../../Helpers/BleLogger';
-import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
-import { tidy, arrange, desc } from '@tidyjs/tidy';
+import { RNLogger } from '../../Helpers/RNLogger';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
@@ -69,7 +65,7 @@ const HomeScreen: FunctionComponent<Props> = ({
   }
 
   const onDevicePress = (device: DeviceModel) => {
-    BleLogger.log(`[BLE] User selected device from HomeScreen: ${device.name} (${device.id})`)
+    RNLogger.log(`[RN] User selected device from HomeScreen: ${device.name} (${device.id})`)
     navigation.navigate("PeripheralDetailScreen", { device })
   }
 
@@ -77,19 +73,19 @@ const HomeScreen: FunctionComponent<Props> = ({
     OpenExternalHelpers.openUrl("https://beepsupport.freshdesk.com/en/support/solutions/folders/60000479696")
   }
 
-  const onExportBleLogsPress = async () => {
+  const onExportLogsPress = async () => {
     try {
-      const logPath = await BleLogger.exportToDownloads()
+      const logPath = await BleHelpers.exportBleLogFile()
       if (logPath) {
         Alert.alert(
           t("common.success"),
-          `BLE logs exported to: ${logPath}`,
+          `Logs exported to: ${logPath}`,
           [{ text: t("common.ok") }]
         )
       } else {
         Alert.alert(
           t("common.error"),
-          "No BLE logs found to export",
+          "No logs found to export",
           [{ text: t("common.ok") }]
         )
       }
@@ -119,8 +115,8 @@ const HomeScreen: FunctionComponent<Props> = ({
       <View style={styles.separator} />
       <View style={styles.spacer} />
 
-      <TouchableOpacity style={[styles.button, { backgroundColor: Colors.lighterGrey }]} onPress={onExportBleLogsPress}>
-        <Text style={styles.text}>Export BLE Debug Logs</Text>
+      <TouchableOpacity style={[styles.button, { backgroundColor: Colors.lighterGrey }]} onPress={onExportLogsPress}>
+        <Text style={styles.text}>Export Debug Logs</Text>
       </TouchableOpacity>
 
       <View style={styles.spacer} />
