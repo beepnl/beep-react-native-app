@@ -160,10 +160,14 @@ export default class BleHelpers {
         const mtu = await (BleManager as any).requestMTU(peripheralId, requestedMtu)
         OSLogger.log(`[BLE] MTU negotiated for ${peripheralId}: ${mtu} (requested ${requestedMtu})`)
         
-        // If we got a reasonable MTU (better than default 23), accept it
+        // Accept any negotiated MTU >= 23; only log improvement if it's strictly higher than default
         if (mtu >= 23) {
-          const improvement = Math.floor((mtu / 23) * 100)
-          OSLogger.log(`[BLE] MTU negotiation successful - ${improvement}% of theoretical max throughput`)
+          if (mtu > 23) {
+            const improvement = Math.floor((mtu / 23) * 100)
+            OSLogger.log(`[BLE] MTU negotiation successful - ~${improvement}% of baseline throughput`)
+          } else {
+            OSLogger.log('[BLE] MTU negotiation resulted in default 23 bytes')
+          }
           return mtu
         }
       } catch (error) {
