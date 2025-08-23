@@ -20,6 +20,8 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+.claude/
+.gemini/
 
 # Android/IntelliJ
 #
@@ -28,7 +30,8 @@ build/
 .gradle
 local.properties
 *.iml
-
+.claude/
+.gemini/
 # node.js
 #
 node_modules/
@@ -51,10 +54,12 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
-
-# Bundle artifact
+/android/.claude/
+/android/.gemini/
+*log
 *.jsbundle
-
+/ios/.claude/
+/ios/.gemini/
 # CocoaPods
 /ios/Pods/
 android/app/release/output-metadata.json
