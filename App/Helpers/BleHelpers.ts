@@ -221,7 +221,8 @@ export default class BleHelpers {
     })
   }
 
-  static connectPeripheral(peripheralId: string) {
+  static connectPeripheral(peripheral: Peripheral) {
+    const peripheralId = peripheral.id;
     OSLogger.log(`[BLE] Attempting to connect to peripheral: ${peripheralId}`);
     store.dispatch(BeepBaseActions.bleFailure(undefined));
     return BleManager.isPeripheralConnected(peripheralId).then(isConnected => {

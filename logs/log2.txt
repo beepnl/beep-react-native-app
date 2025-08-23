@@ -1,0 +1,351 @@
+BLE Debug Log - Started at 2025-07-25T00:47:01.102Z
+Device: android 31
+Brand: samsung
+Model: SM-A217F
+System: Android 12
+API Level: 31
+Build ID: SP1A.210812.016
+Fingerprint: samsung/a21snseea/a21s:12/SP1A.210812.016/A217FXXSCDXE2:user/release-keys
+App Document Directory: /data/user/0/appinventor.ai_app_beep_nl.BEEP_commissioning_V06/files
+===========================================
+
+[2025-07-25T00:47:02.690Z] [BLE] Permission BLUETOOTH_SCAN: granted
+[2025-07-25T00:47:03.070Z] [BLE] Permission BLUETOOTH_CONNECT: granted
+[2025-07-25T00:47:47.222Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -54, Connectable: true
+[2025-07-25T00:47:47.777Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -63, Connectable: true
+[2025-07-25T00:47:47.843Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -60, Connectable: false
+[2025-07-25T00:47:47.844Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:47:47.861Z] [BLE] Found peripheral in wizard - ID: 69:75:6C:6E:B2:45, Name: null, RSSI: -61, Connectable: true
+[2025-07-25T00:47:48.641Z] [BLE] Found peripheral in wizard - ID: 69:75:6C:6E:B2:45, Name: null, RSSI: -59, Connectable: true
+[2025-07-25T00:47:49.116Z] [BLE] Found peripheral in wizard - ID: A0:D7:F3:D1:A1:D3, Name: null, RSSI: -96, Connectable: false
+[2025-07-25T00:47:49.118Z] [BLE] Ignoring non-connectable peripheral: null (A0:D7:F3:D1:A1:D3)
+[2025-07-25T00:47:49.165Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -58, Connectable: false
+[2025-07-25T00:47:49.167Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:47:49.702Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -51, Connectable: false
+[2025-07-25T00:47:49.703Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:47:49.776Z] [BLE] Found peripheral in wizard - ID: 69:75:6C:6E:B2:45, Name: null, RSSI: -65, Connectable: true
+[2025-07-25T00:47:50.397Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -50, Connectable: true
+[2025-07-25T00:47:50.966Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -48, Connectable: true
+[2025-07-25T00:47:51.007Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -49, Connectable: false
+[2025-07-25T00:47:51.008Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:47:51.713Z] [BLE] Found peripheral in wizard - ID: 69:75:6C:6E:B2:45, Name: null, RSSI: -59, Connectable: true
+[2025-07-25T00:47:52.260Z] [BLE] Found peripheral in wizard - ID: 69:75:6C:6E:B2:45, Name: null, RSSI: -59, Connectable: true
+[2025-07-25T00:47:52.285Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -51, Connectable: true
+[2025-07-25T00:47:52.296Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -49, Connectable: false
+[2025-07-25T00:47:52.298Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:47:53.596Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -49, Connectable: true
+[2025-07-25T00:47:53.619Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -49, Connectable: false
+[2025-07-25T00:47:53.621Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:47:54.163Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -48, Connectable: false
+[2025-07-25T00:47:54.164Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:47:54.185Z] [BLE] Found peripheral in wizard - ID: 69:75:6C:6E:B2:45, Name: null, RSSI: -64, Connectable: true
+[2025-07-25T00:47:54.812Z] [BLE] Found peripheral in wizard - ID: EB:17:81:B8:6B:8E, Name: null, RSSI: -66, Connectable: false
+[2025-07-25T00:47:54.813Z] [BLE] Ignoring non-connectable peripheral: null (EB:17:81:B8:6B:8E)
+[2025-07-25T00:47:54.889Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -49, Connectable: true
+[2025-07-25T00:47:55.450Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -71, Connectable: true
+[2025-07-25T00:47:55.476Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -46, Connectable: false
+[2025-07-25T00:47:55.478Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:47:56.126Z] [BLE] Found peripheral in wizard - ID: 69:75:6C:6E:B2:45, Name: null, RSSI: -59, Connectable: true
+[2025-07-25T00:47:56.183Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -51, Connectable: true
+[2025-07-25T00:47:56.741Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -62, Connectable: true
+[2025-07-25T00:47:56.765Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -64, Connectable: false
+[2025-07-25T00:47:56.766Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:47:56.808Z] [BLE] Found peripheral in wizard - ID: EB:17:81:B8:6B:8E, Name: null, RSSI: -61, Connectable: false
+[2025-07-25T00:47:56.815Z] [BLE] Ignoring non-connectable peripheral: null (EB:17:81:B8:6B:8E)
+[2025-07-25T00:48:00.012Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -49, Connectable: false
+[2025-07-25T00:48:00.013Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:48:00.015Z] [BLE] Found peripheral in wizard - ID: C1:91:78:45:ED:27, Name: null, RSSI: -49, Connectable: false
+[2025-07-25T00:48:00.015Z] [BLE] Ignoring non-connectable peripheral: null (C1:91:78:45:ED:27)
+[2025-07-25T00:48:00.017Z] [BLE] Found peripheral in wizard - ID: FE:34:FC:E0:EF:63, Name: BEEPBASE-C357, RSSI: -62, Connectable: true
+[2025-07-25T00:48:00.402Z] [BLE] Found peripheral in wizard - ID: 69:75:6C:6E:B2:45, Name: null, RSSI: -66, Connectable: true
+[2025-07-25T00:48:00.645Z] [BLE] Found peripheral in wizard - ID: 47:7E:3C:A0:AB:7F, Name: null, RSSI: -55, Connectable: true
+[2025-07-25T00:48:00.667Z] [BLE] Found peripheral in wizard - ID: 56:15:83:2A:76:D8, Name: null, RSSI: -53, Connectable: false
+[2025-07-25T00:48:00.669Z] [BLE] Ignoring non-connectable peripheral: null (56:15:83:2A:76:D8)
+[2025-07-25T00:48:03.976Z] [BLE] Retrieving services for notifications...
+[2025-07-25T00:48:03.979Z] [BLE] Retrieving services for peripheral: FE:34:FC:E0:EF:63
+[2025-07-25T00:48:04.039Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-25T00:48:06.014Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-25T00:48:07.900Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa5, Params: h��I
+[2025-07-25T00:48:07.935Z] [BLE] Calling BleManager.retrieveServices...
+[2025-07-25T00:48:08.005Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-25T00:48:09.893Z] [BLE] Services retrieved successfully for FE:34:FC:E0:EF:63. Service count: 6
+[2025-07-25T00:48:09.970Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-25T00:48:10.193Z] [BLE] Notification subscribed for CONTROL POINT characteristic on FE:34:FC:E0:EF:63
+[2025-07-25T00:48:10.195Z] [BLE] Starting notification for LOG FILE characteristic on FE:34:FC:E0:EF:63...
+[2025-07-25T00:48:10.592Z] [BLE] Write successful - 1753404490591 - Data: A56882D449
+[2025-07-25T00:48:10.601Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 00A500000000
+[2025-07-25T00:48:10.615Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 165,0,0,0,0
+[2025-07-25T00:48:10.615Z] [BLE] Response data: 165,0,0,0,0
+[2025-07-25T00:48:11.178Z] [BLE] Notification subscribed for LOG FILE characteristic on FE:34:FC:E0:EF:63
+[2025-07-25T00:48:11.181Z] [BLE] Services retrieved, sending initial commands...
+[2025-07-25T00:48:11.181Z] [BLE] Writing buzzer command
+[2025-07-25T00:48:11.181Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x91, Params: 2
+[2025-07-25T00:48:11.185Z] [BLE] Requesting firmware version
+[2025-07-25T00:48:11.185Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x1, Params: undefined
+[2025-07-25T00:48:11.186Z] [BLE] Requesting hardware version
+[2025-07-25T00:48:11.186Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x2, Params: undefined
+[2025-07-25T00:48:11.553Z] [BLE] Write successful - 1753404491552 - Data: 9102
+[2025-07-25T00:48:11.556Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 009100000000
+[2025-07-25T00:48:11.557Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 145,0,0,0,0
+[2025-07-25T00:48:11.557Z] [BLE] Response data: 145,0,0,0,0
+[2025-07-25T00:48:11.557Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 009100000000
+[2025-07-25T00:48:11.558Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 145,0,0,0,0
+[2025-07-25T00:48:11.558Z] [BLE] Response data: 145,0,0,0,0
+[2025-07-25T00:48:12.136Z] [BLE] Write successful - 1753404492135 - Data: 01
+[2025-07-25T00:48:12.139Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 01000100060001
+[2025-07-25T00:48:12.139Z] [BLE] handleControlPointCharacteristic - Command: 0x1, Data: 0,1,0,6,0,1
+[2025-07-25T00:48:12.191Z] [BLE] Parsed Firmware Version: 1.6.1
+[2025-07-25T00:48:12.529Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 01000100060001
+[2025-07-25T00:48:12.529Z] [BLE] handleControlPointCharacteristic - Command: 0x1, Data: 0,1,0,6,0,1
+[2025-07-25T00:48:12.529Z] [BLE] Parsed Firmware Version: 1.6.1
+[2025-07-25T00:48:13.307Z] [BLE] Write successful - 1753404493306 - Data: 02
+[2025-07-25T00:48:13.312Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0200010000038A645C
+[2025-07-25T00:48:13.313Z] [BLE] handleControlPointCharacteristic - Command: 0x2, Data: 0,1,0,0,3,138,100,92
+[2025-07-25T00:48:13.321Z] [BLE] Parsed Hardware Version: 1.0
+[2025-07-25T00:48:13.655Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0200010000038A645C
+[2025-07-25T00:48:13.656Z] [BLE] handleControlPointCharacteristic - Command: 0x2, Data: 0,1,0,0,3,138,100,92
+[2025-07-25T00:48:13.657Z] [BLE] Parsed Hardware Version: 1.0
+[2025-07-25T00:48:14.181Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xe, Params: undefined
+[2025-07-25T00:48:14.673Z] [BLE] Write successful - 1753404494672 - Data: 0E
+[2025-07-25T00:48:14.680Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0E0123451597B39CF7EE
+[2025-07-25T00:48:14.681Z] [BLE] handleControlPointCharacteristic - Command: 0xe, Data: 1,35,69,21,151,179,156,247,238
+[2025-07-25T00:48:14.690Z] [BLE] Parsed Hardware ID: 0123451597b39cf7ee
+[2025-07-25T00:48:14.732Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0E0123451597B39CF7EE
+[2025-07-25T00:48:14.733Z] [BLE] handleControlPointCharacteristic - Command: 0xe, Data: 1,35,69,21,151,179,156,247,238
+[2025-07-25T00:48:14.733Z] [BLE] Parsed Hardware ID: 0123451597b39cf7ee
+[2025-07-25T00:48:15.226Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x95, Params: b70afb776088C357
+[2025-07-25T00:48:15.649Z] [BLE] Write successful - 1753404495647 - Data: 95B70AFB776088C357
+[2025-07-25T00:48:15.656Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 009500000000
+[2025-07-25T00:48:15.656Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 149,0,0,0,0
+[2025-07-25T00:48:15.657Z] [BLE] Response data: 149,0,0,0,0
+[2025-07-25T00:48:15.657Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 009500000000
+[2025-07-25T00:48:15.658Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 149,0,0,0,0
+[2025-07-25T00:48:15.659Z] [BLE] Response data: 149,0,0,0,0
+[2025-07-25T00:48:18.215Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-25T00:48:18.219Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-25T00:48:18.222Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-25T00:48:18.225Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-25T00:48:18.227Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-25T00:48:18.231Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-25T00:48:18.239Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-25T00:48:22.416Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-25T00:48:24.721Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-25T00:48:26.865Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-25T00:48:28.977Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-25T00:48:31.088Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-25T00:48:33.360Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x14, Params: undefined
+[2025-07-25T00:48:33.362Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x15, Params: undefined
+[2025-07-25T00:48:33.365Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x16, Params: undefined
+[2025-07-25T00:48:33.367Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x17, Params: undefined
+[2025-07-25T00:48:34.087Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-25T00:48:34.105Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-25T00:48:34.208Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-25T00:48:34.310Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-25T00:48:34.414Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-25T00:48:34.533Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-25T00:48:34.556Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-25T00:48:34.582Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-25T00:48:35.359Z] [BLE] Write successful - 1753404515359 - Data: 84FF
+[2025-07-25T00:48:35.363Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008400000000
+[2025-07-25T00:48:35.363Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 132,0,0,0,0
+[2025-07-25T00:48:35.364Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-25T00:48:35.364Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008400000000
+[2025-07-25T00:48:35.365Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 132,0,0,0,0
+[2025-07-25T00:48:35.365Z] [BLE] Response data: 132,0,0,0,0
+[2025-07-25T00:48:35.763Z] [BLE] Write successful - 1753404515763 - Data: 8A0103
+[2025-07-25T00:48:35.773Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008A00000000
+[2025-07-25T00:48:35.773Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 138,0,0,0,0
+[2025-07-25T00:48:35.774Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-25T00:48:35.774Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008A00000000
+[2025-07-25T00:48:35.774Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 138,0,0,0,0
+[2025-07-25T00:48:35.775Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-25T00:48:36.167Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 8A01000235
+[2025-07-25T00:48:36.169Z] [BLE] handleControlPointCharacteristic - Command: 0x-76, Data: 1,0,2,53
+[2025-07-25T00:48:36.169Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 8A01000235
+[2025-07-25T00:48:36.169Z] [BLE] handleControlPointCharacteristic - Command: 0x-76, Data: 1,0,2,53
+[2025-07-25T00:48:36.365Z] [BLE] Write successful - 1753404516365 - Data: 04
+[2025-07-25T00:48:37.012Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x1d, Params: undefined
+[2025-07-25T00:48:37.203Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 04010953
+[2025-07-25T00:48:37.204Z] [BLE] handleControlPointCharacteristic - Command: 0x4, Data: 1,9,83
+[2025-07-25T00:48:37.211Z] [BLE] Parsed Temperature: [{"value":2387,"timestamp":"2025-07-25T00:48:37.210Z","data":2387}]
+[2025-07-25T00:48:37.355Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 04010953
+[2025-07-25T00:48:37.355Z] [BLE] handleControlPointCharacteristic - Command: 0x4, Data: 1,9,83
+[2025-07-25T00:48:37.358Z] [BLE] Parsed Temperature: [{"value":2387,"timestamp":"2025-07-25T00:48:37.355Z","data":2387}]
+[2025-07-25T00:48:37.489Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 04010953
+[2025-07-25T00:48:37.489Z] [BLE] handleControlPointCharacteristic - Command: 0x4, Data: 1,9,83
+[2025-07-25T00:48:37.489Z] [BLE] Parsed Temperature: [{"value":2387,"timestamp":"2025-07-25T00:48:37.489Z","data":2387}]
+[2025-07-25T00:48:37.591Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 04010953
+[2025-07-25T00:48:37.591Z] [BLE] handleControlPointCharacteristic - Command: 0x4, Data: 1,9,83
+[2025-07-25T00:48:37.591Z] [BLE] Parsed Temperature: [{"value":2387,"timestamp":"2025-07-25T00:48:37.591Z","data":2387}]
+[2025-07-25T00:48:37.937Z] [BLE] Write successful - 1753404517936 - Data: 0A
+[2025-07-25T00:48:37.946Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0A01000235
+[2025-07-25T00:48:37.946Z] [BLE] handleControlPointCharacteristic - Command: 0xa, Data: 1,0,2,53
+[2025-07-25T00:48:37.949Z] [BLE] Parsed Weight: {"channels":[{"name":"A_GAIN128","bitmask":1,"value":565}]}
+[2025-07-25T00:48:38.071Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0A01000235
+[2025-07-25T00:48:38.071Z] [BLE] handleControlPointCharacteristic - Command: 0xa, Data: 1,0,2,53
+[2025-07-25T00:48:38.073Z] [BLE] Parsed Weight: {"channels":[{"name":"A_GAIN128","bitmask":1,"value":565}]}
+[2025-07-25T00:48:38.252Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x4, Params: undefined
+[2025-07-25T00:48:38.352Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa, Params: undefined
+[2025-07-25T00:48:38.443Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,3, Params: undefined
+[2025-07-25T00:48:38.540Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-25T00:48:38.651Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x9d, Params:  
+[2025-07-25T00:48:39.441Z] [BLE] Write successful - 1753404519441 - Data: 8A0103
+[2025-07-25T00:48:39.444Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008A00000000
+[2025-07-25T00:48:39.445Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 138,0,0,0,0
+[2025-07-25T00:48:39.445Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-25T00:48:39.445Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008A00000000
+[2025-07-25T00:48:39.445Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 138,0,0,0,0
+[2025-07-25T00:48:39.446Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-25T00:48:44.068Z] [BLE] Write successful - 1753404524067 - Data: 0B
+[2025-07-25T00:48:44.071Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0B0028000A0946
+[2025-07-25T00:48:44.071Z] [BLE] handleControlPointCharacteristic - Command: 0xb, Data: 0,40,0,10,9,70
+[2025-07-25T00:48:44.078Z] [BLE] Parsed Audio: {"channel":{"name":"IN3LM","bitmask":0},"gain":40,"volume":0,"bins":10,"startBin":9,"stopBin":70}
+[2025-07-25T00:48:44.080Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0B0028000A0946
+[2025-07-25T00:48:44.080Z] [BLE] handleControlPointCharacteristic - Command: 0xb, Data: 0,40,0,10,9,70
+[2025-07-25T00:48:44.081Z] [BLE] Parsed Audio: {"channel":{"name":"IN3LM","bitmask":0},"gain":40,"volume":0,"bins":10,"startBin":9,"stopBin":70}
+[2025-07-25T00:48:44.097Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 8A01000C01
+[2025-07-25T00:48:44.097Z] [BLE] handleControlPointCharacteristic - Command: 0x-76, Data: 1,0,12,1
+[2025-07-25T00:48:44.098Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 8A01000C01
+[2025-07-25T00:48:44.098Z] [BLE] handleControlPointCharacteristic - Command: 0x-76, Data: 1,0,12,1
+[2025-07-25T00:48:45.094Z] [BLE] Write successful - 1753404525093 - Data: 14
+[2025-07-25T00:48:45.099Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 141D
+[2025-07-25T00:48:45.100Z] [BLE] handleControlPointCharacteristic - Command: 0x14, Data: 29
+[2025-07-25T00:48:45.108Z] [BLE] Parsed LoRaWan State: {"isEnabled":true,"isDisabled":false,"hasJoined":false,"isDutyCycleLimitationEnabled":true,"isAdaptiveDataRateEnabled":true,"hasValidKeys":true}
+[2025-07-25T00:48:45.110Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 141D
+[2025-07-25T00:48:45.110Z] [BLE] handleControlPointCharacteristic - Command: 0x14, Data: 29
+[2025-07-25T00:48:45.111Z] [BLE] Parsed LoRaWan State: {"isEnabled":true,"isDisabled":false,"hasJoined":false,"isDutyCycleLimitationEnabled":true,"isAdaptiveDataRateEnabled":true,"hasValidKeys":true}
+[2025-07-25T00:48:45.679Z] [BLE] Write successful - 1753404525678 - Data: 15
+[2025-07-25T00:48:45.685Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 15B70AFB776088C357
+[2025-07-25T00:48:45.686Z] [BLE] handleControlPointCharacteristic - Command: 0x15, Data: 183,10,251,119,96,136,195,87
+[2025-07-25T00:48:45.693Z] [BLE] Parsed LoRaWan Device EUI: B7 0A FB 77 60 88 C3 57
+[2025-07-25T00:48:45.694Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 15B70AFB776088C357
+[2025-07-25T00:48:45.694Z] [BLE] handleControlPointCharacteristic - Command: 0x15, Data: 183,10,251,119,96,136,195,87
+[2025-07-25T00:48:45.695Z] [BLE] Parsed LoRaWan Device EUI: B7 0A FB 77 60 88 C3 57
+[2025-07-25T00:48:46.068Z] [BLE] Write successful - 1753404526068 - Data: 16
+[2025-07-25T00:48:46.082Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 1670B3D57ED0028D38
+[2025-07-25T00:48:46.083Z] [BLE] handleControlPointCharacteristic - Command: 0x16, Data: 112,179,213,126,208,2,141,56
+[2025-07-25T00:48:46.091Z] [BLE] Parsed LoRaWan App EUI: 70 B3 D5 7E D0 02 8D 38
+[2025-07-25T00:48:46.094Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 1670B3D57ED0028D38
+[2025-07-25T00:48:46.094Z] [BLE] handleControlPointCharacteristic - Command: 0x16, Data: 112,179,213,126,208,2,141,56
+[2025-07-25T00:48:46.096Z] [BLE] Parsed LoRaWan App EUI: 70 B3 D5 7E D0 02 8D 38
+[2025-07-25T00:48:46.819Z] [BLE] Sending buzzer beep command
+[2025-07-25T00:48:46.821Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x91, Params: 2
+[2025-07-25T00:48:46.824Z] [BLE] Requesting firmware version
+[2025-07-25T00:48:46.824Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x1, Params: undefined
+[2025-07-25T00:48:46.826Z] [BLE] Starting temperature sensor conversion
+[2025-07-25T00:48:46.826Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-25T00:48:46.828Z] [BLE] Starting weight sensor conversion on channel: 1
+[2025-07-25T00:48:46.829Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,10, Params: undefined
+[2025-07-25T00:48:46.831Z] [BLE] Reading audio ADC config
+[2025-07-25T00:48:46.831Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-25T00:48:47.193Z] [BLE] Write successful - 1753404527193 - Data: 17
+[2025-07-25T00:48:47.196Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 17376308821001686BCC0BAA051D5AA499
+[2025-07-25T00:48:47.196Z] [BLE] handleControlPointCharacteristic - Command: 0x17, Data: 55,99,8,130,16,1,104,107,204,11,170,5,29,90,164,153
+[2025-07-25T00:48:47.202Z] [BLE] Parsed LoRaWan App Key: 37 63 08 82 10 01 68 6B CC 0B AA 05 1D 5A A4 99
+[2025-07-25T00:48:47.203Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 17376308821001686BCC0BAA051D5AA499
+[2025-07-25T00:48:47.204Z] [BLE] handleControlPointCharacteristic - Command: 0x17, Data: 55,99,8,130,16,1,104,107,204,11,170,5,29,90,164,153
+[2025-07-25T00:48:47.204Z] [BLE] Parsed LoRaWan App Key: 37 63 08 82 10 01 68 6B CC 0B AA 05 1D 5A A4 99
+[2025-07-25T00:48:47.628Z] [BLE] Write successful - 1753404527628 - Data: 04
+[2025-07-25T00:48:47.632Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 04010953
+[2025-07-25T00:48:47.632Z] [BLE] handleControlPointCharacteristic - Command: 0x4, Data: 1,9,83
+[2025-07-25T00:48:47.633Z] [BLE] Parsed Temperature: [{"value":2387,"timestamp":"2025-07-25T00:48:47.632Z","data":2387}]
+[2025-07-25T00:48:47.634Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 04010953
+[2025-07-25T00:48:47.635Z] [BLE] handleControlPointCharacteristic - Command: 0x4, Data: 1,9,83
+[2025-07-25T00:48:47.635Z] [BLE] Parsed Temperature: [{"value":2387,"timestamp":"2025-07-25T00:48:47.635Z","data":2387}]
+[2025-07-25T00:48:48.018Z] [BLE] Write successful - 1753404528017 - Data: 0A
+[2025-07-25T00:48:48.024Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0A01000C01
+[2025-07-25T00:48:48.024Z] [BLE] handleControlPointCharacteristic - Command: 0xa, Data: 1,0,12,1
+[2025-07-25T00:48:48.025Z] [BLE] Parsed Weight: {"channels":[{"name":"A_GAIN128","bitmask":1,"value":3073}]}
+[2025-07-25T00:48:48.027Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0A01000C01
+[2025-07-25T00:48:48.029Z] [BLE] handleControlPointCharacteristic - Command: 0xa, Data: 1,0,12,1
+[2025-07-25T00:48:48.030Z] [BLE] Parsed Weight: {"channels":[{"name":"A_GAIN128","bitmask":1,"value":3073}]}
+[2025-07-25T00:48:48.604Z] [BLE] Write successful - 1753404528603 - Data: 8A0103
+[2025-07-25T00:48:48.610Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008A00000000
+[2025-07-25T00:48:48.611Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 138,0,0,0,0
+[2025-07-25T00:48:48.611Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-25T00:48:48.612Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008A00000000
+[2025-07-25T00:48:48.613Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 138,0,0,0,0
+[2025-07-25T00:48:48.614Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-25T00:48:48.996Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 8A01000991
+[2025-07-25T00:48:49.001Z] [BLE] handleControlPointCharacteristic - Command: 0x-76, Data: 1,0,9,145
+[2025-07-25T00:48:49.001Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 8A01000991
+[2025-07-25T00:48:49.002Z] [BLE] handleControlPointCharacteristic - Command: 0x-76, Data: 1,0,9,145
+[2025-07-25T00:48:49.190Z] [BLE] Write successful - 1753404529188 - Data: 0B
+[2025-07-25T00:48:49.386Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0B0028000A0946
+[2025-07-25T00:48:49.392Z] [BLE] handleControlPointCharacteristic - Command: 0xb, Data: 0,40,0,10,9,70
+[2025-07-25T00:48:49.393Z] [BLE] Parsed Audio: {"channel":{"name":"IN3LM","bitmask":0},"gain":40,"volume":0,"bins":10,"startBin":9,"stopBin":70}
+[2025-07-25T00:48:49.397Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0B0028000A0946
+[2025-07-25T00:48:49.398Z] [BLE] handleControlPointCharacteristic - Command: 0xb, Data: 0,40,0,10,9,70
+[2025-07-25T00:48:49.399Z] [BLE] Parsed Audio: {"channel":{"name":"IN3LM","bitmask":0},"gain":40,"volume":0,"bins":10,"startBin":9,"stopBin":70}
+[2025-07-25T00:48:49.579Z] [BLE] Write successful - 1753404529578 - Data: 1D
+[2025-07-25T00:48:49.774Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 1D01000F
+[2025-07-25T00:48:49.778Z] [BLE] handleControlPointCharacteristic - Command: 0x1d, Data: 1,0,15
+[2025-07-25T00:48:49.786Z] [BLE] Parsed Application Config: {"measureToSendRatio":1,"measurementInterval":15}
+[2025-07-25T00:48:49.788Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 1D01000F
+[2025-07-25T00:48:49.788Z] [BLE] handleControlPointCharacteristic - Command: 0x1d, Data: 1,0,15
+[2025-07-25T00:48:49.789Z] [BLE] Parsed Application Config: {"measureToSendRatio":1,"measurementInterval":15}
+[2025-07-25T00:48:50.164Z] [BLE] Write successful - 1753404530163 - Data: 04
+[2025-07-25T00:48:50.171Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 04010953
+[2025-07-25T00:48:50.172Z] [BLE] handleControlPointCharacteristic - Command: 0x4, Data: 1,9,83
+[2025-07-25T00:48:50.173Z] [BLE] Parsed Temperature: [{"value":2387,"timestamp":"2025-07-25T00:48:50.172Z","data":2387}]
+[2025-07-25T00:48:50.177Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 04010953
+[2025-07-25T00:48:50.177Z] [BLE] handleControlPointCharacteristic - Command: 0x4, Data: 1,9,83
+[2025-07-25T00:48:50.177Z] [BLE] Parsed Temperature: [{"value":2387,"timestamp":"2025-07-25T00:48:50.177Z","data":2387}]
+[2025-07-25T00:48:50.554Z] [BLE] Write successful - 1753404530553 - Data: 0A
+[2025-07-25T00:48:50.560Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0A01000991
+[2025-07-25T00:48:50.561Z] [BLE] handleControlPointCharacteristic - Command: 0xa, Data: 1,0,9,145
+[2025-07-25T00:48:50.561Z] [BLE] Parsed Weight: {"channels":[{"name":"A_GAIN128","bitmask":1,"value":2449}]}
+[2025-07-25T00:48:50.564Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 0A01000991
+[2025-07-25T00:48:50.565Z] [BLE] handleControlPointCharacteristic - Command: 0xa, Data: 1,0,9,145
+[2025-07-25T00:48:50.566Z] [BLE] Parsed Weight: {"channels":[{"name":"A_GAIN128","bitmask":1,"value":2449}]}
+[2025-07-25T00:48:51.334Z] [BLE] Write successful - 1753404531333 - Data: 8A0103
+[2025-07-25T00:48:51.339Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008A00000000
+[2025-07-25T00:48:51.339Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 138,0,0,0,0
+[2025-07-25T00:48:51.340Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-25T00:48:51.341Z] [BLE] onValueForCharacteristic - Peripheral: undefined, Characteristic: 000068b0-0000-1000-8000-00805f9b34fb, Value: 008A00000000
+[2025-07-25T00:48:51.341Z] [BLE] handleControlPointCharacteristic - Command: 0x0, Data: 138,0,0,0,0
+[2025-07-25T00:48:51.342Z] [BLE] Response data: 138,0,0,0,0
+[2025-07-25T00:48:52.043Z] [BLE] Disconnecting peripheral: FE:34:FC:E0:EF:63
+[2025-07-25T00:48:57.824Z] [BLE] Write successful - 1753404537824 - Data: 0B
+[2025-07-25T00:48:57.868Z] [BLE] Successfully disconnected from FE:34:FC:E0:EF:63
+[2025-07-25T00:49:09.588Z] [BLE] Starting scan for peripherals with name starting with: BEEPBASE-C357
+[2025-07-25T00:49:09.689Z] [BLE] Bluetooth enabled, starting scan...
+[2025-07-25T00:49:09.719Z] [BLE] Scanning started with 10s timeout...
+[2025-07-25T00:49:09.774Z] [BLE] Discovered peripheral - ID: FE:34:FC:E0:EF:63, Name: BEEPBASE-C357, RSSI: -63, Connectable: true
+[2025-07-25T00:49:09.778Z] [BLE] Found matching peripheral: BEEPBASE-C357
+[2025-07-25T00:49:09.782Z] [BLE] Attempting to connect to peripheral: FE:34:FC:E0:EF:63
+[2025-07-25T00:49:09.794Z] [BLE] Scan stopped. Was scanning: true
+[2025-07-25T00:49:09.797Z] [BLE] No matching device found during scan
+[2025-07-25T00:49:09.967Z] [BLE] Successfully connected to FE:34:FC:E0:EF:63
+[2025-07-25T00:49:09.969Z] [BLE] Waiting 500ms before retrieving services...
+[2025-07-25T00:49:10.492Z] [BLE] Retrieving services for FE:34:FC:E0:EF:63...
+[2025-07-25T00:49:10.496Z] [BLE] Retrieving services for peripheral: FE:34:FC:E0:EF:63
+[2025-07-25T00:49:11.006Z] [BLE] Calling BleManager.retrieveServices...
+[2025-07-25T00:49:11.074Z] [BLE] Services retrieved successfully for FE:34:FC:E0:EF:63. Service count: 6
+[2025-07-25T00:49:11.164Z] [BLE] Notification subscribed for CONTROL POINT characteristic on FE:34:FC:E0:EF:63
+[2025-07-25T00:49:11.167Z] [BLE] Starting notification for LOG FILE characteristic on FE:34:FC:E0:EF:63...
+[2025-07-25T00:49:11.252Z] [BLE] Notification subscribed for LOG FILE characteristic on FE:34:FC:E0:EF:63
+[2025-07-25T00:49:13.593Z] [BLE] Sending buzzer beep command
+[2025-07-25T00:49:13.593Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x91, Params: 2
+[2025-07-25T00:49:13.595Z] [BLE] Requesting firmware version
+[2025-07-25T00:49:13.595Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x1, Params: undefined
+[2025-07-25T00:49:13.598Z] [BLE] Starting temperature sensor conversion
+[2025-07-25T00:49:13.598Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x132,255, Params: undefined
+[2025-07-25T00:49:13.600Z] [BLE] Starting weight sensor conversion on channel: 1
+[2025-07-25T00:49:13.600Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x138,1,10, Params: undefined
+[2025-07-25T00:49:13.602Z] [BLE] Reading audio ADC config
+[2025-07-25T00:49:13.603Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x11, Params: undefined
+[2025-07-25T00:49:13.605Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-07-25T00:49:18.001Z] [BLE] Peripheral FE:34:FC:E0:EF:63 is connected
+[2025-07-25T00:49:23.404Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x25, Params: undefined
+[2025-07-25T00:49:25.065Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa5, Params: h�Ԗ
+[2025-07-25T00:49:25.079Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x25, Params: undefined
+[2025-07-25T00:49:37.724Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x25, Params: undefined
+[2025-07-25T00:49:39.206Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa5, Params: h�Ԥ
+[2025-07-25T00:49:39.211Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x25, Params: undefined
+[2025-07-25T00:49:39.373Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0xa5, Params: h�Ԥ
+[2025-07-25T00:49:39.379Z] [BLE] Writing to peripheral FE:34:FC:E0:EF:63 - Command: 0x25, Params: undefined
+[2025-07-25T00:49:44.502Z] [BLE] Checking connection status for FE:34:FC:E0:EF:63
+[2025-0
+\
+|/[']

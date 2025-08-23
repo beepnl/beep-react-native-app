@@ -1,6 +1,7 @@
 import RNFS from 'react-native-fs'
 import { Platform, PermissionsAndroid, Share } from 'react-native'
 import { Peripheral } from 'react-native-ble-manager';
+import OSLogger from './OSLogger';
 
 export interface BleLogEntry {
   timestamp: string
@@ -27,51 +28,34 @@ export class BleLogger {
         BleLogger.hasPermission = true
       }
       
-      const brand = DeviceInfo.getBrand()
-      const model = DeviceInfo.getModel()
-      const systemName = await DeviceInfo.getSystemName()
-      const systemVersion = await DeviceInfo.getSystemVersion()
-      const apiLevel = await DeviceInfo.getApiLevel()
-      const buildId = await DeviceInfo.getBuildId()
-      const fingerprint = await DeviceInfo.getFingerprint()
+      const deviceInfo = OSLogger.getDeviceInfo();
 
       // Create or clear the log file
       const logHeader = `BLE Debug Log - Started at ${new Date().toISOString()}\n` +
                        `Device: ${Platform.OS} ${Platform.Version}\n` +
-                       `Brand: ${brand}\n` +
-                       `Model: ${model}\n` +
-                       `System: ${systemName} ${systemVersion}\n` +
-                       `API Level: ${apiLevel}\n` +
-                       `Build ID: ${buildId}\n` +
-                       `Fingerprint: ${fingerprint}\n` +
+                       `Brand: ${deviceInfo.brand}\n` +
+                       `Model: ${deviceInfo.model}\n` +
+                       `System: ${deviceInfo.osVersion}\n` +
+                       `API Level: ${deviceInfo.apiLevel}\n` +
                        `App Document Directory: ${RNFS.DocumentDirectoryPath}\n` +
                        `===========================================\n\n`
       
       await RNFS.writeFile(BleLogger.BLE_LOG_FILE_PATH, logHeader, 'utf8')
       BleLogger.logToFileEnabled = true
       
-      console.log('[BLE] Logger initialized successfully')
-      console.log('[BLE] Log file path: ' + BleLogger.BLE_LOG_FILE_PATH)
+      OSLogger.log('[BLE] Logger initialized successfully')
+      OSLogger.log('[BLE] Log file path: ' + BleLogger.BLE_LOG_FILE_PATH)
     } catch (error) {
-      console.log('[BLE] Failed to initialize logger:', error)
+      OSLogger.log(`[BLE] Failed to initialize logger: ${error}`)
       BleLogger.logToFileEnabled = false
     }
   }
   
   // Log a message (always logs to console, optionally to file)
-  """  static log(message: string) {
+  static log(message: string) {
     // Always log to console
-    console.log(message)
+    OSLogger.log(message)
 
-  static logPeripheral(peripheral: Peripheral) {
-    if (peripheral) {
-      const { id, name, rssi, advertising } = peripheral;
-      const advertisingString = advertising ? JSON.stringify(advertising) : 'N/A';
-      const peripheralInfo = `[PERIPHERAL] ID: ${id}, Name: ${name}, RSSI: ${rssi}, Advertising: ${advertisingString}`;
-      BleLogger.log(peripheralInfo);
-    }
-  }""
-    
     // Add to queue for file logging if enabled
     if (BleLogger.logToFileEnabled && BleLogger.hasPermission) {
       const timestamp = new Date().toISOString()
@@ -83,7 +67,16 @@ export class BleLogger {
       }
     }
   }
-  
+
+  static logPeripheral(peripheral: Peripheral) {
+    if (peripheral) {
+      const { id, name, rssi, advertising } = peripheral;
+      const advertisingString = advertising ? JSON.stringify(advertising) : 'N/A';
+      const peripheralInfo = `[PERIPHERAL] ID: ${id}, Name: ${name}, RSSI: ${rssi}, Advertising: ${advertisingString}`;
+      BleLogger.log(peripheralInfo);
+    }
+  }
+    
   // Process the log queue (writes in batches)
   private static async processQueue() {
     if (BleLogger.isWriting || BleLogger.logQueue.length === 0) {
@@ -109,7 +102,7 @@ export class BleLogger {
         setTimeout(() => BleLogger.processQueue(), 100)
       }
     } catch (error) {
-      console.log('[BLE] Error writing to log file:', error)
+      OSLogger.log(`[BLE] Error writing to log file: ${error}`)
       // Re-enable file logging might have failed
       if (error.message?.includes('Permission') || error.message?.includes('EACCES')) {
         BleLogger.logToFileEnabled = false
@@ -126,7 +119,7 @@ export class BleLogger {
     try {
       const exists = await RNFS.exists(BleLogger.BLE_LOG_FILE_PATH)
       if (!exists) {
-        console.log('[BLE] No log file to export')
+        OSLogger.log('[BLE] No log file to export')
         return null
       }
       
@@ -148,17 +141,17 @@ export class BleLogger {
           const exportPath = `${RNFS.DownloadDirectoryPath}/BLE_Debug_Log_${timestamp}.txt`
           
           await RNFS.copyFile(BleLogger.BLE_LOG_FILE_PATH, exportPath)
-          console.log(`[BLE] Log file exported to: ${exportPath}`)
+          OSLogger.log(`[BLE] Log file exported to: ${exportPath}`)
           return exportPath
         } else {
-          console.log('[BLE] Storage permission denied')
+          OSLogger.log('[BLE] Storage permission denied')
         }
       }
       
       // Return internal path if export fails
       return BleLogger.BLE_LOG_FILE_PATH
     } catch (error) {
-      console.log('[BLE] Error exporting log file:', error)
+      OSLogger.log(`[BLE] Error exporting log file: ${error}`)
       return null
     }
   }
@@ -167,7 +160,7 @@ export class BleLogger {
   static setFileLoggingEnabled(enabled: boolean) {
     BleLogger.logToFileEnabled = enabled && BleLogger.hasPermission
     if (enabled && !BleLogger.hasPermission) {
-      console.log('[BLE] File logging requested but no permission')
+      OSLogger.log('[BLE] File logging requested but no permission')
     }
   }
   
@@ -181,9 +174,9 @@ export class BleLogger {
     try {
       BleLogger.logQueue = []
       await BleLogger.init()
-      console.log('[BLE] Log file cleared')
+      OSLogger.log('[BLE] Log file cleared')
     } catch (error) {
-      console.log('[BLE] Error clearing log file:', error)
+      OSLogger.log(`[BLE] Error clearing log file: ${error}`)
     }
   }
 }

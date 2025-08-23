@@ -102,6 +102,7 @@ const getMenuItems = (firmwareVersion?: FirmwareVersionModel): Array<MenuItem> =
 
 export type PeripheralDetailScreenNavigationParams = {
   device: DeviceModel,
+  connect?: boolean,
 }
 
 type Props = NativeStackScreenProps<PeripheralDetailScreenNavigationParams>
@@ -114,12 +115,19 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const device: DeviceModel = route.params?.device
+  const connectOnLoad = route.params?.connect
   const peripheralEqualsDevice = peripheral?.deviceId === device?.id
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const [menuItems, setMenuItems] = useState<Array<MenuItem>>(getMenuItems())
   const [error, setError] = useState("")
   const [busy, setBusy] = useState(false)
   const isConnected = peripheral && peripheral.isConnected
+
+  useEffect(() => {
+    if (connectOnLoad && !isConnected) {
+      connect()
+    }
+  }, [connectOnLoad])
 
   useEffect(() => {
     if (!peripheralEqualsDevice) {
@@ -179,13 +187,18 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
   const connect = () => {
     setBusy(true)
-    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((peripheral: Peripheral) => {
-      BleHelpers.connectPeripheral(peripheral.id).then(() => {
+    setError("")
+    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((scannedPeripheral: Peripheral) => {
+      BleHelpers.connectPeripheral(scannedPeripheral).then(() => {
         dispatch(BeepBaseActions.setPairedPeripheral({ 
-          ...peripheral, 
+          ...scannedPeripheral, 
           isConnected: true,
           deviceId: device.id
         }))
+        setBusy(false)
+      }).catch((e) => {
+        setError(t("peripheralDetail.notFound"))
+        BleHelpers.disconnectAllPeripherals()
         setBusy(false)
       })
     }).catch(() => {
@@ -208,28 +221,6 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       RNLogger.log(`[RN] Starting connection process`)
       connect()
     }
-
-    //OK:
-    // if (peripheral) {
-    //   console.log("peripheral.isConnected", peripheral.isConnected)
-    //   if (peripheral.isConnected) {
-    //     BleHelpers.disconnectPeripheral(peripheral)?.then(() => {
-    //       const updated = {
-    //         ...peripheral,
-    //         isConnected: false,
-    //       }
-    //       dispatch(BeepBaseActions.setPairedPeripheral(updated))  
-    //     })
-    //   } else {
-    //     BleHelpers.connectPeripheral(peripheral.id)?.then(() => {
-    //       const updated = {
-    //         ...peripheral,
-    //         isConnected: true,
-    //       }
-    //       dispatch(BeepBaseActions.setPairedPeripheral(updated))  
-    //     })
-    //   }
-    // }
   }
 
   return (<>

@@ -189,7 +189,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     BleManager.stopScan().then(() => {
       RNLogger.log("[RN] Scan stopped, preparing to connect...")
       setError("")
-      BleManager.connect(peripheral.id).then(() => {
+      BleHelpers.connectPeripheral(peripheral)
+      .then(() => {
         RNLogger.log("[RN] Connected to " + peripheral.name + " in wizard")
 
         //if connected to another peripheral clear beep base store
@@ -209,24 +210,14 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         })
         dispatch(BeepBaseActions.setPairedPeripheral(newPairedPeripheral))
 
-        //services are needed to subscribe to notifications
-        BleLogger.log("[BLE] Retrieving services for notifications...")
-        BleHelpers.retrieveServices(peripheral.id).then(() => {
-          BleLogger.log("[BLE] Services retrieved, sending initial commands...")
-          //beep the buzzer
-          BleLogger.log("[BLE] Writing buzzer command")
-          BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
-          //retrieve versions
-          BleLogger.log("[BLE] Requesting firmware version")
-          BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
-          BleLogger.log("[BLE] Requesting hardware version")
-          BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
-        }).catch((error) => {
-          const errorMessage = `[BLE] ERROR: Failed to retrieve services in wizard for ${peripheral.id}: ${error}`;
-          BleLogger.log(errorMessage);
-          setError(errorMessage);
-          setConnectingPeripheral(null);
-        })
+        //beep the buzzer
+        BleLogger.log("[BLE] Writing buzzer command")
+        BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
+        //retrieve versions
+        BleLogger.log("[BLE] Requesting firmware version")
+        BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+        BleLogger.log("[BLE] Requesting hardware version")
+        BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
       })
       .catch((error) => {
         const errorMessage = `[RN] Connection error in wizard for ${peripheral.id}: ${error}`;

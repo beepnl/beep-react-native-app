@@ -1,0 +1,13 @@
+BLE Debug Log - Started at 2025-07-26T10:57:53.765Z
+Device: android 31
+Brand: samsung
+Model: SM-A217F
+System: Android 12
+API Level: 31
+Build ID: SP1A.210812.016
+Fingerprint: samsung/a21snseea/a21s:12/SP1A.210812.016/A217FXXSCDXE2:user/release-keys
+App Document Directory: /data/user/0/appinventor.ai_app_beep_nl.BEEP_commissioning_V06/files
+===========================================
+
+[2025-07-26T10:57:56.035Z] [BLE] Permission BLUETOOTH_SCAN: granted
+[2025-07-26T10:57:57.000Z] [BLE] Permission BLUETOOTH_CONNECT: granted

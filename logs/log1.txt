@@ -1,0 +1,348 @@
+React Native Debug Log - Started at 2025-07-25T00:47:01.118Z
+Device: android 31
+Brand: samsung
+Model: SM-A217F
+System: Android 12
+API Level: 31
+Build ID: SP1A.210812.016
+Fingerprint: samsung/a21snseea/a21s:12/SP1A.210812.016/A217FXXSCDXE2:user/release-keys
+App Document Directory: /data/user/0/appinventor.ai_app_beep_nl.BEEP_commissioning_V06/files
+===========================================
+
+[2025-07-25T00:47:45.930Z] [RN] Getting bonded peripherals...
+[2025-07-25T00:47:45.940Z] [RN] Refreshing list - Scanned: 0, Bonded (unique): 0, Total: 0
+[2025-07-25T00:47:45.941Z] [RN] List sorted by connection status
+[2025-07-25T00:47:46.165Z] [RN] Found 28 bonded peripherals
+[2025-07-25T00:47:46.167Z] [RN] Filtered to 22 BEEPBASE peripherals
+[2025-07-25T00:47:46.170Z] [RN] Adding bonded peripheral: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F)
+[2025-07-25T00:47:46.170Z] [RN] Adding bonded peripheral: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9)
+[2025-07-25T00:47:46.170Z] [RN] Adding bonded peripheral: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB)
+[2025-07-25T00:47:46.171Z] [RN] Adding bonded peripheral: BEEPBASE-B379 (E8:6C:C1:40:F7:E1)
+[2025-07-25T00:47:46.171Z] [RN] Adding bonded peripheral: BEEPBASE-3D2A (EF:75:93:6C:43:46)
+[2025-07-25T00:47:46.172Z] [RN] Adding bonded peripheral: BEEPBASE-1BE2 (D6:63:63:DE:88:45)
+[2025-07-25T00:47:46.172Z] [RN] Adding bonded peripheral: BEEPBASE-AD74 (D9:5E:98:59:4E:FC)
+[2025-07-25T00:47:46.173Z] [RN] Adding bonded peripheral: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4)
+[2025-07-25T00:47:46.173Z] [RN] Adding bonded peripheral: BEEPBASE-3D2A (D9:ED:74:DD:78:33)
+[2025-07-25T00:47:46.173Z] [RN] Adding bonded peripheral: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9)
+[2025-07-25T00:47:46.175Z] [RN] Adding bonded peripheral: BEEPBASE-E37B (D9:21:D0:3D:DE:D9)
+[2025-07-25T00:47:46.176Z] [RN] Adding bonded peripheral: BEEPBASE-49DB (F6:48:9D:15:07:AE)
+[2025-07-25T00:47:46.176Z] [RN] Adding bonded peripheral: BEEPBASE-B960 (FC:DD:F1:FC:80:99)
+[2025-07-25T00:47:46.176Z] [RN] Adding bonded peripheral: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B)
+[2025-07-25T00:47:46.177Z] [RN] Adding bonded peripheral: BEEPBASE-C357 (FE:34:FC:E0:EF:63)
+[2025-07-25T00:47:46.177Z] [RN] Adding bonded peripheral: BEEPBASE-0000 (EE:C5:2D:BA:87:44)
+[2025-07-25T00:47:46.178Z] [RN] Adding bonded peripheral: BEEPBASE-0364 (E3:16:A1:E8:B4:28)
+[2025-07-25T00:47:46.178Z] [RN] Adding bonded peripheral: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9)
+[2025-07-25T00:47:46.178Z] [RN] Adding bonded peripheral: BEEPBASE-0000 (E0:FA:E2:79:EF:DD)
+[2025-07-25T00:47:46.180Z] [RN] Adding bonded peripheral: BEEPBASE-8EC2 (F7:D8:4C:87:20:25)
+[2025-07-25T00:47:46.181Z] [RN] Adding bonded peripheral: BEEPBASE-E150 (D1:02:73:D4:89:B0)
+[2025-07-25T00:47:46.181Z] [RN] Adding bonded peripheral: BEEPBASE-B16C (C5:D0:E0:AC:ED:53)
+[2025-07-25T00:47:46.182Z] [RN] Refreshing list - Scanned: 0, Bonded (unique): 22, Total: 22
+[2025-07-25T00:47:46.183Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.184Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.185Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.185Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.186Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.186Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.186Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.187Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.187Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.188Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.188Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.190Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.190Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.191Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.191Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.192Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.192Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.193Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.193Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.193Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.195Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.195Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.197Z] [RN] List sorted by connection status
+[2025-07-25T00:47:46.622Z] [RN] Bluetooth is already enabled or user confirmed
+[2025-07-25T00:47:46.648Z] [RN] Refreshing list - Scanned: 0, Bonded (unique): 22, Total: 22
+[2025-07-25T00:47:46.648Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.648Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.649Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.649Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.649Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.650Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.650Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.650Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.650Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.651Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.651Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.652Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.653Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.654Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.654Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.654Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.654Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.655Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.655Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.655Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.655Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.655Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:47:46.658Z] [RN] List sorted by connection status
+[2025-07-25T00:47:46.945Z] [RN] Starting scan from wizard...
+[2025-07-25T00:47:47.223Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:47.780Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:47.863Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:48.643Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:49.778Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:50.398Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:50.968Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:51.714Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:52.263Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:52.287Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:53.598Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:54.187Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:54.891Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:55.452Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:56.127Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:56.184Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:56.744Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:47:56.899Z] [RN] Scan stopped in wizard
+[2025-07-25T00:47:59.255Z] [RN] Bluetooth is already enabled or user confirmed
+[2025-07-25T00:47:59.257Z] [RN] Refreshing list - Scanned: 0, Bonded (unique): 22, Total: 22
+[2025-07-25T00:47:59.258Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.258Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.259Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.261Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.261Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.262Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.262Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.263Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.263Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.265Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.265Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.266Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.266Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.267Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.267Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.268Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.269Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.270Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.271Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.271Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.271Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.271Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:47:59.273Z] [RN] List sorted by connection status
+[2025-07-25T00:47:59.652Z] [RN] Starting scan from wizard...
+[2025-07-25T00:48:00.017Z] [RN] Adding scanned BEEPBASE peripheral: BEEPBASE-C357 (FE:34:FC:E0:EF:63)
+[2025-07-25T00:48:00.018Z] [RN] Refreshing list - Scanned: 1, Bonded (unique): 21, Total: 22
+[2025-07-25T00:48:00.018Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: scanned, Connected: false
+[2025-07-25T00:48:00.019Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.019Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.019Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.019Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.019Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.019Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.020Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.020Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.020Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.020Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.020Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.022Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.023Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.023Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.024Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.024Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.025Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.025Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.025Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.027Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.027Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:48:00.029Z] [RN] List sorted by connection status
+[2025-07-25T00:48:00.402Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:48:00.646Z] [RN] Ignoring non-BEEPBASE peripheral: (NO NAME)
+[2025-07-25T00:48:01.170Z] [RN] User selected peripheral: BEEPBASE-C357 (FE:34:FC:E0:EF:63)
+[2025-07-25T00:48:01.173Z] [RN] Clearing firmware and hardware version from store
+[2025-07-25T00:48:01.176Z] [RN] Connecting to peripheral in wizard - ID: FE:34:FC:E0:EF:63, Name: BEEPBASE-C357
+[2025-07-25T00:48:01.533Z] [RN] Scan stopped, preparing to connect...
+[2025-07-25T00:48:01.537Z] [RN] Scan stopped in wizard
+[2025-07-25T00:48:01.969Z] [RN] Connected to BEEPBASE-C357 in wizard
+[2025-07-25T00:48:01.969Z] [RN] Connected to different peripheral, clearing BeepBase store
+[2025-07-25T00:48:01.969Z] [RN] Previous peripheral: undefined, New peripheral: FE:34:FC:E0:EF:63
+[2025-07-25T00:48:01.972Z] [RN] Setting paired peripheral in store
+[2025-07-25T00:48:04.027Z] [RN] Refreshing list - Scanned: 1, Bonded (unique): 21, Total: 22
+[2025-07-25T00:48:04.028Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: scanned, Connected: false
+[2025-07-25T00:48:04.028Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.028Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.028Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.029Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.029Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.029Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.029Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.029Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.029Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.030Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.030Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.030Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.030Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.030Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.030Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.032Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.033Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.033Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.033Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.034Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.034Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:48:04.036Z] [RN] List sorted by connection status
+[2025-07-25T00:48:07.994Z] [RN] Refreshing list - Scanned: 1, Bonded (unique): 21, Total: 22
+[2025-07-25T00:48:07.994Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: scanned, Connected: false
+[2025-07-25T00:48:07.994Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.994Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.995Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.995Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.995Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.995Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.996Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.996Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.996Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.996Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.997Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.997Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.997Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.997Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:48:07.997Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:48:08.000Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:48:08.000Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:08.000Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:48:08.000Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:48:08.001Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:48:08.001Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:48:08.003Z] [RN] List sorted by connection status
+[2025-07-25T00:48:18.194Z] [RN] Refreshing list - Scanned: 1, Bonded (unique): 21, Total: 22
+[2025-07-25T00:48:18.196Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: scanned, Connected: false
+[2025-07-25T00:48:18.196Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.196Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.197Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.197Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.197Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.198Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.198Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.198Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.198Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.201Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.202Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.202Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.203Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.203Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.204Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.205Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.205Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.206Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.206Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.206Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.207Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:48:18.208Z] [RN] List sorted by connection status
+[2025-07-25T00:48:24.697Z] [RN] Refreshing list - Scanned: 1, Bonded (unique): 21, Total: 22
+[2025-07-25T00:48:24.708Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: scanned, Connected: false
+[2025-07-25T00:48:24.709Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.709Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.709Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.709Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.709Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.710Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.710Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.710Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.710Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.710Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.710Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.711Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.711Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.711Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.711Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.711Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.712Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.712Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.712Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.712Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.712Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:48:24.716Z] [RN] List sorted by connection status
+[2025-07-25T00:48:26.844Z] [RN] Refreshing list - Scanned: 1, Bonded (unique): 21, Total: 22
+[2025-07-25T00:48:26.844Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: scanned, Connected: false
+[2025-07-25T00:48:26.845Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.845Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.846Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.846Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.847Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.848Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.849Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.849Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.850Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.850Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.851Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.851Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.851Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.853Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.853Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.854Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.854Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.855Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.855Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.856Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.856Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:48:26.859Z] [RN] List sorted by connection status
+[2025-07-25T00:48:28.964Z] [RN] Refreshing list - Scanned: 1, Bonded (unique): 21, Total: 22
+[2025-07-25T00:48:28.964Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: scanned, Connected: false
+[2025-07-25T00:48:28.964Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.965Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.965Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.965Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.965Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.965Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.965Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.966Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.966Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.966Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.966Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.966Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.968Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.968Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.968Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.969Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.969Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.969Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.969Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.969Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.970Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:48:28.971Z] [RN] List sorted by connection status
+[2025-07-25T00:48:31.069Z] [RN] Refreshing list - Scanned: 1, Bonded (unique): 21, Total: 22
+[2025-07-25T00:48:31.070Z] [RN] List item: BEEPBASE-C357 (FE:34:FC:E0:EF:63) - Origin: scanned, Connected: false
+[2025-07-25T00:48:31.070Z] [RN] List item: BEEPBASE-5D3C (C5:E1:65:3F:6D:2F) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.070Z] [RN] List item: BEEPBASE-DBDB (E8:DD:B1:EC:FE:E9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.071Z] [RN] List item: BEEPBASE-3A37 (C8:C7:7C:D5:54:FB) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.071Z] [RN] List item: BEEPBASE-B379 (E8:6C:C1:40:F7:E1) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.071Z] [RN] List item: BEEPBASE-3D2A (EF:75:93:6C:43:46) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.072Z] [RN] List item: BEEPBASE-1BE2 (D6:63:63:DE:88:45) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.072Z] [RN] List item: BEEPBASE-AD74 (D9:5E:98:59:4E:FC) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.072Z] [RN] List item: BEEPBASE-5DE1 (EA:D9:79:B7:99:D4) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.072Z] [RN] List item: BEEPBASE-3D2A (D9:ED:74:DD:78:33) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.073Z] [RN] List item: BEEPBASE-A3E5 (E2:7F:89:38:EE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.074Z] [RN] List item: BEEPBASE-E37B (D9:21:D0:3D:DE:D9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.075Z] [RN] List item: BEEPBASE-49DB (F6:48:9D:15:07:AE) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.075Z] [RN] List item: BEEPBASE-B960 (FC:DD:F1:FC:80:99) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.075Z] [RN] List item: BEEPBASE-3D2A (CB:E1:6D:D5:72:9B) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.076Z] [RN] List item: BEEPBASE-0000 (EE:C5:2D:BA:87:44) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.076Z] [RN] List item: BEEPBASE-0364 (E3:16:A1:E8:B4:28) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.077Z] [RN] List item: BEEPBASE-DFA9 (DD:67:6F:2C:A1:A9) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.077Z] [RN] List item: BEEPBASE-0000 (E0:FA:E2:79:EF:DD) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.079Z] [RN] List item: BEEPBASE-8EC2 (F7:D8:4C:87:20:25) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.079Z] [RN] List item: BEEPBASE-E150 (D1:02:73:D4:89:B0) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.080Z] [RN] List item: BEEPBASE-B16C (C5:D0:E0:AC:ED:53) - Origin: bonded, Connected: false
+[2025-07-25T00:48:31.081Z] [RN] List sorted by connection status
+[2025-07-25T00:48:39.936Z] [RN] Removing BLE event listeners
+[2025-07-25T00:48:46.366Z] [RN] User selected device from HomeScreen: BEEPBASE-C357 (6227)
+[2025-07-25T00:48:46.812Z] [RN] Device connected in PeripheralDetailScreen, performing initial setup
+[2025-07-25T00:48:46.812Z] [RN] Setting current device in store: BEEPBASE-C357
+[2025-07-25T00:48:46.813Z] [RN] Fetching sensor definitions for device
+[2025-07-25T00:48:51.671Z] [RN] User selected device from HomeScreen: BEEPBASE-B3EB (735)
+[2025-07-25T00:49:07.901Z] [RN] User selected device from HomeScreen: BEEPBASE-C357 (6227)
+[2025-07-25T00:49:09.582Z] [RN] Toggle connection pressed - Current state: disconnected
+[2025-07-25T00:49:09.584Z] [RN] Starting connection process
+[2025-07-25T00:49:13.583Z] [RN] Device connected in PeripheralDetailScreen, performing initial setup
+[2025-07-25T00:49:13.585Z] [RN] Setting current device in store: BEEPBASE-C357
+[2025-07-25T00:49:13.586Z] [RN] Fetching sensor definitions for device

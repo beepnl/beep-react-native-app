@@ -59,7 +59,7 @@ const HomeScreen: FunctionComponent<Props> = ({
 
   const onListItemPress = (device: DeviceModel) => {
     RNLogger.log(`[RN] User selected device from HomeScreen: ${device.name} (${device.id})`)
-    navigation.navigate('PeripheralDetailScreen', { device })
+    navigation.navigate('PeripheralDetailScreen', { device, connect: true })
   }
 
   const onExportLogsPress = async () => {
