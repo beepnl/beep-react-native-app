@@ -13,6 +13,7 @@ export class BleLogger {
   private static isWriting: boolean = false
   private static logToFileEnabled: boolean = false
   private static hasPermission: boolean = false
+  private static downloadMode: boolean = false
   
   static BLE_LOG_FILE_NAME = "BLE_Debug_Log.txt"
   static BLE_LOG_FILE_PATH = RNFS.DocumentDirectoryPath + "/" + BleLogger.BLE_LOG_FILE_NAME
@@ -55,6 +56,11 @@ export class BleLogger {
   static log(message: string) {
     // Always log to console
     OSLogger.log(message)
+
+    // Skip file logging during download mode for better performance
+    if (BleLogger.downloadMode) {
+      return
+    }
 
     // Add to queue for file logging if enabled
     if (BleLogger.logToFileEnabled && BleLogger.hasPermission) {
@@ -161,6 +167,16 @@ export class BleLogger {
     BleLogger.logToFileEnabled = enabled && BleLogger.hasPermission
     if (enabled && !BleLogger.hasPermission) {
       OSLogger.log('[BLE] File logging requested but no permission')
+    }
+  }
+  
+  // Enable or disable download mode (disables file logging for better performance)
+  static setDownloadMode(isDownloading: boolean) {
+    BleLogger.downloadMode = isDownloading
+    if (isDownloading) {
+      OSLogger.log('[BLE] Download mode enabled - file logging disabled for performance')
+    } else {
+      OSLogger.log('[BLE] Download mode disabled - file logging restored')
     }
   }
   

@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback, useRef } fr
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -65,31 +65,46 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     dispatch(BeepBaseActions.setHardwareVersion(undefined))
 
     //initialize scan result with all previously bonded peripherals
-    RNLogger.log("[RN] Getting bonded peripherals...")
-    BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
-      RNLogger.log(`[RN] Found ${peripherals.length} bonded peripherals`)
-      const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
-      RNLogger.log(`[RN] Filtered to ${filtered.length} BEEPBASE peripherals`)
-      filtered.forEach(p => {
-        RNLogger.log(`[RN] Adding bonded peripheral: ${p.name} (${p.id})`)
-        bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded", isConnected: p.id == pairedPeripheral?.id })
-      });
-      refreshList()
-    })
-    
-    startScan()
+    RNLogger.log("[RN] WizardPairPeripheralScreen: Getting bonded peripherals...")
+    if (Platform.OS === 'android') {
+      BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
+        RNLogger.log(`[RN] Found ${peripherals.length} bonded peripherals`)
+        const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
+        RNLogger.log(`[RN] Filtered to ${filtered.length} BEEPBASE peripherals`)
+        filtered.forEach(p => {
+          RNLogger.log(`[RN] Adding bonded peripheral: ${p.name} (${p.id})`)
+          bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded", isConnected: p.id == pairedPeripheral?.id })
+        });
+        refreshList()
+      }).catch(err => {
+        RNLogger.log(`[RN] Error getting bonded peripherals: ${err}`)
+      })
+    }
     
     return (() => {
-      if (isScanning) {
-        RNLogger.log("[RN] Cleaning up: stopping scan")
-        BleManager.stopScan()
-      }
-      
-      RNLogger.log("[RN] Removing BLE event listeners")
+      RNLogger.log("[RN] WizardPairPeripheralScreen: Removing BLE event listeners")
       BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
       BleManagerStopScanSubscription && BleManagerStopScanSubscription.remove()
     })
   }, [])
+
+  // Use focus effect to manage scanning based on screen focus
+  useFocusEffect(
+    useCallback(() => {
+      // On focus: start scanning
+      RNLogger.log("[RN] WizardPairPeripheralScreen: Screen focused, starting scan")
+      startScan()
+      
+      // On blur: stop scanning to avoid conflicts
+      return () => {
+        if (isScanning) {
+          RNLogger.log("[RN] WizardPairPeripheralScreen: Screen blurred, stopping scan")
+          BleManager.stopScan()
+          setIsScanning(false)
+        }
+      };
+    }, [])
+  )
 
   useEffect(() => {
     refreshList()

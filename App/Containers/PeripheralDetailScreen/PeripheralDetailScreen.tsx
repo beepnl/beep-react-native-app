@@ -186,8 +186,31 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   }, [firmwareVersion])
 
   const connect = () => {
+    // Fast path: if we're already connected to this device, just update the state
+    if (peripheral && peripheral.isConnected && peripheral.deviceId === device.id) {
+      RNLogger.log(`[RN] Already connected to device ${device.name}, skipping scan`)
+      // Ensure Redux state is in sync
+      dispatch(BeepBaseActions.setPairedPeripheral({ 
+        ...peripheral,
+        deviceId: device.id
+      }))
+      return
+    }
+
+    // Check if we have a peripheral ID that matches this device's expected BLE name
+    // This could be true if we're connected but the deviceId doesn't match yet
+    if (peripheral && peripheral.isConnected && peripheral.name === DeviceModel.getBleName(device)) {
+      RNLogger.log(`[RN] Already connected to BLE peripheral ${peripheral.name}, just updating deviceId`)
+      dispatch(BeepBaseActions.setPairedPeripheral({ 
+        ...peripheral,
+        deviceId: device.id
+      }))
+      return
+    }
+
     setBusy(true)
     setError("")
+    RNLogger.log(`[RN] Starting scan for device: ${device.name} (BLE name: ${DeviceModel.getBleName(device)})`)
     BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((scannedPeripheral: Peripheral) => {
       BleHelpers.connectPeripheral(scannedPeripheral).then(() => {
         dispatch(BeepBaseActions.setPairedPeripheral({ 
@@ -197,15 +220,18 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         }))
         setBusy(false)
       }).catch((e) => {
+        RNLogger.log(`[RN] Connection failed: ${e}`)
         setError(t("peripheralDetail.notFound"))
-        BleHelpers.disconnectAllPeripherals()
+        // Only disconnect the specific peripheral if we know which one failed
+        if (scannedPeripheral) {
+          BleHelpers.disconnectPeripheral(scannedPeripheral)
+        }
         setBusy(false)
       })
-    }).catch(() => {
+    }).catch((error) => {
       //peripheral not found
+      RNLogger.log(`[RN] Peripheral not found during scan: ${error}`)
       setError(t("peripheralDetail.notFound"))
-      //in case we have an invisible connection in the BLE layer try to disconnect
-      BleHelpers.disconnectAllPeripherals()
       setBusy(false)
     })
   }

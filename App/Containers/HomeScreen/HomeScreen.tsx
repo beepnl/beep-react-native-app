@@ -212,21 +212,31 @@ const HomeScreen: FunctionComponent<Props> = ({
       setListItems(prev => [...prev]);
     });
     
-    // Start scanning when component mounts
-    startScan();
-    
     // Cleanup on unmount
     return () => {
-      if (isScanning) {
-        RNLogger.log("[RN] HomeScreen: Cleaning up: stopping scan");
-        BleManager.stopScan();
-      }
-      
       RNLogger.log("[RN] HomeScreen: Removing BLE event listeners");
       BleManagerDiscoverPeripheralSubscription?.remove();
       BleManagerStopScanSubscription?.remove();
     };
   }, []); // Only run once on mount
+
+  // Use focus effect to manage scanning based on screen focus
+  useFocusEffect(
+    useCallback(() => {
+      // On focus: start scanning
+      RNLogger.log("[RN] HomeScreen: Screen focused, starting scan");
+      startScan();
+      
+      // On blur: stop scanning to avoid conflicts
+      return () => {
+        if (isScanning) {
+          RNLogger.log("[RN] HomeScreen: Screen blurred, stopping scan");
+          BleManager.stopScan();
+          setIsScanning(false);
+        }
+      };
+    }, [])
+  );
 
   // Update bonded/scanned peripherals connection status when pairedPeripheral changes
   useEffect(() => {
@@ -244,7 +254,7 @@ const HomeScreen: FunctionComponent<Props> = ({
   const onListItemPress = (device: any) => {
     if (device.source === 'ble' && device.blePeripheral) {
       // For BLE-only devices, navigate to wizard to connect
-      RNLogger.log(`[RN] User selected BLE device from HomeScreen: ${device.name} (${device.hardware_id})`);
+      RNLogger.log(`[RN] User selected BLE device from HomeScreen: ${device.name} (${device.hardwareId})`);
       navigation.navigate('Wizard');
     } else {
       // For API devices, use existing flow
@@ -293,9 +303,9 @@ const HomeScreen: FunctionComponent<Props> = ({
             dispatch(ApiActions.getDevices());
           }} />}
         >
-          {listItems.map((item, i) => (
+          {listItems.map((item) => (
             <NavigationButton
-              key={i}
+              key={item.source === 'api' ? `api-${item.id}` : `ble-${item.hardwareId}`}
               title={item.name}
               Icon={item.isConnected ? <IconFontAwesome name="bluetooth" size={30} color={Colors.bluetooth} /> : <Image style={{width: 30, height: 30}} source={Images.beepBase} resizeMode='cover'/>}
               IconRight={item.owner ? undefined : <IconFontAwesome name="group" size={30} color={Colors.lighterGrey} />}

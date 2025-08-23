@@ -2,29 +2,47 @@ import { NativeEventEmitter, NativeModules } from 'react-native';
 
 const { OSLogger } = NativeModules;
 
-const osLoggerEmitter = new NativeEventEmitter(OSLogger);
+const osLoggerEmitter = OSLogger ? new NativeEventEmitter(OSLogger) : null;
 
 export const OSLoggerEvents = {
   onBluetoothStateChange: 'onBluetoothStateChange',
 };
 
 export const log = (message: string) => {
-  OSLogger.log(message);
+  if (OSLogger && OSLogger.log) {
+    OSLogger.log(message);
+  } else {
+    console.log(`[OSLogger] ${message}`);
+  }
 };
 
 export const getDeviceInfo = () => {
-  return {
-    brand: OSLogger.BRAND,
-    model: OSLogger.MODEL,
-    osVersion: OSLogger.OS_VERSION,
-    apiLevel: OSLogger.API_LEVEL,
-  };
+  if (OSLogger) {
+    return {
+      brand: OSLogger.BRAND || 'Unknown',
+      model: OSLogger.MODEL || 'Unknown',
+      osVersion: OSLogger.OS_VERSION || 'Unknown',
+      apiLevel: OSLogger.API_LEVEL || 'Unknown',
+    };
+  } else {
+    return {
+      brand: 'Unknown',
+      model: 'Unknown',
+      osVersion: 'Unknown',
+      apiLevel: 'Unknown',
+    };
+  }
 };
 
 export const onBluetoothStateChange = (callback: (state: string) => void) => {
-  return osLoggerEmitter.addListener(OSLoggerEvents.onBluetoothStateChange, (event) => {
-    callback(event.state);
-  });
+  if (OSLogger && osLoggerEmitter) {
+    return osLoggerEmitter.addListener(OSLoggerEvents.onBluetoothStateChange, (event) => {
+      callback(event.state);
+    });
+  } else {
+    console.warn('[OSLogger] Native module not available, cannot listen to Bluetooth state changes');
+    return null;
+  }
 };
 
 export default {

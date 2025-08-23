@@ -18,6 +18,8 @@ import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
 import { TiltModel } from '../../Models/TiltModel';
 import { WeightModel } from '../../Models/WeightModel';
+import { RNLogger } from '../../Helpers/RNLogger';
+import BleHelpers from '../../Helpers/BleHelpers';
 
 export enum BeepBaseTypes {
   CLEAR = 'CLEAR',

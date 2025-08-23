@@ -108,7 +108,7 @@ export const BATTERY_SERVICE = "0000180f-0000-1000-8000-00805f9b34fb"
 export const BATTERY_LEVEL_CHARACTERISTIC = "00002a19-0000-1000-8000-00805f9b34fb"
 
 import { RNLogger } from './RNLogger';
-import { OSLogger } from './OSLogger';
+import OSLogger from './OSLogger';
 
 export default class BleHelpers {
 
@@ -169,9 +169,9 @@ export default class BleHelpers {
     return "off"
   }
 
-  static init() {
+  static async init() {
     // Initialize the loggers
-    BleLogger.init()
+    await BleLogger.init()
     RNLogger.init()
     
     OSLogger.log("[BLE] Initializing BleManager...");
@@ -239,7 +239,7 @@ export default class BleHelpers {
       return BleManager.connect(peripheralId)
         .then(() => {
           OSLogger.log(`[BLE] Successfully connected to ${peripheralId}`);
-          OSLogger.logPeripheral(peripheral);
+          BleLogger.logPeripheral(peripheral);
           OSLogger.log(`[BLE] Waiting 500ms before pairing...`);
           return delay(500);
         })
@@ -272,7 +272,7 @@ export default class BleHelpers {
     return new Promise<Peripheral>((resolve, reject) => {
       const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: Peripheral) => {
         OSLogger.log(`[BLE] Discovered peripheral - ID: ${peripheral.id}, Name: ${peripheral.name}, RSSI: ${peripheral.rssi}, Connectable: ${peripheral.advertising?.isConnectable}`);
-        OSLogger.logPeripheral(peripheral);
+        BleLogger.logPeripheral(peripheral);
         if (peripheral.advertising?.isConnectable) {
           if (!peripheral.name) {
             peripheral.name = peripheral.advertising?.localName
@@ -323,14 +323,15 @@ export default class BleHelpers {
   }
 
   static onValueForCharacteristic({ value, peripheral, characteristic, service }) {
-    OSLogger.log(`[BLE] onValueForCharacteristic - Peripheral: ${peripheral.id}, Characteristic: ${characteristic.toLowerCase()}, Value: ${BleHelpers.byteToHexString(value)}`);
-    OSLogger.logPeripheral(peripheral);
     switch (characteristic.toLowerCase()) {
       case CONTROL_POINT_CHARACTERISTIC:
+        OSLogger.log(`[BLE] onValueForCharacteristic - Peripheral: ${peripheral.id}, Characteristic: ${characteristic.toLowerCase()}, Value: ${BleHelpers.byteToHexString(value)}`);
+        BleLogger.logPeripheral(peripheral);
         BleHelpers.handleControlPointCharacteristic({ value, peripheral })
         break
 
       case LOG_FILE_CHARACTERISTIC:
+        // Skip detailed logging during log file download for better performance
         BleHelpers.handleLogFileCharacteristic({ value, peripheral })
         break
         
@@ -564,20 +565,20 @@ export default class BleHelpers {
       const buffer: Buffer = Buffer.from(valueArray)
       const model = LogFileFrameModel.parse(buffer)
       if (model) {
-        OSLogger.log(`[BLE] Parsed Log File Frame: Frame ${model.frame}, Length ${model.data.length}`);
         //skip frames with equal frame numbers, see https://github.com/innoveit/react-native-ble-manager/issues/577
         if (model.frame != BleHelpers.lastFrame) {
           store.dispatch(BeepBaseActions.addLogFileFrame(model))
           BleHelpers.lastFrame = model.frame
           RNFS.appendFile(BleHelpers.LOG_FILE_PATH, model.data.toString("hex"))
           .catch((err) => {
-            OSLogger.log(`Error writing log file frame: ${err}`);
+            OSLogger.log(`[BLE] ERROR writing log file frame: ${err}`);
           });
-        } else {
+        } else if (__DEV__) {
+          // Only log duplicates in debug mode
           OSLogger.log(`[BLE] Duplicate log file frame received: Frame ${model.frame}`);
         }
       } else {
-        OSLogger.log(`[BLE] Failed to parse log file frame`);
+        OSLogger.log(`[BLE] ERROR: Failed to parse log file frame`);
       }
     } catch (error) {
       OSLogger.log(`[BLE] ERROR in handleLogFileCharacteristic: ${error.message}`)
@@ -722,7 +723,6 @@ export default class BleHelpers {
 
   static write(peripheralId: string, command: any, params?: any) {
     OSLogger.log(`[BLE] Writing to peripheral ${peripheralId} - Command: 0x${command.toString(16)}, Params: ${params}`);
-    OSLogger.logPeripheral(peripheral);
     BleHelpers.lastWrite = { peripheralId, command, params }
 
     store.dispatch(BeepBaseActions.bleFailure(undefined))

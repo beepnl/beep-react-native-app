@@ -31,6 +31,7 @@ The core of the application's functionality lies in its interaction with the BEE
 *   **Sensor Data Visualization:** The app provides screens for viewing data from various sensors.
 *   **Firmware Updates:** The app supports over-the-air (OTA) firmware updates for the BEEP base devices.
 *   **Data Logging:** The app can download and export log files from the devices for analysis.
+*   **Dual Device Lists:** HomeScreen shows both API-registered devices and nearby BLE devices with automatic deduplication.
 
 ## Application Structure
 
@@ -44,3 +45,26 @@ The application follows a standard React Native project structure, with a clear 
 *   **`Services`:** Services for interacting with external APIs.
 *   **`Stores`:** Redux store configuration, including actions, reducers, and selectors.
 *   **`Theme`:** Styles and theme-related configuration.
+
+## Recent Improvements (August 2025)
+
+### BLE Scanning Enhancements
+
+*   **HomeScreen BLE Integration:** Added BLE scanning directly to HomeScreen, showing both API devices and nearby BEEP base devices
+*   **Smart Deduplication:** Prevents duplicate devices when the same device exists in both API and BLE scan results
+*   **Focus-Based Scanning:** Implements `useFocusEffect` to start/stop scanning based on screen focus, preventing concurrent scan conflicts
+*   **Fast Connection Path:** PeripheralDetailScreen now skips scanning if already connected to the target device
+*   **Stable React Keys:** Device list uses stable keys (`api-${id}` or `ble-${hardwareId}`) instead of array indices
+*   **Improved Error Handling:** More granular error handling that only disconnects failed peripherals rather than all connections
+
+### Navigation Flows
+
+*   **API Devices:** Tap → PeripheralDetailScreen with `connect: true` → Auto-scan and connect
+*   **BLE-Only Devices:** Tap → Wizard screen for pairing and registration
+*   **Scan Management:** Automatic scan pause when navigating away from HomeScreen or WizardPairPeripheralScreen
+
+### Platform Compatibility
+
+*   **Android:** Full support for bonded peripherals display and Bluetooth enable prompts
+*   **iOS:** Graceful handling of Android-only APIs (getBondedPeripherals)
+*   **Permissions:** Proper handling of location (Android <12) and Bluetooth (Android 12+) permissions

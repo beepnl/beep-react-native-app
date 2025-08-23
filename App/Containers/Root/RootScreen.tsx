@@ -10,11 +10,12 @@ import useAppState from '../../Helpers/useAppState';
 import styles from './RootScreenStyle'
 
 // Utils
+import { RNLogger } from '../../Helpers/RNLogger';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthStack, AppStack } from './AppNavigation';
 import { navigationRef } from '../../Services/NavigationService';
 import { NativeModules, NativeEventEmitter, Text } from "react-native";
-//import BleHelpers from '../../Helpers/BleHelpers';
+import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import moment from 'moment'
 import i18n from '../../Localization';
 import api from 'App/Services/ApiService'
@@ -28,7 +29,7 @@ import { getDfuUpdating } from 'App/Stores/BeepBase/Selectors';
 import { getToken } from 'App/Stores/User/Selectors';
 import { getLanguageCode } from 'App/Stores/Settings/Selectors';
 
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+//import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import useInterval from '../../Helpers/useInterval';
 //import { ClockModel } from '../../Models/ClockModel';
 
@@ -99,7 +100,9 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       }
     });
 
-    BleHelpers.init()
+    BleHelpers.init().catch(error => {
+      console.error('[ROOT] BleHelpers.init() failed:', error)
+    })
 
     if (token) {
       api.setToken(token)
