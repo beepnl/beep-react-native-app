@@ -1,0 +1,718 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. See https://docs.gradle.org/6.8.3/userguide/gradle_daemon.html#sec:disabling_the_daemon.
+Daemon will be stopped at the end of the build 
+
+The Kotlin Gradle plugin was loaded multiple times in different subprojects, which is not supported and may break the build. 
+This might happen in subprojects that apply the Kotlin plugins with the Gradle 'plugins { ... }' DSL if they specify explicit versions, even if the versions are equal.
+Please add the Kotlin plugin to the common parent project or the root project, then remove the versions in the subprojects.
+If the parent project does not need the plugin, add 'apply false' to the plugin line.
+See: https://docs.gradle.org/current/userguide/plugins.html#sec:subprojects_plugins_dsl
+The Kotlin plugin was loaded in the following projects: ':react-native-file-access', ':react-native-safe-area-context', ':react-native-screens'
+> Task :app:clean
+> Task :react-native-async-storage_async-storage:clean
+> Task :react-native-ble-manager:clean
+> Task :react-native-community_masked-view:clean
+> Task :react-native-community_toolbar-android:clean
+> Task :react-native-file-access:clean
+> Task :react-native-fs:clean
+> Task :react-native-gesture-handler:clean
+> Task :react-native-nordic-dfu:clean
+> Task :react-native-reanimated:clean
+> Task :react-native-safe-area-context:clean
+> Task :react-native-screens:clean
+> Task :react-native-svg:clean
+> Task :react-native-text-input-mask:clean
+> Task :react-native-vector-icons:clean
+> Task :app:generatePackageList
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :react-native-async-storage_async-storage:preBuild UP-TO-DATE
+> Task :react-native-async-storage_async-storage:preDebugBuild UP-TO-DATE
+> Task :react-native-async-storage_async-storage:compileDebugAidl NO-SOURCE
+> Task :react-native-ble-manager:preBuild UP-TO-DATE
+> Task :react-native-ble-manager:preDebugBuild UP-TO-DATE
+> Task :react-native-ble-manager:compileDebugAidl NO-SOURCE
+> Task :react-native-community_masked-view:preBuild UP-TO-DATE
+> Task :react-native-community_masked-view:preDebugBuild UP-TO-DATE
+> Task :react-native-community_masked-view:compileDebugAidl NO-SOURCE
+> Task :react-native-community_toolbar-android:preBuild UP-TO-DATE
+> Task :react-native-community_toolbar-android:preDebugBuild UP-TO-DATE
+> Task :react-native-community_toolbar-android:compileDebugAidl NO-SOURCE
+> Task :react-native-file-access:preBuild UP-TO-DATE
+> Task :react-native-file-access:preDebugBuild UP-TO-DATE
+> Task :react-native-file-access:compileDebugAidl NO-SOURCE
+> Task :react-native-fs:preBuild UP-TO-DATE
+> Task :react-native-fs:preDebugBuild UP-TO-DATE
+> Task :react-native-fs:compileDebugAidl NO-SOURCE
+> Task :react-native-gesture-handler:preBuild UP-TO-DATE
+> Task :react-native-gesture-handler:preDebugBuild UP-TO-DATE
+> Task :react-native-gesture-handler:compileDebugAidl NO-SOURCE
+> Task :react-native-nordic-dfu:preBuild UP-TO-DATE
+> Task :react-native-nordic-dfu:preDebugBuild UP-TO-DATE
+> Task :react-native-nordic-dfu:compileDebugAidl NO-SOURCE
+> Task :react-native-reanimated:preBuild UP-TO-DATE
+> Task :react-native-reanimated:preDebugBuild UP-TO-DATE
+> Task :react-native-reanimated:compileDebugAidl NO-SOURCE
+> Task :react-native-safe-area-context:preBuild UP-TO-DATE
+> Task :react-native-safe-area-context:preDebugBuild UP-TO-DATE
+> Task :react-native-safe-area-context:compileDebugAidl NO-SOURCE
+> Task :react-native-screens:preBuild UP-TO-DATE
+> Task :react-native-screens:preDebugBuild UP-TO-DATE
+> Task :react-native-screens:compileDebugAidl NO-SOURCE
+> Task :react-native-svg:preBuild UP-TO-DATE
+> Task :react-native-svg:preDebugBuild UP-TO-DATE
+> Task :react-native-svg:compileDebugAidl NO-SOURCE
+> Task :react-native-text-input-mask:preBuild UP-TO-DATE
+> Task :react-native-text-input-mask:preDebugBuild UP-TO-DATE
+> Task :react-native-text-input-mask:compileDebugAidl NO-SOURCE
+> Task :react-native-vector-icons:preBuild UP-TO-DATE
+> Task :react-native-vector-icons:preDebugBuild UP-TO-DATE
+> Task :react-native-vector-icons:compileDebugAidl NO-SOURCE
+> Task :app:compileDebugAidl NO-SOURCE
+> Task :react-native-async-storage_async-storage:packageDebugRenderscript NO-SOURCE
+> Task :react-native-ble-manager:packageDebugRenderscript NO-SOURCE
+> Task :react-native-community_masked-view:packageDebugRenderscript NO-SOURCE
+> Task :react-native-community_toolbar-android:packageDebugRenderscript NO-SOURCE
+> Task :react-native-file-access:packageDebugRenderscript NO-SOURCE
+> Task :react-native-fs:packageDebugRenderscript NO-SOURCE
+> Task :react-native-gesture-handler:packageDebugRenderscript NO-SOURCE
+> Task :react-native-nordic-dfu:packageDebugRenderscript NO-SOURCE
+> Task :react-native-reanimated:packageDebugRenderscript NO-SOURCE
+> Task :react-native-safe-area-context:packageDebugRenderscript NO-SOURCE
+> Task :react-native-screens:packageDebugRenderscript NO-SOURCE
+> Task :react-native-svg:packageDebugRenderscript NO-SOURCE
+> Task :react-native-text-input-mask:packageDebugRenderscript NO-SOURCE
+> Task :react-native-vector-icons:packageDebugRenderscript NO-SOURCE
+> Task :app:compileDebugRenderscript NO-SOURCE
+> Task :app:generateDebugBuildConfig
+> Task :app:javaPreCompileDebug
+> Task :react-native-async-storage_async-storage:writeDebugAarMetadata
+> Task :react-native-ble-manager:writeDebugAarMetadata
+> Task :react-native-community_masked-view:writeDebugAarMetadata
+> Task :react-native-community_toolbar-android:writeDebugAarMetadata
+> Task :react-native-file-access:writeDebugAarMetadata
+> Task :react-native-fs:writeDebugAarMetadata
+> Task :react-native-gesture-handler:writeDebugAarMetadata
+> Task :react-native-nordic-dfu:writeDebugAarMetadata
+> Task :react-native-reanimated:writeDebugAarMetadata
+> Task :react-native-safe-area-context:writeDebugAarMetadata
+> Task :react-native-screens:writeDebugAarMetadata
+> Task :react-native-svg:writeDebugAarMetadata
+> Task :react-native-text-input-mask:writeDebugAarMetadata
+> Task :app:bundleDebugJsAndAssets SKIPPED
+> Task :react-native-vector-icons:writeDebugAarMetadata
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :react-native-async-storage_async-storage:mergeDebugShaders
+> Task :react-native-async-storage_async-storage:compileDebugShaders NO-SOURCE
+> Task :react-native-async-storage_async-storage:generateDebugAssets UP-TO-DATE
+> Task :react-native-async-storage_async-storage:packageDebugAssets
+> Task :react-native-ble-manager:mergeDebugShaders
+> Task :react-native-ble-manager:compileDebugShaders NO-SOURCE
+> Task :react-native-ble-manager:generateDebugAssets UP-TO-DATE
+> Task :react-native-ble-manager:packageDebugAssets
+> Task :react-native-community_masked-view:mergeDebugShaders
+> Task :react-native-community_masked-view:compileDebugShaders NO-SOURCE
+> Task :react-native-community_masked-view:generateDebugAssets UP-TO-DATE
+> Task :react-native-community_masked-view:packageDebugAssets
+> Task :react-native-community_toolbar-android:mergeDebugShaders
+> Task :react-native-community_toolbar-android:compileDebugShaders NO-SOURCE
+> Task :react-native-community_toolbar-android:generateDebugAssets UP-TO-DATE
+> Task :react-native-community_toolbar-android:packageDebugAssets
+> Task :react-native-file-access:mergeDebugShaders
+> Task :react-native-file-access:compileDebugShaders NO-SOURCE
+> Task :react-native-file-access:generateDebugAssets UP-TO-DATE
+> Task :react-native-file-access:packageDebugAssets
+> Task :react-native-fs:mergeDebugShaders
+> Task :react-native-fs:compileDebugShaders NO-SOURCE
+> Task :react-native-fs:generateDebugAssets UP-TO-DATE
+> Task :react-native-fs:packageDebugAssets
+> Task :react-native-gesture-handler:mergeDebugShaders
+> Task :react-native-gesture-handler:compileDebugShaders NO-SOURCE
+> Task :react-native-gesture-handler:generateDebugAssets UP-TO-DATE
+> Task :react-native-gesture-handler:packageDebugAssets
+> Task :react-native-nordic-dfu:mergeDebugShaders
+> Task :react-native-nordic-dfu:compileDebugShaders NO-SOURCE
+> Task :react-native-nordic-dfu:generateDebugAssets UP-TO-DATE
+> Task :react-native-nordic-dfu:packageDebugAssets
+> Task :react-native-reanimated:mergeDebugShaders
+> Task :react-native-reanimated:compileDebugShaders NO-SOURCE
+> Task :react-native-reanimated:generateDebugAssets UP-TO-DATE
+> Task :react-native-reanimated:packageDebugAssets
+> Task :react-native-safe-area-context:mergeDebugShaders
+> Task :react-native-safe-area-context:compileDebugShaders NO-SOURCE
+> Task :react-native-safe-area-context:generateDebugAssets UP-TO-DATE
+> Task :react-native-safe-area-context:packageDebugAssets
+> Task :react-native-screens:mergeDebugShaders
+> Task :react-native-screens:compileDebugShaders NO-SOURCE
+> Task :react-native-screens:generateDebugAssets UP-TO-DATE
+> Task :react-native-screens:packageDebugAssets
+> Task :react-native-svg:mergeDebugShaders
+> Task :react-native-svg:compileDebugShaders NO-SOURCE
+> Task :react-native-svg:generateDebugAssets UP-TO-DATE
+> Task :react-native-svg:packageDebugAssets
+> Task :react-native-text-input-mask:mergeDebugShaders
+> Task :react-native-text-input-mask:compileDebugShaders NO-SOURCE
+> Task :react-native-text-input-mask:generateDebugAssets UP-TO-DATE
+> Task :react-native-text-input-mask:packageDebugAssets
+> Task :react-native-vector-icons:mergeDebugShaders
+> Task :react-native-vector-icons:compileDebugShaders NO-SOURCE
+> Task :react-native-vector-icons:generateDebugAssets UP-TO-DATE
+> Task :react-native-vector-icons:packageDebugAssets
+> Task :app:mergeDebugAssets
+> Task :app:copyDebugBundledJs SKIPPED
+> Task :app:generateDebugResValues
+> Task :app:generateDebugResources
+> Task :app:injectCrashlyticsMappingFileIdDebug
+> Task :app:processDebugGoogleServices
+> Task :react-native-async-storage_async-storage:compileDebugRenderscript NO-SOURCE
+> Task :react-native-async-storage_async-storage:generateDebugResValues
+> Task :react-native-async-storage_async-storage:generateDebugResources
+> Task :react-native-async-storage_async-storage:packageDebugResources
+> Task :react-native-ble-manager:compileDebugRenderscript NO-SOURCE
+> Task :react-native-ble-manager:generateDebugResValues
+> Task :react-native-ble-manager:generateDebugResources
+> Task :react-native-ble-manager:packageDebugResources
+> Task :react-native-community_masked-view:compileDebugRenderscript NO-SOURCE
+> Task :react-native-community_masked-view:generateDebugResValues
+> Task :react-native-community_masked-view:generateDebugResources
+> Task :react-native-community_masked-view:packageDebugResources
+> Task :react-native-community_toolbar-android:compileDebugRenderscript NO-SOURCE
+> Task :react-native-community_toolbar-android:generateDebugResValues
+> Task :react-native-community_toolbar-android:generateDebugResources
+> Task :react-native-community_toolbar-android:packageDebugResources
+> Task :react-native-file-access:compileDebugRenderscript NO-SOURCE
+> Task :react-native-file-access:generateDebugResValues
+> Task :react-native-file-access:generateDebugResources
+> Task :react-native-file-access:packageDebugResources
+> Task :react-native-fs:compileDebugRenderscript NO-SOURCE
+> Task :react-native-fs:generateDebugResValues
+> Task :react-native-fs:generateDebugResources
+> Task :react-native-fs:packageDebugResources
+> Task :react-native-gesture-handler:compileDebugRenderscript NO-SOURCE
+> Task :react-native-gesture-handler:generateDebugResValues
+> Task :react-native-gesture-handler:generateDebugResources
+> Task :react-native-gesture-handler:packageDebugResources
+> Task :react-native-nordic-dfu:compileDebugRenderscript NO-SOURCE
+> Task :react-native-nordic-dfu:generateDebugResValues
+> Task :react-native-nordic-dfu:generateDebugResources
+> Task :react-native-nordic-dfu:packageDebugResources
+> Task :react-native-reanimated:compileDebugRenderscript NO-SOURCE
+> Task :react-native-reanimated:generateDebugResValues
+> Task :react-native-reanimated:generateDebugResources
+> Task :react-native-reanimated:packageDebugResources
+> Task :react-native-safe-area-context:compileDebugRenderscript NO-SOURCE
+> Task :react-native-safe-area-context:generateDebugResValues
+> Task :react-native-safe-area-context:generateDebugResources
+> Task :react-native-safe-area-context:packageDebugResources
+> Task :react-native-screens:compileDebugRenderscript NO-SOURCE
+> Task :react-native-screens:generateDebugResValues
+> Task :react-native-screens:generateDebugResources
+> Task :react-native-screens:packageDebugResources
+> Task :react-native-svg:compileDebugRenderscript NO-SOURCE
+> Task :react-native-svg:generateDebugResValues
+> Task :react-native-svg:generateDebugResources
+> Task :app:checkDebugAarMetadata
+> Task :react-native-svg:packageDebugResources
+> Task :react-native-text-input-mask:compileDebugRenderscript NO-SOURCE
+> Task :react-native-text-input-mask:generateDebugResValues
+> Task :react-native-text-input-mask:generateDebugResources
+> Task :react-native-text-input-mask:packageDebugResources
+> Task :react-native-vector-icons:compileDebugRenderscript NO-SOURCE
+> Task :react-native-vector-icons:generateDebugResValues
+> Task :react-native-vector-icons:generateDebugResources
+> Task :react-native-vector-icons:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :react-native-async-storage_async-storage:extractDeepLinksDebug
+> Task :app:mergeDebugResources
+> Task :react-native-ble-manager:extractDeepLinksDebug
+> Task :react-native-community_masked-view:extractDeepLinksDebug
+> Task :react-native-community_toolbar-android:extractDeepLinksDebug
+> Task :react-native-file-access:extractDeepLinksDebug
+> Task :react-native-fs:extractDeepLinksDebug
+> Task :react-native-community_masked-view:processDebugManifest
+> Task :react-native-async-storage_async-storage:processDebugManifest
+> Task :react-native-ble-manager:processDebugManifest
+> Task :react-native-gesture-handler:extractDeepLinksDebug
+> Task :react-native-community_toolbar-android:processDebugManifest
+> Task :react-native-nordic-dfu:extractDeepLinksDebug
+> Task :react-native-file-access:processDebugManifest
+> Task :react-native-fs:processDebugManifest
+> Task :react-native-gesture-handler:processDebugManifest
+> Task :react-native-reanimated:extractDeepLinksDebug
+> Task :react-native-safe-area-context:extractDeepLinksDebug
+> Task :react-native-nordic-dfu:processDebugManifest
+> Task :react-native-screens:extractDeepLinksDebug
+> Task :react-native-reanimated:processDebugManifest
+> Task :react-native-svg:extractDeepLinksDebug
+> Task :react-native-safe-area-context:processDebugManifest
+> Task :react-native-screens:processDebugManifest
+> Task :react-native-text-input-mask:extractDeepLinksDebug
+> Task :react-native-svg:processDebugManifest
+> Task :react-native-vector-icons:extractDeepLinksDebug
+> Task :react-native-text-input-mask:processDebugManifest
+> Task :react-native-vector-icons:processDebugManifest
+> Task :react-native-async-storage_async-storage:compileDebugLibraryResources
+> Task :react-native-ble-manager:compileDebugLibraryResources
+> Task :react-native-community_masked-view:compileDebugLibraryResources
+> Task :react-native-async-storage_async-storage:parseDebugLocalResources
+> Task :react-native-ble-manager:parseDebugLocalResources
+> Task :react-native-community_masked-view:parseDebugLocalResources
+> Task :react-native-community_toolbar-android:compileDebugLibraryResources
+> Task :react-native-async-storage_async-storage:generateDebugRFile
+> Task :react-native-ble-manager:generateDebugRFile
+> Task :react-native-community_toolbar-android:parseDebugLocalResources
+> Task :react-native-file-access:compileDebugLibraryResources
+> Task :react-native-community_masked-view:generateDebugRFile
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :react-native-file-access:parseDebugLocalResources
+> Task :react-native-fs:compileDebugLibraryResources
+> Task :react-native-community_toolbar-android:generateDebugRFile
+> Task :react-native-fs:parseDebugLocalResources
+> Task :react-native-gesture-handler:compileDebugLibraryResources
+> Task :react-native-file-access:generateDebugRFile
+> Task :react-native-gesture-handler:parseDebugLocalResources
+> Task :react-native-nordic-dfu:compileDebugLibraryResources
+> Task :react-native-fs:generateDebugRFile
+> Task :react-native-nordic-dfu:parseDebugLocalResources
+> Task :react-native-reanimated:compileDebugLibraryResources
+> Task :react-native-gesture-handler:generateDebugRFile
+> Task :react-native-reanimated:parseDebugLocalResources
+> Task :react-native-safe-area-context:compileDebugLibraryResources
+> Task :app:processDebugManifestForPackage
+> Task :react-native-nordic-dfu:generateDebugRFile
+> Task :react-native-safe-area-context:parseDebugLocalResources
+> Task :react-native-screens:compileDebugLibraryResources
+> Task :react-native-reanimated:generateDebugRFile
+> Task :react-native-svg:compileDebugLibraryResources
+> Task :react-native-screens:parseDebugLocalResources
+> Task :react-native-svg:parseDebugLocalResources
+> Task :react-native-text-input-mask:compileDebugLibraryResources
+> Task :react-native-safe-area-context:generateDebugRFile
+> Task :react-native-text-input-mask:parseDebugLocalResources
+> Task :react-native-screens:generateDebugRFile
+> Task :react-native-vector-icons:compileDebugLibraryResources
+> Task :react-native-svg:generateDebugRFile
+> Task :react-native-vector-icons:parseDebugLocalResources
+> Task :react-native-async-storage_async-storage:generateDebugBuildConfig
+> Task :react-native-text-input-mask:generateDebugRFile
+> Task :react-native-async-storage_async-storage:javaPreCompileDebug
+> Task :react-native-ble-manager:generateDebugBuildConfig
+> Task :react-native-vector-icons:generateDebugRFile
+
+> Task :react-native-async-storage_async-storage:compileDebugJavaWithJavac
+Note: /Users/orlo/beep-react-native-app/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: /Users/orlo/beep-react-native-app/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStoragePackage.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :react-native-ble-manager:javaPreCompileDebug
+> Task :react-native-community_masked-view:generateDebugBuildConfig
+> Task :react-native-async-storage_async-storage:bundleLibCompileToJarDebug
+
+> Task :react-native-ble-manager:compileDebugJavaWithJavac
+Note: /Users/orlo/beep-react-native-app/node_modules/react-native-ble-manager/android/src/main/java/it/innove/LegacyScanManager.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :react-native-community_masked-view:javaPreCompileDebug
+> Task :react-native-community_toolbar-android:generateDebugBuildConfig
+> Task :react-native-ble-manager:bundleLibCompileToJarDebug
+> Task :react-native-community_masked-view:compileDebugJavaWithJavac
+> Task :react-native-community_toolbar-android:javaPreCompileDebug
+> Task :react-native-community_masked-view:bundleLibCompileToJarDebug
+> Task :app:processDebugResources
+
+> Task :react-native-community_toolbar-android:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :react-native-file-access:generateDebugBuildConfig
+> Task :react-native-community_toolbar-android:bundleLibCompileToJarDebug
+
+> Task :react-native-file-access:compileDebugKotlin
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-file-access/android/src/main/java/com/alpha0010/fs/FileAccessModule.kt: (51, 19): Parameter 'eventType' is never used
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-file-access/android/src/main/java/com/alpha0010/fs/FileAccessModule.kt: (55, 23): Parameter 'count' is never used
+
+> Task :react-native-fs:generateDebugBuildConfig
+> Task :react-native-file-access:javaPreCompileDebug
+> Task :react-native-file-access:compileDebugJavaWithJavac
+> Task :react-native-fs:javaPreCompileDebug
+> Task :react-native-gesture-handler:generateDebugBuildConfig
+> Task :react-native-file-access:bundleLibCompileToJarDebug
+
+> Task :react-native-fs:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :react-native-gesture-handler:javaPreCompileDebug
+> Task :react-native-fs:bundleLibCompileToJarDebug
+> Task :react-native-nordic-dfu:generateDebugBuildConfig
+
+> Task :react-native-gesture-handler:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :react-native-nordic-dfu:javaPreCompileDebug
+> Task :react-native-reanimated:generateDebugBuildConfig
+> Task :react-native-gesture-handler:bundleLibCompileToJarDebug
+
+> Task :react-native-nordic-dfu:compileDebugJavaWithJavac
+Note: /Users/orlo/beep-react-native-app/node_modules/react-native-nordic-dfu/android/src/main/java/com/pilloxa/dfu/RNNordicDfuModule.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :react-native-nordic-dfu:bundleLibCompileToJarDebug
+> Task :react-native-reanimated:javaPreCompileDebug
+> Task :react-native-safe-area-context:generateDebugBuildConfig
+
+> Task :react-native-reanimated:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: /Users/orlo/beep-react-native-app/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :react-native-reanimated:bundleLibCompileToJarDebug
+
+> Task :react-native-safe-area-context:compileDebugKotlin
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt: (50, 23): 'getter for uiImplementation: UIImplementation!' is deprecated. Deprecated in Java
+
+> Task :react-native-safe-area-context:javaPreCompileDebug
+> Task :react-native-screens:generateDebugBuildConfig
+> Task :react-native-safe-area-context:compileDebugJavaWithJavac
+> Task :react-native-safe-area-context:bundleLibCompileToJarDebug
+
+> Task :react-native-screens:compileDebugKotlin
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt: (82, 22): 'constructor GuardedRunnable(ReactContext!)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt: (64, 28): 'setter for targetElevation: Float' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt: (120, 28): 'setter for targetElevation: Float' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt: (21, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt: (69, 47): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt: (70, 15): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt: (89, 34): 'getter for systemWindowInsetTop: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt: (238, 29): 'setColorFilter(Int, PorterDuff.Mode): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (65, 22): 'constructor GuardedRunnable(ReactContext!)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (92, 53): 'getter for systemUiVisibility: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (94, 49): 'SYSTEM_UI_FLAG_LIGHT_STATUS_BAR: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (96, 50): 'SYSTEM_UI_FLAG_LIGHT_STATUS_BAR: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (98, 23): 'setter for systemUiVisibility: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (113, 22): 'constructor GuardedRunnable(ReactContext!)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (122, 43): 'replaceSystemWindowInsets(Int, Int, Int, Int): WindowInsets' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (123, 47): 'getter for systemWindowInsetLeft: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (125, 47): 'getter for systemWindowInsetRight: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (126, 47): 'getter for systemWindowInsetBottom: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (145, 69): 'FLAG_FULLSCREEN: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (146, 71): 'FLAG_FORCE_NOT_FULLSCREEN: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (148, 69): 'FLAG_FORCE_NOT_FULLSCREEN: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt: (149, 71): 'FLAG_FULLSCREEN: Int' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarView.kt: (9, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarView.kt: (122, 47): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarView.kt: (123, 15): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/HeaderBackButtonClickedEvent.kt: (5, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/HeaderBackButtonClickedEvent.kt: (7, 51): 'constructor Event<T : Event<(raw) Event<*>>!>(Int)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/HeaderBackButtonClickedEvent.kt: (17, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/HeaderBackButtonClickedEvent.kt: (18, 25): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenAppearEvent.kt: (5, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenAppearEvent.kt: (7, 40): 'constructor Event<T : Event<(raw) Event<*>>!>(Int)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenAppearEvent.kt: (13, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenAppearEvent.kt: (14, 25): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenDisappearEvent.kt: (5, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenDisappearEvent.kt: (7, 43): 'constructor Event<T : Event<(raw) Event<*>>!>(Int)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenDisappearEvent.kt: (13, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenDisappearEvent.kt: (14, 25): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenDismissedEvent.kt: (5, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenDismissedEvent.kt: (7, 43): 'constructor Event<T : Event<(raw) Event<*>>!>(Int)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenDismissedEvent.kt: (13, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenDismissedEvent.kt: (17, 25): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenTransitionProgressEvent.kt: (5, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenTransitionProgressEvent.kt: (13, 5): 'constructor Event<T : Event<(raw) Event<*>>!>(Int)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenTransitionProgressEvent.kt: (22, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenTransitionProgressEvent.kt: (27, 25): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenWillAppearEvent.kt: (5, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenWillAppearEvent.kt: (7, 44): 'constructor Event<T : Event<(raw) Event<*>>!>(Int)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenWillAppearEvent.kt: (13, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenWillAppearEvent.kt: (14, 25): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenWillDisappearEvent.kt: (5, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenWillDisappearEvent.kt: (7, 47): 'constructor Event<T : Event<(raw) Event<*>>!>(Int)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenWillDisappearEvent.kt: (13, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/ScreenWillDisappearEvent.kt: (14, 25): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/StackFinishTransitioningEvent.kt: (5, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/StackFinishTransitioningEvent.kt: (7, 52): 'constructor Event<T : Event<(raw) Event<*>>!>(Int)' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/StackFinishTransitioningEvent.kt: (13, 44): 'RCTEventEmitter' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/events/StackFinishTransitioningEvent.kt: (14, 25): 'receiveEvent(Int, String!, WritableMap?): Unit' is deprecated. Deprecated in Java
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/paper/java/com/swmansion/rnscreens/FabricEnabledViewGroup.kt: (13, 40): Parameter 'width' is never used
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-screens/android/src/paper/java/com/swmansion/rnscreens/FabricEnabledViewGroup.kt: (13, 52): Parameter 'height' is never used
+
+> Task :react-native-screens:javaPreCompileDebug
+> Task :react-native-svg:generateDebugBuildConfig
+> Task :react-native-screens:compileDebugJavaWithJavac
+> Task :react-native-svg:javaPreCompileDebug
+> Task :react-native-text-input-mask:generateDebugBuildConfig
+> Task :react-native-screens:bundleLibCompileToJarDebug
+
+> Task :react-native-svg:compileDebugJavaWithJavac
+Note: /Users/orlo/beep-react-native-app/node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/VirtualView.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :react-native-svg:bundleLibCompileToJarDebug
+
+> Task :react-native-text-input-mask:compileDebugKotlin
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-text-input-mask/android/src/main/java/com/RNTextInputMask/RNTextInputMaskModule.kt: (64, 47): Elvis operator (?:) always returns the left operand of non-nullable type ReadableMap
+w: /Users/orlo/beep-react-native-app/node_modules/react-native-text-input-mask/android/src/main/java/com/RNTextInputMask/RNTextInputMaskModule.kt: (104, 32): Elvis operator (?:) always returns the left operand of non-nullable type String
+
+> Task :react-native-text-input-mask:javaPreCompileDebug
+> Task :react-native-vector-icons:generateDebugBuildConfig
+> Task :react-native-text-input-mask:compileDebugJavaWithJavac
+> Task :react-native-text-input-mask:bundleLibCompileToJarDebug
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :react-native-vector-icons:javaPreCompileDebug
+> Task :app:compressDebugAssets
+> Task :react-native-vector-icons:compileDebugJavaWithJavac
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :react-native-vector-icons:bundleLibCompileToJarDebug
+> Task :react-native-async-storage_async-storage:processDebugJavaRes NO-SOURCE
+> Task :react-native-async-storage_async-storage:bundleLibResDebug NO-SOURCE
+> Task :react-native-ble-manager:processDebugJavaRes NO-SOURCE
+> Task :react-native-ble-manager:bundleLibResDebug NO-SOURCE
+> Task :react-native-community_masked-view:processDebugJavaRes NO-SOURCE
+> Task :react-native-community_masked-view:bundleLibResDebug NO-SOURCE
+> Task :react-native-community_toolbar-android:processDebugJavaRes NO-SOURCE
+> Task :react-native-community_toolbar-android:bundleLibResDebug NO-SOURCE
+> Task :react-native-file-access:processDebugJavaRes NO-SOURCE
+> Task :react-native-file-access:bundleLibResDebug
+> Task :app:compileDebugJavaWithJavac
+> Task :app:compileDebugSources
+> Task :react-native-fs:processDebugJavaRes NO-SOURCE
+> Task :react-native-fs:bundleLibResDebug NO-SOURCE
+> Task :react-native-gesture-handler:processDebugJavaRes NO-SOURCE
+> Task :react-native-gesture-handler:bundleLibResDebug NO-SOURCE
+> Task :react-native-nordic-dfu:processDebugJavaRes NO-SOURCE
+> Task :react-native-nordic-dfu:bundleLibResDebug NO-SOURCE
+> Task :react-native-reanimated:processDebugJavaRes NO-SOURCE
+> Task :react-native-reanimated:bundleLibResDebug NO-SOURCE
+> Task :react-native-safe-area-context:processDebugJavaRes NO-SOURCE
+> Task :react-native-screens:processDebugJavaRes NO-SOURCE
+> Task :react-native-svg:processDebugJavaRes NO-SOURCE
+> Task :react-native-svg:bundleLibResDebug NO-SOURCE
+> Task :react-native-text-input-mask:processDebugJavaRes NO-SOURCE
+> Task :react-native-screens:bundleLibResDebug
+> Task :react-native-safe-area-context:bundleLibResDebug
+> Task :react-native-vector-icons:processDebugJavaRes NO-SOURCE
+> Task :react-native-text-input-mask:bundleLibResDebug
+> Task :react-native-vector-icons:bundleLibResDebug NO-SOURCE
+> Task :app:desugarDebugFileDependencies
+> Task :app:checkDebugDuplicateClasses
+> Task :react-native-async-storage_async-storage:bundleLibRuntimeToJarDebug
+> Task :react-native-community_toolbar-android:bundleLibRuntimeToJarDebug
+> Task :react-native-community_masked-view:bundleLibRuntimeToJarDebug
+> Task :react-native-ble-manager:bundleLibRuntimeToJarDebug
+> Task :react-native-file-access:bundleLibRuntimeToJarDebug
+> Task :react-native-fs:bundleLibRuntimeToJarDebug
+> Task :react-native-gesture-handler:bundleLibRuntimeToJarDebug
+> Task :app:mergeDebugJavaResource
+> Task :react-native-nordic-dfu:bundleLibRuntimeToJarDebug
+> Task :react-native-reanimated:bundleLibRuntimeToJarDebug
+> Task :react-native-safe-area-context:bundleLibRuntimeToJarDebug
+> Task :react-native-screens:bundleLibRuntimeToJarDebug
+> Task :react-native-svg:bundleLibRuntimeToJarDebug
+> Task :react-native-text-input-mask:bundleLibRuntimeToJarDebug
+> Task :react-native-vector-icons:bundleLibRuntimeToJarDebug
+> Task :app:mergeExtDexDebug
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :react-native-async-storage_async-storage:mergeDebugJniLibFolders
+> Task :react-native-async-storage_async-storage:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-async-storage_async-storage:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-async-storage_async-storage:copyDebugJniLibsProjectOnly
+> Task :react-native-ble-manager:mergeDebugJniLibFolders
+> Task :react-native-ble-manager:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-ble-manager:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-ble-manager:copyDebugJniLibsProjectOnly
+> Task :react-native-community_masked-view:mergeDebugJniLibFolders
+> Task :react-native-community_masked-view:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-community_masked-view:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-community_masked-view:copyDebugJniLibsProjectOnly
+> Task :react-native-community_toolbar-android:mergeDebugJniLibFolders
+> Task :react-native-community_toolbar-android:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-community_toolbar-android:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-community_toolbar-android:copyDebugJniLibsProjectOnly
+> Task :react-native-file-access:mergeDebugJniLibFolders
+> Task :react-native-file-access:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-file-access:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-file-access:copyDebugJniLibsProjectOnly
+> Task :react-native-fs:mergeDebugJniLibFolders
+> Task :react-native-fs:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-fs:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-fs:copyDebugJniLibsProjectOnly
+> Task :react-native-gesture-handler:mergeDebugJniLibFolders
+> Task :react-native-gesture-handler:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-gesture-handler:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-gesture-handler:copyDebugJniLibsProjectOnly
+> Task :react-native-nordic-dfu:mergeDebugJniLibFolders
+> Task :react-native-nordic-dfu:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-nordic-dfu:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-nordic-dfu:copyDebugJniLibsProjectOnly
+> Task :react-native-reanimated:mergeDebugJniLibFolders
+> Task :react-native-reanimated:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-reanimated:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-reanimated:copyDebugJniLibsProjectOnly
+> Task :react-native-safe-area-context:mergeDebugJniLibFolders
+> Task :react-native-safe-area-context:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-safe-area-context:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-safe-area-context:copyDebugJniLibsProjectOnly
+> Task :react-native-screens:mergeDebugJniLibFolders
+> Task :react-native-screens:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-screens:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-screens:copyDebugJniLibsProjectOnly
+> Task :app:mergeProjectDexDebug
+> Task :react-native-svg:mergeDebugJniLibFolders
+> Task :react-native-svg:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-svg:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-svg:copyDebugJniLibsProjectOnly
+> Task :react-native-text-input-mask:mergeDebugJniLibFolders
+> Task :react-native-text-input-mask:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-text-input-mask:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-text-input-mask:copyDebugJniLibsProjectOnly
+> Task :react-native-vector-icons:mergeDebugJniLibFolders
+> Task :react-native-vector-icons:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-vector-icons:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-vector-icons:copyDebugJniLibsProjectOnly
+> Task :app:validateSigningDebug
+> Task :app:mergeLibDexDebug
+> Task :app:mergeDebugNativeLibs
+> Task :app:stripDebugDebugSymbols FAILED
+w: Detected multiple Kotlin daemon sessions at build/kotlin/sessions
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:stripDebugDebugSymbols'.
+> NDK at /Users/orlo/Library/Android/sdk/ndk/25.1.8937393 did not have a source.properties file
+
+* Try:
+Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:stripDebugDebugSymbols'.
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:38)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:200)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:195)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$3.execute(DefaultBuildOperationRunner.java:75)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$3.execute(DefaultBuildOperationRunner.java:68)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:153)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:68)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:62)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.lambda$call$2(DefaultBuildOperationExecutor.java:76)
+	at org.gradle.internal.operations.UnmanagedBuildOperationWrapper.callWithUnmanagedSupport(UnmanagedBuildOperationWrapper.java:54)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:76)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:41)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:411)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:398)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:391)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:377)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.lambda$run$0(DefaultPlanExecutor.java:127)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:191)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.executeNextNode(DefaultPlanExecutor.java:182)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:124)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+Caused by: com.android.builder.errors.EvalIssueException: NDK at /Users/orlo/Library/Android/sdk/ndk/25.1.8937393 did not have a source.properties file
+	at com.android.builder.errors.IssueReporter.reportError(IssueReporter.kt:106)
+	at com.android.builder.errors.IssueReporter.reportError$default(IssueReporter.kt:102)
+	at com.android.build.gradle.internal.cxx.logging.IssueReporterLoggingEnvironment.log(IssueReporterLoggingEnvironment.kt:41)
+	at com.android.build.gradle.internal.cxx.logging.PassThroughDeduplicatingLoggingEnvironment.log(PassThroughDeduplicatingLoggingEnvironment.kt:33)
+	at com.android.build.gradle.internal.cxx.logging.PassThroughDeduplicatingLoggingEnvironment.log(PassThroughDeduplicatingLoggingEnvironment.kt:33)
+	at com.android.build.gradle.internal.cxx.logging.ThreadLoggingEnvironment$Companion.reportFormattedErrorToCurrentLogger(LoggingEnvironment.kt:164)
+	at com.android.build.gradle.internal.cxx.logging.LoggingEnvironmentKt.errorln(LoggingEnvironment.kt:41)
+	at com.android.build.gradle.internal.cxx.configure.NdkLocatorKt.getNdkVersionInfo(NdkLocator.kt:323)
+	at com.android.build.gradle.internal.cxx.configure.NdkLocator$findNdkPath$1$1.invoke(NdkLocator.kt:436)
+	at com.android.build.gradle.internal.cxx.configure.NdkLocator$findNdkPath$1$1.invoke(NdkLocator.kt:405)
+	at com.android.build.gradle.internal.cxx.configure.NdkLocatorKt.getNdkFolderParsedRevision(NdkLocator.kt:236)
+	at com.android.build.gradle.internal.cxx.configure.NdkLocatorKt$findNdkPathImpl$$inlined$with$lambda$1.invoke(NdkLocator.kt:75)
+	at com.android.build.gradle.internal.cxx.configure.NdkLocatorKt.findNdkPathImpl(NdkLocator.kt:190)
+	at com.android.build.gradle.internal.cxx.configure.NdkLocatorKt.findNdkPathImpl(NdkLocator.kt:397)
+	at com.android.build.gradle.internal.cxx.configure.NdkLocator.findNdkPath(NdkLocator.kt:430)
+	at com.android.build.gradle.internal.ndk.NdkHandler.getNdkStatus(NdkHandler.kt:85)
+	at com.android.build.gradle.internal.ndk.NdkHandler.getNdkPlatform(NdkHandler.kt:98)
+	at com.android.build.gradle.internal.ndk.NdkHandler.getNdkPlatform(NdkHandler.kt:104)
+	at com.android.build.gradle.internal.cxx.stripping.SymbolStripExecutableFinderKt.createSymbolStripExecutableFinder(SymbolStripExecutableFinder.kt:60)
+	at com.android.build.gradle.internal.SdkComponentsBuildService$stripExecutableFinderProvider$1.call(SdkComponents.kt:217)
+	at com.android.build.gradle.internal.SdkComponentsBuildService$stripExecutableFinderProvider$1.call(SdkComponents.kt:57)
+	at org.gradle.api.internal.provider.DefaultProvider.calculateOwnValue(DefaultProvider.java:66)
+	at org.gradle.api.internal.provider.AbstractMinimalProvider.get(AbstractMinimalProvider.java:84)
+	at com.android.build.gradle.internal.tasks.StripDebugSymbolsTask.getStripExecutablesMap(StripDebugSymbolsTask.kt:95)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at org.gradle.api.internal.tasks.properties.bean.AbstractNestedRuntimeBeanNode$BeanPropertyValue$1$1.create(AbstractNestedRuntimeBeanNode.java:77)
+	at org.gradle.internal.deprecation.DeprecationLogger.whileDisabled(DeprecationLogger.java:236)
+	at org.gradle.api.internal.tasks.properties.bean.AbstractNestedRuntimeBeanNode$BeanPropertyValue$1.get(AbstractNestedRuntimeBeanNode.java:73)
+	at com.google.common.base.Suppliers$NonSerializableMemoizingSupplier.get(Suppliers.java:167)
+	at org.gradle.api.internal.tasks.properties.bean.AbstractNestedRuntimeBeanNode$BeanPropertyValue.call(AbstractNestedRuntimeBeanNode.java:133)
+	at org.gradle.api.internal.tasks.properties.AbstractValidatingProperty.validate(AbstractValidatingProperty.java:39)
+	at org.gradle.api.internal.tasks.properties.DefaultTaskProperties.validate(DefaultTaskProperties.java:193)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter$TaskExecution.validate(ExecuteActionsTaskExecuter.java:431)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:50)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.lambda$execute$2(SkipEmptyWorkStep.java:88)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.execute(SkipEmptyWorkStep.java:88)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.execute(SkipEmptyWorkStep.java:34)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadExecutionStateStep.execute(LoadExecutionStateStep.java:46)
+	at org.gradle.internal.execution.steps.LoadExecutionStateStep.execute(LoadExecutionStateStep.java:34)
+	at org.gradle.internal.execution.steps.AssignWorkspaceStep.lambda$execute$0(AssignWorkspaceStep.java:43)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter$TaskExecution$3.withWorkspace(ExecuteActionsTaskExecuter.java:286)
+	at org.gradle.internal.execution.steps.AssignWorkspaceStep.execute(AssignWorkspaceStep.java:43)
+	at org.gradle.internal.execution.steps.AssignWorkspaceStep.execute(AssignWorkspaceStep.java:33)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:40)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:30)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:54)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:40)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine.execute(DefaultExecutionEngine.java:41)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:183)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:183)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:173)
+	at org.gradle.api.internal.tasks.execution.CleanupStaleOutputsExecuter.execute(CleanupStaleOutputsExecuter.java:109)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:62)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:56)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:200)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:195)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$3.execute(DefaultBuildOperationRunner.java:75)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$3.execute(DefaultBuildOperationRunner.java:68)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:153)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:68)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:62)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.lambda$call$2(DefaultBuildOperationExecutor.java:76)
+	at org.gradle.internal.operations.UnmanagedBuildOperationWrapper.callWithUnmanagedSupport(UnmanagedBuildOperationWrapper.java:54)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:76)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:41)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:411)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:398)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:391)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:377)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.lambda$run$0(DefaultPlanExecutor.java:127)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:191)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.executeNextNode(DefaultPlanExecutor.java:182)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:124)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 1m 30s
+290 actionable tasks: 290 executed

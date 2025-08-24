@@ -7,13 +7,14 @@ buildscript {
         minSdkVersion = 21
         compileSdkVersion = 31
         targetSdkVersion = 31
-        ndkVersion = "25.1.8937393"
+        ndkVersion = "23.1.7779620"
         kotlin_version = "1.6.10"
 	kotlinVersion = "1.6.10"
     }
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        // jcenter() removed (deprecated)
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.0")
@@ -26,6 +27,19 @@ buildscript {
 }
 
 allprojects {
+    // Enforce Java 8 source/target and Kotlin JVM target for all subprojects
+    subprojects { project ->
+        afterEvaluate {
+            if (project.hasProperty('android')) {
+                project.android {
+                    compileOptions {
+                        sourceCompatibility JavaVersion.VERSION_1_8
+                        targetCompatibility JavaVersion.VERSION_1_8
+                    }
+                }
+            }
+        }
+    }
 
 
     repositories {
@@ -40,7 +54,8 @@ allprojects {
         }
 
         google()
-        jcenter()
+        mavenCentral()
+        // jcenter() removed (deprecated)
         maven { url 'https://www.jitpack.io' }
     }
 }
