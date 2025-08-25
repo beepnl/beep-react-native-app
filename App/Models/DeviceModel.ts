@@ -51,6 +51,7 @@ export class DeviceModel {
   previousDevEUI: string
   sensorDefinitions: Array<SensorDefinitionModel>
   owner: boolean
+  mac?: string
 
   constructor(props: any) {
     this.id = props.id.toString() || ""
@@ -59,6 +60,12 @@ export class DeviceModel {
     this.devEUI = props.key
     this.previousDevEUI = props.key
     this.owner = !!props.owner
+
+    // Optional BLE MAC address if backend provides it under various keys
+    const macCandidate = props.mac || props.macAddress || props.ble_mac || props.bleMac
+    if (macCandidate && typeof macCandidate === 'string') {
+      this.mac = macCandidate
+    }
 
     this.sensorDefinitions = []
     if (Array.isArray(props.sensor_definitions)) {

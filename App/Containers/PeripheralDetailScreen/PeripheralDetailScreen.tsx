@@ -165,7 +165,42 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
   const connect = () => {
     setBusy(true)
-    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((peripheral: Peripheral) => {
+
+    // Prefer direct MAC connect if available
+    if (device?.mac) {
+      BleHelpers.connectPeripheral(device.mac)
+        .then(() => {
+          dispatch(BeepBaseActions.setPairedPeripheral({ 
+            id: device.mac as unknown as string,
+            name: DeviceModel.getBleName(device),
+            isConnected: true,
+            deviceId: device.id
+          } as any))
+          setBusy(false)
+        })
+        .catch(() => {
+          // Fallback to scan by name if direct connect fails
+          BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device), { attempts: 3, timeoutSec: 8 }).then((peripheral: Peripheral) => {
+            BleHelpers.connectPeripheral(peripheral).then(() => {
+              dispatch(BeepBaseActions.setPairedPeripheral({ 
+                ...peripheral, 
+                isConnected: true,
+                deviceId: device.id
+              }))
+              setBusy(false)
+            })
+          }).catch(() => {
+            //peripheral not found
+            setError(t("peripheralDetail.notFound"))
+            BleHelpers.disconnectAllPeripherals()
+            setBusy(false)
+          })
+        })
+      return
+    }
+
+    // No MAC present; scan by name with retries
+    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device), { attempts: 3, timeoutSec: 8 }).then((peripheral: Peripheral) => {
       BleHelpers.connectPeripheral(peripheral).then(() => {
         dispatch(BeepBaseActions.setPairedPeripheral({ 
           ...peripheral, 
