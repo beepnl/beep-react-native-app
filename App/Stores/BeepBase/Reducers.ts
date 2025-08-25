@@ -17,9 +17,12 @@ export const bleFailure = (state: BeepBaseState, payload: any) => {
 }
 
 export const setPairedPeripheral = (state: BeepBaseState, payload: any) => {
+  // Merge with existing pairedPeripheral to preserve fields like deviceId/name
+  const prev = state.pairedPeripheral || {}
+  const next = { ...prev, ...payload.peripheral }
   return {
     ...state,
-    pairedPeripheral: payload.peripheral
+    pairedPeripheral: next
   }
 }
 

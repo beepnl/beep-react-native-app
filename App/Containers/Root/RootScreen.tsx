@@ -65,12 +65,13 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
 
     const BleManagerConnectPeripheralSubscription = bleManagerEmitter.addListener("BleManagerConnectPeripheral", (args) => {
       const peripheralId: string = args?.peripheral
-      if (peripheral && peripheral.id == peripheralId) {
-        const updated = {
-          ...peripheral,
-          isConnected: true,
-        }
-        dispatch(BeepBaseActions.setPairedPeripheral(updated))
+      // Always mark connected and preserve deviceId if known
+      const updated = {
+        ...(peripheral || {}),
+        id: peripheralId,
+        isConnected: true,
+      }
+      dispatch(BeepBaseActions.setPairedPeripheral(updated))
 
         /*
         if (peripheral)
