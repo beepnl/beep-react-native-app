@@ -277,8 +277,8 @@ export default class BleHelpers {
     })
   }
 
-  static connectPeripheral(peripheral: Peripheral) {
-    const peripheralId = peripheral.id;
+  static connectPeripheral(peripheralOrId: Peripheral | string) {
+    const peripheralId = typeof peripheralOrId === 'string' ? peripheralOrId : peripheralOrId.id;
     OSLogger.log(`[BLE] Attempting to connect to peripheral: ${peripheralId}`);
     store.dispatch(BeepBaseActions.bleFailure(undefined));
     return BleManager.isPeripheralConnected(peripheralId).then(isConnected => {
@@ -302,7 +302,9 @@ export default class BleHelpers {
       return BleManager.connect(peripheralId)
         .then(() => {
           OSLogger.log(`[BLE] Successfully connected to ${peripheralId}`);
-          BleLogger.logPeripheral(peripheral);
+          if (typeof peripheralOrId !== 'string') {
+            BleLogger.logPeripheral(peripheralOrId);
+          }
           OSLogger.log(`[BLE] Waiting 500ms before pairing...`);
           return delay(500);
         })
@@ -373,9 +375,9 @@ export default class BleHelpers {
       })
 
       BleManager.enableBluetooth().then(() => {
-        OSLogger.log("[BLE] Bluetooth enabled, starting scan...");
+        OSLogger.log("[BLE] Bluetooth enabled, starting scan (no filter)...");
         isScanning = true
-        BleManager.scan([BEEP_SERVICE], TIME_OUT, false).then((results) => {
+        BleManager.scan([], TIME_OUT, false).then((_results) => {
           OSLogger.log(`[BLE] Scanning started with ${TIME_OUT}s timeout...`)
         }).catch(err => {
           isScanning = false

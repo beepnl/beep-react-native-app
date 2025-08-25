@@ -166,7 +166,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const connect = () => {
     setBusy(true)
     BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((peripheral: Peripheral) => {
-      BleHelpers.connectPeripheral(peripheral.id).then(() => {
+      BleHelpers.connectPeripheral(peripheral).then(() => {
         dispatch(BeepBaseActions.setPairedPeripheral({ 
           ...peripheral, 
           isConnected: true,
