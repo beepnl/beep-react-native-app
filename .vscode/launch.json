@@ -1,0 +1,70 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Android",
+      "request": "launch",
+      "type": "reactnative",
+      "cwd": "${workspaceFolder}",
+      "enableDebug": false,
+      "platform": "android"
+    },
+    {
+      "name": "Debug Android Maarten's Samsung",
+      "cwd": "${workspaceFolder}",
+      "type": "reactnative",
+      "request": "launch",
+      "target": "R58N32WFKRH",
+      "platform": "android"
+    },
+    {
+      "name": "Debug iOS iPhone 12 Pro Max",
+      "cwd": "${workspaceFolder}",
+      "type": "reactnative",
+      "request": "launch",
+      "platform": "ios",
+      "skipFiles": [
+        "<node_internals>/**/*.js"
+      ],
+      "outputCapture": "std",
+      "target": "iPhone 12 Pro Max",
+    },
+    {
+      "name": "Debug iOS iPad Pro (12.9-inch)",
+      "cwd": "${workspaceFolder}",
+      "type": "reactnative",
+      "request": "launch",
+      "platform": "ios",
+      "skipFiles": [
+        "<node_internals>/**/*.js"
+      ],
+      "outputCapture": "std",
+      "target": "iPad Pro (12.9-inch)",
+    },
+    {
+      "name": "Debug iOS Maarten's iPad",
+      "cwd": "${workspaceFolder}",
+      "type": "reactnative",
+      "request": "launch",
+      "platform": "ios",
+      "skipFiles": [
+        "<node_internals>/**/*.js"
+      ],
+      "outputCapture": "std",
+      "target": "Maarten’s iPad",
+    },
+    {
+      "name": "Debug Direct iOS - Experimental",
+      "cwd": "${workspaceFolder}",
+      "type": "reactnativedirect",
+      "request": "launch",
+      "platform": "ios",
+      "useHermesEngine": false,
+      "target": "device",
+      "port": 9221
+    }
+  ]
+}
