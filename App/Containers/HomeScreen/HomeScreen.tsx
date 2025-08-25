@@ -49,8 +49,20 @@ const HomeScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     setRefreshing(false)
 
-    //sort devices for list
-    const items = devices.map((device: DeviceModel) => ({ ...device, isConnected: pairedPeripheral?.deviceId === device.id }))
+    // Determine connection using multiple signals:
+    // 1) deviceId link set on pairedPeripheral after connect
+    // 2) Match BLE name (BEEPBASE-XXXX) if deviceId was not set
+    // 3) Match MAC address (Android) if available
+    const computeConnected = (device: DeviceModel) => {
+      if (!pairedPeripheral) return false
+      if (pairedPeripheral.deviceId && pairedPeripheral.deviceId === device.id) return true
+      const bleName = DeviceModel.getBleName(device)
+      if (pairedPeripheral.name && pairedPeripheral.name === bleName) return true
+      if (device.mac && pairedPeripheral.id && pairedPeripheral.id.toLowerCase() === device.mac.toLowerCase()) return true
+      return false
+    }
+
+    const items = devices.map((device: DeviceModel) => ({ ...device, isConnected: computeConnected(device) }))
     const sortedItems = tidy(items, arrange([
       desc("isConnected"),                    //connected devices on top
       desc("owner")                           //devices from other groups at the bottom
