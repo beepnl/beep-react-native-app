@@ -172,7 +172,8 @@ const HomeScreen: FunctionComponent<Props> = ({
             key={index} 
             title={device.name} 
             Icon={device.isConnected ?
-              <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.bluetooth} /> :
+              <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.bluetooth} /> : device.isNearby ?
+              <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.lightGrey} /> :
               <Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="cover" />
             }
             IconRight={!device.owner ? <IconMaterialIcons name={"group"} size={30} color={Colors.lighterGrey} /> : undefined }
