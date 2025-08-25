@@ -80,7 +80,8 @@ const HomeScreen: FunctionComponent<Props> = ({
   }
 
   const onDevicePress = (device: DeviceModel) => {
-    navigation.navigate("PeripheralDetailScreen", { device })
+    // Pass only serializable id; the detail screen will look up the device from the store
+    navigation.navigate("PeripheralDetailScreen", { deviceId: device.id })
   }
 
   const onHelpPress = () => {

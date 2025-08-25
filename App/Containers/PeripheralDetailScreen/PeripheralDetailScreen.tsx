@@ -99,7 +99,7 @@ const getMenuItems = (firmwareVersion?: FirmwareVersionModel): Array<MenuItem> =
 ]
 
 export type PeripheralDetailScreenNavigationParams = {
-  device: DeviceModel,
+  deviceId: string,
 }
 
 type Props = NativeStackScreenProps<PeripheralDetailScreenNavigationParams>
@@ -111,7 +111,8 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  const device: DeviceModel = route.params?.device
+  const deviceIdParam: string = route.params?.deviceId
+  const device: DeviceModel = useTypedSelector<any>((state: any) => (state.user.devices || []).find((d: DeviceModel) => d.id === deviceIdParam))
   const peripheralEqualsDevice = peripheral?.deviceId === device?.id
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const [menuItems, setMenuItems] = useState<Array<MenuItem>>(getMenuItems())
