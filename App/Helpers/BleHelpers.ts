@@ -182,9 +182,7 @@ export default class BleHelpers {
     })
   }
 
-  }
-
-  // Request high connection priority on Android API 21+ for better throughput
+  // Request high connection priority on Android API 21+
   static async requestConnectionPriorityHigh(peripheralId: string): Promise<void> {
     if (Platform.OS !== 'android' || Platform.Version < 21) return
     const fn = (BleManager as any).requestConnectionPriority
@@ -399,53 +397,6 @@ export default class BleHelpers {
     }
 
     return run()
-  }
-    const run = async (): Promise<Peripheral> => {
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          const p = await attemptOnce(attempt)
-          return p
-        } catch (e) {
-          if (attempt < maxAttempts) {
-            OSLogger.log(`[BLE] Retry in 1500ms (attempt ${attempt + 1}/${maxAttempts})...`)
-            await delay(1500)
-          } else {
-            throw e
-          }
-        }
-      }
-      throw new Error('[BLE] Unexpected scan loop exit')
-    }
-
-    return run()
-=======
-      const BleManagerStopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', () => {
-        BleManagerStopScanSubscription && BleManagerStopScanSubscription.remove()
-        if (isScanning) {
-          //if still scanning at this point no device matching filter was found
-          reject()
-        }
-        isScanning = false
-      })
-
-      BleManager.enableBluetooth().then(() => {
-        console.log("The bluetooth is already enabled or the user confirmed");
-        isScanning = true
-        BleManager.scan([/*BEEP_SERVICE*/], TIME_OUT, false).then((results) => {
-          console.log('Scanning...')
-        }).catch(err => {
-          isScanning = false
-          console.error(err)
-          store.dispatch(BeepBaseActions.bleFailure(err))
-        })
-      })
-      .catch((error) => {
-        isScanning = false
-        console.log("The user refuse to enable bluetooth", error)
-        store.dispatch(BeepBaseActions.bleFailure(error))
-      });
-    })
->>>>>>> origin/master
   }
 
   static onValueForCharacteristic({ value, peripheral, characteristic, service }) {
