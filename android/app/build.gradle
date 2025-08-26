@@ -183,6 +183,26 @@ android {
         }
     }
 
+    // Resolve duplicate asset entries (fonts) coming from multiple sources (e.g. vector-icons + assets)
+    packagingOptions {
+        pickFirst 'assets/fonts/AntDesign.ttf'
+        pickFirst 'assets/fonts/Entypo.ttf'
+        pickFirst 'assets/fonts/EvilIcons.ttf'
+        pickFirst 'assets/fonts/Feather.ttf'
+        pickFirst 'assets/fonts/FontAwesome.ttf'
+        pickFirst 'assets/fonts/FontAwesome5_Brands.ttf'
+        pickFirst 'assets/fonts/FontAwesome5_Regular.ttf'
+        pickFirst 'assets/fonts/FontAwesome5_Solid.ttf'
+        pickFirst 'assets/fonts/Fontisto.ttf'
+        pickFirst 'assets/fonts/Foundation.ttf'
+        pickFirst 'assets/fonts/Ionicons.ttf'
+        pickFirst 'assets/fonts/MaterialCommunityIcons.ttf'
+        pickFirst 'assets/fonts/MaterialIcons.ttf'
+        pickFirst 'assets/fonts/Octicons.ttf'
+        pickFirst 'assets/fonts/SimpleLineIcons.ttf'
+        pickFirst 'assets/fonts/Zocial.ttf'
+    }
+
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
