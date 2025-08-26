@@ -8,7 +8,7 @@ import { PairedPeripheralModel } from '../Models/PairedPeripheralModel';
 import { NativeModules, NativeEventEmitter } from "react-native";
 import { Buffer } from 'buffer';
 import { TemperatureParser } from '../Models/TemperatureModel';
-import { store } from '../App';
+import { store } from 'App/App.tsx';
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
 import { LogFileSizeModel } from '../Models/LogFileSizeModel';
 import { LogFileFrameModel } from '../Models/LogFileFrameModel';

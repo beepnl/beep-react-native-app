@@ -95,7 +95,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         setIsScanning(true)
       }).catch(err => {
         console.error(err)
-        setError(err)
+        setError((err && (err.message || err.toString && err.toString())) || String(err))
       });
     }
   }
@@ -189,7 +189,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       })
       .catch((error) => {
         console.log(error)
-        setError(error)
+        setError((error && (error.message || error.toString && error.toString())) || String(error))
         setConnectingPeripheral(null)
       });
     })
@@ -207,7 +207,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
 
   let message = ""
   if (error) {
-    message = error
+    message = typeof error === 'string' ? error : (error && (error as any).message) || JSON.stringify(error)
   } else if (isScanning) {
     message = t("wizard.pair.scanning")
   } else {
