@@ -14,6 +14,8 @@ import { Colors, Images } from '../../Theme';
 import BleHelpers from '../../Helpers/BleHelpers';
 import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
 import { tidy, arrange, desc } from '@tidyjs/tidy';
+import BleManager from 'react-native-ble-manager'
+import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 
 // Data
 import ApiActions from 'App/Stores/Api/Actions'
@@ -30,7 +32,7 @@ import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-type ListItem = DeviceModel & { isConnected: boolean }
+type ListItem = DeviceModel & { isConnected: boolean, isNearby?: boolean }
 
 interface Props {
 }
@@ -46,17 +48,88 @@ const HomeScreen: FunctionComponent<Props> = ({
 
   const [isRefreshing, setRefreshing] = useState(false)
 
+  // Track nearby advertising devices (by MAC and BLE name)
+  const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager)
+  const [nearby, setNearby] = useState<{ macs: Set<string>, names: Set<string> }>({ macs: new Set(), names: new Set() })
+
+  // Start a short scan when screen becomes active to detect nearby devices
+  useFocusEffect(
+    useCallback(() => {
+      let discoverSub: any;
+      let stopSub: any;
+      let isScanning = false
+      const macs = new Set<string>()
+      const names = new Set<string>()
+
+      const startScan = async () => {
+        try {
+          await BleHelpers.enableBluetooth()
+          isScanning = true
+          discoverSub = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: any) => {
+            const adv = peripheral?.advertising
+            const localName = adv?.localName
+            const name: string = peripheral?.name || localName || ''
+            if (adv?.isConnectable && name.startsWith('BEEPBASE-')) {
+              if (peripheral?.id) macs.add(peripheral.id)
+              names.add(name)
+            }
+          })
+          stopSub = bleManagerEmitter.addListener('BleManagerStopScan', () => {
+            isScanning = false
+            // Commit discovered sets
+            setNearby({ macs: new Set(macs), names: new Set(names) })
+          })
+          // Scan for a short window
+          await BleManager.scan([], 6, false)
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      startScan()
+
+      return () => {
+        try { discoverSub && discoverSub.remove && discoverSub.remove() } catch {}
+        try { stopSub && stopSub.remove && stopSub.remove() } catch {}
+        if (isScanning) {
+          try { BleManager.stopScan() } catch {}
+        }
+      }
+    }, [])
+  )
+
   useEffect(() => {
     setRefreshing(false)
 
-    //sort devices for list
-    const items = devices.map((device: DeviceModel) => ({ ...device, isConnected: pairedPeripheral?.deviceId === device.id }))
+    // Determine connection using multiple signals:
+    // 1) deviceId link set on pairedPeripheral after connect
+    // 2) Match BLE name (BEEPBASE-XXXX) if deviceId was not set
+    // 3) Match MAC address (Android) if available
+    const computeConnected = (device: DeviceModel) => {
+      if (!pairedPeripheral) return false
+      if (pairedPeripheral.deviceId && pairedPeripheral.deviceId === device.id) return true
+      const bleName = DeviceModel.getBleName(device)
+      if (pairedPeripheral.name && pairedPeripheral.name === bleName) return true
+      if (device.mac && pairedPeripheral.id && pairedPeripheral.id.toLowerCase() === device.mac.toLowerCase()) return true
+      return false
+    }
+
+    const computeNearby = (device: DeviceModel) => {
+      const bleName = DeviceModel.getBleName(device)
+      const mac = device.mac?.toLowerCase()
+      const macHit = mac ? Array.from(nearby.macs).some(m => m.toLowerCase() === mac) : false
+      const nameHit = nearby.names.has(bleName)
+      return macHit || nameHit
+    }
+
+    const items = devices.map((device: DeviceModel) => ({ ...device, isConnected: computeConnected(device), isNearby: computeNearby(device) }))
     const sortedItems = tidy(items, arrange([
-      desc("isConnected"),                    //connected devices on top
-      desc("owner")                           //devices from other groups at the bottom
+      desc("isConnected"),                    // connected devices on top
+      desc("isNearby"),                       // then advertising/nearby devices
+      desc("owner")                           // devices from other groups at the bottom
     ]))
     setListItems(sortedItems)
-  }, [devices, pairedPeripheral])
+  }, [devices, pairedPeripheral, nearby])
 
   const onRefresh = () => {
     setRefreshing(true)
@@ -68,7 +141,8 @@ const HomeScreen: FunctionComponent<Props> = ({
   }
 
   const onDevicePress = (device: DeviceModel) => {
-    navigation.navigate("PeripheralDetailScreen", { device })
+    // Pass only serializable id; the detail screen will look up the device from the store
+    navigation.navigate("PeripheralDetailScreen", { deviceId: device.id })
   }
 
   const onHelpPress = () => {
@@ -98,7 +172,8 @@ const HomeScreen: FunctionComponent<Props> = ({
             key={index} 
             title={device.name} 
             Icon={device.isConnected ?
-              <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.bluetooth} /> :
+              <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.bluetooth} /> : device.isNearby ?
+              <IconMaterialIcons name={"bluetooth"} size={30} color={Colors.lightGrey} /> :
               <Image style={{ width: 30, height: 30 }} source={Images.beepBase} resizeMode="cover" />
             }
             IconRight={!device.owner ? <IconMaterialIcons name={"group"} size={30} color={Colors.lighterGrey} /> : undefined }
