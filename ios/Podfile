@@ -28,5 +28,18 @@ target 'app' do
 
   post_install do |installer|
     react_native_post_install(installer)
+
+    # Ensure Folly doesn't redefine clock types on modern iOS by declaring clock_gettime availability
+    installer.pods_project.targets.each do |target|
+      if target.name == 'RCT-Folly'
+        target.build_configurations.each do |config|
+          settings = config.build_settings
+          defs = settings['GCC_PREPROCESSOR_DEFINITIONS'] || ['$(inherited)']
+          defs = [defs] unless defs.is_a?(Array)
+          defs << 'FOLLY_HAVE_CLOCK_GETTIME=1'
+          settings['GCC_PREPROCESSOR_DEFINITIONS'] = defs.uniq
+        end
+      end
+    end
   end
 end
