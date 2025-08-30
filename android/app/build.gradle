@@ -1,13 +1,6 @@
-plugins {
-    id 'com.android.application'
-
-    // Add the Google services Gradle plugin
-    id 'com.google.gms.google-services'
-    id 'com.google.firebase.crashlytics'
-}
-
-
 apply plugin: "com.android.application"
+apply plugin: "com.google.gms.google-services"
+apply plugin: "com.google.firebase.crashlytics"
 
 import com.android.build.OutputFile
 
@@ -88,7 +81,8 @@ import com.android.build.OutputFile
 
 project.ext.react = [
     enableHermes: false,  // clean and rebuild if changing
-    bundleInDebug: true,  // embed JS bundle and assets in debug APK so it runs without Metro
+    bundleInDebug: false, // let Metro serve JS in debug to avoid Gradle 8 strict task ordering
+    bundleInRelease: false, // prebundle JS/Assets to avoid Gradle 8 validation issues
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -133,6 +127,7 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 android {
     ndkVersion rootProject.ext.ndkVersion
 
+    namespace "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
@@ -140,11 +135,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    buildFeatures {
+        buildConfig true
+    }
+
     defaultConfig {
         applicationId "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 91
+        versionCode 92
         versionName "2.2.0"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
