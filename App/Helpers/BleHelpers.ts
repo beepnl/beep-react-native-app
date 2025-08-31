@@ -113,6 +113,11 @@ export default class BleHelpers {
   static LOG_FILE_NAME = "BeepBaseLogFile.txt"
   static LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME
 
+  // Track negotiated MTU per peripheral (Android)
+  static negotiatedMtu: { [peripheralId: string]: number } = {}
+  // Track maximum observed log notification payload per peripheral
+  static maxLogNotifBytes: { [peripheralId: string]: number } = {}
+
   static BleManagerDidUpdateValueForControlPointCharacteristicSubscription: EmitterSubscription
   static BleManagerDidUpdateValueForTXLogCharacteristicSubscription: EmitterSubscription
 
@@ -182,8 +187,6 @@ export default class BleHelpers {
     })
   }
 
-  }
-
   // Request high connection priority on Android API 21+ for better throughput
   static async requestConnectionPriorityHigh(peripheralId: string): Promise<void> {
     if (Platform.OS !== 'android' || Platform.Version < 21) return
@@ -210,14 +213,64 @@ export default class BleHelpers {
       try {
         OSLogger.log(`[BLE] Requesting MTU ${requestedMtu} for ${peripheralId}...`)
         const mtu = await (BleManager as any).requestMTU(peripheralId, requestedMtu)
-        if (mtu >= 23) return mtu
-      } catch (_) {}
+        OSLogger.log(`[BLE] MTU request returned ${mtu} for ${peripheralId}`)
+        if (mtu >= 23) {
+          BleHelpers.negotiatedMtu[peripheralId] = mtu
+          return mtu
+        }
+      } catch (e) {
+        OSLogger.log(`[BLE] MTU request ${requestedMtu} failed for ${peripheralId}: ${e}`)
+      }
     }
+    OSLogger.log(`[BLE] MTU negotiation did not change MTU for ${peripheralId}`)
     return 0
   }
 
   static pair(peripheralId: string) {
     return BleManager.createBond(peripheralId).catch(() => {})
+  }
+
+  static async isBonded(peripheralId: string): Promise<boolean> {
+    if (Platform.OS !== 'android') return false
+    try {
+      const list: Peripheral[] = await BleManager.getBondedPeripherals()
+      return Array.isArray(list) && list.some(p => p.id === peripheralId)
+    } catch {
+      return false
+    }
+  }
+
+  static async ensureBonded(peripheralId: string): Promise<void> {
+    if (Platform.OS !== 'android') return
+    try {
+      const bonded = await BleHelpers.isBonded(peripheralId)
+      if (!bonded) {
+        OSLogger.log(`[BLE] Creating bond with ${peripheralId} (on-demand)...`)
+        await BleHelpers.pair(peripheralId)
+      }
+    } catch (_) {}
+  }
+
+  static shouldPairOnAuthError(error: any): boolean {
+    try {
+      const msg: string = (error?.message || error?.toString?.() || '').toLowerCase()
+      if (!msg) return false
+      // Heuristics for Android auth failures
+      return (
+        Platform.OS === 'android' && (
+          msg.includes('auth') ||
+          msg.includes('insufficient') ||
+          msg.includes('encrypt') ||
+          msg.includes('pair') ||
+          msg.includes('bond') ||
+          msg.includes('gatt 5') ||
+          msg.includes('status=5') ||
+          msg.includes('gatt_insufficient')
+        )
+      )
+    } catch {
+      return false
+    }
   }
 
   static connectPeripheral(peripheralOrId: Peripheral | string) {
@@ -240,30 +293,23 @@ export default class BleHelpers {
       OSLogger.log(`[BLE] Peripheral ${peripheralId} is not connected, starting connection process...`);
 
       return BleManager.connect(peripheralId)
-        .then(() => {
+        .then(async () => {
           OSLogger.log(`[BLE] Successfully connected to ${peripheralId}`);
           if (typeof peripheralOrId !== 'string') {
             BleLogger.logPeripheral(peripheralOrId);
           }
-          OSLogger.log(`[BLE] Waiting 500ms before pairing...`);
-          return delay(500);
-        })
-        .then(() => {
-          OSLogger.log(`[BLE] Attempting to pair with ${peripheralId}`);
-          return this.pair(peripheralId);
-        })
-        .then(() => {
+          // Settle briefly, then optimize link
+          await delay(300)
           if (Platform.OS === 'android') {
             OSLogger.log(`[BLE] Negotiating connection priority and MTU for ${peripheralId}`);
-            return BleHelpers.requestConnectionPriorityHigh(peripheralId)
-              .catch(() => {})
-              .then(() => BleHelpers.requestMtu(peripheralId))
-              .catch(() => {})
-              .then(() => delay(150))
+            await BleHelpers.requestConnectionPriorityHigh(peripheralId).catch(() => {})
+            const mtu = await BleHelpers.requestMtu(peripheralId).catch(() => 0)
+            OSLogger.log(`[BLE] MTU negotiated: ${mtu || 'unknown'}`)
+            await delay(150)
           }
         })
         .then(() => {
-          OSLogger.log(`[BLE] Successfully paired with ${peripheralId}, retrieving services...`);
+          OSLogger.log(`[BLE] Retrieving services (no bond unless required) for ${peripheralId}...`);
           return BleHelpers.retrieveServices(peripheralId);
         })
         .catch(error => {
@@ -399,53 +445,6 @@ export default class BleHelpers {
     }
 
     return run()
-  }
-    const run = async (): Promise<Peripheral> => {
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          const p = await attemptOnce(attempt)
-          return p
-        } catch (e) {
-          if (attempt < maxAttempts) {
-            OSLogger.log(`[BLE] Retry in 1500ms (attempt ${attempt + 1}/${maxAttempts})...`)
-            await delay(1500)
-          } else {
-            throw e
-          }
-        }
-      }
-      throw new Error('[BLE] Unexpected scan loop exit')
-    }
-
-    return run()
-=======
-      const BleManagerStopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', () => {
-        BleManagerStopScanSubscription && BleManagerStopScanSubscription.remove()
-        if (isScanning) {
-          //if still scanning at this point no device matching filter was found
-          reject()
-        }
-        isScanning = false
-      })
-
-      BleManager.enableBluetooth().then(() => {
-        console.log("The bluetooth is already enabled or the user confirmed");
-        isScanning = true
-        BleManager.scan([/*BEEP_SERVICE*/], TIME_OUT, false).then((results) => {
-          console.log('Scanning...')
-        }).catch(err => {
-          isScanning = false
-          console.error(err)
-          store.dispatch(BeepBaseActions.bleFailure(err))
-        })
-      })
-      .catch((error) => {
-        isScanning = false
-        console.log("The user refuse to enable bluetooth", error)
-        store.dispatch(BeepBaseActions.bleFailure(error))
-      });
-    })
->>>>>>> origin/master
   }
 
   static onValueForCharacteristic({ value, peripheral, characteristic, service }) {
@@ -656,6 +655,18 @@ export default class BleHelpers {
     const buffer: Buffer = Buffer.from(value)
     const model = LogFileFrameModel.parse(buffer)
     if (model) {
+      const pid = typeof peripheral === 'string' ? peripheral : (peripheral?.id || 'unknown')
+      const len = buffer.length
+      // per-frame size log
+      console.log(`[BLE] Log frame size: ${len} bytes (peripheral ${pid})`)
+      // track max
+      const prevMax = BleHelpers.maxLogNotifBytes[pid] || 0
+      if (len > prevMax) {
+        BleHelpers.maxLogNotifBytes[pid] = len
+        const mtu = BleHelpers.negotiatedMtu[pid]
+        console.log(`[BLE] New max log frame size: ${len} bytes (negotiated MTU: ${mtu || 'unknown'})`)
+      }
+
       //skip frames with equal frame numbers, see https://github.com/innoveit/react-native-ble-manager/issues/577
       if (model.frame != BleHelpers.lastFrame) {
         store.dispatch(BeepBaseActions.addLogFileFrame(model))
@@ -668,31 +679,74 @@ export default class BleHelpers {
     }
   }
 
-  static retrieveServices(peripheralId: string) {
+  static async retrieveServices(peripheralId: string) {
     store.dispatch(BeepBaseActions.bleFailure(undefined))
     console.log("BleHelpers retrieveServices")
-    return delay(500).then(() => {
-      return BleManager.retrieveServices(peripheralId).then((peripheralInfo) => {
-        // console.log("Peripheral info:", peripheralInfo);
-        console.log("retrieveServices OK")
-        return BleManager.startNotification(peripheralId, BEEP_SERVICE, CONTROL_POINT_CHARACTERISTIC).then(() => {
-          console.log("Notification BEEP CONTROL POINT subscribed")
-          BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription.remove()
-          BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic);
-        }).then(() => {
-          return BleManager.startNotification(peripheralId, BEEP_SERVICE, LOG_FILE_CHARACTERISTIC).then(() => {
-            console.log("Notification LOG FILE subscribed")
-            BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription.remove()
-            BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic);
-          })
-        })
-      })
-      .catch((error) => {
-        const message = "Failed to retrieve services of " + peripheralId + ". Error: " + error
-        console.log(message)
-        store.dispatch(BeepBaseActions.bleFailure(message))
-      })
-    })
+
+    const normalize = (s?: string) => (s || '').toLowerCase()
+
+    const tryOnce = async () => {
+      const info: any = await BleManager.retrieveServices(peripheralId)
+      const services: string[] = (info?.services || []).map((s: any) => normalize(s?.uuid || s?.service))
+      const chars: { service: string, characteristic: string }[] = (info?.characteristics || []).map((c: any) => ({
+        service: normalize(c?.service),
+        characteristic: normalize(c?.characteristic),
+      }))
+      const hasBeepService = services.includes(BEEP_SERVICE) || chars.some(c => c.service === BEEP_SERVICE)
+      if (!hasBeepService) {
+        console.log(`[BLE] retrieveServices: BEEP service not found yet. Services=${JSON.stringify(services)}, CharCount=${chars.length}`)
+        throw new Error('BEEP service not found')
+      }
+      const hasCtrlPoint = chars.some(c => c.service === BEEP_SERVICE && c.characteristic === CONTROL_POINT_CHARACTERISTIC)
+      const hasLogFile = chars.some(c => c.service === BEEP_SERVICE && c.characteristic === LOG_FILE_CHARACTERISTIC)
+      if (!hasCtrlPoint || !hasLogFile) {
+        console.log(`[BLE] retrieveServices: Missing characteristic(s). CTRL=${hasCtrlPoint} LOG=${hasLogFile}`)
+      }
+      console.log("retrieveServices OK - BEEP service present")
+      const startNotifications = async () => {
+        await BleManager.startNotification(peripheralId, BEEP_SERVICE, CONTROL_POINT_CHARACTERISTIC)
+        console.log("Notification BEEP CONTROL POINT subscribed")
+        BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription.remove()
+        BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic)
+        await BleManager.startNotification(peripheralId, BEEP_SERVICE, LOG_FILE_CHARACTERISTIC)
+        console.log("Notification LOG FILE subscribed")
+        BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription.remove()
+        BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic)
+      }
+
+      try {
+        await startNotifications()
+      } catch (e) {
+        if (BleHelpers.shouldPairOnAuthError(e)) {
+          console.log('[BLE] startNotification failed due to auth; attempting on-demand bonding...')
+          await BleHelpers.ensureBonded(peripheralId)
+          await delay(250)
+          await startNotifications()
+        } else {
+          throw e
+        }
+      }
+    }
+
+    const maxAttempts = Platform.OS === 'ios' ? 5 : 2
+    const initialDelay = Platform.OS === 'ios' ? 700 : 300
+    await delay(initialDelay)
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        await tryOnce()
+        return
+      } catch (err) {
+        if (attempt === maxAttempts) {
+          const message = `Failed to retrieve services of ${peripheralId}. Error: ${err}`
+          console.log(message)
+          store.dispatch(BeepBaseActions.bleFailure(message))
+          throw err
+        }
+        console.log(`[BLE] retry retrieveServices in 300ms (attempt ${attempt + 1}/${maxAttempts})`)
+        await delay(300)
+      }
+    }
   }
 
   static isConnected(peripheralId: string) {
@@ -779,17 +833,6 @@ export default class BleHelpers {
       return obj != null && obj.constructor != null && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
     }
 
-    // const isLittleEndian = (function () {
-    //   let t32 = new Uint32Array(1);
-    //   let t8 = new Uint8Array(t32.buffer);
-    //   t8[0] = 0x0A;
-    //   t8[1] = 0x0B;
-    //   t8[2] = 0x0C;
-    //   t8[3] = 0x0D;
-    //   return t32[0] === 0x0D0C0B0A;
-    // })();
-    // const isBigEndian = !isLittleEndian;
-
     let buffer: Buffer
     const arrayCommand = Array.isArray(command) ? command : [command]
     let arrayCommandParams
@@ -805,24 +848,37 @@ export default class BleHelpers {
       buffer = Buffer.from(arrayCommand)
     }
 
-    // if (isLittleEndian) {
-    //   buffer.swap16()
-    // }
+    const performWrite = () => BleManager.write(
+      peripheralId,
+      BEEP_SERVICE,
+      CONTROL_POINT_CHARACTERISTIC,
+      [...buffer]
+    )
 
-    return BleHelpers.limiter.schedule(() => 
-      BleManager.write(
-        peripheralId,
-        BEEP_SERVICE,
-        CONTROL_POINT_CHARACTERISTIC,
-        [...buffer]
-      )
-      .then(() => {
+    return BleHelpers.limiter.schedule(async () => {
+      try {
+        await performWrite()
         console.log(Date.now() + " Written data: " + BleHelpers.byteToHexString([...buffer]));
-      })
-      .catch((error) => {
+        return
+      } catch (error) {
+        // On Android, attempt on-demand bonding for auth-related failures, then retry once
+        if (BleHelpers.shouldPairOnAuthError(error)) {
+          console.log('[BLE] Write failed due to auth; attempting on-demand bonding and retry...')
+          await BleHelpers.ensureBonded(peripheralId)
+          await delay(250)
+          try {
+            await performWrite()
+            console.log(Date.now() + " Written data (after bond): " + BleHelpers.byteToHexString([...buffer]));
+            return
+          } catch (e2) {
+            console.log(e2)
+            store.dispatch(BeepBaseActions.bleFailure(e2))
+            return
+          }
+        }
         console.log(error)
         store.dispatch(BeepBaseActions.bleFailure(error))
-      })
-    )
+      }
+    })
   }
 }

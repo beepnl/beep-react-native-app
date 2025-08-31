@@ -54,36 +54,42 @@ export class DeviceModel {
   mac?: string
 
   constructor(props: any) {
-    this.id = props.id.toString() || ""
-    this.name = props.name
-    this.hardwareId = props.hardware_id
-    this.devEUI = props.key
-    this.previousDevEUI = props.key
-    this.owner = !!props.owner
+    this.id = (props?.id != null ? props.id.toString() : "")
+    this.name = props?.name || ""
+    this.hardwareId = props?.hardware_id || ""
+    this.devEUI = typeof props?.key === 'string' ? props.key : ""
+    this.previousDevEUI = typeof props?.key === 'string' ? props.key : ""
+    this.owner = !!props?.owner
 
     // Optional BLE MAC address if backend provides it under various keys
-    const macCandidate = props.mac || props.macAddress || props.ble_mac || props.bleMac
+    const macCandidate = props?.mac || props?.macAddress || props?.ble_mac || props?.bleMac
     if (macCandidate && typeof macCandidate === 'string') {
       this.mac = macCandidate
     }
 
     this.sensorDefinitions = []
-    if (Array.isArray(props.sensor_definitions)) {
+    if (Array.isArray(props?.sensor_definitions)) {
       props.sensor_definitions.forEach((item: any) => this.sensorDefinitions.push(new SensorDefinitionModel(item)))
     }
   }
 
-  static getBleName(instance: DeviceModel) {
+  static getBleName(instance?: DeviceModel) {
     if (instance) {
-      const suffix = instance.devEUI.slice(-4).toUpperCase()
+      const candidate = (instance.devEUI && instance.devEUI.length >= 4)
+        ? instance.devEUI
+        : (instance.previousDevEUI || "")
+      const suffix = candidate && candidate.length >= 4 ? candidate.slice(-4).toUpperCase() : "0000"
       return BLE_NAME_PREFIX + suffix
     }
     return ""
   }
 
-  static getPreviousBleName(instance: DeviceModel) {
+  static getPreviousBleName(instance?: DeviceModel) {
     if (instance) {
-      const suffix = instance.previousDevEUI.slice(-4).toUpperCase()
+      const candidate = (instance.previousDevEUI && instance.previousDevEUI.length >= 4)
+        ? instance.previousDevEUI
+        : (instance.devEUI || "")
+      const suffix = candidate && candidate.length >= 4 ? candidate.slice(-4).toUpperCase() : "0000"
       return BLE_NAME_PREFIX + suffix
     }
     return ""

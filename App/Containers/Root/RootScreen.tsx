@@ -111,7 +111,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   }, [])
 
   useEffect(() => {
-    if (peripheral && appState == "active") {
+      if (peripheral && appState == "active") {
       BleHelpers.isConnected(peripheral.id).then((isConnected : boolean) => {
         if (peripheral.isConnected != isConnected) {
           const updated = {
@@ -120,16 +120,15 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
           }
           dispatch(BeepBaseActions.setPairedPeripheral(updated))
 
-          if (peripheral)
-          {    
-      params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
-      BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
-          //console.log('clock synced from rootscreen')
-          if (dropDownAlert?.current) {       
+          // Only sync clock and show toast when we actually became connected
+          if (isConnected) {
+            params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
+            BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
+            if (dropDownAlert?.current) {       
               dropDownAlert.current.alertWithType('success', 'Clock sync', 'Internal clock has been synchronized', params);
             }
+          }
         }
-      }
       })
     }
   }, [peripheral, appState])

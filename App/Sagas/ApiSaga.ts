@@ -92,21 +92,21 @@ export function* checkDeviceRegistration(action: any) {
       //no info field means we have a search result
       if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
 
-        // device found but may not have a devEUI
-        
-        if (deviceResponse.devEUI == null)
-        {
-          yield put(ApiActions.setRegisterState("failed"))
-          yield put(ApiActions.setRegisterState("notYetRegistered"))
-          console.log("Registration failed (device exists but devEUI is not defined)")
-        }
-
-        yield put(ApiActions.setRegisterState("alreadyRegistered"))
-        const device = new DeviceModel(deviceResponse.data[0])
+        // device found; decide based on presence of devEUI/key
+        const foundRaw = deviceResponse.data[0]
+        const device = new DeviceModel(foundRaw)
         yield put(BeepBaseActions.setDevice(device))
 
-        //update firmware with LoRa devEUI. This will also rename the BLE name
-        yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+        if (device.devEUI && device.devEUI.length > 0) {
+          // Already registered with a devEUI
+          yield put(ApiActions.setRegisterState("alreadyRegistered"))
+          // update firmware with LoRa devEUI. This will also rename the BLE name
+          yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+        } else {
+          // Device exists in API but lacks a devEUI; continue registration flow
+          yield put(ApiActions.setRegisterState("notYetRegistered"))
+          console.log("Device exists in API but devEUI is not defined")
+        }
 
       } else {
         //device not found

@@ -62,14 +62,16 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     dispatch(BeepBaseActions.setFirmwareVersion(undefined))
     dispatch(BeepBaseActions.setHardwareVersion(undefined))
 
-    //initialize scan result with all previously bonded peripherals
-    BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
-      const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
-      filtered.forEach(p => {
-        bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded", isConnected: p.id == pairedPeripheral?.id })
-      });
-      refreshList()
-    })
+    //initialize scan result with all previously bonded peripherals (Android only)
+    if (Platform.OS === 'android') {
+      BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
+        const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
+        filtered.forEach(p => {
+          bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded", isConnected: p.id == pairedPeripheral?.id })
+        });
+        refreshList()
+      }).catch(() => {})
+    }
     
     startScan()
     
