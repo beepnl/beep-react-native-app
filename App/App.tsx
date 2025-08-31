@@ -9,6 +9,7 @@ import i18n from './Localization';
 import { I18nextProvider } from 'react-i18next';
 import { MenuProvider } from 'react-native-popup-menu';
 import RootScreen from './Containers/Root/RootScreen'
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Redux
 import { Provider } from 'react-redux'
@@ -38,9 +39,11 @@ const App: FunctionComponent<Props> = () => {
       <PersistGate loading={null} persistor={persistor}>
         <I18nextProvider i18n={i18n}>
           <SafeAreaProvider>
-            <MenuProvider>
-              <RootScreen />
-            </MenuProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <MenuProvider>
+                <RootScreen />
+              </MenuProvider>
+            </GestureHandlerRootView>
           </SafeAreaProvider>
         </I18nextProvider>
       </PersistGate>

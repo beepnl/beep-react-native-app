@@ -63,6 +63,8 @@ const HomeScreen: FunctionComponent<Props> = ({
 
       const startScan = async () => {
         try {
+          // Ensure BLE manager is started and permissions requested (Android)
+          try { await BleHelpers.init() } catch {}
           await BleHelpers.enableBluetooth()
           isScanning = true
           discoverSub = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: any) => {

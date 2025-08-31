@@ -82,10 +82,9 @@ import com.android.build.OutputFile
 project.ext.react = [
     enableHermes: false,  // clean and rebuild if changing
     bundleInDebug: false, // let Metro serve JS in debug to avoid Gradle 8 strict task ordering
-    bundleInRelease: false, // prebundle JS/Assets to avoid Gradle 8 validation issues
+    bundleInRelease: true, // prebundle JS/Assets for release builds (Play Store)
 ]
 
-apply from: "../../node_modules/react-native/react.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -124,6 +123,11 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+// Mirror Hermes flag for libraries expecting project(':app').hermesEnabled
+ext {
+    hermesEnabled = enableHermes
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -143,7 +147,7 @@ android {
         applicationId "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 92
+        versionCode 94
         versionName "2.2.0"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
@@ -203,7 +207,7 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
-    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation("com.facebook.react:react-android")  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
@@ -256,6 +260,20 @@ dependencies {
 task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.implementation
     into 'libs'
+}
+
+// Ensure Gradle 8+ explicit task dependency for React Native copy step
+afterEvaluate {
+    def procReleaseMainManifest = tasks.findByName("processReleaseMainManifest")
+    def parseReleaseLocalResources = tasks.findByName("parseReleaseLocalResources")
+    def copyReleaseBundledJs = tasks.findByName("copyReleaseBundledJs")
+
+    if (procReleaseMainManifest != null && copyReleaseBundledJs != null) {
+        procReleaseMainManifest.dependsOn(copyReleaseBundledJs)
+    }
+    if (parseReleaseLocalResources != null && copyReleaseBundledJs != null) {
+        parseReleaseLocalResources.dependsOn(copyReleaseBundledJs)
+    }
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
