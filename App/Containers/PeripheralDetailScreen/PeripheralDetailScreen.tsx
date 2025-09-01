@@ -99,7 +99,7 @@ const getMenuItems = (firmwareVersion?: FirmwareVersionModel): Array<MenuItem> =
 ]
 
 export type PeripheralDetailScreenNavigationParams = {
-  device: DeviceModel,
+  deviceId: string,
 }
 
 type Props = NativeStackScreenProps<PeripheralDetailScreenNavigationParams>
@@ -111,7 +111,8 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  const device: DeviceModel = route.params?.device
+  const deviceIdParam: string = route.params?.deviceId
+  const device: DeviceModel = useTypedSelector<any>((state: any) => (state.user.devices || []).find((d: DeviceModel) => d.id === deviceIdParam))
   const peripheralEqualsDevice = peripheral?.deviceId === device?.id
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const [menuItems, setMenuItems] = useState<Array<MenuItem>>(getMenuItems())
@@ -165,8 +166,43 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
   const connect = () => {
     setBusy(true)
-    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((peripheral: Peripheral) => {
-      BleHelpers.connectPeripheral(peripheral.id).then(() => {
+
+    // Prefer direct MAC connect if available
+    if (device?.mac) {
+      BleHelpers.connectPeripheral(device.mac)
+        .then(() => {
+          dispatch(BeepBaseActions.setPairedPeripheral({ 
+            id: device.mac as unknown as string,
+            name: DeviceModel.getBleName(device),
+            isConnected: true,
+            deviceId: device.id
+          } as any))
+          setBusy(false)
+        })
+        .catch(() => {
+          // Fallback to scan by name if direct connect fails
+          BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device), { attempts: 3, timeoutSec: 8 }).then((peripheral: Peripheral) => {
+            BleHelpers.connectPeripheral(peripheral).then(() => {
+              dispatch(BeepBaseActions.setPairedPeripheral({ 
+                ...peripheral, 
+                isConnected: true,
+                deviceId: device.id
+              }))
+              setBusy(false)
+            })
+          }).catch(() => {
+            //peripheral not found
+            setError(t("peripheralDetail.notFound"))
+            BleHelpers.disconnectAllPeripherals()
+            setBusy(false)
+          })
+        })
+      return
+    }
+
+    // No MAC present; scan by name with retries
+    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device), { attempts: 3, timeoutSec: 8 }).then((peripheral: Peripheral) => {
+      BleHelpers.connectPeripheral(peripheral).then(() => {
         dispatch(BeepBaseActions.setPairedPeripheral({ 
           ...peripheral, 
           isConnected: true,
