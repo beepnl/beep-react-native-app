@@ -137,6 +137,7 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
 
     buildFeatures {
@@ -147,7 +148,7 @@ android {
         applicationId "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 95
+        versionCode 96
         versionName "2.2.0"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
@@ -210,6 +211,7 @@ dependencies {
     implementation("com.facebook.react:react-android")  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.2"
 
     // Flipper Fresco plugin disabled to avoid missing com.facebook.fresco:stetho
     // debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
