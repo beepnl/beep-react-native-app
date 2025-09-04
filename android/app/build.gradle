@@ -148,7 +148,7 @@ android {
         applicationId "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 96
+        versionCode 100
         versionName "2.2.0"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
@@ -208,7 +208,7 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
-    implementation("com.facebook.react:react-android")  // From node_modules
+    implementation "com.facebook.react:react-native:0.68.2"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.2"
@@ -278,4 +278,5 @@ afterEvaluate {
     }
 }
 
+apply from: "../../node_modules/react-native/react.gradle"
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

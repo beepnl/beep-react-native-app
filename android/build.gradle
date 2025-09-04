@@ -4,9 +4,9 @@
 buildscript {
     ext {
         buildToolsVersion = "31.0.0"
-        minSdkVersion = 33
+        minSdkVersion = 21
         compileSdkVersion = 33
-        targetSdkVersion = 33
+        targetSdkVersion = 35
         ndkVersion = "23.1.7779620"
         kotlin_version = "1.6.10"
 	kotlinVersion = "1.6.10"
@@ -29,6 +29,10 @@ buildscript {
 allprojects {
     // Enforce Java 8 source/target and Kotlin JVM target for all subprojects
     subprojects { project ->
+        // Some older RN libraries expect a 'compile' configuration; create it early if missing.
+        if (project.name == 'react-native-reanimated') {
+            project.configurations.maybeCreate('compile')
+        }
         afterEvaluate {
             if (project.hasProperty('android')) {
                 project.android {
