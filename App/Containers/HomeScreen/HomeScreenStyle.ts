@@ -14,6 +14,25 @@ export default StyleSheet.create({
   devicesContainer: {
     ...ApplicationStyles.container,
     width: "100%",
+  },
+
+  noticeContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingHorizontal: Metrics.doubleBaseMargin,
+    paddingVertical: Metrics.baseMargin,
+    backgroundColor: Colors.lightYellow,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.darkYellow,
+    borderRadius: 8,
+    marginBottom: Metrics.baseMargin,
+  },
+  noticeText: {
+    flex: 1,
+    color: Colors.grey,
+    fontSize: 13,
+    lineHeight: 18,
   }
 
 })

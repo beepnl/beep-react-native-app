@@ -50,23 +50,11 @@ export class WeightParser {
    * @returns number - 32-bit signed integer
    */
   private convert24BitToSigned(byte1: number, byte2: number, byte3: number): number {
-    // Check if the number is negative (most significant bit is 1)
-    const isNegative = (byte1 & 0x80) !== 0;
-    
-    if (isNegative) {
-      // For negative numbers:
-      // 1. Clear the sign bit
-      byte1 &= 0x7F;
-      
-      // 2. Combine bytes into 24-bit value
-      const positiveValue = (byte1 << 16) | (byte2 << 8) | byte3;
-      
-      // 3. Return as negative number
-      return -positiveValue;
-    } else {
-      // For positive numbers, simply combine the bytes
-      return (byte1 << 16) | (byte2 << 8) | byte3;
-    }
+    // Combine to 24-bit unsigned value
+    let v = ((byte1 & 0xFF) << 16) | ((byte2 & 0xFF) << 8) | (byte3 & 0xFF);
+    // Sign-extend 24 -> 32 bits
+    if (v & 0x800000) v -= 0x1000000; // 2^24
+    return v;
   }
 
   parse(): WeightModel | undefined {
