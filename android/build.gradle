@@ -3,7 +3,7 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "31.0.0"
+        buildToolsVersion = "33.0.2"
         minSdkVersion = 21
         compileSdkVersion = 33
         targetSdkVersion = 35
@@ -32,6 +32,36 @@ allprojects {
         // Some older RN libraries expect a 'compile' configuration; create it early if missing.
         if (project.name == 'react-native-reanimated') {
             project.configurations.maybeCreate('compile')
+        }
+        // Set namespace for AGP 8 where missing in third-party libraries
+        project.plugins.withId('com.android.library') {
+            def nsMap = [
+                'react-native-async-storage_async-storage': 'com.reactnativecommunity.asyncstorage',
+                'react-native-community_masked-view'     : 'org.reactnative.maskedview',
+                'react-native-community_toolbar-android' : 'com.reactnativecommunity.toolbarandroid',
+                'react-native-ble-manager'               : 'it.innove',
+                'react-native-file-access'               : 'com.alpha0010.fs',
+                'react-native-fs'                        : 'com.rnfs',
+                'react-native-gesture-handler'           : 'com.swmansion.gesturehandler.react',
+                'react-native-nordic-dfu'                : 'com.pilloxa.dfu',
+                'react-native-reanimated'                : 'com.swmansion.reanimated',
+                'react-native-safe-area-context'         : 'com.th3rdwave.safeareacontext',
+                'react-native-screens'                   : 'com.swmansion.rnscreens',
+                'react-native-svg'                       : 'com.horcrux.svg',
+                'react-native-text-input-mask'           : 'com.RNTextInputMask',
+                'react-native-vector-icons'              : 'com.oblador.vectoricons'
+            ]
+            if (project.hasProperty('android') && nsMap.containsKey(project.name)) {
+                project.android.namespace nsMap[project.name]
+                if (project.android.hasProperty('buildFeatures')) {
+                    project.android.buildFeatures.buildConfig = true
+                }
+                // Ensure Java 8 for libs
+                project.android.compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_1_8
+                    targetCompatibility JavaVersion.VERSION_1_8
+                }
+            }
         }
         afterEvaluate {
             if (project.hasProperty('android')) {

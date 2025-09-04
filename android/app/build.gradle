@@ -2,6 +2,30 @@ apply plugin: "com.android.application"
 apply plugin: "com.google.gms.google-services"
 apply plugin: "com.google.firebase.crashlytics"
 
+// Ensure Gradle 8 validation is satisfied by declaring explicit deps for RN bundling task
+gradle.projectsEvaluated {
+    def aarMetadataTasks = [
+        ":react-native-async-storage_async-storage:writeReleaseAarMetadata",
+        ":react-native-community_masked-view:writeReleaseAarMetadata",
+        ":react-native-community_toolbar-android:writeReleaseAarMetadata",
+        ":react-native-ble-manager:writeReleaseAarMetadata",
+        ":react-native-file-access:writeReleaseAarMetadata",
+        ":react-native-fs:writeReleaseAarMetadata",
+        ":react-native-gesture-handler:writeReleaseAarMetadata",
+        ":react-native-nordic-dfu:writeReleaseAarMetadata",
+        ":react-native-reanimated:writeReleaseAarMetadata",
+        ":react-native-safe-area-context:writeReleaseAarMetadata",
+        ":react-native-screens:writeReleaseAarMetadata",
+        ":react-native-svg:writeReleaseAarMetadata",
+        ":react-native-text-input-mask:writeReleaseAarMetadata",
+        ":react-native-vector-icons:writeReleaseAarMetadata"
+    ]
+    tasks.matching { it.name == "bundleReleaseJsAndAssets" }.configureEach {
+        dependsOn(aarMetadataTasks)
+        mustRunAfter(aarMetadataTasks)
+    }
+}
+
 import com.android.build.OutputFile
 
 /**
