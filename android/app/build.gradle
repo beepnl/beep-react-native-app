@@ -2,27 +2,38 @@ apply plugin: "com.android.application"
 apply plugin: "com.google.gms.google-services"
 apply plugin: "com.google.firebase.crashlytics"
 
-// Ensure Gradle 8 validation is satisfied by declaring explicit deps for RN bundling task
+
+// Ensure Gradle 8 validation is satisfied by declaring explicit deps for RN bundling tasks
 gradle.projectsEvaluated {
-    def aarMetadataTasks = [
-        ":react-native-async-storage_async-storage:writeReleaseAarMetadata",
-        ":react-native-community_masked-view:writeReleaseAarMetadata",
-        ":react-native-community_toolbar-android:writeReleaseAarMetadata",
-        ":react-native-ble-manager:writeReleaseAarMetadata",
-        ":react-native-file-access:writeReleaseAarMetadata",
-        ":react-native-fs:writeReleaseAarMetadata",
-        ":react-native-gesture-handler:writeReleaseAarMetadata",
-        ":react-native-nordic-dfu:writeReleaseAarMetadata",
-        ":react-native-reanimated:writeReleaseAarMetadata",
-        ":react-native-safe-area-context:writeReleaseAarMetadata",
-        ":react-native-screens:writeReleaseAarMetadata",
-        ":react-native-svg:writeReleaseAarMetadata",
-        ":react-native-text-input-mask:writeReleaseAarMetadata",
-        ":react-native-vector-icons:writeReleaseAarMetadata"
+    def modules = [
+        "react-native-async-storage_async-storage",
+        "react-native-community_masked-view",
+        "react-native-community_toolbar-android",
+        "react-native-ble-manager",
+        "react-native-file-access",
+        "react-native-fs",
+        "react-native-gesture-handler",
+        "react-native-nordic-dfu",
+        "react-native-reanimated",
+        "react-native-safe-area-context",
+        "react-native-screens",
+        "react-native-svg",
+        "react-native-text-input-mask",
+        "react-native-vector-icons"
     ]
-    tasks.matching { it.name == "bundleReleaseJsAndAssets" }.configureEach {
-        dependsOn(aarMetadataTasks)
-        mustRunAfter(aarMetadataTasks)
+    def variants = ["Debug", "DebugOffline", "Release"]
+    def aarMetadataTasks = []
+    modules.each { m ->
+        variants.each { v ->
+            aarMetadataTasks += ":${m}:write${v}AarMetadata"
+        }
+    }
+    def existingTasks = aarMetadataTasks.findAll { tasks.findByPath(it) != null }
+    ["bundleReleaseJsAndAssets", "bundleDebugOfflineJsAndAssets"].each { tname ->
+        tasks.matching { it.name == tname }.configureEach {
+            dependsOn(existingTasks)
+            mustRunAfter(existingTasks)
+        }
     }
 }
 
@@ -105,8 +116,16 @@ import com.android.build.OutputFile
 
 project.ext.react = [
     enableHermes: false,  // clean and rebuild if changing
-    bundleInDebug: false, // let Metro serve JS in debug to avoid Gradle 8 strict task ordering
-    bundleInRelease: true, // prebundle JS/Assets for release builds (Play Store)
+    bundleInDebug: false, // let Metro serve JS in debug
+    bundleInRelease: false, // we will not bundle via Gradle in release
+    // Provide an explicit predicate so react.gradle never bundles in these variants
+    bundleForVariant: { variant ->
+        def n = variant.name?.toLowerCase() ?: ""
+        return false // disable for all variants; we pre-bundle or use existing assets
+    },
+    // Offline-capable debug variant: avoid RN Gradle bundling; use pre-bundled asset
+    bundleInDebugOffline: false,
+    devDisabledInDebugOffline: true,
 ]
 
 
@@ -168,12 +187,16 @@ android {
         buildConfig true
     }
 
+    buildFeatures {
+        buildConfig true
+    }
+
     defaultConfig {
         applicationId "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 100
-        versionName "2.2.0"
+        versionCode 105
+        versionName "2.3"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
@@ -201,6 +224,13 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+        }
+        // Offline-capable debug type that bundles JS, so APK runs without Metro
+        debugOffline {
+            initWith debug
+            debuggable true
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ["debug"]
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -278,6 +308,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
 
+    // Nordic DFU library with Android 14/15 typed foreground service support
+    implementation("no.nordicsemi.android:dfu:2.9.0")
 
 }
 
@@ -290,15 +322,32 @@ task copyDownloadableDepsToLibs(type: Copy) {
 
 // Ensure Gradle 8+ explicit task dependency for React Native copy step
 afterEvaluate {
-    def procReleaseMainManifest = tasks.findByName("processReleaseMainManifest")
-    def parseReleaseLocalResources = tasks.findByName("parseReleaseLocalResources")
-    def copyReleaseBundledJs = tasks.findByName("copyReleaseBundledJs")
+    ["Release", "DebugOffline"].each { variantName ->
+        def procTask = tasks.findByName("process${variantName}MainManifest")
+        def parseTask = tasks.findByName("parse${variantName}LocalResources")
+        def copyJsTask = tasks.findByName("copy${variantName}BundledJs")
 
-    if (procReleaseMainManifest != null && copyReleaseBundledJs != null) {
-        procReleaseMainManifest.dependsOn(copyReleaseBundledJs)
+        if (procTask != null && copyJsTask != null) {
+            procTask.dependsOn(copyJsTask)
+        }
+        if (parseTask != null && copyJsTask != null) {
+            parseTask.dependsOn(copyJsTask)
+        }
     }
-    if (parseReleaseLocalResources != null && copyReleaseBundledJs != null) {
-        parseReleaseLocalResources.dependsOn(copyReleaseBundledJs)
+    // Fallback in case tasks are created after this block
+    tasks.whenTaskAdded { t ->
+        if (t.name == 'parseDebugOfflineLocalResources') {
+            def copyJs = tasks.findByName('copyDebugOfflineBundledJs')
+            if (copyJs != null) {
+                t.dependsOn(copyJs)
+            }
+        }
+        if (t.name == 'parseReleaseLocalResources') {
+            def copyJsRel = tasks.findByName('copyReleaseBundledJs')
+            if (copyJsRel != null) {
+                t.dependsOn(copyJsRel)
+            }
+        }
     }
 }
 
