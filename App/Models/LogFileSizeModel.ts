@@ -1,5 +1,6 @@
 import DateTimeHelper from "../Helpers/DateTimeHelpers"
 import FormatHelpers from "../Helpers/FormatHelpers"
+import { Buffer } from 'buffer'
 
 export class LogFileSizeModel {
   data: number = 0
@@ -23,8 +24,10 @@ export class LogFileSizeModel {
 
   static parse(rawData: any) {
     let data = 0
-    if (rawData?.length > 0) {
-      data = rawData.readInt32BE()
+    // Ensure rawData is a proper Buffer instance
+    const buffer = Buffer.isBuffer(rawData) ? rawData : Buffer.from(rawData || [])
+    if (buffer?.length > 0) {
+      data = buffer.readInt32BE()
     }
     return new LogFileSizeModel({ data })
   }

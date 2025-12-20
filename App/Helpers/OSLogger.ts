@@ -1,23 +1,53 @@
-export default class OSLogger {
-  static log(message: string) {
-    try {
-      // Route logs to console; adjust to native logging as needed
-      // Avoid throwing if console is unavailable in some environments
-      /* eslint-disable no-console */
-      console.log(message)
-      /* eslint-enable no-console */
-    } catch {
-      // no-op
-    }
-  }
+import { NativeEventEmitter, NativeModules } from 'react-native';
 
-  static getDeviceInfo() {
-    // Minimal placeholder used by BleLogger for metadata
-    return {
-      brand: 'unknown',
-      model: 'unknown',
-      osVersion: String((global as any)?.navigator?.userAgent || 'android'),
-      apiLevel: 0,
-    }
+const { OSLogger } = NativeModules;
+
+const osLoggerEmitter = OSLogger ? new NativeEventEmitter(OSLogger) : null;
+
+export const OSLoggerEvents = {
+  onBluetoothStateChange: 'onBluetoothStateChange',
+};
+
+export const log = (message: string) => {
+  if (OSLogger && OSLogger.log) {
+    OSLogger.log(message);
+  } else {
+    console.log(`[OSLogger] ${message}`);
   }
-}
+};
+
+export const getDeviceInfo = () => {
+  if (OSLogger) {
+    return {
+      brand: OSLogger.BRAND || 'Unknown',
+      model: OSLogger.MODEL || 'Unknown',
+      osVersion: OSLogger.OS_VERSION || 'Unknown',
+      apiLevel: OSLogger.API_LEVEL || 'Unknown',
+    };
+  } else {
+    return {
+      brand: 'Unknown',
+      model: 'Unknown',
+      osVersion: 'Unknown',
+      apiLevel: 'Unknown',
+    };
+  }
+};
+
+export const onBluetoothStateChange = (callback: (state: string) => void) => {
+  if (OSLogger && osLoggerEmitter) {
+    return osLoggerEmitter.addListener(OSLoggerEvents.onBluetoothStateChange, (event) => {
+      callback(event.state);
+    });
+  } else {
+    console.warn('[OSLogger] Native module not available, cannot listen to Bluetooth state changes');
+    return null;
+  }
+};
+
+export default {
+  log,
+  getDeviceInfo,
+  onBluetoothStateChange,
+  Events: OSLoggerEvents,
+};

@@ -10,11 +10,12 @@ import useAppState from '../../Helpers/useAppState';
 import styles from './RootScreenStyle'
 
 // Utils
+import { RNLogger } from '../../Helpers/RNLogger';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthStack, AppStack } from './AppNavigation';
 import { navigationRef } from '../../Services/NavigationService';
 import { NativeModules, NativeEventEmitter, Text } from "react-native";
-//import BleHelpers from '../../Helpers/BleHelpers';
+import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import moment from 'moment'
 import i18n from '../../Localization';
 import api from 'App/Services/ApiService'
@@ -28,7 +29,7 @@ import { getDfuUpdating } from 'App/Stores/BeepBase/Selectors';
 import { getToken } from 'App/Stores/User/Selectors';
 import { getLanguageCode } from 'App/Stores/Settings/Selectors';
 
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+//import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import useInterval from '../../Helpers/useInterval';
 //import { ClockModel } from '../../Models/ClockModel';
 
@@ -65,24 +66,25 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
 
     const BleManagerConnectPeripheralSubscription = bleManagerEmitter.addListener("BleManagerConnectPeripheral", (args) => {
       const peripheralId: string = args?.peripheral
-      // Always mark connected and preserve deviceId if known
-      const updated = {
-        ...(peripheral || {}),
-        id: peripheralId,
-        isConnected: true,
-      }
-      dispatch(BeepBaseActions.setPairedPeripheral(updated))
+      if (peripheral && peripheral.id == peripheralId) {
+        const updated = {
+          ...peripheral,
+          isConnected: true,
+        }
+        dispatch(BeepBaseActions.setPairedPeripheral(updated))
 
-      /*
-      if (peripheral) {
+        /*
+        if (peripheral)
+            {
         params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
         BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
-        //console.log('clock synced from rootscreen')
-        if (dropDownAlert?.current) {       
-          dropDownAlert.current.alertWithType('success', 'Clock sync', 'Internal clock has been synchronized', params);
-        }
+            //console.log('clock synced from rootscreen')
+            if (dropDownAlert?.current) {       
+                dropDownAlert.current.alertWithType('success', 'Clock sync', 'Internal clock has been synchronized', params);
+              }
+            }
+        */
       }
-      */
     });
 
     const BleManagerDisconnectPeripheralSubscription = bleManagerEmitter.addListener("BleManagerDisconnectPeripheral", (args) => {
@@ -98,7 +100,9 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       }
     });
 
-    BleHelpers.init()
+    BleHelpers.init().catch(error => {
+      console.error('[ROOT] BleHelpers.init() failed:', error)
+    })
 
     if (token) {
       api.setToken(token)
@@ -111,7 +115,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   }, [])
 
   useEffect(() => {
-      if (peripheral && appState == "active") {
+    if (peripheral && appState == "active") {
       BleHelpers.isConnected(peripheral.id).then((isConnected : boolean) => {
         if (peripheral.isConnected != isConnected) {
           const updated = {
@@ -120,15 +124,16 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
           }
           dispatch(BeepBaseActions.setPairedPeripheral(updated))
 
-          // Only sync clock and show toast when we actually became connected
-          if (isConnected) {
-            params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
-            BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
-            if (dropDownAlert?.current) {       
+          if (peripheral)
+          {    
+      params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
+      BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params)
+          //console.log('clock synced from rootscreen')
+          if (dropDownAlert?.current) {       
               dropDownAlert.current.alertWithType('success', 'Clock sync', 'Internal clock has been synchronized', params);
             }
-          }
         }
+      }
       })
     }
   }, [peripheral, appState])

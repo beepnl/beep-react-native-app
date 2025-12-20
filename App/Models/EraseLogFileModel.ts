@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 const ERRORS = [
   "Succeeded",                                                          //0
   "A hard error occurred in the low level disk I/O layer",              //1
@@ -37,11 +39,12 @@ export class EraseLogFileModel {
   }
 
   static parse(rawData: any) {
+    const buffer = Buffer.isBuffer(rawData) ? rawData : Buffer.from(rawData || [])
     let command = 0
     let code = 0
-    if (rawData?.length >= 5) {
-      command = rawData.readUInt8(0)
-      code = rawData.readUInt32BE(1)
+    if (buffer?.length >= 5) {
+      command = buffer.readUInt8(0)
+      code = buffer.readUInt32BE(1)
     }
     return new EraseLogFileModel({ command, code })
   }

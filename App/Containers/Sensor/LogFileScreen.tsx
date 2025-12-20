@@ -16,6 +16,7 @@ import RNFS, { UploadBeginCallbackResult, UploadFileItem, UploadProgressCallback
 import ApiService from '../../Services/ApiService';
 import useTimeout from '../../Helpers/useTimeout';
 import useInterval from '../../Helpers/useInterval';
+import { BleLogger } from '../../Helpers/BleLogger';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
@@ -76,6 +77,8 @@ const LogFileScreen: FunctionComponent<Props> = ({
   useTimeout(() => {
     setState("failed")
     setError(t("logFile.timeout"))
+    // Disable download mode on timeout
+    BleLogger.setDownloadMode(false)
   }, state == "downloading" && logFileProgress == 0 ? TIMEOUT : null)
 
   useInterval(() => {
@@ -83,12 +86,13 @@ const LogFileScreen: FunctionComponent<Props> = ({
     dispatch(BeepBaseActions.setEraseLogFileProgress(diff / 1000 / 250))
   }, (state == "erasing" && eraseType == "full") ? (__DEV__ ? 5000 : 1000) : null)
 
-  useEffect(() => {onDownloadLogFilePress
+  useEffect(() => {
     if (logFileProgress > 0 && logFileProgress === logFileSize?.value()) {
       //download finished, copy to SD card
       BleHelpers.exportLogFile()   //when uncommenting, also uncomment permission request in onDownloadLogFilePress()
 
-      //download finished, upload to api
+      //download finished, disable download mode and upload to api
+      BleLogger.setDownloadMode(false)
       setState("uploading")
       RNFS.uploadFiles({
         toUrl: ApiService.getLogFileUploadUrl(useProduction, logFileSize?.value()),
@@ -130,9 +134,10 @@ const LogFileScreen: FunctionComponent<Props> = ({
         } else {
           console.log('SERVER ERROR');
           setUploadProgress(0)
-          setState("failed") 
-          setError(("Upload failed: log file saved locally as " + BleHelpers.LOG_FILE_NAME))
-          //setError(`${response.statusCode}: ${response.body}`)
+          setState("failed")
+          setError(`Upload failed: log file saved locally as ${BleHelpers.LOG_FILE_NAME}`)
+          // Ensure download mode is disabled on upload failure
+          BleLogger.setDownloadMode(false)
         }
       })
       .catch((err) => {
@@ -142,6 +147,8 @@ const LogFileScreen: FunctionComponent<Props> = ({
             // cancelled by user
           }
           console.log(err);
+          // Ensure download mode is disabled on upload error
+          BleLogger.setDownloadMode(false)
         });
     }    
   }, [logFileProgress]);
@@ -167,6 +174,10 @@ const LogFileScreen: FunctionComponent<Props> = ({
       setError("")
       dispatch(BeepBaseActions.clearLogFileFrames())
       dispatch(BeepBaseActions.setEraseLogFileProgress(0))
+      
+      // Enable download mode to optimize performance
+      BleLogger.setDownloadMode(true)
+      
       if (peripheral) {
         BleHelpers.initLogFile().then(() => {
           BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
@@ -187,6 +198,10 @@ const LogFileScreen: FunctionComponent<Props> = ({
     dispatch(BeepBaseActions.setEraseLogFileProgress(0))
     setState("idle")
     setError("")
+    
+    // Ensure download mode is disabled when resetting
+    BleLogger.setDownloadMode(false)
+    
     onGetLogFileSizePress()
   }
 

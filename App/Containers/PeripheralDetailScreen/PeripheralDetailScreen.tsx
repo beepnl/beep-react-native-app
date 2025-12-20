@@ -11,6 +11,8 @@ import { Colors } from '../../Theme';
 
 // Utils
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
+import { RNLogger } from '../../Helpers/RNLogger';
+import { BleLogger } from '../../Helpers/BleLogger';
 import { Peripheral } from 'react-native-ble-manager';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -99,7 +101,8 @@ const getMenuItems = (firmwareVersion?: FirmwareVersionModel): Array<MenuItem> =
 ]
 
 export type PeripheralDetailScreenNavigationParams = {
-  deviceId: string,
+  device: DeviceModel,
+  connect?: boolean,
 }
 
 type Props = NativeStackScreenProps<PeripheralDetailScreenNavigationParams>
@@ -111,14 +114,20 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  const deviceIdParam: string = route.params?.deviceId
-  const device: DeviceModel = useTypedSelector<any>((state: any) => (state.user.devices || []).find((d: DeviceModel) => d.id === deviceIdParam))
+  const device: DeviceModel = route.params?.device
+  const connectOnLoad = route.params?.connect
   const peripheralEqualsDevice = peripheral?.deviceId === device?.id
   const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const [menuItems, setMenuItems] = useState<Array<MenuItem>>(getMenuItems())
   const [error, setError] = useState("")
   const [busy, setBusy] = useState(false)
   const isConnected = peripheral && peripheral.isConnected
+
+  useEffect(() => {
+    if (connectOnLoad && !isConnected) {
+      connect()
+    }
+  }, [connectOnLoad])
 
   useEffect(() => {
     if (!peripheralEqualsDevice) {
@@ -141,20 +150,32 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
   useEffect(() => {
     if (peripheralEqualsDevice && isConnected) {
+      RNLogger.log(`[RN] Device connected in PeripheralDetailScreen, performing initial setup`)
+      
       //update current device
+      RNLogger.log(`[RN] Setting current device in store: ${device.name}`)
       dispatch(BeepBaseActions.setDevice(device))
 
       //refresh sensor definitions for sensor detail screens
+      RNLogger.log(`[RN] Fetching sensor definitions for device`)
       dispatch(ApiActions.getSensorDefinitions(device))
 
       //beep the buzzer
+      BleLogger.log(`[BLE] Sending buzzer beep command`)
       BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
 
       //get latest sensor readings
+      BleLogger.log(`[BLE] Requesting firmware version`)
       BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+      
+      BleLogger.log(`[BLE] Starting temperature sensor conversion`)
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
+      
       const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
+      BleLogger.log(`[BLE] Starting weight sensor conversion on channel: ${channel}`)
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
+      
+      BleLogger.log(`[BLE] Reading audio ADC config`)
       BleHelpers.write(peripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
     }
   }, [peripheral, isConnected])
@@ -165,90 +186,67 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   }, [firmwareVersion])
 
   const connect = () => {
-    setBusy(true)
-
-    // Prefer direct MAC connect if available
-    if (device?.mac) {
-      BleHelpers.connectPeripheral(device.mac)
-        .then(() => {
-          dispatch(BeepBaseActions.setPairedPeripheral({ 
-            id: device.mac as unknown as string,
-            name: DeviceModel.getBleName(device),
-            isConnected: true,
-            deviceId: device.id
-          } as any))
-          setBusy(false)
-        })
-        .catch(() => {
-          // Fallback to scan by name if direct connect fails
-          BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device), { attempts: 3, timeoutSec: 8 }).then((peripheral: Peripheral) => {
-            BleHelpers.connectPeripheral(peripheral).then(() => {
-              dispatch(BeepBaseActions.setPairedPeripheral({ 
-                ...peripheral, 
-                isConnected: true,
-                deviceId: device.id
-              }))
-              setBusy(false)
-            })
-          }).catch(() => {
-            //peripheral not found
-            setError(t("peripheralDetail.notFound"))
-            BleHelpers.disconnectAllPeripherals()
-            setBusy(false)
-          })
-        })
+    // Fast path: if we're already connected to this device, just update the state
+    if (peripheral && peripheral.isConnected && peripheral.deviceId === device.id) {
+      RNLogger.log(`[RN] Already connected to device ${device.name}, skipping scan`)
+      // Ensure Redux state is in sync
+      dispatch(BeepBaseActions.setPairedPeripheral({ 
+        ...peripheral,
+        deviceId: device.id
+      }))
       return
     }
 
-    // No MAC present; scan by name with retries
-    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device), { attempts: 3, timeoutSec: 8 }).then((peripheral: Peripheral) => {
-      BleHelpers.connectPeripheral(peripheral).then(() => {
+    // Check if we have a peripheral ID that matches this device's expected BLE name
+    // This could be true if we're connected but the deviceId doesn't match yet
+    if (peripheral && peripheral.isConnected && peripheral.name === DeviceModel.getBleName(device)) {
+      RNLogger.log(`[RN] Already connected to BLE peripheral ${peripheral.name}, just updating deviceId`)
+      dispatch(BeepBaseActions.setPairedPeripheral({ 
+        ...peripheral,
+        deviceId: device.id
+      }))
+      return
+    }
+
+    setBusy(true)
+    setError("")
+    RNLogger.log(`[RN] Starting scan for device: ${device.name} (BLE name: ${DeviceModel.getBleName(device)})`)
+    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((scannedPeripheral: Peripheral) => {
+      BleHelpers.connectPeripheral(scannedPeripheral).then(() => {
         dispatch(BeepBaseActions.setPairedPeripheral({ 
-          ...peripheral, 
+          ...scannedPeripheral, 
           isConnected: true,
           deviceId: device.id
         }))
         setBusy(false)
+      }).catch((e) => {
+        RNLogger.log(`[RN] Connection failed: ${e}`)
+        setError(t("peripheralDetail.notFound"))
+        // Only disconnect the specific peripheral if we know which one failed
+        if (scannedPeripheral) {
+          BleHelpers.disconnectPeripheral(scannedPeripheral)
+        }
+        setBusy(false)
       })
-    }).catch(() => {
+    }).catch((error) => {
       //peripheral not found
+      RNLogger.log(`[RN] Peripheral not found during scan: ${error}`)
       setError(t("peripheralDetail.notFound"))
-      //in case we have an invisible connection in the BLE layer try to disconnect
-      BleHelpers.disconnectAllPeripherals()
       setBusy(false)
     })
   }
 
   const onToggleConnectionPress = () => {
+    RNLogger.log(`[RN] Toggle connection pressed - Current state: ${isConnected ? 'connected' : 'disconnected'}`)
     setError("")
     if (isConnected) {
+      RNLogger.log(`[RN] Disconnecting from ${peripheral?.name} (${peripheral?.id})`)
       BleHelpers.disconnectPeripheral(peripheral)
       dispatch(BeepBaseActions.setPairedPeripheral({ ...peripheral, isConnected: false }))
     } else {
+      RNLogger.log(`[RN] Starting connection process`)
       connect()
     }
-
-    //OK:
-    // if (peripheral) {
-    //   console.log("peripheral.isConnected", peripheral.isConnected)
-    //   if (peripheral.isConnected) {
-    //     BleHelpers.disconnectPeripheral(peripheral)?.then(() => {
-    //       const updated = {
-    //         ...peripheral,
-    //         isConnected: false,
-    //       }
-    //       dispatch(BeepBaseActions.setPairedPeripheral(updated))  
-    //     })
-    //   } else {
-    //     BleHelpers.connectPeripheral(peripheral.id)?.then(() => {
-    //       const updated = {
-    //         ...peripheral,
-    //         isConnected: true,
-    //       }
-    //       dispatch(BeepBaseActions.setPairedPeripheral(updated))  
-    //     })
-    //   }
-    // }
   }
 
   return (<>

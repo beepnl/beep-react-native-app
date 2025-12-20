@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect, useState, useCallback, useRef } fr
 // Hooks
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTypedSelector } from 'App/Stores';
 
 // Styles
@@ -14,8 +14,10 @@ import { Colors, Fonts, Metrics } from '../../Theme';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import BleManager, { Peripheral } from 'react-native-ble-manager'
 import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '../../Helpers/BleHelpers';
+import { RNLogger } from '../../Helpers/RNLogger';
+import { BleLogger } from '../../Helpers/BleLogger';
 import { Platform } from 'react-native'
-import { tidy, arrange, desc } from '@tidyjs/tidy';
+import * as tidyJs from '@tidyjs/tidy';
 
 // Data
 import BeepBaseActions from 'App/Stores/BeepBase/Actions'
@@ -62,26 +64,47 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     dispatch(BeepBaseActions.setFirmwareVersion(undefined))
     dispatch(BeepBaseActions.setHardwareVersion(undefined))
 
-    //initialize scan result with all previously bonded peripherals (Android only)
+    //initialize scan result with all previously bonded peripherals
+    RNLogger.log("[RN] WizardPairPeripheralScreen: Getting bonded peripherals...")
     if (Platform.OS === 'android') {
       BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
+        RNLogger.log(`[RN] Found ${peripherals.length} bonded peripherals`)
         const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => peripheral.name?.startsWith(BLE_NAME_PREFIX))
+        RNLogger.log(`[RN] Filtered to ${filtered.length} BEEPBASE peripherals`)
         filtered.forEach(p => {
+          RNLogger.log(`[RN] Adding bonded peripheral: ${p.name} (${p.id})`)
           bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded", isConnected: p.id == pairedPeripheral?.id })
         });
         refreshList()
-      }).catch(() => {})
+      }).catch(err => {
+        RNLogger.log(`[RN] Error getting bonded peripherals: ${err}`)
+      })
     }
     
-    startScan()
-    
     return (() => {
-      isScanning && BleManager.stopScan()
-      
+      RNLogger.log("[RN] WizardPairPeripheralScreen: Removing BLE event listeners")
       BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
       BleManagerStopScanSubscription && BleManagerStopScanSubscription.remove()
     })
   }, [])
+
+  // Use focus effect to manage scanning based on screen focus
+  useFocusEffect(
+    useCallback(() => {
+      // On focus: start scanning
+      RNLogger.log("[RN] WizardPairPeripheralScreen: Screen focused, starting scan")
+      startScan()
+      
+      // On blur: stop scanning to avoid conflicts
+      return () => {
+        if (isScanning) {
+          RNLogger.log("[RN] WizardPairPeripheralScreen: Screen blurred, stopping scan")
+          BleManager.stopScan()
+          setIsScanning(false)
+        }
+      };
+    }, [])
+  )
 
   useEffect(() => {
     refreshList()
@@ -93,10 +116,10 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     if (!isScanning) {
       setConnectingPeripheral(null)
       BleManager.scan([], 10, false).then((results) => {
-        console.log('Scanning...')
+        RNLogger.log('[RN] Starting scan from wizard...')
         setIsScanning(true)
       }).catch(err => {
-        console.error(err)
+        RNLogger.log('[RN] ERROR: Scan failed: ' + err)
         setError(err)
       });
     }
@@ -106,11 +129,11 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     switch (Platform.OS) {
       case "android":
         BleManager.enableBluetooth().then(() => {
-          console.log("The bluetooth is already enabled or the user confirmed");
+          RNLogger.log("[RN] Bluetooth is already enabled or user confirmed");
           scan()
         })
         .catch((error) => {
-          console.log("The user refuse to enable bluetooth", error);
+          RNLogger.log("[RN] User refused to enable bluetooth: " + error);
           setError("Bluetooth is disabled or not allowed.")
         });
         break;
@@ -122,12 +145,12 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   }
 
   const handleStopScan = () => {
-    console.log('Scan is stopped')
+    RNLogger.log('[RN] Scan stopped in wizard')
     setIsScanning(false)
   }
 
   const handleDiscoverPeripheral = (peripheral: Peripheral) => {
-    console.log('Found BLE peripheral', peripheral.id, peripheral.name);
+    BleLogger.log(`[BLE] Found peripheral in wizard - ID: ${peripheral.id}, Name: ${peripheral.name}, RSSI: ${peripheral.rssi}, Connectable: ${peripheral.advertising?.isConnectable}`);
     if (peripheral.advertising?.isConnectable) {
       if (!peripheral.name) {
         peripheral.name = peripheral.advertising?.localName;
@@ -137,9 +160,14 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
       }
       //filter list based on name
       if (peripheral.name.startsWith(BLE_NAME_PREFIX)) {
+        RNLogger.log(`[RN] Adding scanned BEEPBASE peripheral: ${peripheral.name} (${peripheral.id})`)
         scannedPeripherals.current?.set(peripheral.id, { ...peripheral, origin: "scanned", isConnected: peripheral.id == pairedPeripheral?.id });
         refreshList()
+      } else {
+        RNLogger.log(`[RN] Ignoring non-BEEPBASE peripheral: ${peripheral.name}`)
       }
+    } else {
+      BleLogger.log(`[BLE] Ignoring non-connectable peripheral: ${peripheral.name} (${peripheral.id})`);
     }
   }
 
@@ -147,52 +175,70 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     const scanned: Array<ListItem> = Array.from(scannedPeripherals.current.values())
     const bonded = Array.from(bondedPeripherals.current.values()).filter(p => scanned.findIndex(i => i.id == p.id) == -1)
     const merged = scanned.concat(bonded)
-    const sorted = tidy(merged, arrange([
-      desc("isConnected"),                    //connected devices on top
+    RNLogger.log(`[RN] Refreshing list - Scanned: ${scanned.length}, Bonded (unique): ${bonded.length}, Total: ${merged.length}`)
+    
+    // Log details of each peripheral
+    merged.forEach(p => {
+      RNLogger.log(`[RN] List item: ${p.name} (${p.id}) - Origin: ${p.origin}, Connected: ${p.isConnected}`)
+    })
+    
+    const sorted = tidyJs.tidy(merged, tidyJs.arrange([
+      tidyJs.desc("isConnected"),                    //connected devices on top
     ]))
+    RNLogger.log(`[RN] List sorted by connection status`)
     setList(sorted)
   }
 
   const onPeripheralPress = (peripheral: Peripheral) => {
+    RNLogger.log(`[RN] User selected peripheral: ${peripheral.name} (${peripheral.id})`)
     setConnectingPeripheral(peripheral)
+    RNLogger.log(`[RN] Clearing firmware and hardware version from store`)
     dispatch(BeepBaseActions.setFirmwareVersion(undefined))
     dispatch(BeepBaseActions.setHardwareVersion(undefined))
     connectPeripheral(peripheral)
   }
 
   const connectPeripheral = (peripheral: Peripheral) => {
-    console.log("connectPeripheral", peripheral)
+    RNLogger.log(`[RN] Connecting to peripheral in wizard - ID: ${peripheral.id}, Name: ${peripheral.name}`)
 
     BleManager.stopScan().then(() => {
+      RNLogger.log("[RN] Scan stopped, preparing to connect...")
       setError("")
-      BleManager.connect(peripheral.id).then(() => {
-        console.log("Connected to " + peripheral.name)
+      BleHelpers.connectPeripheral(peripheral)
+      .then(() => {
+        RNLogger.log("[RN] Connected to " + peripheral.name + " in wizard")
 
         //if connected to another peripheral clear beep base store
         if (pairedPeripheral?.id != peripheral.id) {
+          RNLogger.log("[RN] Connected to different peripheral, clearing BeepBase store")
+          RNLogger.log(`[RN] Previous peripheral: ${pairedPeripheral?.id}, New peripheral: ${peripheral.id}`)
           dispatch(BeepBaseActions.clear())
+        } else {
+          RNLogger.log("[RN] Connected to same peripheral, keeping BeepBase store")
         }
 
         //set paired peripheral in beep base store
+        RNLogger.log("[RN] Setting paired peripheral in store")
         const newPairedPeripheral = new PairedPeripheralModel({
           id: peripheral.id,
           name: peripheral.name,
         })
         dispatch(BeepBaseActions.setPairedPeripheral(newPairedPeripheral))
 
-        //services are needed to subscribe to notifications
-        BleHelpers.retrieveServices(peripheral.id).then(() => {
-          //beep the buzzer
-          BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
-          //retrieve versions
-          BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
-          BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
-        })
+        //beep the buzzer
+        BleLogger.log("[BLE] Writing buzzer command")
+        BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
+        //retrieve versions
+        BleLogger.log("[BLE] Requesting firmware version")
+        BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+        BleLogger.log("[BLE] Requesting hardware version")
+        BleHelpers.write(peripheral.id, COMMANDS.READ_HARDWARE_VERSION)
       })
       .catch((error) => {
-        console.log(error)
-        setError(error)
-        setConnectingPeripheral(null)
+        const errorMessage = `[RN] Connection error in wizard for ${peripheral.id}: ${error}`;
+        RNLogger.log(errorMessage);
+        setError(errorMessage);
+        setConnectingPeripheral(null);
       });
     })
   }

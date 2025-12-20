@@ -1,8 +1,6 @@
 // Utils
 import BleManager, { Peripheral } from 'react-native-ble-manager'
-import { EmitterSubscription, Linking, PermissionsAndroid, Platform } from "react-native";
-import OSLogger from './OSLogger';
-import { BleLogger } from './BleLogger';
+import { EmitterSubscription, Linking, PermissionsAndroid, Platform, ToastAndroid } from "react-native";
 import { stringToBytes, bytesToString } from "convert-string";
 import { PairedPeripheralModel } from '../Models/PairedPeripheralModel';
 import { NativeModules, NativeEventEmitter } from "react-native";
@@ -24,6 +22,7 @@ import { LoRaWanDeviceEUIParser } from '../Models/LoRaWanDeviceEUIModel';
 import { LoRaWanAppEUIParser } from '../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyParser } from '../Models/LoRaWanAppKeyModel';
 import { ApplicationConfigParser } from '../Models/ApplicationConfigModel';
+import { BleLogger } from './BleLogger';
 // import { BatteryParser } from '../Models/BatteryServiceModel';
 import { ClockModel } from '../Models/ClockModel';
 import { ResponseModel } from '../Models/ResponseModel';
@@ -108,24 +107,30 @@ export const LOG_FILE_CHARACTERISTIC = "be4768a3-719f-4bad-5040-c6ebc5f8c31b"
 export const BATTERY_SERVICE = "0000180f-0000-1000-8000-00805f9b34fb"
 export const BATTERY_LEVEL_CHARACTERISTIC = "00002a19-0000-1000-8000-00805f9b34fb"
 
+import { RNLogger } from './RNLogger';
+import OSLogger from './OSLogger';
+
 export default class BleHelpers {
 
   static LOG_FILE_NAME = "BeepBaseLogFile.txt"
   static LOG_FILE_NUMBER = 0
-  static LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME + "_" + BleHelpers.LOG_FILE_NUMBER.toString;
-
-  // Track negotiated MTU per peripheral (Android)
-  static negotiatedMtu: { [peripheralId: string]: number } = {}
-  // Track maximum observed log notification payload per peripheral
-  static maxLogNotifBytes: { [peripheralId: string]: number } = {}
+  static LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME + "_" + BleHelpers.LOG_FILE_NUMBER.toString()
+  
+  // File logging is now handled by BleLogger and RNLogger classes
+  static async exportBleLogFile() {
+    await BleLogger.exportToDownloads();
+    return RNLogger.exportToDownloads();
+  }
 
   static BleManagerDidUpdateValueForControlPointCharacteristicSubscription: EmitterSubscription
   static BleManagerDidUpdateValueForTXLogCharacteristicSubscription: EmitterSubscription
 
   static enableBluetooth() {
+    OSLogger.log("[BLE] Enabling Bluetooth...")
     store.dispatch(BeepBaseActions.bleFailure(undefined))
     switch (Platform.OS) {
       case "ios":
+        OSLogger.log("[BLE] iOS: Opening Bluetooth settings")
         return new Promise<void>((resolve) => {
           Linking.openURL('App-Prefs:Bluetooth')
           resolve()
@@ -134,349 +139,230 @@ export default class BleHelpers {
         // break;
     
       case "android":
+        OSLogger.log("[BLE] Android: Enabling Bluetooth via BleManager")
         return  BleManager.enableBluetooth()
+        .then(() => {
+          OSLogger.log("[BLE] Android: Bluetooth enabled successfully")
+        })
         .catch((error) => {
           const message = "The user did not enable bluetooth. Error: " + error
-          console.log(message)
+          OSLogger.log("[BLE] ERROR: " + message)
           store.dispatch(BeepBaseActions.bleFailure(message))
         });
     }
   }
 
   static getBluetoothState(bleState: string, pairedPeripherals: Array<PairedPeripheralModel>) {
+    OSLogger.log(`[BLE] Getting Bluetooth state - BLE state: ${bleState}, Paired peripherals: ${pairedPeripherals?.length || 0}`)
     if (bleState == "on") {
       if (pairedPeripherals && pairedPeripherals.length > 0) {
         if (pairedPeripherals.every(p => p.isConnected == true)) {
+          OSLogger.log("[BLE] State: pairedConnected")
           return "pairedConnected"
         }
+        OSLogger.log("[BLE] State: pairedNotConnected")
         return "pairedNotConnected"
       }
+      OSLogger.log("[BLE] State: noPaired")
       return "noPaired"
     }
+    OSLogger.log("[BLE] State: off")
     return "off"
   }
 
-  static init() {
-    console.log("BleManager start");
+  static async init() {
+    // Initialize the loggers
+    await BleLogger.init()
+    RNLogger.init()
+    
+    OSLogger.log("[BLE] Initializing BleManager...");
     return BleManager.start({
       showAlert: true,
       restoreIdentifierKey: "nl.beep.BEEP.restoreIdentifierKey",
       queueIdentifierKey: "nl.beep.BEEP.queueIdentifierKey",
     }).then(async () => {
+      OSLogger.log("[BLE] BleManager started successfully");
       //request usage of Bluetooth on Android (iOS is handled by OS via info.plist entry)
       if (Platform.OS === 'android' && Platform.Version >= 31) {
+        OSLogger.log("[BLE] Android 12+: Requesting Bluetooth permissions...");
         const grantedSCAN = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN)
-        console.log("Permission BLUETOOTH_SCAN", grantedSCAN)
+        OSLogger.log(`[BLE] Permission BLUETOOTH_SCAN: ${grantedSCAN}`)
         const grantedCONNECT = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT)
-        console.log("Permission BLUETOOTH_CONNECT", grantedCONNECT)
+        OSLogger.log(`[BLE] Permission BLUETOOTH_CONNECT: ${grantedCONNECT}`)
       }
       else if (Platform.OS === 'android' && Platform.Version >= 23) {
+        OSLogger.log("[BLE] Android 6+: Checking location permissions...");
         PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
           if (result) {
-            console.log("Permission is ACCESS_FINE_LOCATION OK");
+            OSLogger.log("[BLE] Permission ACCESS_FINE_LOCATION is OK");
           } else {
+            OSLogger.log("[BLE] Requesting ACCESS_FINE_LOCATION permission...");
             PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
               if (result) {
-                console.log("User accepted ACCESS_FINE_LOCATION permission");
+                OSLogger.log("[BLE] User accepted ACCESS_FINE_LOCATION permission");
               } else {
-                console.log("User refused ACCESS_FINE_LOCATION permission");
+                OSLogger.log("[BLE] User refused ACCESS_FINE_LOCATION permission");
               }
             });
           }
         });
       }    
     })
-  }
-
-  // Request high connection priority on Android API 21+ for better throughput
-  static async requestConnectionPriorityHigh(peripheralId: string): Promise<void> {
-    if (Platform.OS !== 'android' || Platform.Version < 21) return
-    const fn = (BleManager as any).requestConnectionPriority
-    if (typeof fn === 'function') {
-      try {
-        OSLogger.log(`[BLE] Requesting HIGH connection priority for ${peripheralId}`)
-        await fn(peripheralId, 1)
-        OSLogger.log(`[BLE] Connection priority set to HIGH for ${peripheralId}`)
-      } catch (e) {
-        OSLogger.log(`[BLE] ERROR requesting connection priority for ${peripheralId}: ${e}`)
-      }
-    }
-  }
-
-  // Request MTU negotiation on Android API 21+
-  static async requestMtu(peripheralId: string): Promise<number> {
-    if (Platform.OS !== 'android') return 0
-    if (Platform.Version < 21 || typeof (BleManager as any).requestMTU !== 'function') {
-      return 0
-    }
-    const mtuSizes = [247, 185, 158, 104, 52]
-    for (const requestedMtu of mtuSizes) {
-      try {
-        OSLogger.log(`[BLE] Requesting MTU ${requestedMtu} for ${peripheralId}...`)
-        const mtu = await (BleManager as any).requestMTU(peripheralId, requestedMtu)
-        OSLogger.log(`[BLE] MTU request returned ${mtu} for ${peripheralId}`)
-        if (mtu >= 23) {
-          BleHelpers.negotiatedMtu[peripheralId] = mtu
-          return mtu
-        }
-      } catch (e) {
-        OSLogger.log(`[BLE] MTU request ${requestedMtu} failed for ${peripheralId}: ${e}`)
-      }
-    }
-    OSLogger.log(`[BLE] MTU negotiation did not change MTU for ${peripheralId}`)
-    return 0
+    .catch(error => {
+      OSLogger.log(`[BLE] ERROR: Failed to start BleManager: ${error}`);
+      throw error;
+    })
   }
 
   static pair(peripheralId: string) {
-    return BleManager.createBond(peripheralId).catch(() => {})
+    return BleManager.createBond(peripheralId).then(() => {
+      OSLogger.log(`[BLE] Successfully bonded with ${peripheralId}`);
+    }).catch(() => {
+      OSLogger.log(`[BLE] Failed to bond with ${peripheralId}`);
+    })
   }
 
-  static async isBonded(peripheralId: string): Promise<boolean> {
-    if (Platform.OS !== 'android') return false
-    try {
-      const list: Peripheral[] = await BleManager.getBondedPeripherals()
-      return Array.isArray(list) && list.some(p => p.id === peripheralId)
-    } catch {
-      return false
-    }
-  }
-
-  static async ensureBonded(peripheralId: string): Promise<void> {
-    if (Platform.OS !== 'android') return
-    try {
-      const bonded = await BleHelpers.isBonded(peripheralId)
-      if (!bonded) {
-        OSLogger.log(`[BLE] Creating bond with ${peripheralId} (on-demand)...`)
-        await BleHelpers.pair(peripheralId)
-      }
-    } catch (_) {}
-  }
-
-  static shouldPairOnAuthError(error: any): boolean {
-    try {
-      const msg: string = (error?.message || error?.toString?.() || '').toLowerCase()
-      if (!msg) return false
-      // Heuristics for Android auth failures
-      return (
-        Platform.OS === 'android' && (
-          msg.includes('auth') ||
-          msg.includes('insufficient') ||
-          msg.includes('encrypt') ||
-          msg.includes('pair') ||
-          msg.includes('bond') ||
-          msg.includes('gatt 5') ||
-          msg.includes('status=5') ||
-          msg.includes('gatt_insufficient')
-        )
-      )
-    } catch {
-      return false
-    }
-  }
-
-  static connectPeripheral(peripheralOrId: Peripheral | string) {
-    const peripheralId = typeof peripheralOrId === 'string' ? peripheralOrId : peripheralOrId.id;
+  static connectPeripheral(peripheral: Peripheral) {
+    const peripheralId = peripheral.id;
     OSLogger.log(`[BLE] Attempting to connect to peripheral: ${peripheralId}`);
     store.dispatch(BeepBaseActions.bleFailure(undefined));
     return BleManager.isPeripheralConnected(peripheralId).then(isConnected => {
       if (isConnected) {
-        OSLogger.log(`[BLE] Peripheral ${peripheralId} is already connected`);
-        if (Platform.OS === 'android') {
-          return BleHelpers.requestConnectionPriorityHigh(peripheralId)
-            .catch(() => {})
-            .then(() => BleHelpers.requestMtu(peripheralId))
-            .catch(() => {})
-            .then(() => BleHelpers.retrieveServices(peripheralId))
-        }
+        OSLogger.log(`[BLE] Peripheral ${peripheralId} is already connected, retrieving services...`);
         return BleHelpers.retrieveServices(peripheralId);
       }
 
       OSLogger.log(`[BLE] Peripheral ${peripheralId} is not connected, starting connection process...`);
+      if (Platform.OS === 'android') {
+        this.refreshDeviceCache(peripheralId);
+      }
 
       return BleManager.connect(peripheralId)
-        .then(async () => {
+        .then(() => {
           OSLogger.log(`[BLE] Successfully connected to ${peripheralId}`);
-          if (typeof peripheralOrId !== 'string') {
-            BleLogger.logPeripheral(peripheralOrId);
-          }
-          // Settle briefly, then optimize link
-          await delay(300)
-          if (Platform.OS === 'android') {
-            OSLogger.log(`[BLE] Negotiating connection priority and MTU for ${peripheralId}`);
-            await BleHelpers.requestConnectionPriorityHigh(peripheralId).catch(() => {})
-            const mtu = await BleHelpers.requestMtu(peripheralId).catch(() => 0)
-            OSLogger.log(`[BLE] MTU negotiated: ${mtu || 'unknown'}`)
-            await delay(150)
-          }
+          BleLogger.logPeripheral(peripheral);
+          OSLogger.log(`[BLE] Waiting 500ms before pairing...`);
+          return delay(500);
         })
         .then(() => {
-          OSLogger.log(`[BLE] Retrieving services (no bond unless required) for ${peripheralId}...`);
+          OSLogger.log(`[BLE] Attempting to pair with ${peripheralId}`);
+          return this.pair(peripheralId);
+        })
+        .then(() => {
+          OSLogger.log(`[BLE] Successfully paired with ${peripheralId}, retrieving services...`);
           return BleHelpers.retrieveServices(peripheralId);
         })
         .catch(error => {
           const errorMessage = `[BLE] ERROR: Failed during connection process for ${peripheralId}: ${error}`;
           OSLogger.log(errorMessage);
           store.dispatch(BeepBaseActions.bleFailure(errorMessage));
-          BleManager.disconnect(peripheralId).catch(() => {});
+          BleManager.disconnect(peripheralId).catch(disconnectError => {
+            OSLogger.log(`[BLE] ERROR: Failed to disconnect after connection error: ${disconnectError}`);
+          });
           throw error;
         });
     });
   }
 
-  static scanPeripheralByName(startsWith: string, options?: { attempts?: number, timeoutSec?: number }): Promise<Peripheral> {
-    const maxAttempts = options?.attempts ?? 3
-    const timeoutSec = options?.timeoutSec ?? 10
-    const startsWithUpper = (startsWith || '').toUpperCase()
-    const last4Match = startsWithUpper.match(/[0-9A-F]{4}$/)
-    const targetLast4 = last4Match ? last4Match[0] : undefined
-
-    OSLogger.log(`[BLE] Starting scan (attempts=${maxAttempts}, timeout=${timeoutSec}s) for name: ${startsWithUpper}${targetLast4 ? ` (suffix ${targetLast4})` : ''}`)
+  static scanPeripheralByName(startsWith: string): Promise<Peripheral> {
+    OSLogger.log(`[BLE] Starting scan for peripherals with name starting with: ${startsWith}`);
     store.dispatch(BeepBaseActions.bleFailure(undefined))
+    const TIME_OUT = 15   //seconds
+    let isScanning = false
 
-    const attemptOnce = (attempt: number): Promise<Peripheral> => {
-      OSLogger.log(`[BLE] Scan attempt ${attempt}/${maxAttempts}...`)
-      let isScanning = false
-      let resolved = false
-      const candidates = new Map<string, Peripheral>()
-
-      const cleanup = (subs: Array<EmitterSubscription | undefined>) => subs.forEach(s => s && s.remove())
-
-      return new Promise<Peripheral>((resolve, reject) => {
-        const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: Peripheral) => {
-          const adv = peripheral?.advertising
-          const localName = adv?.localName
-          let name: string = peripheral?.name || localName || ''
-          const nameUpper = name.toUpperCase()
-          OSLogger.log(`[BLE] Found ID=${peripheral.id} Name=${name} RSSI=${peripheral.rssi} Conn=${adv?.isConnectable}`)
-          BleLogger.logPeripheral(peripheral)
-
-          if (!adv?.isConnectable) return
-
-          const nameMatches = nameUpper.startsWith(startsWithUpper) || (targetLast4 ? nameUpper.includes(targetLast4) : false)
-          if (nameMatches) {
-            OSLogger.log(`[BLE] Match: ${name} (by ${nameUpper.startsWith(startsWithUpper) ? 'startsWith' : 'last4'})`)
-            resolved = true
-            cleanup([BleManagerDiscoverPeripheralSubscription, BleManagerStopScanSubscription])
+    return new Promise<Peripheral>((resolve, reject) => {
+      const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral: Peripheral) => {
+        OSLogger.log(`[BLE] Discovered peripheral - ID: ${peripheral.id}, Name: ${peripheral.name}, RSSI: ${peripheral.rssi}, Connectable: ${peripheral.advertising?.isConnectable}`);
+        BleLogger.logPeripheral(peripheral);
+        if (peripheral.advertising?.isConnectable) {
+          if (!peripheral.name) {
+            peripheral.name = peripheral.advertising?.localName
+            OSLogger.log(`[BLE] Using localName for peripheral: ${peripheral.name}`);
+          }
+          if (peripheral.name?.startsWith(startsWith)) {
+            OSLogger.log(`[BLE] Found matching peripheral: ${peripheral.name}`);
+            BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
             BleManager.stopScan()
-            return resolve(peripheral)
-          }
-
-          if (nameUpper.startsWith(BLE_NAME_PREFIX)) {
-            candidates.set(peripheral.id, peripheral)
-          }
-        })
-
-        const BleManagerStopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', () => {
-          OSLogger.log(`[BLE] Scan stopped (attempt ${attempt}). Was scanning: ${isScanning}. Candidates: ${candidates.size}`)
-          isScanning = false
-          if (resolved) {
-            cleanup([BleManagerDiscoverPeripheralSubscription, BleManagerStopScanSubscription])
-            return
-          }
-
-          // Fallback: prefer unique candidate containing last4
-          if (targetLast4) {
-            const last4Candidates = Array.from(candidates.values()).filter(p => (p.name || p.advertising?.localName || '').toUpperCase().includes(targetLast4))
-            if (last4Candidates.length === 1) {
-              const fallback = last4Candidates[0]
-              OSLogger.log(`[BLE] Using fallback by last4: ${fallback?.name} (${fallback?.id})`)
-              resolved = true
-              cleanup([BleManagerDiscoverPeripheralSubscription, BleManagerStopScanSubscription])
-              return resolve(fallback)
-            }
-          }
-
-          // Fallback: if exactly one BEEPBASE device seen
-          if (candidates.size === 1) {
-            const fallback = Array.from(candidates.values())[0]
-            OSLogger.log(`[BLE] Using fallback candidate: ${fallback?.name} (${fallback?.id})`)
-            resolved = true
-            cleanup([BleManagerDiscoverPeripheralSubscription, BleManagerStopScanSubscription])
-            return resolve(fallback)
-          }
-
-          cleanup([BleManagerDiscoverPeripheralSubscription, BleManagerStopScanSubscription])
-          const errorMessage = candidates.size > 1
-            ? "[BLE] Multiple BEEPBASE devices found; cannot disambiguate"
-            : "[BLE] No matching device found during scan"
-          OSLogger.log(errorMessage)
-          reject(new Error(errorMessage))
-        })
-
-        BleManager.enableBluetooth().then(() => {
-          OSLogger.log(`[BLE] Bluetooth enabled, starting scan (no filter) for ${timeoutSec}s...`)
-          isScanning = true
-          BleManager.scan([], timeoutSec, false).then(() => {
-            OSLogger.log(`[BLE] Scanning...`)
-          }).catch(err => {
-            isScanning = false
-            const errorMessage = `[BLE] ERROR: Scan failed: ${err}`
-            OSLogger.log(errorMessage)
-            store.dispatch(BeepBaseActions.bleFailure(errorMessage))
-            cleanup([BleManagerDiscoverPeripheralSubscription, BleManagerStopScanSubscription])
-            reject(err)
-          })
-        })
-        .catch((error) => {
-          isScanning = false
-          const errorMessage = `[BLE] ERROR: User refused to enable bluetooth: ${error}`
-          OSLogger.log(errorMessage)
-          store.dispatch(BeepBaseActions.bleFailure(errorMessage))
-          cleanup([BleManagerDiscoverPeripheralSubscription, BleManagerStopScanSubscription])
-          reject(error)
-        })
-      })
-    }
-
-    const run = async (): Promise<Peripheral> => {
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          const p = await attemptOnce(attempt)
-          return p
-        } catch (e) {
-          if (attempt < maxAttempts) {
-            OSLogger.log(`[BLE] Retry in 1500ms (attempt ${attempt + 1}/${maxAttempts})...`)
-            await delay(1500)
-          } else {
-            throw e
+            resolve(peripheral)
           }
         }
-      }
-      throw new Error('[BLE] Unexpected scan loop exit')
-    }
+      })
 
-    return run()
+      const BleManagerStopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', () => {
+        OSLogger.log(`[BLE] Scan stopped. Was scanning: ${isScanning}`);
+        BleManagerStopScanSubscription && BleManagerStopScanSubscription.remove()
+        if (isScanning) {
+          //if still scanning at this point no device matching filter was found
+          const errorMessage = "[BLE] No matching device found during scan";
+          OSLogger.log(errorMessage);
+          reject(new Error(errorMessage))
+        }
+        isScanning = false
+      })
+
+      BleManager.enableBluetooth().then(() => {
+        OSLogger.log("[BLE] Bluetooth enabled, starting scan...");
+        isScanning = true
+        BleManager.scan([BEEP_SERVICE], TIME_OUT, false).then((results) => {
+          OSLogger.log(`[BLE] Scanning started with ${TIME_OUT}s timeout...`)
+        }).catch(err => {
+          isScanning = false
+          const errorMessage = `[BLE] ERROR: Scan failed: ${err}`;
+          OSLogger.log(errorMessage);
+          store.dispatch(BeepBaseActions.bleFailure(errorMessage))
+          reject(err)
+        })
+      })
+      .catch((error) => {
+        isScanning = false
+        const errorMessage = `[BLE] ERROR: User refused to enable bluetooth: ${error}`;
+        OSLogger.log(errorMessage);
+        store.dispatch(BeepBaseActions.bleFailure(errorMessage))
+        reject(error)
+      });
+    })
   }
 
   static onValueForCharacteristic({ value, peripheral, characteristic, service }) {
-    // console.log(`Recieved ${data} for characteristic ${characteristic}`);
     switch (characteristic.toLowerCase()) {
       case CONTROL_POINT_CHARACTERISTIC:
+        OSLogger.log(`[BLE] onValueForCharacteristic - Peripheral: ${peripheral.id}, Characteristic: ${characteristic.toLowerCase()}, Value: ${BleHelpers.byteToHexString(value)}`);
+        BleLogger.logPeripheral(peripheral);
         BleHelpers.handleControlPointCharacteristic({ value, peripheral })
         break
 
       case LOG_FILE_CHARACTERISTIC:
+        // Skip detailed logging during log file download for better performance
         BleHelpers.handleLogFileCharacteristic({ value, peripheral })
         break
+        
+      default:
+        OSLogger.log(`[BLE] onValueForCharacteristic - Unhandled characteristic: ${characteristic.toLowerCase()}`);
     }
   }
   
   static handleControlPointCharacteristic({ value, peripheral }) {
-    const buffer: Buffer = Buffer.from(value)
-    const command = buffer.readInt8()
-    const data: Buffer = buffer.subarray(1)
-    if (data.length) {
+    try {
+      // Convert value to Buffer - handle both array-like objects and arrays
+      const valueArray = Array.isArray(value) ? value : Object.values(value)
+      const buffer: Buffer = Buffer.from(valueArray)
+      const command = buffer.readInt8()
+      const data: Buffer = buffer.subarray(1)
+      
+      OSLogger.log(`[BLE] handleControlPointCharacteristic - Command: 0x${command.toString(16)}, Data: ${data.toString('hex')}`);
+      
+      if (data.length) {
       let model
       switch (command) {
         case COMMANDS.RESPONSE:
-          console.log("BLE response", data)
+          OSLogger.log(`[BLE] Response data: ${data.toString('hex')}`)
           const response = ResponseModel.parse(data)
           if (response.code > 0) {
             switch (response.command) {
               case COMMANDS.READ_MX_FLASH:
                   //00 00 0E 0F
                   if (response.code == 0x00E0F) {
-                    console.log("Download ready, received response code 0x00E0F")
+                    OSLogger.log("Download ready, received response code 0x00E0F")
                     const logFileSize = getLogFileSize(store.getState())
                     store.dispatch(BeepBaseActions.setLogFileProgress(logFileSize.data))
                   }
@@ -510,7 +396,7 @@ export default class BleHelpers {
             //NRF_SUCCESS
             switch (response.command) {
               case COMMANDS.READ_MX_FLASH:
-                console.log("Download ready, received NRF_SUCCESS")
+                OSLogger.log("Download ready, received NRF_SUCCESS")
                 const logFileSize = getLogFileSize(store.getState())
                 store.dispatch(BeepBaseActions.setLogFileProgress(logFileSize.data))
                 break
@@ -524,87 +410,101 @@ export default class BleHelpers {
 
         case COMMANDS.READ_FIRMWARE_VERSION:
           model = new FirmwareVersionParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed Firmware Version: ${model.toString()}`);
           store.dispatch(BeepBaseActions.setFirmwareVersion(model))
           break
 
         case COMMANDS.READ_HARDWARE_VERSION:
           model = new HardwareVersionParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed Hardware Version: ${model.toString()}`);
           store.dispatch(BeepBaseActions.setHardwareVersion(model))
           break
 
         //Application config
         case COMMANDS.READ_APPLICATION_CONFIG:
           model = new ApplicationConfigParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed Application Config: ${JSON.stringify(model)}`);
           store.dispatch(BeepBaseActions.setApplicationConfig(model))
           break
 
         //Tilt sensor
         case COMMANDS.READ_SQ_MIN_STATE:
           model = TiltModel.parse(data)
+          OSLogger.log(`[BLE] Parsed Tilt: ${JSON.stringify(model)}`);
           store.dispatch(BeepBaseActions.setTilt(model))
           break
 
         //LoRaWan state
         case COMMANDS.READ_LORAWAN_STATE:
           model = new LoRaWanStateParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed LoRaWan State: ${JSON.stringify(model)}`);
           store.dispatch(BeepBaseActions.setLoRaWanState(model))
           break
 
         //LoRaWan device EUI
         case COMMANDS.READ_LORAWAN_DEVEUI:
           model = new LoRaWanDeviceEUIParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed LoRaWan Device EUI: ${model.toString()}`);
           store.dispatch(BeepBaseActions.setLoRaWanDeviceEUI(model))
           break
 
         //LoRaWan app EUI
         case COMMANDS.READ_LORAWAN_APPEUI:
           model = new LoRaWanAppEUIParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed LoRaWan App EUI: ${model.toString()}`);
           store.dispatch(BeepBaseActions.setLoRaWanAppEUI(model))
           break
 
         //LoRaWan app key
         case COMMANDS.READ_LORAWAN_APPKEY:
           model = new LoRaWanAppKeyParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed LoRaWan App Key: ${model.toString()}`);
           store.dispatch(BeepBaseActions.setLoRaWanAppKey(model))
           break
 
         //temperature sensor
         case COMMANDS.READ_DS18B20_CONVERSION:
           const models = new TemperatureParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed Temperature: ${JSON.stringify(models)}`);
           store.dispatch(BeepBaseActions.setTemperatures(models))
           break
 
         //weight sensor
         case COMMANDS.READ_HX711_CONVERSION:
           model = new WeightParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed Weight: ${JSON.stringify(model)}`);
           store.dispatch(BeepBaseActions.setWeight(model))
           break
 
         //audio sensor
         case COMMANDS.READ_AUDIO_ADC_CONFIG:
           model = new AudioParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed Audio: ${JSON.stringify(model)}`);
           store.dispatch(BeepBaseActions.setAudio(model))
           break
 
         //hardware id
         case COMMANDS.READ_ATECC_READ_ID:
           model = new AteccParser({ data }).parse()
+          OSLogger.log(`[BLE] Parsed Hardware ID: ${model.toString()}`);
           store.dispatch(BeepBaseActions.setHardwareId(model))
           break
 
         //flash log file
         case COMMANDS.READ_MX_FLASH:
-          console.log(data)
+          OSLogger.log(`[BLE] Flash data: ${data.toString('hex')}`)
           break
 
         //flash log file size
         case COMMANDS.SIZE_MX_FLASH:
           model = LogFileSizeModel.parse(data)
+          OSLogger.log(`[BLE] Parsed Log File Size: ${JSON.stringify(model)}`);
           store.dispatch(BeepBaseActions.setLogFileSize(model))
           break
 
         //erase flash log file
         case COMMANDS.ERASE_MX_FLASH:
+          OSLogger.log(`[BLE] Erase Log File command processed`);
           // model = EraseLogFileModel.parse(data)
           // store.dispatch(BeepBaseActions.setEraseLogFileProgress(0))
           break
@@ -612,171 +512,158 @@ export default class BleHelpers {
         //clock
         case COMMANDS.READ_CLOCK:
           model = ClockModel.parse(data)
+          OSLogger.log(`[BLE] Parsed Clock: ${JSON.stringify(model)}`);
           store.dispatch(BeepBaseActions.setClock(model))
           break
 
         //battery (old mode, not using Battery Service)
         case COMMANDS.READ_nRF_ADC_CONVERSION:
           model = BatteryModel.parse(data)
+          OSLogger.log(`[BLE] Parsed Battery: ${JSON.stringify(model)}`);
           store.dispatch(BeepBaseActions.setBattery(model))
           break
       }
     }
+    } catch (error) {
+      OSLogger.log(`[BLE] ERROR in handleControlPointCharacteristic: ${error.message}`)
+      OSLogger.log(`[BLE] ERROR stack: ${error.stack}`)
+      store.dispatch(BeepBaseActions.bleFailure(`BLE data parsing error: ${error.message}`))
+    }
   }
 
   static lastFrame: number = -1
+  static updateLogFilePath() {
+    BleHelpers.LOG_FILE_PATH = RNFS.CachesDirectoryPath + "/" + BleHelpers.LOG_FILE_NAME + "_" + BleHelpers.LOG_FILE_NUMBER.toString()
+  }
 
   static initLogFile() {
     BleHelpers.lastFrame = -1
+    BleHelpers.updateLogFilePath()
 
     // keep old log file and increment log file number instead of deleting
     return RNFS.exists(BleHelpers.LOG_FILE_PATH).then((exists: boolean) => {
       if (exists) {
-
-        /*
-        RNFS.unlink(BleHelpers.LOG_FILE_PATH)
-        .then(() => {
-          console.log("Existing log file deleted");
-        })
-        .catch((err) => {
-          console.log("Error initLogFile.unlink", err.message);
-        });
-        */
-        BleHelpers.LOG_FILE_NUMBER = (BleHelpers.LOG_FILE_NUMBER + 1);
+        BleHelpers.LOG_FILE_NUMBER = BleHelpers.LOG_FILE_NUMBER + 1
+        BleHelpers.updateLogFilePath()
       }
     })
     .catch((err) => {
-      console.log("Error initLogFile.exists", err.message);
+      OSLogger.log(`Error initLogFile.exists: ${err.message}`);
     });
   }
 
   static exportLogFile() {
     FileSystem.cpExternal(BleHelpers.LOG_FILE_PATH, BleHelpers.LOG_FILE_NAME, "downloads").catch(error => {
-      console.log("Error copying to SD card", error)
+      OSLogger.log(`Error copying to SD card: ${error}`)
     })
   }
 
   static handleLogFileCharacteristic({ value, peripheral }) {
-    const buffer: Buffer = Buffer.from(value)
-    const model = LogFileFrameModel.parse(buffer)
-    if (model) {
-      const pid = typeof peripheral === 'string' ? peripheral : (peripheral?.id || 'unknown')
-      const len = buffer.length
-      // per-frame size log
-      console.log(`[BLE] Log frame size: ${len} bytes (peripheral ${pid})`)
-      // track max
-      const prevMax = BleHelpers.maxLogNotifBytes[pid] || 0
-      if (len > prevMax) {
-        BleHelpers.maxLogNotifBytes[pid] = len
-        const mtu = BleHelpers.negotiatedMtu[pid]
-        console.log(`[BLE] New max log frame size: ${len} bytes (negotiated MTU: ${mtu || 'unknown'})`)
+    try {
+      // Convert value to Buffer - handle both array-like objects and arrays
+      const valueArray = Array.isArray(value) ? value : Object.values(value)
+      const buffer: Buffer = Buffer.from(valueArray)
+      const model = LogFileFrameModel.parse(buffer)
+      if (model) {
+        //skip frames with equal frame numbers, see https://github.com/innoveit/react-native-ble-manager/issues/577
+        if (model.frame != BleHelpers.lastFrame) {
+          store.dispatch(BeepBaseActions.addLogFileFrame(model))
+          BleHelpers.lastFrame = model.frame
+          RNFS.appendFile(BleHelpers.LOG_FILE_PATH, model.data.toString("hex"))
+          .catch((err) => {
+            OSLogger.log(`[BLE] ERROR writing log file frame: ${err}`);
+          });
+        } else if (__DEV__) {
+          // Only log duplicates in debug mode
+          OSLogger.log(`[BLE] Duplicate log file frame received: Frame ${model.frame}`);
+        }
+      } else {
+        OSLogger.log(`[BLE] ERROR: Failed to parse log file frame`);
       }
-
-      //skip frames with equal frame numbers, see https://github.com/innoveit/react-native-ble-manager/issues/577
-      if (model.frame != BleHelpers.lastFrame) {
-        store.dispatch(BeepBaseActions.addLogFileFrame(model))
-        BleHelpers.lastFrame = model.frame
-        RNFS.appendFile(BleHelpers.LOG_FILE_PATH, model.data.toString("hex"))
-        .catch((err) => {
-          console.log("Error writing log file frame", err);
-        });
-      }
+    } catch (error) {
+      OSLogger.log(`[BLE] ERROR in handleLogFileCharacteristic: ${error.message}`)
+      OSLogger.log(`[BLE] ERROR stack: ${error.stack}`)
     }
   }
 
-  static async retrieveServices(peripheralId: string) {
+  static retrieveServices(peripheralId: string) {
+    OSLogger.log(`[BLE] Retrieving services for peripheral: ${peripheralId}`);
     store.dispatch(BeepBaseActions.bleFailure(undefined))
-    console.log("BleHelpers retrieveServices")
-
-    const normalize = (s?: string) => (s || '').toLowerCase()
-
-    const tryOnce = async () => {
-      const info: any = await BleManager.retrieveServices(peripheralId)
-      const services: string[] = (info?.services || []).map((s: any) => normalize(s?.uuid || s?.service))
-      const chars: { service: string, characteristic: string }[] = (info?.characteristics || []).map((c: any) => ({
-        service: normalize(c?.service),
-        characteristic: normalize(c?.characteristic),
-      }))
-      const hasBeepService = services.includes(BEEP_SERVICE) || chars.some(c => c.service === BEEP_SERVICE)
-      if (!hasBeepService) {
-        console.log(`[BLE] retrieveServices: BEEP service not found yet. Services=${JSON.stringify(services)}, CharCount=${chars.length}`)
-        throw new Error('BEEP service not found')
-      }
-      const hasCtrlPoint = chars.some(c => c.service === BEEP_SERVICE && c.characteristic === CONTROL_POINT_CHARACTERISTIC)
-      const hasLogFile = chars.some(c => c.service === BEEP_SERVICE && c.characteristic === LOG_FILE_CHARACTERISTIC)
-      if (!hasCtrlPoint || !hasLogFile) {
-        console.log(`[BLE] retrieveServices: Missing characteristic(s). CTRL=${hasCtrlPoint} LOG=${hasLogFile}`)
-      }
-      console.log("retrieveServices OK - BEEP service present")
-      const startNotifications = async () => {
-        await BleManager.startNotification(peripheralId, BEEP_SERVICE, CONTROL_POINT_CHARACTERISTIC)
-        console.log("Notification BEEP CONTROL POINT subscribed")
-        BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription.remove()
-        BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic)
-        await BleManager.startNotification(peripheralId, BEEP_SERVICE, LOG_FILE_CHARACTERISTIC)
-        console.log("Notification LOG FILE subscribed")
-        BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription.remove()
-        BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic)
-      }
-
-      try {
-        await startNotifications()
-      } catch (e) {
-        if (BleHelpers.shouldPairOnAuthError(e)) {
-          console.log('[BLE] startNotification failed due to auth; attempting on-demand bonding...')
-          await BleHelpers.ensureBonded(peripheralId)
-          await delay(250)
-          await startNotifications()
-        } else {
-          throw e
-        }
-      }
-    }
-
-    const maxAttempts = Platform.OS === 'ios' ? 5 : 2
-    const initialDelay = Platform.OS === 'ios' ? 700 : 300
-    await delay(initialDelay)
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      try {
-        await tryOnce()
-        return
-      } catch (err) {
-        if (attempt === maxAttempts) {
-          const message = `Failed to retrieve services of ${peripheralId}. Error: ${err}`
-          console.log(message)
-          store.dispatch(BeepBaseActions.bleFailure(message))
-          throw err
-        }
-        console.log(`[BLE] retry retrieveServices in 300ms (attempt ${attempt + 1}/${maxAttempts})`)
-        await delay(300)
-      }
-    }
+    return delay(500).then(() => {
+      OSLogger.log("[BLE] Calling BleManager.retrieveServices...");
+      return BleManager.retrieveServices(peripheralId).then((peripheralInfo) => {
+        OSLogger.log(`[BLE] Services retrieved successfully for ${peripheralId}. Service count: ${peripheralInfo?.services?.length || 0}`);
+        return BleManager.startNotification(peripheralId, BEEP_SERVICE, CONTROL_POINT_CHARACTERISTIC).then(() => {
+          OSLogger.log(`[BLE] Notification subscribed for CONTROL POINT characteristic on ${peripheralId}`);
+          BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription.remove()
+          BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic);
+        }).then(() => {
+          OSLogger.log(`[BLE] Starting notification for LOG FILE characteristic on ${peripheralId}...`);
+          return BleManager.startNotification(peripheralId, BEEP_SERVICE, LOG_FILE_CHARACTERISTIC).then(() => {
+            OSLogger.log(`[BLE] Notification subscribed for LOG FILE characteristic on ${peripheralId}`);
+            BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription.remove()
+            BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription = bleManagerEmitter.addListener("BleManagerDidUpdateValueForCharacteristic", BleHelpers.onValueForCharacteristic);
+          })
+        })
+      })
+      .catch((error) => {
+        const message = `[BLE] ERROR: Failed to retrieve services of ${peripheralId}. Error: ${error}`
+        console.log(message)
+        store.dispatch(BeepBaseActions.bleFailure(message))
+      })
+    })
   }
 
   static isConnected(peripheralId: string) {
+    OSLogger.log(`[BLE] Checking connection status for ${peripheralId}`);
     return BleManager.isPeripheralConnected(peripheralId, [BEEP_SERVICE])
+      .then(isConnected => {
+        OSLogger.log(`[BLE] Peripheral ${peripheralId} is ${isConnected ? 'connected' : 'not connected'}`);
+        return isConnected;
+      })
   }
 
   static readRSSI(peripheralId: string) {
-    // return new Promise<void>((resolve) => resolve());
-
+    OSLogger.log(`[BLE] Reading RSSI for ${peripheralId}`);
     return BleManager.isPeripheralConnected(peripheralId, []).then(isConnected => {
       if (isConnected) {
+        OSLogger.log(`[BLE] Peripheral connected, reading RSSI...`);
         return BleManager.readRSSI(peripheralId)
+          .then(rssi => {
+            OSLogger.log(`[BLE] RSSI for ${peripheralId}: ${rssi}`);
+            return rssi;
+          })
       } else {
-        BleHelpers.connectPeripheral(peripheralId)
+        OSLogger.log(`[BLE] Peripheral not connected, attempting to connect...`);
+        return BleHelpers.connectPeripheral(peripheralId)
       }
     })
   }
 
   static disconnectPeripheral(peripheral: PairedPeripheralModel) {
+    OSLogger.log(`[BLE] Disconnecting peripheral: ${peripheral?.id}`);
     BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForControlPointCharacteristicSubscription.remove()
     BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription && BleHelpers.BleManagerDidUpdateValueForTXLogCharacteristicSubscription.remove()
 
     if (peripheral) {
       return BleManager.disconnect(peripheral.id, true)
+        .then(() => {
+          OSLogger.log(`[BLE] Successfully disconnected from ${peripheral.id}`);
+        })
+        .catch(error => {
+          OSLogger.log(`[BLE] ERROR: Failed to disconnect from ${peripheral.id}: ${error}`);
+          throw error;
+        })
     }
+  }
+
+  static refreshDeviceCache(peripheralId: string) {
+    return new Promise(resolve => {
+      BleManager.refreshCache(peripheralId).then(()=>{
+        ToastAndroid.show("Your device cache is cleared", ToastAndroid.SHORT);
+        resolve(true);
+      });
+    })
   }
 
   static disconnectAllPeripherals() {
@@ -814,7 +701,16 @@ export default class BleHelpers {
   }
 
   static read(peripheralId: string, serviceUUID: string, characteristicUUID: string) {
+    OSLogger.log(`[BLE] Reading from peripheral ${peripheralId} - Service: ${serviceUUID}, Characteristic: ${characteristicUUID}`);
     return BleManager.read(peripheralId, serviceUUID, characteristicUUID)
+      .then(data => {
+        OSLogger.log(`[BLE] Read successful from ${peripheralId} - Data length: ${data?.length || 0}`);
+        return data;
+      })
+      .catch(error => {
+        OSLogger.log(`[BLE] ERROR: Read failed from ${peripheralId}: ${error}`);
+        throw error;
+      })
   }
 
   //limit calls to write() with these settings:
@@ -826,6 +722,7 @@ export default class BleHelpers {
   static lastWrite: { peripheralId: string, command: any, params?: any } | undefined = undefined
 
   static write(peripheralId: string, command: any, params?: any) {
+    OSLogger.log(`[BLE] Writing to peripheral ${peripheralId} - Command: 0x${command.toString(16)}, Params: ${params}`);
     BleHelpers.lastWrite = { peripheralId, command, params }
 
     store.dispatch(BeepBaseActions.bleFailure(undefined))
@@ -837,6 +734,17 @@ export default class BleHelpers {
     const isBuffer = function(obj: any) {
       return obj != null && obj.constructor != null && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
     }
+
+    // const isLittleEndian = (function () {
+    //   let t32 = new Uint32Array(1);
+    //   let t8 = new Uint8Array(t32.buffer);
+    //   t8[0] = 0x0A;
+    //   t8[1] = 0x0B;
+    //   t8[2] = 0x0C;
+    //   t8[3] = 0x0D;
+    //   return t32[0] === 0x0D0C0B0A;
+    // })();
+    // const isBigEndian = !isLittleEndian;
 
     let buffer: Buffer
     const arrayCommand = Array.isArray(command) ? command : [command]
@@ -853,37 +761,24 @@ export default class BleHelpers {
       buffer = Buffer.from(arrayCommand)
     }
 
-    const performWrite = () => BleManager.write(
-      peripheralId,
-      BEEP_SERVICE,
-      CONTROL_POINT_CHARACTERISTIC,
-      [...buffer]
-    )
+    // if (isLittleEndian) {
+    //   buffer.swap16()
+    // }
 
-    return BleHelpers.limiter.schedule(async () => {
-      try {
-        await performWrite()
-        console.log(Date.now() + " Written data: " + BleHelpers.byteToHexString([...buffer]));
-        return
-      } catch (error) {
-        // On Android, attempt on-demand bonding for auth-related failures, then retry once
-        if (BleHelpers.shouldPairOnAuthError(error)) {
-          console.log('[BLE] Write failed due to auth; attempting on-demand bonding and retry...')
-          await BleHelpers.ensureBonded(peripheralId)
-          await delay(250)
-          try {
-            await performWrite()
-            console.log(Date.now() + " Written data (after bond): " + BleHelpers.byteToHexString([...buffer]));
-            return
-          } catch (e2) {
-            console.log(e2)
-            store.dispatch(BeepBaseActions.bleFailure(e2))
-            return
-          }
-        }
-        console.log(error)
+    return BleHelpers.limiter.schedule(() => 
+      BleManager.write(
+        peripheralId,
+        BEEP_SERVICE,
+        CONTROL_POINT_CHARACTERISTIC,
+        [...buffer]
+      )
+      .then(() => {
+        OSLogger.log(`[BLE] Write successful - ${Date.now()} - Data: ${BleHelpers.byteToHexString([...buffer])}`);
+      })
+      .catch((error) => {
+        OSLogger.log(`[BLE] ERROR: Write failed to ${peripheralId}: ${error}`)
         store.dispatch(BeepBaseActions.bleFailure(error))
-      }
-    })
+      })
+    )
   }
 }

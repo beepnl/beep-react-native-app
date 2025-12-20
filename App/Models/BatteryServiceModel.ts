@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 export class BatteryModel {
   percentage : number
 
@@ -15,7 +17,8 @@ export class BatteryParser {
   data: Buffer;
 
   constructor(props: any) {
-    this.data = props.data || Buffer.alloc(1)
+    // Ensure data is a proper Buffer instance
+    this.data = Buffer.isBuffer(props.data) ? props.data : Buffer.from(props.data || [])
   }
 
   parse(): BatteryModel | undefined {
