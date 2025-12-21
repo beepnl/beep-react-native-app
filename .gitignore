@@ -38,6 +38,10 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+# Editor / tooling caches
+.vscode/.react/
+.opencode/
+
 # BUCK
 buck-out/
 \.buckd/
@@ -65,4 +69,5 @@ buck-out/
 android/app/release/output-metadata.json
 # Ignore large build outputs
 *.apk
+*.aab
 android/app/src/main/assets/index.android.bundle
