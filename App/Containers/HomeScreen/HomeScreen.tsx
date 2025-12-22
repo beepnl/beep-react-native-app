@@ -168,6 +168,15 @@ const HomeScreen: FunctionComponent<Props> = ({
       <View style={styles.separator} />
       <View style={styles.spacer} />
 
+      {/* Policy notice above device list */}
+      <View style={styles.noticeContainer} accessibilityRole="text">
+        <IconMaterialIcons name="info-outline" size={18} color={Colors.darkYellow} />
+        <View style={styles.spacerHalf} />
+        <Text style={styles.noticeText}>
+          Due to updated Android policies: always pair with a BEEP base using the default passcode (123456) when prompted.
+        </Text>
+      </View>
+
       <ScrollView style={styles.devicesContainer} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />} >
         { listItems.map((device: ListItem, index: number) => 
           <NavigationButton 

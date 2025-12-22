@@ -44,37 +44,44 @@ export class WeightParser {
     this.data = props.data || Buffer.alloc(1)
   }
 
+  /**
+   * Converts a 24-bit value to a 32-bit signed integer
+   * @param bytes - Array of 3 bytes representing 24-bit value
+   * @returns number - 32-bit signed integer
+   */
+  private convert24BitToSigned(byte1: number, byte2: number, byte3: number): number {
+    // Combine to 24-bit unsigned value
+    let v = ((byte1 & 0xFF) << 16) | ((byte2 & 0xFF) << 8) | (byte3 & 0xFF);
+    // Sign-extend 24 -> 32 bits
+    if (v & 0x800000) v -= 0x1000000; // 2^24
+    return v;
+  }
+
   parse(): WeightModel | undefined {
     const data = []
     const len = this.data?.length
     if (len >= 4) {
       let i = 0
       while (i < len) {
-        const channelByte = this.data.readUInt8(i++)
-        const channel = CHANNELS.find(ch => ch.bitmask == channelByte)
+        const channelByte = this.data.readUInt8(i++);
+        const channel = CHANNELS.find(ch => ch.bitmask == channelByte);
         if (!channel) {
-          i += 3
-          continue
+          i += 3;
+          continue;
         }
-  
-        //read 24bit signed value
-        let byte1 = this.data.readUInt8(i++)
-        const signed = byte1 & 0b10000000
-        if (signed) {
-          byte1 &= 0b01111111
-        }
-        const byte2 = this.data.readUInt8(i++)
-        const byte3 = this.data.readUInt8(i++)
-        let combined = (byte1<<16) | (byte2<<8) | (byte3)
-        if (signed) {
-          combined = -combined
-        }
-        channel.value = combined
-  
-        data.push(channel)
+
+        // Read the three bytes for the 24-bit value
+        const byte1 = this.data.readUInt8(i++);
+        const byte2 = this.data.readUInt8(i++);
+        const byte3 = this.data.readUInt8(i++);
+
+        // Convert to signed value using the new method
+        channel.value = this.convert24BitToSigned(byte1, byte2, byte3);
+
+        data.push(channel);
       }
     }
 
-    return new WeightModel({ data })
+    return new WeightModel({ data });
   }
 }
