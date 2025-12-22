@@ -26,6 +26,11 @@ DerivedData
 build/
 .idea
 .gradle
+android/.gradle-user-home/
+android/app/build/
+android/build/
+android/app/.cxx/
+build-logs/
 local.properties
 *.iml
 

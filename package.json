@@ -8,7 +8,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "postinstall": "npx jetify"
+    "postinstall": "npx jetify && npx patch-package"
   },
   "dependencies": {
     "@os-team/i18next-react-native-language-detector": "^1.0.10",
@@ -79,6 +79,7 @@
     "eslint": "^7.14.0",
     "jest": "^26.6.3",
     "metro-react-native-babel-preset": "^0.64.0",
+    "patch-package": "^6.5.1",
     "react-native-svg-app-icon": "^0.5.0",
     "react-test-renderer": "17.0.1",
     "typescript": "^3.8.3"
@@ -98,4 +99,3 @@
     ]
   }
 }
-
