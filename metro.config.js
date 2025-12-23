@@ -5,7 +5,12 @@
  * @format
  */
 
-module.exports = {
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+
+const defaultConfig = getDefaultConfig(__dirname);
+
+const config = {
+  projectRoot: __dirname,
   transformer: {
     getTransformOptions: async () => ({
       transform: {
@@ -14,4 +19,10 @@ module.exports = {
       },
     }),
   },
+  resolver: {
+    // Module resolution for absolute imports
+    nodeModulesPaths: ['./node_modules'],
+    unstable_enableSymlinks: true
+  },
 };
+module.exports = mergeConfig(defaultConfig, config);

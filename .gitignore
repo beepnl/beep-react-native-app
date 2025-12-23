@@ -20,6 +20,8 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+.claude/
+.gemini/
 
 # Android/IntelliJ
 #
@@ -33,12 +35,17 @@ android/app/.cxx/
 build-logs/
 local.properties
 *.iml
-
+.claude/
+.gemini/
 # node.js
 #
 node_modules/
 npm-debug.log
 yarn-error.log
+
+# Editor / tooling caches
+.vscode/.react/
+.opencode/
 
 # BUCK
 buck-out/
@@ -56,10 +63,16 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
-
-# Bundle artifact
+/android/.claude/
+/android/.gemini/
+*log
 *.jsbundle
-
+/ios/.claude/
+/ios/.gemini/
 # CocoaPods
 /ios/Pods/
 android/app/release/output-metadata.json
+# Ignore large build outputs
+*.apk
+*.aab
+android/app/src/main/assets/index.android.bundle
