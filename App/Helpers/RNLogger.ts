@@ -1,6 +1,6 @@
 import RNFS from 'react-native-fs'
 import { Platform, PermissionsAndroid, Share } from 'react-native'
-import DeviceInfo from 'react-native-device-info'
+import DeviceInfo from './DeviceInfoShim'
 
 export interface RNLogEntry {
   timestamp: string
