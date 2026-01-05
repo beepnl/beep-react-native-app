@@ -164,7 +164,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     BleManager.stopScan().then(() => {
       setError("")
       const peripheralId = Platform.select({
-        android: peripheral.id,
+        default: peripheral.id,
         ios: peripheral.id.toUpperCase(),
       })
       BleManager.connect(peripheralId).then(() => {

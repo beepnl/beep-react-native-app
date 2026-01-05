@@ -106,6 +106,10 @@ export const CONTROL_POINT_CHARACTERISTIC = Platform.select({
   android: "000068b0-0000-1000-8000-00805f9b34fb",
 }) 
 export const LOG_FILE_CHARACTERISTIC = "be4768a3-719f-4bad-5040-c6ebc5f8c31b"
+// export const LOG_FILE_CHARACTERISTIC = Platform.select({
+//   ios: "BE4768A3-719F-4BAD-5040-C6EBC5F8C31B",
+//   android: "be4768a3-719f-4bad-5040-c6ebc5f8c31b",
+// }) 
 export const BATTERY_SERVICE = "0000180f-0000-1000-8000-00805f9b34fb"
 export const BATTERY_LEVEL_CHARACTERISTIC = Platform.select({
   ios: "2a19",
@@ -188,7 +192,10 @@ export default class BleHelpers {
 
   static connectPeripheral(peripheralId: string) {
     store.dispatch(BeepBaseActions.bleFailure(undefined))
-    return BleManager.connect(peripheralId).then(() => {
+    return BleManager.connect(Platform.select({
+      default: peripheralId,
+      ios: peripheralId.toUpperCase(),
+    })).then(() => {
       console.log("Connected to " + peripheralId)
 
       const retrieveServices = () => {

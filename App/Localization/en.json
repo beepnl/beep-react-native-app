@@ -248,7 +248,7 @@
     "apiBaseUrl": "API base URL: ",
     "logout": "Sign out",
     "app": "App",
-    "versionJS": "App version: "
+    "versionJS": "INTERNAL TEST VERSION. App version: "
   },
   "peripheralDetail": {
     "screenTitle": "Base detail",

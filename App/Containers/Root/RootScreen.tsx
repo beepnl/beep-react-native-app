@@ -13,7 +13,7 @@ import styles from './RootScreenStyle'
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthStack, AppStack } from './AppNavigation';
 import { navigationRef } from '../../Services/NavigationService';
-import { NativeModules, NativeEventEmitter, Text } from "react-native";
+import { NativeModules, NativeEventEmitter, Text, BackHandler } from "react-native";
 import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 import moment from 'moment'
 import i18n from '../../Localization';
@@ -90,6 +90,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     BleHelpers.init()
 
     if (token) {
+      console.log("token", token)
       api.setToken(token)
     }
     
@@ -143,12 +144,42 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     }
   }, [bleError])
 
+
+  // useEffect(() => {
+  //   const onBackPress = () => {
+  //     dispatch(UserActions.setAppMode("web"))
+  //     //   { text: "Cancel", style: "cancel", onPress: () => {} },
+  //     //   { text: "Exit", onPress: () => BackHandler.exitApp() },
+  //     return true; // Prevent default back behavior (which would close the app)
+  //   };
+
+  //   BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+  //   return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+  // }, []);
+
   const ACTION_NEW_BEEP_BASE = "NewBeepBase";
   const ACTION_EDIT_BEEP_BASE = "EditBeepBase";
   const ACTION_SWITCH_ENV = "SwitchEnv";
 
+  const constructMessageParams = (action: string, params: any) => {
+    const message = {
+      action,
+      params,
+    }
+    return JSON.stringify(message)
+  }
+
   const injectedJavaScriptBeforeContentLoaded = `
     (function() {
+      const constructMessageParams = (action, params) => {
+        const message = {
+          action,
+          params,
+        }
+        return JSON.stringify(message)
+      }
+
       // New button
       const newButton = document.createElement("button");
       newButton.innerText = "New";
@@ -163,7 +194,8 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       newButton.style.borderRadius = "5px";
       newButton.style.fontSize = "16px";
       newButton.onclick = function() {
-        window.ReactNativeWebView.postMessage("${ACTION_NEW_BEEP_BASE}");
+        const message = constructMessageParams("${ACTION_NEW_BEEP_BASE}");
+        window.ReactNativeWebView.postMessage(message);
       };
       document.addEventListener("DOMContentLoaded", function() {
         document.body.appendChild(newButton);
@@ -171,7 +203,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
 
       // Edit button
       const editButton = document.createElement("button");
-      editButton.innerText = "Edit Beep base";
+      editButton.innerText = "Edit";
       editButton.style.position = "fixed";
       editButton.style.top = "5px";
       editButton.style.right = "10px";
@@ -183,10 +215,11 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       editButton.style.borderRadius = "5px";
       editButton.style.fontSize = "16px";
       editButton.onclick = function() {
-        window.ReactNativeWebView.postMessage("${ACTION_EDIT_BEEP_BASE}");
+        const message = constructMessageParams("${ACTION_EDIT_BEEP_BASE}", { devEUI: "49b55e035a658a3d" });
+        window.ReactNativeWebView.postMessage(message);
       };
       document.addEventListener("DOMContentLoaded", function() {
-        // document.body.appendChild(editButton);
+        document.body.appendChild(editButton);
       });
 
       // Env button
@@ -194,7 +227,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       envButton.innerText = "${env}";
       envButton.style.position = "fixed";
       envButton.style.top = "5px";
-      envButton.style.right = "10px";
+      envButton.style.left = "130px";
       envButton.style.zIndex = "9999";
       envButton.style.padding = "10px";
       envButton.style.background = "blue";
@@ -203,7 +236,8 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       envButton.style.borderRadius = "5px";
       envButton.style.fontSize = "16px";
       envButton.onclick = function() {
-        window.ReactNativeWebView.postMessage("${ACTION_SWITCH_ENV}");
+        const message = constructMessageParams("${ACTION_SWITCH_ENV}");
+        window.ReactNativeWebView.postMessage(message);
       };
       document.addEventListener("DOMContentLoaded", function() {
         document.body.appendChild(envButton);
@@ -223,18 +257,24 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   `;
 
   const handleWebViewMessage = (event: any) => {
-    switch (event.nativeEvent.data) {
-      case ACTION_NEW_BEEP_BASE:
-        dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "Wizard" } }))
-        break;
-      case ACTION_EDIT_BEEP_BASE:
-        dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "PeripheralDetailScreen", devEUI: "49b55e035a658a3d" } })) //TODO: get devEUI from webview
-        break;
-      case ACTION_SWITCH_ENV:
-        setEnv((prevEnv) => prevEnv === "prod" ? "test" : "prod")
-        break;
-      default:
-        break;
+    const message = event.nativeEvent.data;
+    if (message) {
+      const parsedMessage = JSON.parse(message);
+      if (parsedMessage.action) {
+        switch (parsedMessage.action) {
+          case ACTION_NEW_BEEP_BASE:
+            dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "Wizard" } }))
+            break;
+          case ACTION_EDIT_BEEP_BASE:
+            dispatch(GlobalActions.setAppMode({ mode: "app", params: { screen: "PeripheralDetailScreen", devEUI: parsedMessage.params.devEUI } }))
+            break;
+          case ACTION_SWITCH_ENV:
+            setEnv((prevEnv) => prevEnv === "prod" ? "test" : "prod")
+            break;
+          default:
+            break;
+        }
+      }
     }
   };
 
