@@ -7,7 +7,7 @@ export class LogFileFrameModel {
 
   constructor(props: any) {
     this.frame = props.frame
-    this.data = props.data
+    this.data = Buffer.from(props.data)
     this.size = props.data?.length
   }
 

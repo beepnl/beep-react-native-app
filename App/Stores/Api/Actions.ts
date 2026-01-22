@@ -1,4 +1,4 @@
-import { ActionCreators, createActions } from 'reduxsauce';
+import { createActions } from 'reduxsauce';
 import { FirmwareModel } from '../../Models/FirmwareModel';
 import { RegisterState } from './InitialState';
 
@@ -54,4 +54,4 @@ const CreatedActions = createActions({
   apiFailure: ['response'],
 });
 
-export default CreatedActions.Creators as C;
+export default CreatedActions.Creators;

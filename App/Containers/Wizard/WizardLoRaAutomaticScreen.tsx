@@ -1,33 +1,31 @@
-import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
+import { RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Images, Metrics } from '../../Theme';
+import styles from './styles';
 
 // Utils
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import { generateKey } from '@/App/Helpers/random';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import { generateKey } from '../../Helpers/random';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { getLoRaWanState } from '../../Stores/BeepBase/Selectors';
-import { LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
-import { LoRaConfigState } from '../../Stores/Api/InitialState';
-import { getLoRaConfigState } from '../../Stores/Api/Selectors';
+import { LoRaWanStateModel } from '@/App/Models/LoRaWanStateModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import { LoRaConfigState } from '@/App/Stores/Api/InitialState';
+import { getLoRaConfigState } from '@/App/Stores/Api/Selectors';
+import { getLoRaWanState, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
-import useInterval from '../../Helpers/useInterval';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import useInterval from '@/App/Helpers/useInterval';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const RETRY_COUNT = 8
 

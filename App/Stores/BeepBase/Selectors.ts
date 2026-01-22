@@ -1,4 +1,4 @@
-import { AppState } from 'App/Stores'
+import { AppState } from '@/App/Stores'
 import { LogFileFrameModel } from '../../Models/LogFileFrameModel'
 
 export const getError = (state: AppState) => {

@@ -1,33 +1,31 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
+import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Images, Metrics } from '../../Theme';
+import { Colors } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import useInterval from '@/App/Helpers/useInterval';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import useInterval from '../../Helpers/useInterval';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { TemperatureModel } from '../../Models/TemperatureModel';
-import { getTemperatureSensorDefinitions, getTemperatures } from 'App/Stores/BeepBase/Selectors';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
+import { TemperatureModel } from '@/App/Models/TemperatureModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import { getPairedPeripheral, getTemperatureSensorDefinitions, getTemperatures } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
-import ToggleSwitch from 'rn-toggle-switch';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -136,7 +134,14 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
         <View style={styles.spacer} />
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <Text style={styles.label}>{t("wizard.calibrate.temperature.location")}</Text>
-          <ToggleSwitch
+          <Switch
+            trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}
+            thumbColor={Colors.yellow}
+            // text={{ on: t("wizard.calibrate.temperature.inside"), off: t("wizard.calibrate.temperature.outside"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
+            value={sensorLocations[index].value}
+            onValueChange={sensorLocations[index].setValue}
+            />
+          {/* <ToggleSwitch
             text={{ on: t("wizard.calibrate.temperature.inside"), off: t("wizard.calibrate.temperature.outside"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
             textStyle={{ ...Fonts.style.regular }}
             textProps={{ allowFontScaling: false }}
@@ -146,7 +151,7 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
             radius={Metrics.inputHeight / 4}
             active={sensorLocations[index].value}
             onValueChange={sensorLocations[index].setValue}
-            />
+            /> */}
         </View>
         <View style={styles.spacerDouble} />
       </View>)}

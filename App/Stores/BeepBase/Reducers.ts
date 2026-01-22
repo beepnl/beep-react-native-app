@@ -1,7 +1,7 @@
-import { INITIAL_STATE, BeepBaseState } from './InitialState'
 import { createReducer } from 'reduxsauce'
-import { BeepBaseTypes } from './Actions'
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel'
+import { BeepBaseTypes } from './Actions'
+import { BeepBaseState, INITIAL_STATE } from './InitialState'
 
 export const clear = (state: BeepBaseState, payload: any) => INITIAL_STATE
 
@@ -17,6 +17,10 @@ export const bleFailure = (state: BeepBaseState, payload: any) => {
 }
 
 export const setPairedPeripheral = (state: BeepBaseState, payload: any) => {
+  if (!payload.peripheral) {
+    return { ...state, pairedPeripheral: undefined}
+  }
+
   // Merge with existing pairedPeripheral to preserve fields like deviceId/name
   const prev = state.pairedPeripheral || {}
   const next = { ...prev, ...payload.peripheral }

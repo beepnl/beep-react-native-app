@@ -1,40 +1,37 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTypedSelector } from 'App/Stores';
+import { useTypedSelector } from '@/App/Stores';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { ApplicationStyles, Colors, Fonts } from '../../Theme';
+import { ApplicationStyles, Colors, Fonts } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import RNFS, { UploadBeginCallbackResult, UploadFileItem, UploadProgressCallbackResult, UploadResult } from 'react-native-fs';
-import ApiService from '../../Services/ApiService';
-import useTimeout from '../../Helpers/useTimeout';
-import useInterval from '../../Helpers/useInterval';
-import { BleLogger } from '../../Helpers/BleLogger';
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import { BleLogger } from '@/App/Helpers/BleLogger';
+import useInterval from '@/App/Helpers/useInterval';
+import useTimeout from '@/App/Helpers/useTimeout';
+import { fetch } from 'expo/fetch';
 
 // Data
-import BeepBaseActions from 'App/Stores/BeepBase/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { getLogFileSize } from 'App/Stores/BeepBase/Selectors'
-import { LogFileSizeModel } from '../../Models/LogFileSizeModel';
-import { getLogFileProgress } from 'App/Stores/BeepBase/Selectors'
-import { getEraseLogFileProgress } from 'App/Stores/BeepBase/Selectors'
-import { getUseProduction } from '../../Stores/User/Selectors';
-import { ERASE_TYPE, UploadResponseModel } from '../../Models/UploadResponseModel';
+import { LogFileSizeModel } from '@/App/Models/LogFileSizeModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { ERASE_TYPE, UploadResponseModel } from '@/App/Models/UploadResponseModel';
+import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
+import { getEraseLogFileProgress, getLogFileProgress, getLogFileSize, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
+import { getUseProduction } from '@/App/Stores/User/Selectors';
 
 // Components
-import { Text, View, TouchableOpacity } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader'
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import ApiService from '@/App/Services/ApiService';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import * as Progress from 'react-native-progress';
 import Modal from 'react-native-modal';
+import * as Progress from 'react-native-progress';
 
 type STATE = 
   "idle" |
@@ -86,6 +83,83 @@ const LogFileScreen: FunctionComponent<Props> = ({
     dispatch(BeepBaseActions.setEraseLogFileProgress(diff / 1000 / 250))
   }, (state == "erasing" && eraseType == "full") ? (__DEV__ ? 5000 : 1000) : null)
 
+  const uploadLogFile = async () => {
+    try {
+      setUploadProgress(0);
+
+      const uploadUrl = ApiService.getLogFileUploadUrl(
+        useProduction,
+        logFileSize?.value()
+      );
+
+      if (BleHelpers.LOG_FILE) {
+        const formData = new FormData();
+        formData.append('id', peripheral.deviceId);
+        formData.append('file', BleHelpers.LOG_FILE, BleHelpers.LOG_FILE_NAME)
+        setUploadProgress(0.5);
+        const response = await fetch(uploadUrl, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${ApiService.getToken()}`,
+          },
+          body: formData,
+          // not supported in expo fetch
+          // onUploadProgress({ loaded, total }) {
+          //   if (total) {
+          //     setUploadProgress(loaded / total);
+          //   }
+          // },
+        });
+  
+        console.log('Upload response:', response);
+        if (response.ok) {
+          setUploadProgress(1);
+  
+          const parsedJson = await response.json();
+          const uploadResponse = new UploadResponseModel(parsedJson);
+
+          // TODO: enable when upload works
+          if (uploadResponse.shouldErase()) {
+            setState('erasing');
+  
+            const eraseCode = uploadResponse.getEraseCode();
+          //   BleHelpers.write(
+          //     peripheral.id,
+          //     COMMANDS.ERASE_MX_FLASH,
+          //     eraseCode
+          //   );
+  
+            const et = uploadResponse.getEraseType();
+            // setEraseType(et);
+  
+          //   if (et === 'full') {
+          //     setFullEraseStart(new Date());
+          //   }
+          } else {
+            setState('completed');
+            setModalVisible(true);
+          }
+        } else {
+          console.log('SERVER ERROR', response);
+          setUploadProgress(0);
+          setState('failed');
+          setError(
+            `Upload failed: log file saved locally as ${BleHelpers.LOG_FILE.uri}`
+          );
+          BleLogger.setDownloadMode(false);
+        }
+      } else {
+        BleLogger.log('No log file to upload');
+      }
+    } catch (err: any) {
+      setUploadProgress(0);
+      setError(err?.message ?? 'Upload failed');
+      console.log(err);
+      BleLogger.setDownloadMode(false);
+    }
+  };
+
   useEffect(() => {
     if (logFileProgress > 0 && logFileProgress === logFileSize?.value()) {
       //download finished, copy to SD card
@@ -94,6 +168,11 @@ const LogFileScreen: FunctionComponent<Props> = ({
       //download finished, disable download mode and upload to api
       BleLogger.setDownloadMode(false)
       setState("uploading")
+
+      uploadLogFile()
+      
+      //TODO: replace
+      /*
       RNFS.uploadFiles({
         toUrl: ApiService.getLogFileUploadUrl(useProduction, logFileSize?.value()),
         files: [{ 
@@ -150,6 +229,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
           // Ensure download mode is disabled on upload error
           BleLogger.setDownloadMode(false)
         });
+        */
     }    
   }, [logFileProgress]);
 
@@ -179,9 +259,9 @@ const LogFileScreen: FunctionComponent<Props> = ({
       BleLogger.setDownloadMode(true)
       
       if (peripheral) {
-        BleHelpers.initLogFile().then(() => {
-          BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
-        })
+        //create new log file
+        BleHelpers.initLogFile()
+        BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
       }
     }
   }
@@ -286,7 +366,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
 
       { !!error && <>
         <View style={styles.spacer} />
-        <Text style={[styles.error]}>{`Error: ${error}`}</Text>
+        <Text style={styles.error}>{`Error: ${error}`}</Text>
       </>}
 
     </ScrollView>
@@ -301,7 +381,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
       <View style={ApplicationStyles.modalContainer}>
         <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("logFile.screenTitle")}</Text>
         <View style={styles.spacer} />
-        <View style={styles.itemContianer}>
+        <View style={styles.itemContainer}>
           <Text style={styles.itemText}>{t("logFile.uploadedMessage")}</Text>
           { eraseLogFileProgress == 1 && <>
             <View style={styles.spacer} />

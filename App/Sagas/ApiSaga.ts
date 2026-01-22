@@ -1,21 +1,19 @@
-import { put, call, select, all, take } from 'redux-saga/effects'
-import ApiActions from 'App/Stores/Api/Actions'
-import BeepBaseActions from 'App/Stores/BeepBase/Actions'
-import UserActions from 'App/Stores/User/Actions'
-import AuthActions from 'App/Stores/Auth/Actions'
-import api from 'App/Services/ApiService'
-import { DeviceModel } from '../Models/DeviceModel'
-import { FirmwareModel } from '../Models/FirmwareModel'
-import { SensorDefinitionModel } from '../Models/SensorDefinitionModel'
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers'
+import { CHANNELS } from '@/App/Models/AudioModel'
+import { DeviceModel } from '@/App/Models/DeviceModel'
+import { FirmwareModel } from '@/App/Models/FirmwareModel'
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel'
+import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel'
+import { APP_EUI, TTNModel } from '@/App/Models/TTNModel'
+import api from '@/App/Services/ApiService'
+import { navigate } from '@/App/Services/NavigationService'
+import ApiActions from '@/App/Stores/Api/Actions'
+import BeepBaseActions, { BeepBaseTypes } from '@/App/Stores/BeepBase/Actions'
+import UserActions from '@/App/Stores/User/Actions'
+import { getRefreshToken } from '@/App/Stores/User/Selectors'
+import { all, call, put, select, take } from 'redux-saga/effects'
+import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DISABLED, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
 import { getDevice, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
-import BleHelpers, { COMMANDS } from '../Helpers/BleHelpers'
-import { PairedPeripheralModel } from '../Models/PairedPeripheralModel'
-import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_DISABLED, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
-import { APP_EUI, TTNModel } from '../Models/TTNModel'
-import { BeepBaseTypes } from '../Stores/BeepBase/Actions'
-import { CHANNELS } from '../Models/AudioModel'
-import { getRefreshToken } from '../Stores/User/Selectors'
-import { navigate } from '../Services/NavigationService'
 
 function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Parameters<Fn>) {
   const response = yield fn(...args)
@@ -80,6 +78,7 @@ export function* checkDeviceRegistration(action: any) {
   //search for existing device
   const deviceResponse = yield guardedRequest(api.getDevice, hardwareId.id)
   if (deviceResponse && deviceResponse.ok && deviceResponse.data) {
+    console.log("deviceResponse", deviceResponse)
     if (deviceResponse.data.info) {
       //info field has error code
       switch (deviceResponse.data.info) {
@@ -144,9 +143,9 @@ export function* registerDevice(action: any) {
     //LORA
     yield call(BleHelpers.write, peripheralId, COMMANDS.READ_LORAWAN_STATE)
     yield take(BeepBaseTypes.SET_LO_RA_WAN_STATE)
-    const loRaWanState: LoRaWanStateModel = getLoRaWanState(yield select())
+    const loRaWanState: LoRaWanStateModel | undefined = getLoRaWanState(yield select())
     let newState = BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION
-    if (loRaWanState.hasJoined) {
+    if (loRaWanState?.hasJoined) {
       newState |= BITMASK_ENABLED
     }
     yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_STATE, newState)

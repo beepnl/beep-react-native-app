@@ -1,47 +1,41 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react'
+import React, { FunctionComponent, useEffect, useRef } from 'react';
 
 // Hooks
+import useAppState from '@/App/Helpers/useAppState';
+import { useTypedSelector } from '@/App/Stores';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTypedSelector } from 'App/Stores';
-import useAppState from '../../Helpers/useAppState';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './RootScreenStyle'
+import styles from './RootScreenStyle';
 
 // Utils
-import { RNLogger } from '../../Helpers/RNLogger';
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import i18n from '@/App/Localization';
+import api from '@/App/Services/ApiService';
+import { navigationRef } from '@/App/Services/NavigationService';
 import { NavigationContainer } from '@react-navigation/native';
-import { AuthStack, AppStack } from './AppNavigation';
-import { navigationRef } from '../../Services/NavigationService';
-import { NativeModules, NativeEventEmitter, Text } from "react-native";
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import moment from 'moment'
-import i18n from '../../Localization';
-import api from 'App/Services/ApiService'
+import moment from 'moment';
+import BleManager from 'react-native-ble-manager';
+import { AppStack, AuthStack } from './AppNavigation';
 
 // Data
-import StartupActions from 'App/Stores/Startup/Actions'
-import BeepBaseActions from 'App/Stores/BeepBase/Actions'
-import { getError as getApiError } from 'App/Stores/Api/Selectors';
-import { getError as getBleError } from 'App/Stores/BeepBase/Selectors';
-import { getDfuUpdating } from 'App/Stores/BeepBase/Selectors';
-import { getToken } from 'App/Stores/User/Selectors';
-import { getLanguageCode } from 'App/Stores/Settings/Selectors';
-
-//import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import useInterval from '../../Helpers/useInterval';
-//import { ClockModel } from '../../Models/ClockModel';
+import { getError as getApiError } from '@/App/Stores/Api/Selectors';
+import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
+import { getError as getBleError, getDfuUpdating } from '@/App/Stores/BeepBase/Selectors';
+import { getLanguageCode } from '@/App/Stores/Settings/Selectors';
+import StartupActions from '@/App/Stores/Startup/Actions';
+import { getToken } from '@/App/Stores/User/Selectors';
 
 // Data
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { View } from 'react-native'
+import { Colors } from '@/App/Theme';
+import { View } from 'react-native';
 import DropdownAlert from 'react-native-dropdownalert';
-
-const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface RootScreenBaseProps {
   startup?: typeof StartupActions.startup;
@@ -51,7 +45,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const languageCode = useTypedSelector<string>(getLanguageCode)
-  const dropDownAlert = useRef<DropdownAlert>(null);
+  const dropDownAlert = useRef<typeof DropdownAlert>(null);
   const apiError: any = useTypedSelector<any>(getApiError)
   const bleError: string = useTypedSelector<any>(getBleError)
   const token: string = useTypedSelector<string>(getToken)
@@ -64,7 +58,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   useEffect(() => {
     dispatch(StartupActions.startup())
 
-    const BleManagerConnectPeripheralSubscription = bleManagerEmitter.addListener("BleManagerConnectPeripheral", (args) => {
+    const BleManagerConnectPeripheralSubscription = BleManager.onConnectPeripheral((args: any) => {
       const peripheralId: string = args?.peripheral
       if (peripheral && peripheral.id == peripheralId) {
         const updated = {
@@ -87,7 +81,7 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
       }
     });
 
-    const BleManagerDisconnectPeripheralSubscription = bleManagerEmitter.addListener("BleManagerDisconnectPeripheral", (args) => {
+    const BleManagerDisconnectPeripheralSubscription = BleManager.onDisconnectPeripheral((args: any) => {
       const peripheralId: string = args?.peripheral
       if (peripheral && peripheral.id == peripheralId) {
         const updated = {
@@ -109,8 +103,8 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
     }
 
     return (() => {
-      BleManagerConnectPeripheralSubscription && BleManagerConnectPeripheralSubscription.remove()
-      BleManagerDisconnectPeripheralSubscription && BleManagerDisconnectPeripheralSubscription.remove()
+      BleManagerConnectPeripheralSubscription?.remove()
+      BleManagerDisconnectPeripheralSubscription?.remove()
     })
   }, [])
 
@@ -162,8 +156,18 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   return (
     <View style={styles.mainContainer}>
       <NavigationContainer ref={navigationRef}>
-        { !token && <AuthStack /> }
-        { !!token && <AppStack /> }
+        { !token && 
+          <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={['top', 'bottom']}>
+            <AuthStack />
+          </SafeAreaView>
+        }
+        { !!token && 
+          <SafeAreaView style={{ flex: 1, backgroundColor: Colors.yellow }} edges={['top']}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['bottom']}>
+              <AppStack /> 
+            </SafeAreaView>
+          </SafeAreaView>
+        }
       </NavigationContainer>
       <DropdownAlert ref={dropDownAlert} />
     </View>

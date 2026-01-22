@@ -1,32 +1,30 @@
-import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Metrics } from '../../Theme';
+import { Colors } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import useInterval from '@/App/Helpers/useInterval';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import useInterval from '../../Helpers/useInterval';
 
 // Data
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState } from '../../Stores/BeepBase/Selectors';
-import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
-import { LoRaWanDeviceEUIModel } from '../../Models/LoRaWanDeviceEUIModel';
-import { LoRaWanAppEUIModel } from '../../Models/LoRaWanAppEUIModel';
-import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
+import { LoRaWanAppEUIModel } from '@/App/Models/LoRaWanAppEUIModel';
+import { LoRaWanAppKeyModel } from '@/App/Models/LoRaWanAppKeyModel';
+import { LoRaWanDeviceEUIModel } from '@/App/Models/LoRaWanDeviceEUIModel';
+import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '@/App/Models/LoRaWanStateModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 interface Props {

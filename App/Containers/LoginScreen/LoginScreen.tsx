@@ -1,29 +1,29 @@
-import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
+import React, { FunctionComponent, useRef, useState } from 'react';
 
 // Hooks
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector, useStore } from 'react-redux';
+import { useTypedSelector } from '@/App/Stores';
 import { useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './LoginScreenStyle'
-import { Colors, Images, Metrics } from '../../Theme';
+import { Colors, Metrics } from '@/App/Theme';
+import styles from './LoginScreenStyle';
 
 // Utils
-import { RNLogger } from '../../Helpers/RNLogger';
-import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
+import OpenExternalHelpers from '@/App/Helpers/OpenExternalHelpers';
 
 // Data
-import AuthActions from 'App/Stores/Auth/Actions'
-import { getError } from 'App/Stores/Auth/Selectors';
-import { getUsername } from 'App/Stores/Settings/Selectors';
-import { getUseProduction } from '../../Stores/User/Selectors';
+import AuthActions from '@/App/Stores/Auth/Actions';
+import { getError } from '@/App/Stores/Auth/Selectors';
+import { getUsername } from '@/App/Stores/Settings/Selectors';
+import { getUseProduction } from '@/App/Stores/User/Selectors';
 
 // Components
-import { Text, View, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
+import Bee from '@/App/Components/Bee';
+import { Image } from 'expo-image';
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Bee from '../../Components/Bee';
 
 interface Props {
 }
@@ -66,7 +66,7 @@ const LoginScreen: FunctionComponent<Props> = ({
       <ScrollView style={styles.container}>
         <View style={styles.spacerDouble} />
 
-        <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 300, margin: Metrics.baseMargin }} source={Images.beepLogo} resizeMode="contain" />
+        <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 300, margin: Metrics.baseMargin }} source={{ uri: "beep_logo" }} contentFit="contain" />
 
         <TextInput
           ref={inputUsernameRef}

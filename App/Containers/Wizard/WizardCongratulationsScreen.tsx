@@ -1,23 +1,22 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent } from 'react';
 
 // Hooks
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Images, Metrics } from '../../Theme';
+import styles from './styles';
 
 // Utils
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import OpenExternalHelpers from '@/App/Helpers/OpenExternalHelpers';
 import { CommonActions } from '@react-navigation/native';
-import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
+import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
   navigation: StackNavigationProp,

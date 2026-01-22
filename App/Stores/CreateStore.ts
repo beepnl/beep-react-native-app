@@ -1,17 +1,5 @@
 import { applyMiddleware, compose, createStore } from 'redux'
 import createSagaMiddleware from 'redux-saga'
-import { persistReducer, persistStore, createMigrate } from 'redux-persist'
-import logger from 'redux-logger'
-
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
-const rootPersistConfig = {
-  key: 'root',
-  storage: AsyncStorage,
-  blacklist: ['settings'],
-  whitelist: [],
-  version: 0,
-}
 
 export default (rootReducer: any, rootSaga: any) => {
   const middleware = []
@@ -24,13 +12,10 @@ export default (rootReducer: any, rootSaga: any) => {
   enhancers.push(applyMiddleware(...middleware/*, logger*/))
 
   // Redux persist
-  const persistedReducer = persistReducer(rootPersistConfig, rootReducer)
-
-  const store = createStore(persistedReducer, compose(...enhancers))
-  const persistor = persistStore(store)
+  const store = createStore(rootReducer, compose(...enhancers))
 
   // Kick off the root saga
   sagaMiddleware.run(rootSaga)
 
-  return { store, persistor }
+  return { store }
 }

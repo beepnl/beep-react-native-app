@@ -1,78 +1,43 @@
-# OSX
-#
-.DS_Store
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# Xcode
-#
-build/
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
-xcuserdata
-*.xccheckout
-*.moved-aside
-DerivedData
-*.hmap
-*.ipa
-*.xcuserstate
-.claude/
-.gemini/
-
-# Android/IntelliJ
-#
-build/
-.idea
-.gradle
-android/.gradle-user-home/
-android/app/build/
-android/build/
-android/app/.cxx/
-build-logs/
-local.properties
-*.iml
-.claude/
-.gemini/
-# node.js
-#
+# dependencies
 node_modules/
-npm-debug.log
-yarn-error.log
 
-# Editor / tooling caches
-.vscode/.react/
-.opencode/
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
 
-# BUCK
-buck-out/
-\.buckd/
-*.keystore
-!debug.keystore
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/
+# Metro
+.metro-health-check*
 
-*/fastlane/report.xml
-*/fastlane/Preview.html
-*/fastlane/screenshots
-/android/.claude/
-/android/.gemini/
-*log
-*.jsbundle
-/ios/.claude/
-/ios/.gemini/
-# CocoaPods
-/ios/Pods/
-android/app/release/output-metadata.json
-# Ignore large build outputs
-*.apk
-*.aab
-android/app/src/main/assets/index.android.bundle
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+app-example
+
+# generated native folders
+/ios
+/android

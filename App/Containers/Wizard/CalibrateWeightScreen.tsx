@@ -1,35 +1,34 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
+import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { ApplicationStyles, Colors, Fonts } from '../../Theme';
+import { ApplicationStyles, Colors, Fonts } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import useInterval from '@/App/Helpers/useInterval';
+import useTimeout from '@/App/Helpers/useTimeout';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import useInterval from '../../Helpers/useInterval';
-import useTimeout from '../../Helpers/useTimeout';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getWeightSensorDefinitions, getWeight } from 'App/Stores/BeepBase/Selectors';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
-import { CHANNELS, WeightModel } from '../../Models/WeightModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
+import { CHANNELS, WeightModel } from '@/App/Models/WeightModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import { getPairedPeripheral, getWeight, getWeightSensorDefinitions } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
-import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
-import TextInputMask from 'react-native-text-input-mask';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
+// import TextInputMask from 'react-native-text-input-mask';
+import TextInputMask from 'react-native-advanced-input-mask';
 
 type PAGE = "tare" | "calibrate"
 

@@ -1,41 +1,39 @@
-import React, { FunctionComponent, useEffect, useState, useCallback, useRef, useMemo } from 'react'
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // Hooks
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector, useStore } from 'react-redux';
+import { useTypedSelector } from '@/App/Stores';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './HomeScreenStyle'
-import { Colors, Images } from '../../Theme';
+import { Colors } from '@/App/Theme';
+import styles from './HomeScreenStyle';
 
-import { RNLogger } from '../../Helpers/RNLogger';
-import BleHelpers, { BLE_NAME_PREFIX } from '../../Helpers/BleHelpers';
-import { BleLogger } from '../../Helpers/BleLogger';
+import { BLE_NAME_PREFIX } from '@/App/Helpers/BleHelpers';
 import * as tidyJs from '@tidyjs/tidy';
 
 // BLE
-import BleManager, { Peripheral } from 'react-native-ble-manager'
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import BleManager, { Peripheral } from 'react-native-ble-manager';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import BeepBaseActions from 'App/Stores/BeepBase/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { getDevices } from 'App/Stores/User/Selectors'
-import { DeviceModel } from '../../Models/DeviceModel';
+import { DeviceModel } from '@/App/Models/DeviceModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import { getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
+import { getDevices } from '@/App/Stores/User/Selectors';
 
 // Components
-import { Text, View, TouchableOpacity, Button, ScrollView, RefreshControl, Image, Alert } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
-import NavigationButton from '../../Components/NavigationButton';
+import NavigationButton from '@/App/Components/NavigationButton';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { BleLogger } from '@/App/Helpers/BleLogger';
+import OpenExternalHelpers from '@/App/Helpers/OpenExternalHelpers';
+import { RNLogger } from '@/App/Helpers/RNLogger';
+import { Image } from 'expo-image';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import OpenExternalHelpers from '../../Helpers/OpenExternalHelpers';
-
-const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
 type ListItem = DeviceModel & { isConnected: boolean }
 type BleListItem = Peripheral & { origin: "bonded" | "scanned", isConnected: boolean }
@@ -152,7 +150,7 @@ const HomeScreen: FunctionComponent<Props> = ({
   const scan = useCallback(() => {
     setScanError("");
     if (!isScanning) {
-      BleManager.scan([], 10, false).then((results) => {
+      BleManager.scan({ serviceUUIDs: [], seconds: 10/*, allowDuplicates: false*/ }).then((results) => {
         RNLogger.log('[RN] Starting scan from HomeScreen...');
         setIsScanning(true);
       }).catch(err => {
@@ -183,14 +181,8 @@ const HomeScreen: FunctionComponent<Props> = ({
 
   // Initialize BLE scanning on mount
   useEffect(() => {
-    const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener(
-      'BleManagerDiscoverPeripheral', 
-      handleDiscoverPeripheral
-    );
-    const BleManagerStopScanSubscription = bleManagerEmitter.addListener(
-      'BleManagerStopScan', 
-      handleStopScan
-    );
+    const BleManagerDiscoverPeripheralSubscription = BleManager.onDiscoverPeripheral(handleDiscoverPeripheral);
+    const BleManagerStopScanSubscription = BleManager.onStopScan(handleStopScan);
 
     // Initialize scan result with all previously bonded peripherals
     RNLogger.log("[RN] HomeScreen: Getting bonded peripherals...");
@@ -225,7 +217,7 @@ const HomeScreen: FunctionComponent<Props> = ({
     useCallback(() => {
       // On focus: start scanning
       RNLogger.log("[RN] HomeScreen: Screen focused, starting scan");
-      startScan();
+      // startScan();
       
       // On blur: stop scanning to avoid conflicts
       return () => {
@@ -263,22 +255,6 @@ const HomeScreen: FunctionComponent<Props> = ({
     }
   }
 
-  const onExportLogsPress = async () => {
-    try {
-      const result = await BleHelpers.exportBleLogFile();
-      if (result) {
-        Alert.alert(t('common.success'), `Logs exported to: ${result}`,
-          [{ text: t('common.ok') }])
-      } else {
-        Alert.alert(t('common.error'), 'No logs found to export',
-          [{ text: t('common.ok') }])
-      }
-    } catch (error) {
-      Alert.alert(t('common.error'), `Failed to export logs: ${error}`,
-        [{ text: t('common.ok') }])
-    }
-  }
-
   return (
     <>
       <ScreenHeader title={t('home.screenTitle')} menu />
@@ -292,11 +268,13 @@ const HomeScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
         <View style={styles.separator} />
         <View style={styles.spacer} />
-        <TouchableOpacity style={[styles.button, { backgroundColor: Colors.lighterGrey }]} onPress={onExportLogsPress}>
+        {/* <TouchableOpacity style={[styles.button, { backgroundColor: Colors.lighterGrey }]} onPress={onExportLogsPress}>
           <Text style={styles.text}>Export Debug Logs</Text>
-        </TouchableOpacity>
-        <View style={styles.spacer} />
-          {/* Policy notice above device list */}
+        </TouchableOpacity> */}
+
+        {/* Policy notice above device list */}
+        { Platform.OS === 'android' && <>
+          <View style={styles.spacer} />
           <View style={styles.noticeContainer} accessibilityRole="text">
             <IconMaterialIcons name="info-outline" size={18} color={Colors.darkYellow} />
             <View style={styles.spacerHalf} />
@@ -304,6 +282,8 @@ const HomeScreen: FunctionComponent<Props> = ({
               Due to updated Android policies: always pair with a BEEP base using the default passcode (123456) when prompted.
             </Text>
           </View>
+        </>}
+
         <ScrollView 
           style={styles.devicesContainer}
           refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={() => { 
@@ -315,7 +295,7 @@ const HomeScreen: FunctionComponent<Props> = ({
             <NavigationButton
               key={item.source === 'api' ? `api-${item.id}` : `ble-${item.hardwareId}`}
               title={item.name}
-              Icon={item.isConnected ? <IconFontAwesome name="bluetooth" size={30} color={Colors.bluetooth} /> : <Image style={{width: 30, height: 30}} source={Images.beepBase} resizeMode='cover'/>}
+              Icon={item.isConnected ? <IconFontAwesome name="bluetooth" size={30} color={Colors.bluetooth} /> : <Image style={{width: 30, height: 30}} source={{ uri: "beepbase" }} contentFit='cover'/>}
               IconRight={item.owner ? undefined : <IconFontAwesome name="group" size={30} color={Colors.lighterGrey} />}
               onPress={() => onListItemPress(item)}
             />

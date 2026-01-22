@@ -1,35 +1,31 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect } from 'react';
 
 // Hooks
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTypedSelector } from 'App/Stores';
+import { useTypedSelector } from '@/App/Stores';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './FirmwareScreenStyle'
-import { Colors, Metrics } from '../../Theme';
+import { Colors } from '../../Theme';
+import styles from './FirmwareScreenStyle';
 
 // Utils
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import { NordicDFU, DFUEmitter } from "react-native-nordic-dfu";
-import RNFS from 'react-native-fs'
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { getFirmwaresStable } from 'App/Stores/Api/Selectors'
-import { getFirmwaresTest } from 'App/Stores/Api/Selectors'
-import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
-import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
-import { FirmwareModel } from '../../Models/FirmwareModel';
+import { FirmwareModel } from '@/App/Models/FirmwareModel';
+import { FirmwareVersionModel } from '@/App/Models/FirmwareVersionModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import { getFirmwaresStable, getFirmwaresTest } from '@/App/Stores/Api/Selectors';
+import { getFirmwareVersion, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { Text, View, TouchableOpacity } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader'
+import NavigationButton from '@/App/Components/NavigationButton';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import NavigationButton from '../../Components/NavigationButton';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {

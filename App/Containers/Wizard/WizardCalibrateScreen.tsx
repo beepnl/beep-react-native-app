@@ -1,39 +1,37 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Images, Metrics } from '../../Theme';
+import { Colors, Metrics } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import useInterval from '@/App/Helpers/useInterval';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import useInterval from '../../Helpers/useInterval';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { TemperatureModel } from '../../Models/TemperatureModel';
-import { getTemperatures, getWeight, getAudio } from 'App/Stores/BeepBase/Selectors';
-import { getPairedPeripheral, getDevice } from 'App/Stores/BeepBase/Selectors'
-import { DeviceModel } from '../../Models/DeviceModel';
-import { CHANNELS, WeightModel } from '../../Models/WeightModel';
-import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
-import { getWeightSensorDefinitions } from '../../Stores/BeepBase/Selectors';
-import { AudioModel } from '../../Models/AudioModel';
+import { AudioModel } from '@/App/Models/AudioModel';
+import { DeviceModel } from '@/App/Models/DeviceModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
+import { TemperatureModel } from '@/App/Models/TemperatureModel';
+import { CHANNELS, WeightModel } from '@/App/Models/WeightModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import { getAudio, getDevice, getPairedPeripheral, getTemperatures, getWeight, getWeightSensorDefinitions } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
-import NavigationButton from '../../Components/NavigationButton';
+import NavigationButton from '@/App/Components/NavigationButton';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { Image } from 'expo-image';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import * as Progress from 'react-native-progress';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import * as Progress from 'react-native-progress';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -157,7 +155,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
       />
 
       <View style={{ flex: 1, justifyContent: "center" }}>
-        <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, aspectRatio: 3840/2160, height: null, margin: Metrics.baseMargin }} source={Images.beepBase} resizeMode="contain" />
+        <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, aspectRatio: 3840/2160, height: null, margin: Metrics.baseMargin }} source={{ uri: "beepbase" }} contentFit="contain" />
       </View>
 
       <TouchableOpacity style={styles.button} onPress={onNextPress}>

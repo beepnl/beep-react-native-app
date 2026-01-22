@@ -1,4 +1,4 @@
-import { ActionCreators, createActions } from 'reduxsauce';
+import { createActions } from 'reduxsauce';
 import { ApplicationConfigModel } from '../../Models/ApplicationConfigModel';
 import { AteccModel } from '../../Models/AteccModel';
 import { AudioModel } from '../../Models/AudioModel';
@@ -18,8 +18,6 @@ import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
 import { TiltModel } from '../../Models/TiltModel';
 import { WeightModel } from '../../Models/WeightModel';
-import { RNLogger } from '../../Helpers/RNLogger';
-import BleHelpers from '../../Helpers/BleHelpers';
 
 export enum BeepBaseTypes {
   CLEAR = 'CLEAR',
@@ -50,7 +48,7 @@ export enum BeepBaseTypes {
   SET_DFU_UPDATING = 'SET_DFU_UPDATING',
 }
 
-interface C extends ActionCreators {
+interface C {
   clear: () => { type: BeepBaseTypes.CLEAR };
   bleFailure: ((error: any) => { type: BeepBaseTypes.BLE_FAILURE })
   setPairedPeripheral: (peripheral: PairedPeripheralModel) => { type: BeepBaseTypes.SET_PAIRED_PERIPHERAL };
@@ -79,7 +77,7 @@ interface C extends ActionCreators {
   setDfuUpdating: (isDfuUpdating: boolean) => { type: BeepBaseTypes.SET_DFU_UPDATING };
 }
 
-const CreatedActions = createActions( {
+const { Creators } = createActions( {
   clear: null,
   bleFailure: ['error'],
   setPairedPeripheral: ['peripheral'],
@@ -108,4 +106,4 @@ const CreatedActions = createActions( {
   setDfuUpdating: ['isDfuUpdating'],
 } );
 
-export default CreatedActions.Creators as C;
+export default Creators;

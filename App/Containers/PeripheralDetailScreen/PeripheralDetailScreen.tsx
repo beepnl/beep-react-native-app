@@ -1,37 +1,35 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './PeripheralDetailScreenStyle'
-import { Colors } from '../../Theme';
+import { Colors } from '@/App/Theme';
+import styles from './PeripheralDetailScreenStyle';
 
 // Utils
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import { RNLogger } from '../../Helpers/RNLogger';
-import { BleLogger } from '../../Helpers/BleLogger';
-import { Peripheral } from 'react-native-ble-manager';
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import { BleLogger } from '@/App/Helpers/BleLogger';
+import { RNLogger } from '@/App/Helpers/RNLogger';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Peripheral } from 'react-native-ble-manager';
 
 // Data
-import BeepBaseActions from 'App/Stores/BeepBase/Actions'
-import ApiActions from 'App/Stores/Api/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { DeviceModel } from '../../Models/DeviceModel';
-import { CHANNELS } from '../../Models/WeightModel';
-import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
-import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
+import { DeviceModel } from '@/App/Models/DeviceModel';
+import { FirmwareVersionModel } from '@/App/Models/FirmwareVersionModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { CHANNELS } from '@/App/Models/WeightModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
+import { getFirmwareVersion, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { Text, View, TouchableOpacity } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader'
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import NavigationButton from '@/App/Components/NavigationButton';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import NavigationButton from '../../Components/NavigationButton';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -124,7 +122,8 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const isConnected = peripheral && peripheral.isConnected
 
   useEffect(() => {
-    if (connectOnLoad && !isConnected) {
+    // if (connectOnLoad && !isConnected) {
+    if (connectOnLoad) {
       connect()
     }
   }, [connectOnLoad])
@@ -132,7 +131,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     if (!peripheralEqualsDevice) {
       if (isConnected) {
-        BleHelpers.disconnectPeripheral(peripheral)
+        BleHelpers.disconnectPeripheral(peripheral.id)
       }
       dispatch(BeepBaseActions.setPairedPeripheral(undefined))
     }
@@ -194,6 +193,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         ...peripheral,
         deviceId: device.id
       }))
+      BleHelpers.retrieveServices(peripheral.id)
       return
     }
 
@@ -205,6 +205,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         ...peripheral,
         deviceId: device.id
       }))
+      BleHelpers.retrieveServices(peripheral.id)
       return
     }
 
@@ -212,7 +213,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
     setError("")
     RNLogger.log(`[RN] Starting scan for device: ${device.name} (BLE name: ${DeviceModel.getBleName(device)})`)
     BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((scannedPeripheral: Peripheral) => {
-      BleHelpers.connectPeripheral(scannedPeripheral).then(() => {
+      BleHelpers.connectPeripheral(scannedPeripheral.id).then(() => {
         dispatch(BeepBaseActions.setPairedPeripheral({ 
           ...scannedPeripheral, 
           isConnected: true,
@@ -224,7 +225,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
         setError(t("peripheralDetail.notFound"))
         // Only disconnect the specific peripheral if we know which one failed
         if (scannedPeripheral) {
-          BleHelpers.disconnectPeripheral(scannedPeripheral)
+          BleHelpers.disconnectPeripheral(scannedPeripheral.id)
         }
         setBusy(false)
       })
@@ -241,7 +242,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
     setError("")
     if (isConnected) {
       RNLogger.log(`[RN] Disconnecting from ${peripheral?.name} (${peripheral?.id})`)
-      BleHelpers.disconnectPeripheral(peripheral)
+      BleHelpers.disconnectPeripheral(peripheral.id)
       dispatch(BeepBaseActions.setPairedPeripheral({ ...peripheral, isConnected: false }))
     } else {
       RNLogger.log(`[RN] Starting connection process`)

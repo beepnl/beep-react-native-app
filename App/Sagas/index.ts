@@ -1,27 +1,27 @@
-import { takeLatest, all, takeEvery } from 'redux-saga/effects'
-import { StartupTypes } from 'App/Stores/Startup/Actions'
-import { AuthTypes } from 'App/Stores/Auth/Actions'
-import { ApiTypes } from 'App/Stores/Api/Actions'
+import { all, takeEvery, takeLatest } from 'redux-saga/effects'
+import { ApiTypes } from '../Stores/Api/Actions'
+import { AuthTypes } from '../Stores/Auth/Actions'
+import { StartupTypes } from '../Stores/Startup/Actions'
 
 import { startup } from './StartupSaga'
 
-import { 
+import {
   login,
   logout,
 } from './AuthSaga'
 
 import {
-  getDevices,
   checkDeviceRegistration,
-  registerDevice,
   configureLoRaAutomatic,
   configureLoRaManual,
+  createSensorDefinition,
+  getDevices,
+  getFirmwares,
+  getSensorDefinitions,
   initializeTemperatureSensors,
   initializeWeightSensor,
-  createSensorDefinition,
-  getSensorDefinitions,
+  registerDevice,
   updateApiSensorDefinition,
-  getFirmwares,
 } from './ApiSaga'
 
 export default function* root() {

@@ -368,11 +368,16 @@
     "test": "Test versions",
     "install": "Download and install",
     "progress": "Installing",
+    "success": "Successfully installed firmware version {{version}}",
     "ENABLING_DFU_MODE": "Initializing BEEP base for firmware upload",
     "CONNECTING": "Reconnecting for upload",
+    "CONNECTED": "Connected",
     "DEVICE_DISCONNECTING": "Disconnecting",
-    "DFU_PROCESS_STARTING": "Uploading firmware...",
-    "DFU_COMPLETED": "Upload completed",
+    "DEVICE_DISCONNECTED": "Disconnected",
+    "DFU_PROCESS_STARTING": "Preparing firmware upload...",
+    "DFU_PROCESS_STARTED": "Uploading firmware...",
+    "DFU_UPLOADING": "Uploading firmware...",
+    "DFU_COMPLETED": "Upload completed, restarting BEEP base...",
     "DFU_FAILED": "Failed uploading firmware"
   }
 }

@@ -1,31 +1,29 @@
-import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 // Hooks
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTypedSelector } from 'App/Stores';
+import { useTypedSelector } from '@/App/Stores';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from '../Sensor/styles'
-import { Colors, Fonts, Metrics } from '../../Theme';
-import Images from 'App/Assets/Images'
+import ApiService from '@/App/Services/ApiService';
+import styles from '../Sensor/styles';
 
 // Utils
-const nodePackage = require('../../../package.json')   //including node package config for app version
-import ApiService from '../../Services/ApiService';
+const nodePackage = require('@/App/../package.json')   //including node package config for app version
 
 // Data
-import AuthActions from 'App/Stores/Auth/Actions'
-import UserActions from 'App/Stores/User/Actions'
-import { getToken, getUser, getUseProduction } from 'App/Stores/User/Selectors';
-import { UserModel } from '../../Models/UserModel';
+import { UserModel } from '@/App/Models/UserModel';
+import AuthActions from '@/App/Stores/Auth/Actions';
+import UserActions from '@/App/Stores/User/Actions';
+import { getToken, getUseProduction, getUser } from '@/App/Stores/User/Selectors';
 
 // Components
-import { Text, View, TouchableOpacity } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader'
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { Colors } from '@/App/Theme';
+import { Switch, Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import ToggleSwitch from 'rn-toggle-switch';
 
 interface Props {
 }
@@ -89,7 +87,14 @@ const SettingsScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <Text style={styles.label}>{t("settings.environment")}</Text>
-        <ToggleSwitch
+        <Switch
+          trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}
+          thumbColor={Colors.yellow}
+          // text={{ on: t("settings.production"), off: t("settings.test"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
+          value={useProduction}
+          onValueChange={setUseProduction}
+        />
+        {/* <ToggleSwitch
           text={{ on: t("settings.production"), off: t("settings.test"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
           textStyle={{ ...Fonts.style.regular }}
           textProps={{ allowFontScaling: false }}
@@ -99,7 +104,7 @@ const SettingsScreen: FunctionComponent<Props> = ({
           radius={Metrics.inputHeight / 4}
           active={useProduction}
           onValueChange={setUseProduction}
-        />
+        /> */}
       </View>
       <View style={styles.spacer} />
       <View style={styles.itemContainer}>

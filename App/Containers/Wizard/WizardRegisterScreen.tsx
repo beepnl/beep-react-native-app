@@ -1,38 +1,35 @@
-import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
+import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Metrics } from '../../Theme';
+import { Colors } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
+import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '@/App/Helpers/BleHelpers';
+import { generateKey } from '@/App/Helpers/random';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '../../Helpers/BleHelpers';
-import { generateKey } from '../../Helpers/random';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import BeepBaseActions from 'App/Stores/BeepBase/Actions'
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getHardwareId } from 'App/Stores/BeepBase/Selectors'
-import { getRegisterState } from 'App/Stores/Api/Selectors'
-import { AteccModel } from '../../Models/AteccModel';
-import { RegisterState } from '../../Stores/Api/InitialState';
-import { getDevice, getFirmwareVersion, getHardwareVersion } from '../../Stores/BeepBase/Selectors';
-import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
-import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
-import { getError } from 'App/Stores/Api/Selectors';
-import { DeviceModel } from '../../Models/DeviceModel';
+import { AteccModel } from '@/App/Models/AteccModel';
+import { DeviceModel } from '@/App/Models/DeviceModel';
+import { FirmwareVersionModel } from '@/App/Models/FirmwareVersionModel';
+import { HardwareVersionModel } from '@/App/Models/HardwareVersionModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import { RegisterState } from '@/App/Stores/Api/InitialState';
+import { getError, getRegisterState } from '@/App/Stores/Api/Selectors';
+import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
+import { getDevice, getFirmwareVersion, getHardwareId, getHardwareVersion, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { Text, View, TouchableOpacity, TextInput } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface Props {
   navigation: StackNavigationProp,

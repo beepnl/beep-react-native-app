@@ -1,4 +1,78 @@
 {
-  "name": "app",
-  "displayName": "app"
+  "expo": {
+    "name": "beep",
+    "slug": "beep",
+    "version": "3.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "beep",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "Uses Bluetooth to connect to Bluetooth enabled device.",
+        "NSBluetoothPeripheralUsageDescription": "Uses Bluetooth to connect to Bluetooth enabled device.",
+        "UIBackgroundModes": [
+          "bluetooth-central"
+        ]
+      },
+      "bundleIdentifier": "nl.beep.BEEP",
+      "appleTeamId": "Z962SL274G"
+    },
+    "android": {
+      // "adaptiveIcon": {
+      //   "backgroundColor": "#E6F4FE",
+      //   "foregroundImage": "./assets/images/android-icon-foreground.png",
+      //   "backgroundImage": "./assets/images/android-icon-background.png",
+      //   "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      // },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        // DFU
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE",
+        // BLE
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_SCAN", // You might need to set "neverForLocation"
+        "android.permission.BLUETOOTH_CONNECT"
+      ],
+      "package": "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash_icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "react-native-ble-manager",
+        {
+          "bluetoothAlwaysPermission": "to connect to to Bluetooth devices",
+          "isBleRequired": true,
+          "neverForLocation": true
+        }
+      ],
+      [
+        "expo-asset",
+        {
+          "assets": ["./assets/images"]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
 }

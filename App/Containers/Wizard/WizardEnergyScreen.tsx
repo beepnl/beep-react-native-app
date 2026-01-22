@@ -1,33 +1,29 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
+import { RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Images, Metrics } from '../../Theme';
-import { markerStyle, pressedMarkerStyle, selectedStyle, trackStyle } from '../../Theme/ApplicationStyles';
+import { Colors, Fonts, Metrics } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
+import BatteryHelper from '@/App/Helpers/BatteryHelper';
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import useInterval from '../../Helpers/useInterval';
-import BatteryHelper from '../../Helpers/BatteryHelper';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { ApplicationConfigModel } from '../../Models/ApplicationConfigModel';
-import { getApplicationConfig } from '../../Stores/BeepBase/Selectors';
+import { ApplicationConfigModel } from '@/App/Models/ApplicationConfigModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { getApplicationConfig, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import Slider from '@react-native-community/slider';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const BATTERY_CAPACITY_MILLI_AMPS = 750
 
@@ -45,14 +41,13 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
   const fromSensorScreen = route.params?.fromSensorScreen
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const applicationConfig: ApplicationConfigModel = useTypedSelector<ApplicationConfigModel>(getApplicationConfig)
-  const [sliderIndex, setSliderIndex] = useState([8])
-  const [measureToSendRatios, setMeasureToSendRatios] = useState([applicationConfig?.measureToSendRatio ?? 1])
+  const [sliderIndex, setSliderIndex] = useState(8)
+  const [measureToSendRatio, _setMeasureToSendRatio] = useState(applicationConfig?.measureToSendRatio ?? 1)
 
   const INTERVALS = [1440, 720, 360, 180, 120, 60, 30, 20, 15, 10, 5, 1].map((duration: number) => ({ duration, description: t(`wizard.energy.interval.${duration}`) }))
 
-  const setMeasureToSendRatio = (values: Array<number>) => {
+  const setMeasureToSendRatio = (value: number) => {
     //convert linear scale into lograthimic exponent
-    const value = values[0]
     const exponent = 0.52   //was 0.42
     const curve = Math.pow(10, exponent)
     const originalMin = 1
@@ -64,7 +59,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
     const zeroRefCurVal = value - originalMin
     const normalizedCurVal = zeroRefCurVal / originalRange
     const rangedValue = Math.round((Math.pow(normalizedCurVal, curve) * newRange) + mappedOutputMin)
-    setMeasureToSendRatios([rangedValue])
+    _setMeasureToSendRatio(rangedValue)
   }
   
   useEffect(() => {
@@ -78,18 +73,18 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
     if (applicationConfig) {
       const intervalIndex = INTERVALS.findIndex(interval => interval.duration == applicationConfig.measurementInterval)
       if (intervalIndex) {
-        setSliderIndex([intervalIndex])
+        setSliderIndex(intervalIndex)
       }
 
-      setMeasureToSendRatios([applicationConfig.measureToSendRatio])
+      _setMeasureToSendRatio(applicationConfig.measureToSendRatio)
     }
   }, [applicationConfig])
 
   const updateFirmware = () => {
     const params = Buffer.alloc(3)
     let i = 0
-    params.writeUint8(measureToSendRatios[0], i++)
-    params.writeUInt16BE(INTERVALS[sliderIndex[0]].duration, i++)
+    params.writeUint8(measureToSendRatio, i++)
+    params.writeUInt16BE(INTERVALS[sliderIndex].duration, i++)
     BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_APPLICATION_CONFIG, params)
   }
 
@@ -110,8 +105,8 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
 
   const getAveragePower = () => {
     if (applicationConfig) {
-      const measurementInterval = INTERVALS[sliderIndex[0]].duration
-      const consumption = BatteryHelper.energyConsumptionMilliWattPerHour(measureToSendRatios[0], measurementInterval)
+      const measurementInterval = INTERVALS[sliderIndex]?.duration
+      const consumption = BatteryHelper.energyConsumptionMilliWattPerHour(measureToSendRatio, measurementInterval)
       return `${consumption.toFixed(2)} mW`
     }
     return "-"
@@ -119,8 +114,8 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
 
   const getBatteryLife = () => {
     if (applicationConfig) {
-      const measurementInterval = INTERVALS[sliderIndex[0]].duration
-      const estimatedBatteryLife = BatteryHelper.estimatedBatteryLifeDays(BATTERY_CAPACITY_MILLI_AMPS, measureToSendRatios[0], measurementInterval)
+      const measurementInterval = INTERVALS[sliderIndex]?.duration
+      const estimatedBatteryLife = BatteryHelper.estimatedBatteryLifeDays(BATTERY_CAPACITY_MILLI_AMPS, measureToSendRatio, measurementInterval)
       return estimatedBatteryLife.toFixed(0)
     }
     return "-"
@@ -140,7 +135,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
       <View style={styles.itemContainer}>
         <Text style={styles.itemText}>{t("wizard.energy.takeEvery")}</Text>
         <View style={styles.spacer} />
-        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{INTERVALS[sliderIndex[0]].description}</Text>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{INTERVALS[sliderIndex]?.description}</Text>
       </View>
 
       <View style={styles.spacerHalf} />
@@ -149,18 +144,15 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
         <Text style={styles.text}>{t("wizard.energy.maxInterval")}</Text>
         <View style={styles.spacer} />
-        <MultiSlider
-          sliderLength={200}
-          values={sliderIndex}
-          onValuesChange={setSliderIndex}
-          min={0}
-          max={INTERVALS.length - 1}
-          enabledOne={true}
-          enabledTwo={false}
-          trackStyle={trackStyle}
-          markerStyle={markerStyle}
-          pressedMarkerStyle={pressedMarkerStyle}
-          selectedStyle={trackStyle}
+        <Slider
+          style={{ width: 200 }}
+          minimumValue={0}
+          maximumValue={INTERVALS.length - 1}
+          step={1}
+          onValueChange={setSliderIndex}
+          value={sliderIndex}
+          tapToSeek={true}
+          thumbTintColor={Colors.yellow}
         />
         <View style={styles.spacer} />
         <Text style={styles.text}>{t("wizard.energy.minInterval")}</Text>
@@ -173,7 +165,7 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
       <View style={styles.itemContainer}>
         <Text style={styles.itemText}>{t("wizard.energy.measureToSendRatio")}</Text>
         <View style={styles.spacer} />
-        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{`${measureToSendRatios}`}</Text>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{`${measureToSendRatio}`}</Text>
       </View>
 
       <View style={styles.spacerHalf} />
@@ -182,18 +174,15 @@ const WizardEnergyScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
         <Text style={styles.text}>{"1"}</Text>
         <View style={styles.spacer} />
-        <MultiSlider
-          sliderLength={200}
-          values={measureToSendRatios}
-          onValuesChange={setMeasureToSendRatio}
-          min={1}
-          max={255}
-          enabledOne={true}
-          enabledTwo={false}
-          trackStyle={trackStyle}
-          markerStyle={markerStyle}
-          pressedMarkerStyle={pressedMarkerStyle}
-          selectedStyle={trackStyle}
+        <Slider
+          style={{ width: 200 }}
+          minimumValue={1}
+          maximumValue={255}
+          step={1}
+          onValueChange={setMeasureToSendRatio}
+          value={measureToSendRatio}
+          tapToSeek={true}
+          thumbTintColor={Colors.yellow}
         />
         <View style={styles.spacer} />
         <Text style={styles.text}>{"255"}</Text>

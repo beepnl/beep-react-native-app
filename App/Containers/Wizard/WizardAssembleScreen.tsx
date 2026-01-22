@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent } from 'react';
 
 // Hooks
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Images, Metrics } from '../../Theme';
+import { Metrics } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
@@ -14,8 +14,9 @@ import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/v
 // Data
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { Image } from 'expo-image';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -44,7 +45,7 @@ const WizardAssembleScreen: FunctionComponent<Props> = ({
         <Text style={styles.text}>{t("wizard.assemble.step2")}</Text>
       </View>
       <View style={{ flex: 1, justifyContent: "center" }}>
-        <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, aspectRatio: 3840/2160, height: null, margin: Metrics.baseMargin }} source={Images.beepBase} resizeMode="contain" />
+        <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, aspectRatio: 3840/2160, height: null, margin: Metrics.baseMargin }} source={{ uri: "beepbase" }} contentFit="contain" />
       </View>
       <View style={styles.itemContainer}>
         <Text style={styles.text}>{t("wizard.assemble.nb")}</Text>

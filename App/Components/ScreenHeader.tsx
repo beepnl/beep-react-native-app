@@ -1,29 +1,26 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent } from 'react';
 
 // Hooks
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 // Styles
-import { Metrics, Colors, Fonts } from '../Theme';
+import { Colors, Fonts, Metrics } from '../Theme';
 
 // Utils
-import AnimateDown from 'App/Helpers/MenuRenderer'
+import AnimateDown from '@/App/Helpers/MenuRenderer';
 
 // Redux
 
 // Components
-import { StyleSheet, StatusBar, Text, View, TouchableOpacity } from 'react-native';
-import Back from 'App/Assets/Images/Back'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
   Menu,
-  MenuOptions,
   MenuOption,
-  MenuTrigger,
-  renderers,
+  MenuOptions,
+  MenuTrigger
 } from 'react-native-popup-menu';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface ScreenHeaderProps {
   title: string,
@@ -47,28 +44,24 @@ const ScreenHeader: FunctionComponent<ScreenHeaderProps> = ({
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: Colors.yellow }} edges={["top"]}>
-      <View style={styles.container}>
-        <StatusBar backgroundColor={Colors.statusBar} barStyle="light-content"/>
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.back} onPress={onBackPressInternal} disabled={!back} >
+        <Icon name="chevron-left" size={30} color={back ? Colors.black : Colors.transparent} />
+      </TouchableOpacity>
 
-        <TouchableOpacity style={styles.back} onPress={onBackPressInternal} disabled={!back} >
-          <Icon name="chevron-left" size={30} color={back ? Colors.black : Colors.transparent} />
-        </TouchableOpacity>
+      <Text style={styles.title}>{title}</Text>
 
-        <Text style={styles.title}>{title}</Text>
-
-        <Menu renderer={AnimateDown} >
-          <MenuTrigger style={[styles.menuTrigger, !menu && { opacity: 0 }]} disabled={!menu} >
-            <Icon name="dots-vertical" size={30} color={Colors.black} />
-          </MenuTrigger>
-          <MenuOptions style={{ }}>
-            <MenuOption customStyles={{ optionWrapper: styles.menuItemWrapper }} onSelect={() => { navigation.navigate("SettingsScreen") }} >
-              <Text style={styles.menuItem}>{t("menu.itemSettings")}</Text>
-            </MenuOption>
-          </MenuOptions>
-        </Menu>
-      </View>
-    </SafeAreaView>
+      <Menu renderer={AnimateDown} >
+        <MenuTrigger style={[styles.menuTrigger, !menu && { opacity: 0 }]} disabled={!menu} >
+          <Icon name="dots-vertical" size={30} color={Colors.black} />
+        </MenuTrigger>
+        <MenuOptions style={{ }}>
+          <MenuOption customStyles={{ optionWrapper: styles.menuItemWrapper }} onSelect={() => { navigation.navigate("SettingsScreen") }} >
+            <Text style={styles.menuItem}>{t("menu.itemSettings")}</Text>
+          </MenuOption>
+        </MenuOptions>
+      </Menu>
+    </View>
   )
 }
 

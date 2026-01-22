@@ -1,35 +1,32 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './FirmwareScreenStyle'
-import { Colors, Fonts, Metrics } from '../../Theme';
+import { Colors, Fonts } from '@/App/Theme';
+import styles from './FirmwareScreenStyle';
 
 // Utils
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import { NordicDFU, DFUEmitter } from "react-native-nordic-dfu";
-import RNFS from 'react-native-fs'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import ExpoNordicDfu from '@getquip/expo-nordic-dfu';
+import { File, Paths } from 'expo-file-system';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import BeepBaseActions from 'App/Stores/BeepBase/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { getFirmwareVersion } from 'App/Stores/BeepBase/Selectors'
-import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
-import { FirmwareModel } from '../../Models/FirmwareModel';
+import { FirmwareModel } from '@/App/Models/FirmwareModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
+import { getFirmwareVersion, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { Text, View, TouchableOpacity } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Progress from 'react-native-progress';
+import { FirmwareVersionModel } from '@/App/Models/FirmwareVersionModel';
 
 export type FirmwareDetailScreenNavigationParams = {
   firmware: FirmwareModel,
@@ -45,16 +42,18 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const firmware: FirmwareModel = route.params?.firmware
+  const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
   const [dfuProgress, setDfuProgress] = useState(0)
   const [dfuState, setDfuState] = useState("")
+  const [error, setError] = useState("")
   const [dfuTransferResult, setDfuTransferResult] = useState("")
   const [dfuReconnectRetry, setDfuReconnectRetry] = useState(0)
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    DFUEmitter.addListener(
-      "DFUProgress",
-      ({ percent, currentPart, partsTotal, avgSpeed, speed }) => {
+    ExpoNordicDfu.module.addListener("DFUProgress", (params) => {
+        const { percent, currentPart, avgSpeed, speed } = params
+        const partsTotal = params.totalParts ?? params.partsTotal   //this can be removed once the naming is consistent across platforms
         if (percent != undefined && currentPart != undefined) {
           const maxPercent = 100 / (partsTotal ?? 1)
           const offset = (currentPart - 1) * maxPercent
@@ -65,8 +64,8 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
       }
     );
     
-    DFUEmitter.addListener("DFUStateChanged", ({ state }) => {
-      // console.log("DFU State:", state);
+    ExpoNordicDfu.module.addListener("DFUStateChanged", ({ state }) => {
+      console.log("DFU State:", state);
       if (state != undefined) {
         //track internal state for UI updates
         setDfuState(state)
@@ -78,11 +77,15 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
           case "CONNECTING":
           case "DEVICE_DISCONNECTING":
           case "DFU_PROCESS_STARTING":
-          case "DFU_COMPLETED":
             isUpdating = true
             break;
-
+            
           case "DFU_FAILED":
+            isUpdating = false
+            setDfuProgress(0)
+            break;
+
+          case "DFU_COMPLETED":
             isUpdating = false
             break;
         }
@@ -96,62 +99,82 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
   const onInstallFirmwarePress = async () => {
     console.log("onInstallFirmwarePress")
     setBusy(true)
+    setError("")
     setDfuTransferResult("")
     setDfuProgress(0)
     setDfuReconnectRetry(0)
-    const destination = RNFS.CachesDirectoryPath + "/firmware.zip"
+    const destination = new File(Paths.cache, 'firmware.zip');
     console.log("destination", destination)
-    RNFS.downloadFile({ 
-      fromUrl: firmware.url,
-      toFile: destination
-    }).promise.then(result => {
+
+    try {
+      console.log("starting download", firmware.url)
+      const result = await File.downloadFileAsync(firmware.url, destination, { idempotent: true });
+      // console.log(result.exists);
       const peripheralId = peripheral.id
       console.log("download successful")
-      BleHelpers.disconnectPeripheral(peripheral)?.then(() => {
+      BleHelpers.disconnectPeripheral(peripheral.id)?.then(() => {
         console.log("disconnect successful")
-        delay(500).then(() => {
-          NordicDFU.startDFU({
+        return delay(500).then(() => {
+          console.log("starting DFU upload")
+          return ExpoNordicDfu.startDfu({
             deviceAddress: peripheral.id,
-            filePath: destination,
-            options: {
-              retries: 3,
-              mtu: 247
-            }
+            fileUri: result.uri,
+            android: {
+              deviceName: peripheral.name,
+              keepBond: true,
+              numberOfRetries: 3,
+            },
+            ios: {
+              connectionTimeout: 15000,
+              disableResume: false,
+            },
+            // options: {
+            //   retries: 3,
+            //   mtu: 247
+            // }
           })
           .then(async (res: any) => {
-            console.log("upload successful")
             //upload successful
+            console.log("DFU upload successful")
             setDfuTransferResult(res.deviceAddress)
             const RETRY_COUNT = 10
             let retry = 1
             while (retry < RETRY_COUNT) {
-              setDfuReconnectRetry(retry)
-              const isConnected = await BleHelpers.isConnected(peripheralId)
-              if (isConnected) {
-                //reconnect successful
-                retry = RETRY_COUNT
-                BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
-                dispatch(BeepBaseActions.setDfuUpdating(false))
-              } else {
-                await BleHelpers.connectPeripheral(peripheralId)
+              console.log(`Reconnecting to device attempt ${retry}`)
+              try {
+                setDfuReconnectRetry(retry)
+                const isConnected = await BleHelpers.isConnected(peripheralId)
+                if (isConnected) {
+                  //reconnect successful
+                  retry = RETRY_COUNT //exit loop
+                  BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
+                  dispatch(BeepBaseActions.setDfuUpdating(false))
+                } else {
+                  await BleHelpers.connectPeripheral(peripheral.id)
+                }
+                retry += 1
+                await delay(1000)
+              } catch (error) {
+                console.log("reconnect retry error", error)
               }
-              retry += 1
-              await delay(1000)
             }
           })
           .catch((error) => {
             console.log("error in startDFU", error)
             dispatch(BeepBaseActions.setDfuUpdating(false))
             setDfuTransferResult(error)
-          })
-          .finally(() => {
-            setBusy(false)
+            ExpoNordicDfu.abortDfu()
+            setError(error.message ?? error.Message)
           })
         })
       })
-    }).catch((error) => {
-      console.log("error in downloadFile", error)
-    })
+    } catch (error: any) {
+      console.error("Error error in onInstallFirmwarePress", error);
+      ExpoNordicDfu.abortDfu()
+      setError(error.message ?? error.Message)
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -188,11 +211,25 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
           </View>
         </View>
 
-        <View style={styles.spacer} />
 
-        { !!dfuState &&
+        {/* { !!dfuState && <>
+          <View style={styles.spacer} />
           <Text style={[styles.instructions]}>{t(`firmware.${dfuState}`)}</Text>
-        }
+        </>} */}
+
+        { firmwareVersion?.toString() == firmware.version ? <>
+          <View style={styles.spacer} />
+          <Text style={[styles.instructions]}>{t("firmware.success", { version: firmware.version })}</Text>
+        </> :
+          !!dfuState && <>
+          <View style={styles.spacer} />
+          <Text style={[styles.instructions]}>{t(`firmware.${dfuState}`)}</Text>
+        </>}
+
+        { !!error && <>
+          <View style={styles.spacer} />
+          <Text style={styles.error}>{`Error: ${error}`}</Text>
+        </>}
 
         <View style={styles.spacer} />
 

@@ -1,40 +1,37 @@
-import React, { FunctionComponent, useEffect, useState, useCallback, useRef } from 'react'
+import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Metrics } from '../../Theme';
+import { Colors, Fonts, Metrics } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleManager, { Peripheral } from 'react-native-ble-manager'
-import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '../../Helpers/BleHelpers';
-import { RNLogger } from '../../Helpers/RNLogger';
-import { BleLogger } from '../../Helpers/BleLogger';
-import { Platform } from 'react-native'
+import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '@/App/Helpers/BleHelpers';
+import { BleLogger } from '@/App/Helpers/BleLogger';
+import { RNLogger } from '@/App/Helpers/RNLogger';
 import * as tidyJs from '@tidyjs/tidy';
+import { Platform } from 'react-native';
+import BleManager, { Peripheral } from 'react-native-ble-manager';
+import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
-import BeepBaseActions from 'App/Stores/BeepBase/Actions'
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getFirmwareVersion, getHardwareVersion } from 'App/Stores/BeepBase/Selectors'
-import { FirmwareVersionModel } from '../../Models/FirmwareVersionModel';
-import { HardwareVersionModel } from '../../Models/HardwareVersionModel';
+import { FirmwareVersionModel } from '@/App/Models/FirmwareVersionModel';
+import { HardwareVersionModel } from '@/App/Models/HardwareVersionModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
+import { getFirmwareVersion, getHardwareVersion, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { FlatList, Text, View, TouchableOpacity, NativeEventEmitter, NativeModules } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
+import NavigationButton from '@/App/Components/NavigationButton';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import NavigationButton from '../../Components/NavigationButton';
-
-const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
 type ListItem = Peripheral & { origin: "bonded" | "scanned", isConnected: boolean }
 
@@ -58,8 +55,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const hardwareVersion: HardwareVersionModel = useTypedSelector<HardwareVersionModel>(getHardwareVersion)
 
   useEffect(() => {
-    const BleManagerDiscoverPeripheralSubscription = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
-    const BleManagerStopScanSubscription = bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan);
+    const BleManagerDiscoverPeripheralSubscription = BleManager.onDiscoverPeripheral(handleDiscoverPeripheral);
+    const BleManagerStopScanSubscription = BleManager.onStopScan(handleStopScan);
 
     dispatch(BeepBaseActions.setFirmwareVersion(undefined))
     dispatch(BeepBaseActions.setHardwareVersion(undefined))
@@ -83,8 +80,8 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     
     return (() => {
       RNLogger.log("[RN] WizardPairPeripheralScreen: Removing BLE event listeners")
-      BleManagerDiscoverPeripheralSubscription && BleManagerDiscoverPeripheralSubscription.remove()
-      BleManagerStopScanSubscription && BleManagerStopScanSubscription.remove()
+      BleManagerDiscoverPeripheralSubscription?.remove()
+      BleManagerStopScanSubscription?.remove()
     })
   }, [])
 
@@ -115,7 +112,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     refreshList()
     if (!isScanning) {
       setConnectingPeripheral(null)
-      BleManager.scan([], 10, false).then((results) => {
+      BleManager.scan({ serviceUUIDs: [], seconds: 10/*, allowDuplicates: false*/ }).then((results) => {
         RNLogger.log('[RN] Starting scan from wizard...')
         setIsScanning(true)
       }).catch(err => {
@@ -204,7 +201,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     BleManager.stopScan().then(() => {
       RNLogger.log("[RN] Scan stopped, preparing to connect...")
       setError("")
-      BleHelpers.connectPeripheral(peripheral)
+      BleHelpers.connectPeripheral(peripheral.id)
       .then(() => {
         RNLogger.log("[RN] Connected to " + peripheral.name + " in wizard")
 

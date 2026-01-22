@@ -1,34 +1,30 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
+import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Metrics } from '../../Theme';
+import styles from './styles';
 
 // Utils
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import useInterval from '../../Helpers/useInterval';
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
+import useInterval from '@/App/Helpers/useInterval';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions'
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { TemperatureModel } from '../../Models/TemperatureModel';
-import { getTemperatures } from 'App/Stores/BeepBase/Selectors';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
-import { getTemperatureSensorDefinitions } from '../../Stores/BeepBase/Selectors';
-import { DeviceModel } from '../../Models/DeviceModel';
+import { DeviceModel } from '@/App/Models/DeviceModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
+import { TemperatureModel } from '@/App/Models/TemperatureModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import { getPairedPeripheral, getTemperatures, getTemperatureSensorDefinitions } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export type SensorScreenNavigationParams = {
   device: DeviceModel,

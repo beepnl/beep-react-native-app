@@ -1,30 +1,26 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { Colors, Fonts, Metrics } from '../../Theme';
+import styles from './styles';
 
 // Utils
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import useInterval from '../../Helpers/useInterval';
 
 // Data
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors'
-import { TiltModel } from '../../Models/TiltModel';
-import { getTilt } from '../../Stores/BeepBase/Selectors';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { TiltModel } from '@/App/Models/TiltModel';
+import { getPairedPeripheral, getTilt } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
-import ToggleSwitch from 'rn-toggle-switch';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { Colors } from '@/App/Theme';
+import { Switch, Text, View } from 'react-native';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -71,17 +67,24 @@ const TiltScreen: FunctionComponent<Props> = ({
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <Text style={styles.label}>{t("sensor.tilt.tiltSensor")}</Text>
         { tiltSensor?.isSensorEnabled() != undefined &&
-          <ToggleSwitch
-            text={{ on: t("sensor.tilt.enabled"), off: t("sensor.tilt.disabled"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
-            textStyle={{ ...Fonts.style.regular }}
-            textProps={{ allowFontScaling: false }}
-            color={{ indicator: Colors.yellow, inactiveIndicator: Colors.grey, active: Colors.white, inactive: Colors.white, activeBorder: Colors.lightGrey, inactiveBorder: Colors.lightGrey }}
-            padding={16}
-            width={90}
-            radius={Metrics.inputHeight / 4}
-            active={value}
+          <Switch
+            // text={{ on: t("sensor.tilt.enabled"), off: t("sensor.tilt.disabled"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
+            trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}
+            thumbColor={Colors.yellow}
+            value={value}
             onValueChange={setValue}
           />
+          // <ToggleSwitch
+          //   text={{ on: t("sensor.tilt.enabled"), off: t("sensor.tilt.disabled"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
+          //   textStyle={{ ...Fonts.style.regular }}
+          //   textProps={{ allowFontScaling: false }}
+          //   color={{ indicator: Colors.yellow, inactiveIndicator: Colors.grey, active: Colors.white, inactive: Colors.white, activeBorder: Colors.lightGrey, inactiveBorder: Colors.lightGrey }}
+          //   padding={16}
+          //   width={90}
+          //   radius={Metrics.inputHeight / 4}
+          //   active={value}
+          //   onValueChange={setValue}
+          // />
         }
       </View>
 

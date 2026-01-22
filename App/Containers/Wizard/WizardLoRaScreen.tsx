@@ -1,39 +1,35 @@
-import React, { FunctionComponent, useEffect, useState, useCallback } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
+import { useTypedSelector } from '@/App/Stores';
+import { RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { CommonActions, RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useTypedSelector } from 'App/Stores';
+import { useDispatch } from 'react-redux';
 
 // Styles
-import styles from './styles'
-import { ApplicationStyles, Colors, Fonts, Images, Metrics } from '../../Theme';
+import { ApplicationStyles, Colors, Fonts } from '@/App/Theme';
+import styles from './styles';
 
 // Utils
+import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
-import BleHelpers, { COMMANDS } from '../../Helpers/BleHelpers';
-import useInterval from '../../Helpers/useInterval';
 
 // Data
-import ApiActions from 'App/Stores/Api/Actions';
-import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
-import { getPairedPeripheral } from 'App/Stores/BeepBase/Selectors';
-import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState } from '../../Stores/BeepBase/Selectors';
-import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_DISABLED, BITMASK_ENABLED, LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
-import { LoRaWanDeviceEUIModel } from '../../Models/LoRaWanDeviceEUIModel';
-import { LoRaWanAppEUIModel } from '../../Models/LoRaWanAppEUIModel';
-import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
+import { LoRaWanAppEUIModel } from '@/App/Models/LoRaWanAppEUIModel';
+import { LoRaWanAppKeyModel } from '@/App/Models/LoRaWanAppKeyModel';
+import { LoRaWanDeviceEUIModel } from '@/App/Models/LoRaWanDeviceEUIModel';
+import { LoRaWanStateModel } from '@/App/Models/LoRaWanStateModel';
+import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import ApiActions from '@/App/Stores/Api/Actions';
+import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
-import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
-import ScreenHeader from '../../Components/ScreenHeader';
-import Collapsible from 'react-native-collapsible';
+import ScreenHeader from '@/App/Components/ScreenHeader';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+// import Collapsible from 'react-native-collapsible';
+import { Collapsible } from '@/App/Components/collapsible';
 import Modal from 'react-native-modal';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import { setLoRaWanState } from '../../Stores/BeepBase/Reducers';
-import { setLoRaConfigState } from '../../Stores/Api/Reducers';
-import { disableLoRa } from '../../Stores/Api/Reducers';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -153,7 +149,9 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
       <TouchableOpacity onPress={() => setDetailsCollapsed(!isDetailsCollapsed)}>
         <Text style={[styles.link, { alignSelf: "center" }]}>{t(`wizard.lora.${isDetailsCollapsed ? "show" : "hide"}Details`)}</Text>
       </TouchableOpacity>
-      <Collapsible collapsed={isDetailsCollapsed}>
+      {/* <Collapsible collapsed={isDetailsCollapsed}> */}
+      {/* TODO: pass collapsed prop */}
+      <Collapsible>
         {renderDetails()}
       </Collapsible>
 
