@@ -66,7 +66,7 @@ const LoginScreen: FunctionComponent<Props> = ({
       <ScrollView style={styles.container}>
         <View style={styles.spacerDouble} />
 
-        <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 300, margin: Metrics.baseMargin }} source={{ uri: "beep_logo" }} contentFit="contain" />
+        <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 300, margin: Metrics.baseMargin }} source={{ uri: "beeplogo" }} contentFit="contain" />
 
         <TextInput
           ref={inputUsernameRef}
