@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 
 // Styles
 import { Colors, Fonts, Metrics } from '@/App/Theme';
-import { markerStyle, pressedMarkerStyle, trackStyle } from '@/App/Theme/ApplicationStyles';
 import styles from './styles';
 
 // Utils
@@ -21,7 +20,7 @@ import { getAudio, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
-// import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import Slider from '@react-native-community/slider';
 import { Image } from 'expo-image';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,6 +29,9 @@ type PAGE = "plug" | "frequencies"
 
 const BIN_RESOLUTION = 3.937752016
 const FREQUENCY_STEP = 50
+const MIN_FREQUENCY = 0
+const MAX_FREQUENCY = 2000
+
 export const getFrequencyByBin = (bin: number) => Math.round((bin * 2 * BIN_RESOLUTION)/ FREQUENCY_STEP) * FREQUENCY_STEP
 
 interface Props {
@@ -45,19 +47,32 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
   const [page, setPage] = useState<PAGE>("plug")
   const audio: AudioModel = useTypedSelector<AudioModel>(getAudio)
   const [channel, setChannel] = useState<Channel>(audio?.channel)
-  const [frequencies, setFrequencies] = useState([ getFrequencyByBin(audio.startBin), getFrequencyByBin(audio.stopBin) ])
-  const [bins, setBins] = useState([audio.bins])
+  const [startFrequency, setStartFrequency] = useState(getFrequencyByBin(audio.startBin))
+  const [stopFrequency, setStopFrequency] = useState(getFrequencyByBin(audio.stopBin))
+  const [bins, setBins] = useState(audio.bins)
 
+  useEffect(() => {
+    if (startFrequency >= stopFrequency) {
+      setStopFrequency(Math.min(startFrequency + FREQUENCY_STEP, MAX_FREQUENCY))
+    }
+  }, [startFrequency])
+  
+  useEffect(() => {
+    if (stopFrequency <= startFrequency) {
+      setStartFrequency(Math.max(stopFrequency - FREQUENCY_STEP, MIN_FREQUENCY))
+    }
+  }, [stopFrequency])
+  
   const updateFirmware = () => {
-    const startBin = Math.round(frequencies[0] / BIN_RESOLUTION / 2)
-    const stopBin = Math.round(frequencies[1] / BIN_RESOLUTION / 2)
+    const startBin = Math.round(startFrequency / BIN_RESOLUTION / 2)
+    const stopBin = Math.round(stopFrequency / BIN_RESOLUTION / 2)
 
     const params = Buffer.alloc(6)
     let i = 0
     params.writeUint8(channel.bitmask, i++)
     params.writeUint8(audio.gain, i++)
     params.writeInt8(audio.volume, i++)
-    params.writeUint8(bins[0], i++)
+    params.writeUint8(bins, i++)
     params.writeUint8(startBin, i++)
     params.writeUint8(stopBin, i++)
     BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_AUDIO_ADC_CONFIG, params)
@@ -123,51 +138,65 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
 
       { page == "frequencies" && <>
         <View style={styles.itemContainer}>
-          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.startFrequency")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${frequencies[0]} Hz`}</Text></Text>
-          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.endFrequency")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${frequencies[1]} Hz`}</Text></Text>
+          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.startFrequency")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${startFrequency} Hz`}</Text></Text>
         </View>
-
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginHorizontal: Metrics.baseMargin }}>
-          <Text style={styles.text}>0 Hz</Text>
+          <Text style={styles.text}>{MIN_FREQUENCY} Hz</Text>
           <View style={styles.spacer} />
-          {/* TODO: replace */}
-          {/* <MultiSlider
-            sliderLength={240}
-            values={frequencies}
-            onValuesChange={setFrequencies}
-            min={0}
-            max={2000}
-            step={FREQUENCY_STEP}
-            trackStyle={trackStyle}
-            markerStyle={markerStyle}
-            pressedMarkerStyle={pressedMarkerStyle}
-            selectedStyle={selectedStyle}
-          /> */}
+          <Slider
+            style={{ width: 200 }}
+            minimumValue={MIN_FREQUENCY}
+            maximumValue={MAX_FREQUENCY}
+            step={1}
+            onValueChange={setStartFrequency}
+            value={startFrequency}
+            tapToSeek={true}
+            thumbTintColor={Colors.yellow}
+          />
           <View style={styles.spacer} />
-          <Text style={styles.text}>2 kHz</Text>
+          <Text style={styles.text}>{MAX_FREQUENCY} Hz</Text>
         </View>
 
         <View style={styles.spacerDouble} />
 
         <View style={styles.itemContainer}>
-          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.bins")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${bins[0]}`}</Text></Text>
+          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.endFrequency")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${stopFrequency} Hz`}</Text></Text>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginHorizontal: Metrics.baseMargin }}>
+          <Text style={styles.text}>{MIN_FREQUENCY} Hz</Text>
+          <View style={styles.spacer} />
+          <Slider
+            style={{ width: 200 }}
+            minimumValue={MIN_FREQUENCY}
+            maximumValue={MAX_FREQUENCY}
+            step={1}
+            onValueChange={setStopFrequency}
+            value={stopFrequency}
+            tapToSeek={true}
+            thumbTintColor={Colors.yellow}
+          />
+          <View style={styles.spacer} />
+          <Text style={styles.text}>{MAX_FREQUENCY} Hz</Text>
+        </View>
+
+        <View style={styles.spacerDouble} />
+
+        <View style={styles.itemContainer}>
+          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.bins")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${bins}`}</Text></Text>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginHorizontal: Metrics.baseMargin }}>
           <Text style={styles.text}>1</Text>
           <View style={styles.spacer} />
-          <MultiSlider
-              sliderLength={240}
-              values={bins}
-              onValuesChange={setBins}
-              min={1}
-              max={12}
-              enabledOne={true}
-              enabledTwo={false}
-              trackStyle={trackStyle}
-              markerStyle={markerStyle}
-              pressedMarkerStyle={pressedMarkerStyle}
-              selectedStyle={trackStyle}
-            />
+          <Slider
+            style={{ width: 200 }}
+            minimumValue={1}
+            maximumValue={12}
+            step={1}
+            onValueChange={setBins}
+            value={bins}
+            tapToSeek={true}
+            thumbTintColor={Colors.yellow}
+          />
           <View style={styles.spacer} />
           <Text style={styles.text}>12</Text>
         </View>

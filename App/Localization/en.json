@@ -123,8 +123,8 @@
         },
         "frequencies": {
           "description": "Specify the observed frequency range.\n\nThe observed range will be divided into the number of bins you specify.",
-          "startFrequency": "Start frequency: ",
-          "endFrequency": "End frequency: ",
+          "startFrequency": "Lowest frequency: ",
+          "endFrequency": "Highest frequency: ",
           "bins": "Amount of bins: "
         }
       }
@@ -301,8 +301,8 @@
     "audio": {
       "screenTitle": "Audio",
       "channel": "Audio channel",
-      "startFrequency": "Start frequency",
-      "stopFrequency": "Stop frequency",
+      "startFrequency": "Lowest frequency",
+      "stopFrequency": "Highest frequency",
       "bins": "Amount of bins"
     },
     "lora": {
