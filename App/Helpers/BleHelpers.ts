@@ -176,7 +176,7 @@ export default class BleHelpers {
         const grantedCONNECT = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT)
         OSLogger.log(`[BLE] Permission BLUETOOTH_CONNECT: ${grantedCONNECT}`)
       }
-      else if (Platform.OS === 'android' && Platform.Version >= 23) {
+      if (Platform.OS === 'android' && Platform.Version >= 23) {
         OSLogger.log("[BLE] Android 6+: Checking location permissions...");
         PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
           if (result) {

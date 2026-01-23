@@ -36,8 +36,10 @@
         // BLE
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
-        "android.permission.BLUETOOTH_SCAN", // You might need to set "neverForLocation"
-        "android.permission.BLUETOOTH_CONNECT"
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_ADVERTISE",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "package": "appinventor.ai_app_beep_nl.BEEP_commissioning_V06"
     },
