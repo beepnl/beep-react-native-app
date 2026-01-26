@@ -159,8 +159,8 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   }, [weight])
 
   const onTarePress = () => {
-    if (pairedPeripheral && weightSensorDefinition) {
-      if (weightSensorDefinition?.offset > 0 && weightSensorDefinition?.multiplier > 0) {
+    if (pairedPeripheral) {
+      if (weightSensorDefinition?.offset && weightSensorDefinition?.offset > 0 && weightSensorDefinition?.multiplier > 0) {
         setModalVisible(true)
       } else {
         startTare()
