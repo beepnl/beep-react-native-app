@@ -21,7 +21,7 @@ import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
 import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
 import { CHANNELS, WeightModel } from '@/App/Models/WeightModel';
 import ApiActions from '@/App/Stores/Api/Actions';
-import { getPairedPeripheral, getWeight, getWeightSensorDefinitions } from '@/App/Stores/BeepBase/Selectors';
+import { getPairedPeripheral, getWeight, getWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
@@ -56,7 +56,8 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
   const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
-  const weightSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getWeightSensorDefinitions)
+  const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getWeightSensorDefinition)
+
   const [page, setPage] = useState<PAGE>("tare")
   const [state, setState] = useState<STATE>("tareIdle")
   const [resetTimer, setResetTimer] = useState(false)
@@ -158,8 +159,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   }, [weight])
 
   const onTarePress = () => {
-    if (pairedPeripheral) {
-      const weightSensorDefinition = weightSensorDefinitions[0]
+    if (pairedPeripheral && weightSensorDefinition) {
       if (weightSensorDefinition?.offset > 0 && weightSensorDefinition?.multiplier > 0) {
         setModalVisible(true)
       } else {
@@ -224,7 +224,6 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
 
   const onFinishPress = () => {
     //update api sensor definition
-    const weightSensorDefinition = weightSensorDefinitions[0]
     if (weightSensorDefinition) {
       console.log('offset =', offset)
       console.log('multiplier =', multiplier)

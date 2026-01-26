@@ -1,5 +1,6 @@
 import { AppState } from '@/App/Stores'
 import { LogFileFrameModel } from '../../Models/LogFileFrameModel'
+import { createSelector } from '@reduxjs/toolkit'
 
 export const getError = (state: AppState) => {
   return state.beepBase.error
@@ -57,10 +58,17 @@ export const getTemperatureSensorDefinitions = (state: AppState, count?: number)
   return sensorDefinitions
 }
 
-export const getWeightSensorDefinitions = (state: AppState) => {
-  const sensorDefinitions = state.beepBase.weightSensorDefinitions
-  return sensorDefinitions.slice(0, 1)  //always return one weight sensor
-}
+// export const getWeightSensorDefinitions = (state: AppState) => {
+//   const sensorDefinitions = state.beepBase.weightSensorDefinitions
+//   return sensorDefinitions.slice(0, 1)  //always return one weight sensor
+// }
+
+const selectWeightSensorDefinitions = (state: AppState) => state.beepBase.weightSensorDefinitions
+
+export const getWeightSensorDefinition = createSelector(
+  [selectWeightSensorDefinitions],
+  (sensorDefinitions) => sensorDefinitions[0] ?? null
+)
 
 export const getTemperatures = (state: AppState) => {
   return state.beepBase.temperatures
