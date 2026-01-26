@@ -544,6 +544,8 @@ export default class BleHelpers {
     BleHelpers.lastFrame = -1
     BleHelpers.updateLogFilePath()
 
+    BleHelpers.LOG_FILE?.create({ intermediates: true, overwrite: true })
+
     // keep old log file and increment log file number instead of deleting
     // TODO: migrate to expo-file-system
     // return RNFS.exists(BleHelpers.LOG_FILE_PATH).then((exists: boolean) => {
