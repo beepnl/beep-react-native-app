@@ -26,7 +26,6 @@ import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanStat
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-// import Collapsible from 'react-native-collapsible';
 import { Collapsible } from '@/App/Components/collapsible';
 import Modal from 'react-native-modal';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
@@ -146,11 +145,6 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => setDetailsCollapsed(!isDetailsCollapsed)}>
-        <Text style={[styles.link, { alignSelf: "center" }]}>{t(`wizard.lora.${isDetailsCollapsed ? "show" : "hide"}Details`)}</Text>
-      </TouchableOpacity>
-      {/* <Collapsible collapsed={isDetailsCollapsed}> */}
-      {/* TODO: pass collapsed prop */}
       <Collapsible>
         {renderDetails()}
       </Collapsible>

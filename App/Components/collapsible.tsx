@@ -1,7 +1,10 @@
 import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { ApplicationStyles } from '../Theme';
 
 export function Collapsible({ children, title }: PropsWithChildren & { title?: string }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -9,30 +12,19 @@ export function Collapsible({ children, title }: PropsWithChildren & { title?: s
       <TouchableOpacity
         style={styles.heading}
         onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}>
-          {/* TODO: replace */}
-        {/* <IconSymbol
-          name="chevron.right"
-          size={18}
-          weight="medium"
-          // color={theme === 'light' ? Colors.light.icon : Colors.dark.icon}
-          style={{ transform: [{ rotate: isOpen ? '90deg' : '0deg' }] }}
-        /> */}
-        {/* <ThemedText type="defaultSemiBold">{title}</ThemedText> */}
+      >
+        <Text style={[styles.link, { alignSelf: "center" }]}>{t(`wizard.lora.${isOpen ? "hide" : "show"}Details`)}</Text>
       </TouchableOpacity>
-      {isOpen && <View style={styles.content}>{children}</View>}
+      {isOpen && <View>{children}</View>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  ...ApplicationStyles,
   heading: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'center',
     gap: 6,
-  },
-  content: {
-    marginTop: 6,
-    marginLeft: 24,
   },
 });
