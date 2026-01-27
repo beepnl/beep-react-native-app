@@ -23,7 +23,7 @@ import { getApplicationConfig, getBatteryPercentage, getPairedPeripheral } from 
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import { ApplicationConfigModel } from '@/App/Models/ApplicationConfigModel';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -92,7 +92,7 @@ const EnergyScreen: FunctionComponent<Props> = ({
         </View>
         { battery?.mvBattery < 2900 &&
           <View style={[styles.itemRow, { alignItems: "center", justifyContent: "center" }]}>
-            <IconIonicons name="warning" size={30} color={Colors.black} />
+            <Ionicons name="warning" size={30} color={Colors.black} />
             <View style={styles.spacerHalf} />
             <Text style={styles.text}>{t("sensor.energy.warning")}</Text>
           </View>

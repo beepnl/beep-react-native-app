@@ -30,9 +30,9 @@ import NavigationButton from '@/App/Components/NavigationButton';
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
-import IconIonicons from 'react-native-vector-icons/Ionicons';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 type MenuItem = { 
   title: string, 
@@ -45,55 +45,55 @@ const getMenuItems = (firmwareVersion?: FirmwareVersionModel): Array<MenuItem> =
   {
     title: "peripheralDetail.items.temperature",
     screen: "TemperatureScreen",
-    icon: <IconFontAwesome name="thermometer-2" size={30} color={Colors.black} />,
+    icon: <FontAwesome name="thermometer-2" size={30} color={Colors.black} />,
     supported: true,
   },
   {
     title: "peripheralDetail.items.weight",
     screen: "WeightScreen",
-    icon: <IconMaterialCommunityIcons name="scale" size={30} color={Colors.black} />,
+    icon: <MaterialCommunityIcons name="scale" size={30} color={Colors.black} />,
     supported: true,
   },
   {
     title: "peripheralDetail.items.audio",
     screen: "AudioScreen",
-    icon: <IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />,
+    icon: <MaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} />,
     supported: true,
   },
   {
     title: "peripheralDetail.items.tilt",
     screen: "TiltScreen",
-    icon: <IconMaterialCommunityIcons name="rotate-right-variant" size={30} color={Colors.black} />,
+    icon: <MaterialCommunityIcons name="rotate-right-variant" size={30} color={Colors.black} />,
     supported: firmwareVersion ? firmwareVersion.supportsFeature("tilt") : false,
   },
   {
     title: "peripheralDetail.items.lora",
     screen: "LoRaScreen",
-    icon: <IconIonicons name="ios-radio-outline" size={30} color={Colors.black} style={{ transform: [{ rotate: '90deg'}] }} />,
+    icon: <Ionicons name="radio-outline" size={30} color={Colors.black} style={{ transform: [{ rotate: '90deg'}] }} />,
     supported: true,
   },
   {
     title: "peripheralDetail.items.energy",
     screen: "EnergyScreen",
-    icon: <IconMaterialCommunityIcons name="battery-charging-wireless-70" size={30} color={Colors.black} />,
+    icon: <MaterialCommunityIcons name="battery-charging-wireless-70" size={30} color={Colors.black} />,
     supported: true,
   },
   {
     title: "peripheralDetail.items.clock",
     screen: "ClockScreen",
-    icon: <IconMaterialCommunityIcons name="clock-outline" size={30} color={Colors.black} />,
+    icon: <MaterialCommunityIcons name="clock-outline" size={30} color={Colors.black} />,
     supported: firmwareVersion ? firmwareVersion.supportsFeature("clock") : false,
   },
   {
     title: "peripheralDetail.items.logFile",
     screen: "LogFileScreen",
-    icon: <IconMaterialCommunityIcons name="download" size={30} color={Colors.black} />,
+    icon: <MaterialCommunityIcons name="download" size={30} color={Colors.black} />,
     supported: firmwareVersion ? firmwareVersion.supportsFeature("logDownload") : false,
   },
   {
     title: "peripheralDetail.items.firmware",
     screen: "FirmwareScreen",
-    icon: <IconFontAwesome name="microchip" size={30} color={Colors.black} />,
+    icon: <FontAwesome name="microchip" size={30} color={Colors.black} />,
     supported: true,
   },
 ]
