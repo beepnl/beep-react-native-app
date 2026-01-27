@@ -18,7 +18,7 @@ import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/v
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
 import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
 import { CHANNELS, WeightModel } from '@/App/Models/WeightModel';
-import { getPairedPeripheral, getWeight, getWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
+import { getPairedPeripheral, getWeight, getFirstWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
@@ -36,7 +36,7 @@ const WeightScreen: FunctionComponent<Props> = ({
   const isFocused = useIsFocused();
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const weightSensor: WeightModel = useTypedSelector<WeightModel>(getWeight)
-  const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getWeightSensorDefinition)
+  const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getFirstWeightSensorDefinition)
   const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")
 
   const refresh = () => {

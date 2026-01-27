@@ -22,7 +22,7 @@ import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
 import { TemperatureModel } from '@/App/Models/TemperatureModel';
 import { CHANNELS, WeightModel } from '@/App/Models/WeightModel';
 import ApiActions from '@/App/Stores/Api/Actions';
-import { getAudio, getDevice, getPairedPeripheral, getTemperatures, getWeight, getWeightSensorDefinitions } from '@/App/Stores/BeepBase/Selectors';
+import { getAudio, getDevice, getPairedPeripheral, getTemperatures, getWeight, getFirstWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
 import NavigationButton from '@/App/Components/NavigationButton';
@@ -50,7 +50,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const audio: AudioModel = useTypedSelector<AudioModel>(getAudio)
   const [temperatureSensorsInitialized, setTemperatureSensorsInitialized] = useState(false)
   const [weightSensorInitialized, setWeightSensorInitialized] = useState(false)
-  const weightSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>(getWeightSensorDefinitions)
+  const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getFirstWeightSensorDefinition)
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -97,7 +97,6 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
 
   const getWeightTitle = () => {
     if (weight) {
-      const weightSensorDefinition = weightSensorDefinitions[0]
       if (weightSensorDefinition) {
         const sensorChannel = weight.channels.find(ch => ch.bitmask == weightChannel?.bitmask)
         if (sensorChannel) {

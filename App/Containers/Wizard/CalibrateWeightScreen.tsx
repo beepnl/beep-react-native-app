@@ -21,7 +21,7 @@ import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
 import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
 import { CHANNELS, WeightModel } from '@/App/Models/WeightModel';
 import ApiActions from '@/App/Stores/Api/Actions';
-import { getPairedPeripheral, getWeight, getWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
+import { getPairedPeripheral, getWeight, getFirstWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
@@ -56,7 +56,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
   const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
-  const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getWeightSensorDefinition)
+  const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getFirstWeightSensorDefinition)
 
   const [page, setPage] = useState<PAGE>("tare")
   const [state, setState] = useState<STATE>("tareIdle")
@@ -78,11 +78,11 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const ALLOWED_CONSECUTIVE_DEVIATION_ERRORS = 3
   const TIMEOUT = 60000
 
-  const refresh = () => {
+  const refresh = async () => {
     if (pairedPeripheral) {
       //read weight sensor
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
+      await BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
+      await BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
     }
   }
 
@@ -202,10 +202,6 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
     setCalibrateWeight(value || "")
     setCalibrateWeightFormatted(value)
   }
-  // const onCalibrateWeightChangeText = (formatted: string, extracted?: string | undefined) => {
-    // setCalibrateWeight(extracted || "")
-    // setCalibrateWeightFormatted(formatted)
-  // }
 
   const onCalibrateWeightValidate = () => {
     const parsed = parseFloat(calibrateWeight)

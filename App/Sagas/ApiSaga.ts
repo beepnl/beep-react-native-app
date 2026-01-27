@@ -13,7 +13,7 @@ import UserActions from '@/App/Stores/User/Actions'
 import { getRefreshToken } from '@/App/Stores/User/Selectors'
 import { all, call, put, select, take } from 'redux-saga/effects'
 import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DISABLED, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
-import { getDevice, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions, getWeightSensorDefinitions } from '../Stores/BeepBase/Selectors'
+import { getWeightSensorDefinitions, getDevice, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions } from '../Stores/BeepBase/Selectors'
 
 function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Parameters<Fn>) {
   const response = yield fn(...args)
@@ -330,14 +330,12 @@ export function* initializeTemperatureSensors(action: any) {
 export function* initializeWeightSensor(action: any) {
   const { device, weight } = action
   yield call(getSensorDefinitions, action)
-  const weightSensorDefinitions: Array<SensorDefinitionModel> = getWeightSensorDefinitions(yield select())
-  const sensorAbbr = "w_v"
-  const sensorDefinition = weightSensorDefinitions.find(weightSensorDefinition => weightSensorDefinition.inputAbbreviation === sensorAbbr)
-  if (!sensorDefinition) {
+  const weightSensorDefinitions: SensorDefinitionModel[] = getWeightSensorDefinitions(yield select())
+  if (!weightSensorDefinitions.length) {
     //definition for this sensor not found in api
     const requestParams = {
       device_hardware_id: device.hardwareId,
-      input_measurement_abbreviation: sensorAbbr,
+      input_measurement_abbreviation: "w_v",
       output_measurement_abbreviation: "weight_kg",
       name: "Weight sensor",
       // offset: weight.offset,

@@ -58,15 +58,10 @@ export const getTemperatureSensorDefinitions = (state: AppState, count?: number)
   return sensorDefinitions
 }
 
-// export const getWeightSensorDefinitions = (state: AppState) => {
-//   const sensorDefinitions = state.beepBase.weightSensorDefinitions
-//   return sensorDefinitions.slice(0, 1)  //always return one weight sensor
-// }
+export const getWeightSensorDefinitions = (state: AppState) => state.beepBase.weightSensorDefinitions
 
-const selectWeightSensorDefinitions = (state: AppState) => state.beepBase.weightSensorDefinitions
-
-export const getWeightSensorDefinition = createSelector(
-  [selectWeightSensorDefinitions],
+export const getFirstWeightSensorDefinition = createSelector(
+  [getWeightSensorDefinitions],
   (sensorDefinitions) => sensorDefinitions[0] ?? null
 )
 
