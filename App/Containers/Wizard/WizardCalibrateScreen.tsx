@@ -52,12 +52,12 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
   const [weightSensorInitialized, setWeightSensorInitialized] = useState(false)
   const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getFirstWeightSensorDefinition)
 
-  const refresh = () => {
+  const refresh = async () => {
     if (pairedPeripheral) {
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, weightChannel?.bitmask, 3])
-      BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
+      await BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_CONVERSION)
+      await BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_HX711_CONVERSION)
+      await BleHelpers.write(pairedPeripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, weightChannel?.bitmask, 3])
+      await BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
     }
   }
 
@@ -81,7 +81,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
       dispatch(ApiActions.initializeTemperatureSensors(device, temperatures))
       setTemperatureSensorsInitialized(true)
     }
-  }, [device, temperatures.length])
+  }, [device, temperatures.length, temperatureSensorsInitialized])
 
   //create weight sensor definition if not found in api db
   useEffect(() => {
@@ -89,7 +89,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
       dispatch(ApiActions.initializeWeightSensor(device, weight))
       setWeightSensorInitialized(true)
     }
-  }, [device, weight])
+  }, [device, weight, weightSensorInitialized])
 
   const onNextPress = () => {
     navigation.navigate("WizardLoRaScreen")

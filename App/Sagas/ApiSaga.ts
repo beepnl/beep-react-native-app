@@ -319,7 +319,7 @@ export function* initializeTemperatureSensors(action: any) {
         name: `Temperature sensor ${index + 1}`,
         inside: true,
       }
-      return call(createSensorDefinition, { requestParams })
+      return call(createSensorDefinition, { device, requestParams })
     }
   }))
   if (navigateToScreen) {
@@ -329,6 +329,7 @@ export function* initializeTemperatureSensors(action: any) {
 
 export function* initializeWeightSensor(action: any) {
   const { device, weight } = action
+  console.log("[ApiSagas] initializeWeightSensor", device)
   yield call(getSensorDefinitions, action)
   const weightSensorDefinitions: SensorDefinitionModel[] = getWeightSensorDefinitions(yield select())
   if (!weightSensorDefinitions.length) {
@@ -341,13 +342,15 @@ export function* initializeWeightSensor(action: any) {
       // offset: weight.offset,
       // multiplier: weight.multiplier,
     }
-    yield call(createSensorDefinition, { requestParams })
+    yield call(createSensorDefinition, { device, requestParams })
   }
 }
 
 export function* getSensorDefinitions(action: any) {
   const { device } = action
+  console.log("[ApiSagas] getSensorDefinitions", device)
   const response = yield guardedRequest(api.getSensorDefinitions, device.id)
+  console.log("[ApiSagas] getSensorDefinitions response", response)
   if (response && response.ok) {
     const sensorDefinitions: Array<SensorDefinitionModel> = []
     response.data?.map((item: any) => sensorDefinitions.push(new SensorDefinitionModel(item)))
@@ -355,6 +358,7 @@ export function* getSensorDefinitions(action: any) {
     //sort on updated desc
     sensorDefinitions.sort((a: SensorDefinitionModel, b: SensorDefinitionModel) => b.updatedAt.valueOf() - a.updatedAt.valueOf())
 
+    console.log("[ApiSagas] getSensorDefinitions sensorDefinitions", sensorDefinitions)
     //store in beep base store because it belongs to the currently connected beep base
     yield put(BeepBaseActions.setSensorDefinitions(sensorDefinitions))
   } else {
@@ -363,10 +367,12 @@ export function* getSensorDefinitions(action: any) {
 }
 
 export function* createSensorDefinition(action: any) {
-  const { requestParams } = action
+  const { device, requestParams } = action
+  console.log("[ApiSagas] createSensorDefinition", requestParams)
   const response = yield guardedRequest(api.createSensorDefinition, requestParams)
+  console.log("[ApiSagas] createSensorDefinition response", response)
   if (response && response.ok) {
-    //TODO: update device with defs from response
+    yield call(getSensorDefinitions, { device })
   } else {
     yield put(ApiActions.apiFailure(response))
   }

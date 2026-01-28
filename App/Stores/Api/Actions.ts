@@ -44,7 +44,7 @@ const CreatedActions = createActions({
 
   initializeTemperatureSensors: ['device', 'temperatureSensors', 'navigateToScreen'],
   initializeWeightSensor: ['device', 'weight'],
-  createSensorDefinition: ['requestParams'],
+  createSensorDefinition: ['device', 'requestParams'],
   getSensorDefinitions: ['device'],
   updateApiSensorDefinition: ['sensorDefinition'],
 
