@@ -31,7 +31,7 @@ import { getUseProduction } from '@/App/Stores/User/Selectors';
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import useInterval from '@/App/Helpers/useInterval';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import TextInputMask from 'react-native-advanced-input-mask';
+import { MaskedTextInput } from "react-native-advanced-input-mask";
 
 const RETRY_COUNT = 8
 
@@ -174,7 +174,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
         <Text style={styles.label}>{`(${devEui.length}/16)`}</Text>
       </View>
       <View style={styles.spacer} />
-      <TextInputMask
+      <MaskedTextInput
         style={styles.input}
         onBlur={onDevEuiValidate}
         onChangeText={onDevEuiChangeText}
@@ -200,7 +200,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
         <Text style={styles.label}>{`(${appEui.length}/16)`}</Text>
       </View>
       <View style={styles.spacer} />
-      <TextInputMask
+      <MaskedTextInput
         style={styles.input}
         onBlur={onAppEuiValidate}
         onChangeText={onAppEuiChangeText}
@@ -226,7 +226,7 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
         <Text style={styles.label}>{`(${appKey.length}/32)`}</Text>
       </View>
       <View style={styles.spacer} />
-      <TextInputMask
+      <MaskedTextInput
         style={styles.input}
         onBlur={onAppKeyValidate}
         onChangeText={onAppKeyChangeText}

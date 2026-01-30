@@ -27,8 +27,7 @@ import { getPairedPeripheral, getWeight, getFirstWeightSensorDefinition } from '
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
-// import TextInputMask from 'react-native-text-input-mask';
-// import TextInputMask from 'react-native-advanced-input-mask';
+import { MaskedTextInput } from "react-native-advanced-input-mask";
 
 type PAGE = "tare" | "calibrate"
 
@@ -274,8 +273,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
       </>}
 
       { state == "calibrateIdle" && <>
-        {/* <TextInputMask */}
-        <TextInput
+        <MaskedTextInput
           style={styles.input}
           onBlur={onCalibrateWeightValidate}
           onChangeText={onCalibrateWeightChangeText}
