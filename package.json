@@ -25,6 +25,7 @@
     "bottleneck": "^2.19.5",
     "buffer": "^6.0.3",
     "expo": "~54.0.29",
+    "expo-application": "~7.0.8",
     "expo-asset": "~12.0.12",
     "expo-constants": "~18.0.12",
     "expo-file-system": "~19.0.21",

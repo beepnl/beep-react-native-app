@@ -2,7 +2,6 @@ import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -11,7 +10,7 @@ import ApiService from '@/App/Services/ApiService';
 import styles from '../Sensor/styles';
 
 // Utils
-const nodePackage = require('@/App/../package.json')   //including node package config for app version
+import * as Application from 'expo-application';
 
 // Data
 import { UserModel } from '@/App/Models/UserModel';
@@ -32,10 +31,9 @@ const SettingsScreen: FunctionComponent<Props> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const navigation = useNavigation();
   const token: string = useTypedSelector<string>(getToken)
   const user: UserModel = useTypedSelector<UserModel>(getUser)
-  const jsVersion =  nodePackage.version
+  const jsVersion = Application.nativeApplicationVersion
   const [useProduction, _setUseProduction] = useState(useTypedSelector<boolean>(getUseProduction))
   const setUseProduction = (value: boolean) => {
     _setUseProduction(value)
