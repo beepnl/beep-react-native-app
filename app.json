@@ -11,8 +11,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSBluetoothAlwaysUsageDescription": "Uses Bluetooth to connect to Bluetooth enabled device.",
-        "NSBluetoothPeripheralUsageDescription": "Uses Bluetooth to connect to Bluetooth enabled device.",
+        "NSBluetoothAlwaysUsageDescription": "BEEP uses bluetooth to configure your BEEP Base hardware.",
+        "NSBluetoothPeripheralUsageDescription": "BEEP uses bluetooth to configure your BEEP Base hardware.",
         "UIBackgroundModes": [
           "bluetooth-central"
         ]
