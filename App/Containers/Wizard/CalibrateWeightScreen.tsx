@@ -144,11 +144,12 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
               if (!isNaN(parsedCalibrateWeight)) {
                 const multiplier = parsedCalibrateWeight / (average - offset)
                 setMultiplier(multiplier)
+                console.log('Calibration completed with average = ', average)
+                console.log('Calibration completed with offset = ', offset)
+                console.log('Calibration completed with multiplier = ', multiplier)
               }
             }
             setState(`${page}Completed`)
-            console.log('Calibration completed with offset = ', offset)
-            console.log('Calibration completed with multiplier = ', multiplier)
 
             setResetTimer(false)
           }
