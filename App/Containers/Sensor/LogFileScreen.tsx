@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, usePreventRemove } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -50,6 +50,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false)
+  const [isBackModalVisible, setBackModalVisible] = useState(false);
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const logFileSize: LogFileSizeModel = useTypedSelector<LogFileSizeModel>(getLogFileSize)
   const logFileProgress: number = useTypedSelector<number>(getLogFileProgress)
@@ -60,6 +61,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const [state, setState] = useState<STATE>("idle")
   const [error, setError] = useState("")
   const useProduction = useTypedSelector<boolean>(getUseProduction)
+  const [pendingBackAction, setPendingBackAction] = useState<any>(null);
         
   const TIMEOUT = 10000
 
@@ -70,6 +72,28 @@ const LogFileScreen: FunctionComponent<Props> = ({
       BleHelpers.write(peripheral.id, COMMANDS.SIZE_MX_FLASH)
     }  
   }, []);
+
+  usePreventRemove(
+    state === "downloading" || state === "uploading" || state === "erasing",
+    ({ data }) => {
+      setPendingBackAction(data.action);
+      setBackModalVisible(true);
+    }
+  );
+
+  const hideBackModal = () => {
+    setBackModalVisible(false);
+    setPendingBackAction(null);
+  };
+
+  const doNavigateBack = () => {
+    setBackModalVisible(false);
+    //TODO: stop transfer?
+    if (pendingBackAction) {
+      navigation.dispatch(pendingBackAction);
+    }
+    setPendingBackAction(null);
+  };
 
   useTimeout(() => {
     setState("failed")
@@ -261,7 +285,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
       if (peripheral) {
         //create new log file
         BleHelpers.initLogFile()
-        BleHelpers.write(peripheral.id, [0x20, 0x00, 0x00, 0x00, 0x00])
+        BleHelpers.write(peripheral.id, [COMMANDS.READ_MX_FLASH, 0x00, 0x00, 0x00, 0x00])
       }
     }
   }
@@ -391,6 +415,32 @@ const LogFileScreen: FunctionComponent<Props> = ({
           <View style={ApplicationStyles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={hideModal}>
               <Text style={styles.text}>{t("common.btnOk")}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.spacerHalf} />
+        </View>
+      </View>
+    </Modal>
+
+    <Modal
+      isVisible={isBackModalVisible}
+      onBackdropPress={hideBackModal}
+      onBackButtonPress={hideBackModal}
+      useNativeDriver={true}
+      backdropOpacity={0.3}
+    >
+      <View style={ApplicationStyles.modalContainer}>
+        <Text style={[styles.itemText, { ...Fonts.style.bold }]}>{t("logFile.screenTitle")}</Text>
+        <View style={styles.spacer} />
+        <View style={styles.itemContainer}>
+          <Text style={styles.itemText}>{t("logFile.backMessage")}</Text>
+          <View style={styles.spacerDouble} />
+          <View style={ApplicationStyles.buttonsContainer}>
+            <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={doNavigateBack}>
+              <Text style={styles.text}>{t("logFile.btnStop")}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={hideBackModal}>
+              <Text style={styles.text}>{t("common.btnCancel")}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.spacerHalf} />

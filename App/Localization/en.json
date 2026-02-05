@@ -358,7 +358,9 @@
     "erase": "Erase",
     "timeout": "BEEP base did not respond in a timely fashion",
     "uploadedMessage": "Upload finished",
-    "erasedMessage": "Erase successful"
+    "erasedMessage": "Erase successful",
+    "backMessage": "Do you want to stop the transfer and leave the screen?",
+    "btnStop": "Stop"
   },
   "firmware": {
     "screenTitle": "Firmware",
