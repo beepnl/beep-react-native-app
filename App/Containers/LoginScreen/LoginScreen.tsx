@@ -63,75 +63,76 @@ const LoginScreen: FunctionComponent<Props> = ({
 
       { BEES }
 
-      <ScrollView style={styles.container}>
-        <View style={styles.spacerDouble} />
+      <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1, justifyContent: "space-between" }}>
 
-        <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 300, margin: Metrics.baseMargin }} source={{ uri: "beeplogo" }} contentFit="contain" />
+          <Image style={{ width: Metrics.clientWidth - Metrics.doubleBaseMargin, height: 200, margin: Metrics.baseMargin }} source={{ uri: "beeplogo" }} contentFit="contain" />
 
-        <TextInput
-          ref={inputUsernameRef}
-          style={[styles.input, { backgroundColor: "#FFFFFFDD" }]}
-          placeholder={t("login.username")}
-          placeholderTextColor={Colors.placeholder}
-          onChangeText={setUsername}
-          value={username}
-          maxLength={100}
-          autoCapitalize={"none"}
-          autoCorrect={false}
-          returnKeyType="next"
-          blurOnSubmit={false}
-          onSubmitEditing={() => inputPasswordRef?.current?.focus()}
-        />
+          <View>
 
-        <View style={styles.spacerDouble} />
+            <TextInput
+              ref={inputUsernameRef}
+              style={[styles.input, { backgroundColor: "#FFFFFFDD" }]}
+              placeholder={t("login.username")}
+              placeholderTextColor={Colors.placeholder}
+              onChangeText={setUsername}
+              value={username}
+              maxLength={100}
+              autoCapitalize={"none"}
+              autoCorrect={false}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              onSubmitEditing={() => inputPasswordRef?.current?.focus()}
+            />
 
-        <TextInput
-          ref={inputPasswordRef}
-          style={[styles.input, { backgroundColor: "#FFFFFFDD" }]}
-          placeholder={t("login.password")}
-          placeholderTextColor={Colors.placeholder}
-          onChangeText={setPassword}
-          maxLength={100}
-          value={password}
-          secureTextEntry={true}
-          onSubmitEditing={onLoginPress}
-        />
+            <View style={styles.spacerDouble} />
 
-        <View style={styles.spacerDouble} />
+            <TextInput
+              ref={inputPasswordRef}
+              style={[styles.input, { backgroundColor: "#FFFFFFDD" }]}
+              placeholder={t("login.password")}
+              placeholderTextColor={Colors.placeholder}
+              onChangeText={setPassword}
+              maxLength={100}
+              value={password}
+              secureTextEntry={true}
+              onSubmitEditing={onLoginPress}
+            />
 
-        { !useProduction && <>
-          <Text style={[styles.text, { color: Colors.darkYellow, alignSelf: "center" }]}>{t("login.testEnvironmentWarning")}</Text>
-          <View style={styles.spacer} />
-        </>}
+            <View style={styles.spacerDouble} />
 
-        { !!error && <>
-          <Text style={[styles.text, styles.error, { alignSelf: "center" }]}>{t(`login.error.${error}`)}</Text>
-          <View style={styles.spacerDouble} />
-        </>}
+            { !useProduction && <>
+              <Text style={[styles.text, { color: Colors.darkYellow, alignSelf: "center" }]}>{t("login.testEnvironmentWarning")}</Text>
+              <View style={styles.spacer} />
+            </>}
 
-        <TouchableOpacity style={styles.button} onPress={onLoginPress}>
-          <Text style={styles.text}>{t("login.login")}</Text>
-        </TouchableOpacity>
+            { !!error && <>
+              <Text style={[styles.text, styles.error, { alignSelf: "center" }]}>{t(`login.error.${error}`)}</Text>
+              <View style={styles.spacerDouble} />
+            </>}
 
-        <View style={styles.spacerDouble} />
-        <View style={styles.spacerDouble} />
+            <TouchableOpacity style={styles.button} onPress={onLoginPress}>
+              <Text style={styles.text}>{t("login.login")}</Text>
+            </TouchableOpacity>
 
-        <View style={styles.centeredContainer}>
-          <TouchableOpacity onPress={onForgotPasswordPress}>
-            <Text style={[styles.text, styles.link]}>{t("login.forgotPassword")}</Text>
-          </TouchableOpacity>
-        </View>
+            <View style={styles.spacerDouble} />
+            <View style={styles.spacerDouble} />
 
-        <View style={styles.spacerDouble} />
+            <View style={styles.centeredContainer}>
+              <TouchableOpacity onPress={onForgotPasswordPress}>
+                <Text style={[styles.text, styles.link]}>{t("login.forgotPassword")}</Text>
+              </TouchableOpacity>
+            </View>
 
-        <View style={styles.centeredContainer}>
-          <TouchableOpacity onPress={onCreateAccountPress}>
-            <Text style={[styles.text, styles.link]}>{t("login.signUp")}</Text>
-          </TouchableOpacity>
-        </View>
+            <View style={styles.spacerDouble} />
 
-        <View style={styles.spacer} />
+            <View style={styles.centeredContainer}>
+              <TouchableOpacity onPress={onCreateAccountPress}>
+                <Text style={[styles.text, styles.link]}>{t("login.signUp")}</Text>
+              </TouchableOpacity>
+            </View>
 
+            <View style={styles.spacer} />
+          </View>
       </ScrollView>
     </SafeAreaView>
   )
