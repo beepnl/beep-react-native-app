@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useRef } from 'react';
+import React, { FunctionComponent, useRef, useEffect } from 'react';
 
 // Hooks
 
@@ -29,13 +29,25 @@ const ScreenHeader: FunctionComponent<ScreenHeaderProps> = ({
   const angle = deg2rad(angleVariance)
   const height = width * Math.tan(angle)
   const animatedValue = useRef<Animated.Value>(new Animated.Value(0))
-  let ANIMATION_DURATION = 5000 + (Math.random() * 2000)
-  Animated.loop(
-    Animated.sequence([
-      Animated.delay(Math.random() * ANIMATION_DURATION),
-      Animated.timing(animatedValue.current, { toValue: 1, duration: ANIMATION_DURATION, useNativeDriver: true }),
-    ])
-  ).start()
+  const animationRef = useRef<Animated.CompositeAnimation | null>(null)
+  const ANIMATION_DURATION = useRef(5000 + (Math.random() * 2000))
+
+  useEffect(() => {
+    animationRef.current = Animated.loop(
+      Animated.sequence([
+        Animated.delay(Math.random() * ANIMATION_DURATION.current),
+        Animated.timing(animatedValue.current, { toValue: 1, duration: ANIMATION_DURATION.current, useNativeDriver: true }),
+        Animated.timing(animatedValue.current, { toValue: 0, duration: 0, useNativeDriver: true }),
+      ])
+    )
+    animationRef.current.start()
+
+    return () => {
+      if (animationRef.current) {
+        animationRef.current.stop()
+      }
+    }
+  }, [])
 
   return (
     <Animated.View style={
