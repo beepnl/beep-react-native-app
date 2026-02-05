@@ -6,6 +6,9 @@ import UserActions from '@/App/Stores/User/Actions'
 import { call, put } from 'redux-saga/effects'
 import { UserModel } from '../Models/UserModel'
 import { getDevices } from './ApiSaga'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
+export const TOKEN_KEY = 'auth_token'
 
 export function* login(action: any) {
   const { username, password } = action
@@ -17,6 +20,8 @@ export function* login(action: any) {
     if (api_token) {
       //set token for authentication
       yield call(api.setToken, api_token)
+      //persist token to async storage for future app runs
+      yield call(AsyncStorage.setItem, TOKEN_KEY, api_token)
       //persist token for future app runs
       yield put(UserActions.setToken(api_token))
       //store user details
@@ -32,6 +37,8 @@ export function* login(action: any) {
 }
 
 export function* logout(action: any) {
+  //clear token from async storage
+  yield call(AsyncStorage.removeItem, TOKEN_KEY)
   yield put(UserActions.setToken(undefined))
   yield put(UserActions.setUser(undefined))
   yield put(UserActions.setDevices([]))
