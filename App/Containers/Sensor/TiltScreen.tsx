@@ -20,7 +20,8 @@ import { getPairedPeripheral, getTilt } from '@/App/Stores/BeepBase/Selectors';
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import { Colors } from '@/App/Theme';
-import { Switch, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import ToggleSwitch from '@/App/Components/ToggleSwitch';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -67,24 +68,14 @@ const TiltScreen: FunctionComponent<Props> = ({
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <Text style={styles.label}>{t("sensor.tilt.tiltSensor")}</Text>
         { tiltSensor?.isSensorEnabled() != undefined &&
-          <Switch
-            // text={{ on: t("sensor.tilt.enabled"), off: t("sensor.tilt.disabled"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
-            trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}
-            thumbColor={Colors.yellow}
+            <ToggleSwitch
             value={value}
             onValueChange={setValue}
+            offLabel={t("sensor.tilt.disabled")}
+            onLabel={t("sensor.tilt.enabled")}
+            trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}
+            thumbColor={Colors.yellow}
           />
-          // <ToggleSwitch
-          //   text={{ on: t("sensor.tilt.enabled"), off: t("sensor.tilt.disabled"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
-          //   textStyle={{ ...Fonts.style.regular }}
-          //   textProps={{ allowFontScaling: false }}
-          //   color={{ indicator: Colors.yellow, inactiveIndicator: Colors.grey, active: Colors.white, inactive: Colors.white, activeBorder: Colors.lightGrey, inactiveBorder: Colors.lightGrey }}
-          //   padding={16}
-          //   width={90}
-          //   radius={Metrics.inputHeight / 4}
-          //   active={value}
-          //   onValueChange={setValue}
-          // />
         }
       </View>
 

@@ -20,8 +20,9 @@ import { getToken, getUseProduction, getUser } from '@/App/Stores/User/Selectors
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
+import ToggleSwitch from '@/App/Components/ToggleSwitch';
 import { Colors } from '@/App/Theme';
-import { Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 interface Props {
@@ -85,24 +86,14 @@ const SettingsScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <Text style={styles.label}>{t("settings.environment")}</Text>
-        <Switch
-          trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}
-          thumbColor={Colors.yellow}
-          // text={{ on: t("settings.production"), off: t("settings.test"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
+        <ToggleSwitch
           value={useProduction}
           onValueChange={setUseProduction}
+          offLabel={t("settings.test")}
+          onLabel={t("settings.production")}
+          trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}
+          thumbColor={Colors.yellow}
         />
-        {/* <ToggleSwitch
-          text={{ on: t("settings.production"), off: t("settings.test"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
-          textStyle={{ ...Fonts.style.regular }}
-          textProps={{ allowFontScaling: false }}
-          color={{ indicator: Colors.yellow, inactiveIndicator: Colors.yellow, active: Colors.white, inactive: Colors.white, activeBorder: Colors.lightGrey, inactiveBorder: Colors.lightGrey }}
-          padding={16}
-          width={105}
-          radius={Metrics.inputHeight / 4}
-          active={useProduction}
-          onValueChange={setUseProduction}
-        /> */}
       </View>
       <View style={styles.spacer} />
       <View style={styles.itemContainer}>

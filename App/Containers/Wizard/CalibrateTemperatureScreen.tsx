@@ -24,8 +24,9 @@ import { getPairedPeripheral, getTemperatureSensorDefinitions, getTemperatures }
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
-import { ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
+import ToggleSwitch from '@/App/Components/ToggleSwitch';
 
 interface Props {
   navigation: StackNavigationProp,
@@ -132,28 +133,17 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
           // onSubmitEditing={() => inputPasswordRef?.current?.focus()}
         />
         <View style={styles.spacer} />
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-          <Text style={styles.label}>{t("wizard.calibrate.temperature.location")}</Text>
-          <Switch
-            trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}
-            thumbColor={Colors.yellow}
-            // text={{ on: t("wizard.calibrate.temperature.inside"), off: t("wizard.calibrate.temperature.outside"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
-            value={sensorLocations[index].value}
-            onValueChange={sensorLocations[index].setValue}
-            />
-          {/* <ToggleSwitch
-            text={{ on: t("wizard.calibrate.temperature.inside"), off: t("wizard.calibrate.temperature.outside"), activeTextColor: Colors.black, inactiveTextColor: Colors.black }}
-            textStyle={{ ...Fonts.style.regular }}
-            textProps={{ allowFontScaling: false }}
-            color={{ indicator: Colors.yellow, inactiveIndicator: Colors.grey, active: Colors.white, inactive: Colors.white, activeBorder: Colors.lightGrey, inactiveBorder: Colors.lightGrey }}
-            padding={16}
-            width={115}
-            radius={Metrics.inputHeight / 4}
-            active={sensorLocations[index].value}
-            onValueChange={sensorLocations[index].setValue}
-            /> */}
-        </View>
+        <Text style={styles.label}>{t("wizard.calibrate.temperature.location")}</Text>
+        <ToggleSwitch
+          value={sensorLocations[index].value}
+          onValueChange={sensorLocations[index].setValue}
+          offLabel={t("wizard.calibrate.temperature.outside")}
+          onLabel={t("wizard.calibrate.temperature.inside")}
+          trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}
+          thumbColor={Colors.yellow}
+        />
         <View style={styles.spacerDouble} />
+        <View style={styles.spacer} />
       </View>)}
 
     </ScrollView>
