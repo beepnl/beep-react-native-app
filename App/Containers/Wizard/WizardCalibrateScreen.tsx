@@ -100,9 +100,14 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
       if (weightSensorDefinition) {
         const sensorChannel = weight.channels.find(ch => ch.bitmask == weightChannel?.bitmask)
         if (sensorChannel) {
+          const sensorReceivedInitialCalibration = weightSensorDefinition.offset != 0 && weightSensorDefinition.multiplier != 0
           const value = sensorChannel.value
-          const offsetValue = Math.max(value - weightSensorDefinition.offset, 0)
-          return `${((offsetValue) * weightSensorDefinition.multiplier).toFixed(2)} kg`
+          if (sensorReceivedInitialCalibration) {
+            const offsetValue = Math.max(value - weightSensorDefinition.offset, 0)
+            return `${((offsetValue) * weightSensorDefinition.multiplier).toFixed(2)} kg`
+          } else {
+            return `${t("wizard.calibrate.uncalibratedValue")}${value}`
+          }
         } 
       }
       return weight.toString()

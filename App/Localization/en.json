@@ -81,6 +81,7 @@
       "description": "Inspect each of the sensors below in order to configure and calibrate them.",
       "retrievingTemperature": "Temperature...",
       "retrievingWeight": "Weight...",
+      "uncalibratedValue": "Uncalibrated raw value: ",
       "retrievingAudio": "Audio...",
       "temperature": {
         "screenTitle": "Temperature",
