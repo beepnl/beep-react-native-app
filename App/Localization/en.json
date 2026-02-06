@@ -360,7 +360,8 @@
     "uploadedMessage": "Upload finished",
     "erasedMessage": "Erase successful",
     "backMessage": "Do you want to stop the transfer and leave the screen?",
-    "btnStop": "Stop"
+    "btnStop": "Stop",
+    "btnContinue": "Continue"
   },
   "firmware": {
     "screenTitle": "Firmware",

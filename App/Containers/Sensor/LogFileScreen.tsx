@@ -378,7 +378,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
               <Text style={styles.text}>{t("logFile.btnStop")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button, { width: "40%" }]} onPress={hideBackModal}>
-              <Text style={styles.text}>{t("common.btnCancel")}</Text>
+              <Text style={styles.text}>{t("logFile.btnContinue")}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.spacerHalf} />
