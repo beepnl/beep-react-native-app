@@ -45,8 +45,8 @@ const ScreenHeader: FunctionComponent<ScreenHeaderProps> = ({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.back} onPress={onBackPressInternal} disabled={!back} >
-        <Icon name="chevron-left" size={30} color={back ? Colors.black : Colors.transparent} />
+      <TouchableOpacity style={[styles.back, !back && { opacity: 0 }]} onPress={onBackPressInternal} disabled={!back} >
+        <Icon name="chevron-left" size={30} color={Colors.black} />
       </TouchableOpacity>
 
       <Text style={styles.title}>{title}</Text>

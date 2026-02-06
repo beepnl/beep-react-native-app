@@ -4,6 +4,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useTypedSelector } from '@/App/Stores';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import { usePreventRemove } from '@react-navigation/native';
 
 // Styles
 import { Colors, Fonts } from '@/App/Theme';
@@ -30,6 +31,17 @@ import { FirmwareVersionModel } from '@/App/Models/FirmwareVersionModel';
 
 export type FirmwareDetailScreenNavigationParams = {
   firmware: FirmwareModel,
+}
+
+const getIsUpdating = (state: string) => {
+  return state === "ENABLING_DFU_MODE" || 
+         state === "CONNECTING" || 
+         state === "CONNECTED" || 
+         state === "DEVICE_DISCONNECTING" || 
+         state === "DFU_PROCESS_STARTING" ||
+         state === "DFU_PROCESS_STARTED" ||
+         state == "DFU_UPLOADING" ||
+         state === "FIRMWARE_VALIDATING"
 }
 
 type Props = NativeStackScreenProps<FirmwareDetailScreenNavigationParams>
@@ -70,29 +82,19 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
         //track internal state for UI updates
         setDfuState(state)
 
-        //update 'dfu is updating flag' in store for error drop down visibility logic
-        let isUpdating
-        switch (state) {
-          case "ENABLING_DFU_MODE":
-          case "CONNECTING":
-          case "DEVICE_DISCONNECTING":
-          case "DFU_PROCESS_STARTING":
-            isUpdating = true
-            break;
-            
-          case "DFU_FAILED":
-            isUpdating = false
-            setDfuProgress(0)
-            break;
-
-          case "DFU_COMPLETED":
-            isUpdating = false
-            break;
+        if (state === "DFU_FAILED" || state === "DFU_ABORTED") {
+          setDfuProgress(0)
         }
+
+        //update 'dfu is updating flag' in store for error drop down visibility logic
+        const isUpdating = getIsUpdating(state)
         dispatch(BeepBaseActions.setDfuUpdating(isUpdating))
       }
     });
   }, []);
+
+  //prevent navigating away from screen while updating firmware
+  usePreventRemove(getIsUpdating(dfuState), () => { });
 
   const delay = (ms: number) => new Promise(res=>setTimeout(res, ms));
 
@@ -179,7 +181,7 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
 
   return (
     <View style={styles.mainContainer}>
-      <ScreenHeader title={t("firmware.screenTitle")} back />
+      <ScreenHeader title={t("firmware.screenTitle")} back={!getIsUpdating(dfuState)} />
 
       <ScrollView style={styles.container} >
         <View style={styles.spacer} />
