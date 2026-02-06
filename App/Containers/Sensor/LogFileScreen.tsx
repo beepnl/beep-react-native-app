@@ -143,23 +143,21 @@ const LogFileScreen: FunctionComponent<Props> = ({
           const parsedJson = await response.json();
           const uploadResponse = new UploadResponseModel(parsedJson);
 
-          // TODO: enable when upload works
           if (uploadResponse.shouldErase()) {
             setState('erasing');
-  
+
             const eraseCode = uploadResponse.getEraseCode();
-          //   BleHelpers.write(
-          //     peripheral.id,
-          //     COMMANDS.ERASE_MX_FLASH,
-          //     eraseCode
-          //   );
+            BleHelpers.write(
+              peripheral.id,
+              COMMANDS.ERASE_MX_FLASH,
+              eraseCode
+            );
   
             const et = uploadResponse.getEraseType();
-            // setEraseType(et);
-  
-          //   if (et === 'full') {
-          //     setFullEraseStart(new Date());
-          //   }
+            setEraseType(et);
+            if (et === 'full') {
+              setFullEraseStart(new Date());
+            }
           } else {
             setState('completed');
             setModalVisible(true);
@@ -194,66 +192,6 @@ const LogFileScreen: FunctionComponent<Props> = ({
       setState("uploading")
 
       uploadLogFile()
-      
-      //TODO: replace
-      /*
-      RNFS.uploadFiles({
-        toUrl: ApiService.getLogFileUploadUrl(useProduction, logFileSize?.value()),
-        files: [{ 
-          name: "file", 
-          filename: BleHelpers.LOG_FILE_NAME,
-          filepath: BleHelpers.LOG_FILE_PATH,
-          filetype: "text/plain"
-        } as UploadFileItem],
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${ApiService.getToken()}`
-        },
-        fields: {
-          "id": peripheral.deviceId,
-        },
-        begin: (response: UploadBeginCallbackResult) => setUploadProgress(0),
-        progress: (response: UploadProgressCallbackResult) => setUploadProgress(response.totalBytesSent / response.totalBytesExpectedToSend)
-      }).promise.then((response: UploadResult) => {
-        if (response.statusCode == 200) {
-          console.log('FILES UPLOADED!', response); // response.statusCode, response.headers, response.body
-          setUploadProgress(1)
-          const parsedJson = JSON.parse(response.body)
-          const uploadResponse = new UploadResponseModel(parsedJson)
-          if (uploadResponse.shouldErase()) {
-            setState("erasing")
-            const eraseCode = uploadResponse.getEraseCode()
-            BleHelpers.write(peripheral.id, COMMANDS.ERASE_MX_FLASH, eraseCode)
-            const et = uploadResponse.getEraseType()
-            setEraseType(et)
-            if (et == "full") {
-              setFullEraseStart(new Date())
-            }
-          } else {
-            setState("completed")
-            setModalVisible(true)
-          }
-        } else {
-          console.log('SERVER ERROR');
-          setUploadProgress(0)
-          setState("failed")
-          setError(`Upload failed: log file saved locally as ${BleHelpers.LOG_FILE_NAME}`)
-          // Ensure download mode is disabled on upload failure
-          BleLogger.setDownloadMode(false)
-        }
-      })
-      .catch((err) => {
-          setUploadProgress(0)
-          setError(err.description)
-          if (err.description === "cancelled") {
-            // cancelled by user
-          }
-          console.log(err);
-          // Ensure download mode is disabled on upload error
-          BleLogger.setDownloadMode(false)
-        });
-        */
     }    
   }, [logFileProgress]);
 
