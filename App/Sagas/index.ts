@@ -7,6 +7,7 @@ import { startup } from './StartupSaga'
 
 import {
   login,
+  handleLogin,
   logout,
 } from './AuthSaga'
 
@@ -29,6 +30,7 @@ export default function* root() {
     takeLatest(StartupTypes.STARTUP, startup),
 
     takeLatest(AuthTypes.LOGIN, login),
+    takeLatest(AuthTypes.HANDLE_LOGIN, handleLogin),
     takeLatest(AuthTypes.LOGOUT, logout),
 
     takeLatest(ApiTypes.GET_DEVICES, getDevices),

@@ -28,12 +28,23 @@ export function* login(action: any) {
       yield put(UserActions.setUser(new UserModel(response.data)))
       //persist username for next login
       yield put(SettingsActions.setUsername(username))
-      //refresh registered devices linked to user account
-      yield call(getDevices, null)
+      yield call(handleLogin, { apiToken: api_token, user })
     }
   } else {
     yield put(AuthActions.loginFailure(response))
   }
+}
+
+export function* handleLogin(action: any) {
+  const { apiToken, user } = action
+  console.log("Handle login", apiToken, user)
+  //set token for authentication
+  yield call(api.setToken, apiToken)
+  yield put(UserActions.setToken(apiToken))
+  //store user details
+  yield put(UserActions.setUser(user))
+  //refresh registered devices linked to user account
+  yield call(getDevices, null)
 }
 
 export function* logout(action: any) {
