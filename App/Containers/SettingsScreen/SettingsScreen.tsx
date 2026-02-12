@@ -24,6 +24,8 @@ import ToggleSwitch from '@/App/Components/ToggleSwitch';
 import { Colors } from '@/App/Theme';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { persistData, USE_PRODUCTION_KEY } from '@/App/Helpers/AsyncStorageHelpers';
+
 
 interface Props {
 }
@@ -39,6 +41,8 @@ const SettingsScreen: FunctionComponent<Props> = ({
   const setUseProduction = (value: boolean) => {
     _setUseProduction(value)
     useProductionRef.current = value
+    //persist setting
+    persistData(USE_PRODUCTION_KEY, value)
   }
   const useProductionRef = useRef(useProduction)    //we need a ref to access the current value in the return handler of useEffect
 

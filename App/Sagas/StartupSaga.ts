@@ -5,15 +5,16 @@ import { getUseProduction } from '../Stores/User/Selectors'
 import api from '@/App/Services/ApiService'
 import moment from 'moment'
 import 'moment/locale/nl'
-import { TOKEN_KEY } from './AuthSaga';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { retrieveData, 
+  TOKEN_KEY, 
+  USE_PRODUCTION_KEY, 
+  USER_KEY
+} from '../Helpers/AsyncStorageHelpers'
+import AuthActions from '@/App/Stores/Auth/Actions'
 import UserActions from '@/App/Stores/User/Actions'
 
 export function* startup() {
   console.log("**** App Startup ****")
-
-  const useProduction: boolean = getUseProduction(yield select())
-  yield call(api.setBaseUrl, useProduction)
 
   //set global locale of moment.js
   const language: string = yield select((state) => state.settings.language)
@@ -21,10 +22,16 @@ export function* startup() {
 
   console.log(moment().format('LLL'))
 
-  //retrieve and restore token from async storage if available
-  const storedToken = yield call(AsyncStorage.getItem, TOKEN_KEY)
-  if (storedToken) {
-    yield call(api.setToken, storedToken)
-    yield put(UserActions.setToken(storedToken))
+  //retrieve and restore persisted settings from async storage.
+  //make sure useProduction is set before api token and user, as it determines the base url for api calls
+  const useProduction = yield call(retrieveData, USE_PRODUCTION_KEY)
+  if (typeof useProduction === 'boolean') {
+    yield call(api.setBaseUrl, useProduction)
+    yield put(UserActions.setUseProduction(useProduction))
+  }
+  const token = yield call(retrieveData, TOKEN_KEY)
+  const user = yield call(retrieveData, USER_KEY)
+  if (token && user) {
+    yield put(AuthActions.handleLogin(token, user))
   }
 }
