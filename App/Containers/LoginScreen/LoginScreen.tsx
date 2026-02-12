@@ -95,6 +95,7 @@ const LoginScreen: FunctionComponent<Props> = ({
               maxLength={100}
               value={password}
               secureTextEntry={true}
+              autoCapitalize={"none"}
               onSubmitEditing={onLoginPress}
             />
 
