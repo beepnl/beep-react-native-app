@@ -2,7 +2,31 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'com.facebook.react'
 
+import java.util.Properties
+
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { inputStream ->
+        keystoreProperties.load(inputStream)
+    }
+}
+def configuredReleaseStoreFile = keystoreProperties.getProperty('storeFile') ?: System.getenv('ANDROID_KEYSTORE_FILE') ?: 'keystores/android.keystore'
+def releaseStoreFile = rootProject.file(configuredReleaseStoreFile)
+def releaseStorePassword = keystoreProperties.getProperty('storePassword') ?: System.getenv('ANDROID_KEYSTORE_PASSWORD')
+def releaseKeyAlias = keystoreProperties.getProperty('keyAlias') ?: System.getenv('ANDROID_KEY_ALIAS')
+def releaseKeyPassword = keystoreProperties.getProperty('keyPassword') ?: System.getenv('ANDROID_KEY_PASSWORD')
+def isReleaseBuildRequested = gradle.startParameter.taskNames.any { taskName -> taskName.toLowerCase().contains('release') }
+
+if (isReleaseBuildRequested) {
+    if (!releaseStoreFile.exists()) {
+        throw new GradleException("Missing Android release keystore at ${releaseStoreFile}.")
+    }
+    if (!releaseStorePassword || !releaseKeyAlias || !releaseKeyPassword) {
+        throw new GradleException('Missing Android release signing credentials. Provide android/keystore.properties or ANDROID_KEYSTORE_PASSWORD / ANDROID_KEY_ALIAS / ANDROID_KEY_PASSWORD.')
+    }
+}
 
 react {
     entryFile = file(['node', '-e', "require('expo/scripts/resolveAppEntry')", projectRoot, 'android', 'absolute'].execute(null, rootDir).text.trim())
@@ -21,18 +45,18 @@ def enableMinifyInReleaseBuilds = (findProperty('android.enableMinifyInReleaseBu
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
-    ndkVersion rootProject.ext.ndkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
-    compileSdk rootProject.ext.compileSdkVersion
+    ndkVersion = rootProject.ext.ndkVersion
+    buildToolsVersion = rootProject.ext.buildToolsVersion
+    compileSdk = rootProject.ext.compileSdkVersion
 
-    namespace 'appinventor.ai_app_beep_nl.BEEP_commissioning_V06'
+    namespace = 'appinventor.ai_app_beep_nl.BEEP_commissioning_V06'
 
     defaultConfig {
-        applicationId 'appinventor.ai_app_beep_nl.BEEP_commissioning_V06'
+        applicationId = 'appinventor.ai_app_beep_nl.BEEP_commissioning_V06'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 300
-        versionName '3.0.0'
+        versionCode = 300
+        versionName = '3.0.0'
 
         buildConfigField 'String', 'REACT_NATIVE_RELEASE_LEVEL', "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
@@ -45,39 +69,39 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file("$rootDir/keystores/android.keystore")
-            storePassword 'android'
-            keyAlias 'androidkey'
-            keyPassword 'android'
+            storeFile = releaseStoreFile
+            storePassword = releaseStorePassword
+            keyAlias = releaseKeyAlias
+            keyPassword = releaseKeyPassword
         }
     }
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig = signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.release
+            signingConfig = signingConfigs.release
 
             def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
-            shrinkResources enableShrinkResources.toBoolean()
-            minifyEnabled enableMinifyInReleaseBuilds
+            shrinkResources = enableShrinkResources.toBoolean()
+            minifyEnabled = enableMinifyInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
-            crunchPngs enablePngCrunchInRelease.toBoolean()
+            crunchPngs = enablePngCrunchInRelease.toBoolean()
         }
     }
 
     packagingOptions {
         jniLibs {
             def enableLegacyPackaging = findProperty('expo.useLegacyPackaging') ?: 'false'
-            useLegacyPackaging enableLegacyPackaging.toBoolean()
+            useLegacyPackaging = enableLegacyPackaging.toBoolean()
         }
     }
 
     androidResources {
-        ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
+        ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
     }
 }
 

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
@@ -61,9 +61,10 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
   const [dfuTransferResult, setDfuTransferResult] = useState("")
   const [dfuReconnectRetry, setDfuReconnectRetry] = useState(0)
   const [busy, setBusy] = useState(false)
+  const dfuStateRef = useRef("")
 
   useEffect(() => {
-    ExpoNordicDfu.module.addListener("DFUProgress", (params) => {
+    const dfuProgressSubscription = ExpoNordicDfu.module.addListener("DFUProgress", (params) => {
         const { percent, currentPart, avgSpeed, speed } = params
         const partsTotal = params.totalParts ?? params.partsTotal   //this can be removed once the naming is consistent across platforms
         if (percent != undefined && currentPart != undefined) {
@@ -76,10 +77,11 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
       }
     );
     
-    ExpoNordicDfu.module.addListener("DFUStateChanged", ({ state }) => {
+    const dfuStateSubscription = ExpoNordicDfu.module.addListener("DFUStateChanged", ({ state }) => {
       console.log("DFU State:", state);
       if (state != undefined) {
         //track internal state for UI updates
+        dfuStateRef.current = state
         setDfuState(state)
 
         if (state === "DFU_FAILED" || state === "DFU_ABORTED") {
@@ -91,12 +93,32 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
         dispatch(BeepBaseActions.setDfuUpdating(isUpdating))
       }
     });
+
+    return () => {
+      dfuProgressSubscription?.remove()
+      dfuStateSubscription?.remove()
+    }
   }, []);
 
   //prevent navigating away from screen while updating firmware
   usePreventRemove(getIsUpdating(dfuState), () => { });
 
   const delay = (ms: number) => new Promise(res=>setTimeout(res, ms));
+  const refreshFirmwareVersion = async (peripheralId: string) => {
+    const RETRY_COUNT = 5
+
+    for (let retry = 1; retry <= RETRY_COUNT; retry += 1) {
+      try {
+        await BleHelpers.write(peripheralId, COMMANDS.READ_FIRMWARE_VERSION, undefined, { throwOnError: true })
+        return true
+      } catch (refreshError) {
+        console.log(`firmware version refresh retry ${retry} failed`, refreshError)
+        await delay(1000)
+      }
+    }
+
+    return false
+  }
 
   const onInstallFirmwarePress = async () => {
     console.log("onInstallFirmwarePress")
@@ -105,74 +127,90 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
     setDfuTransferResult("")
     setDfuProgress(0)
     setDfuReconnectRetry(0)
+    setDfuState("")
+    dfuStateRef.current = ""
     const destination = new File(Paths.cache, 'firmware.zip');
     console.log("destination", destination)
 
     try {
+      if (!peripheral?.id) {
+        throw new Error('No paired peripheral selected')
+      }
       console.log("starting download", firmware.url)
       const result = await File.downloadFileAsync(firmware.url, destination, { idempotent: true });
       // console.log(result.exists);
       const peripheralId = peripheral.id
       console.log("download successful")
-      BleHelpers.disconnectPeripheral(peripheral.id)?.then(() => {
+      try {
+        await BleHelpers.disconnectPeripheral(peripheral.id)
         console.log("disconnect successful")
-        return delay(500).then(() => {
-          console.log("starting DFU upload")
-          return ExpoNordicDfu.startDfu({
-            deviceAddress: peripheral.id,
-            fileUri: result.uri,
-            android: {
-              deviceName: peripheral.name,
-              keepBond: true,
-              numberOfRetries: 3,
-            },
-            ios: {
-              connectionTimeout: 15000,
-              disableResume: false,
-            },
-            // options: {
-            //   retries: 3,
-            //   mtu: 247
-            // }
-          })
-          .then(async (res: any) => {
-            //upload successful
-            console.log("DFU upload successful")
-            setDfuTransferResult(res.deviceAddress)
-            const RETRY_COUNT = 10
-            let retry = 1
-            while (retry < RETRY_COUNT) {
-              console.log(`Reconnecting to device attempt ${retry}`)
-              try {
-                setDfuReconnectRetry(retry)
-                const isConnected = await BleHelpers.isConnected(peripheralId)
-                if (isConnected) {
-                  //reconnect successful
-                  retry = RETRY_COUNT //exit loop
-                  BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
-                  dispatch(BeepBaseActions.setDfuUpdating(false))
-                } else {
-                  await BleHelpers.connectPeripheral(peripheral.id)
-                }
-                retry += 1
-                await delay(1000)
-              } catch (error) {
-                console.log("reconnect retry error", error)
-              }
-            }
-          })
-          .catch((error) => {
-            console.log("error in startDFU", error)
-            dispatch(BeepBaseActions.setDfuUpdating(false))
-            setDfuTransferResult(error)
-            ExpoNordicDfu.abortDfu()
-            setError(error.message ?? error.Message)
-          })
-        })
-      })
+      } catch (disconnectError) {
+        // Keep going; device may already be disconnected.
+        console.log("disconnect before DFU failed", disconnectError)
+      }
+
+      await delay(500)
+      console.log("starting DFU upload")
+      const transferResult = await ExpoNordicDfu.startDfu({
+        deviceAddress: peripheral.id,
+        fileUri: result.uri,
+        android: {
+          deviceName: peripheral.name,
+          keepBond: true,
+          numberOfRetries: 3,
+        },
+        ios: {
+          connectionTimeout: 15000,
+          disableResume: false,
+        },
+      }) as unknown as { deviceAddress?: string } | string | void
+      console.log("DFU upload successful")
+      if (transferResult === "DFU was aborted" || dfuStateRef.current === "DFU_ABORTED") {
+        throw new Error("Firmware update was aborted.")
+      }
+
+      const reconnectPeripheralId = typeof transferResult === 'object' && transferResult?.deviceAddress
+        ? transferResult.deviceAddress
+        : peripheralId
+      setDfuTransferResult(reconnectPeripheralId)
+
+      const RETRY_COUNT = 10
+      let reconnected = false
+      for (let retry = 1; retry <= RETRY_COUNT; retry += 1) {
+        console.log(`Reconnecting to device attempt ${retry}`)
+        setDfuReconnectRetry(retry)
+        try {
+          const isConnected = await BleHelpers.isConnected(reconnectPeripheralId)
+          if (isConnected) {
+            reconnected = true
+            break
+          }
+          await BleHelpers.connectPeripheral(reconnectPeripheralId)
+          reconnected = true
+          break
+        } catch (retryError) {
+          console.log("reconnect retry error", retryError)
+          await delay(1000)
+        }
+      }
+
+      dispatch(BeepBaseActions.setDfuUpdating(false))
+      if (!reconnected) {
+        throw new Error("Firmware upload completed, but failed to reconnect to device.")
+      }
+      dfuStateRef.current = "DFU_COMPLETED"
+      setDfuState("DFU_COMPLETED")
+
+      const firmwareVersionRefreshed = await refreshFirmwareVersion(reconnectPeripheralId)
+      if (!firmwareVersionRefreshed) {
+        console.log('Firmware upload completed, but firmware version refresh is still pending.')
+      }
     } catch (error: any) {
       console.error("Error error in onInstallFirmwarePress", error);
-      ExpoNordicDfu.abortDfu()
+      dispatch(BeepBaseActions.setDfuUpdating(false))
+      if (getIsUpdating(dfuStateRef.current)) {
+        await ExpoNordicDfu.abortDfu().catch(() => undefined)
+      }
       setError(error.message ?? error.Message)
     } finally {
       setBusy(false)

@@ -170,10 +170,14 @@ export const setLogFileProgress = (state: BeepBaseState, payload: any) => {
 }
 
 export const addLogFileFrame = (state: BeepBaseState, payload: any) => {
-  const logFileFrames = [payload.frame] //only keep last frame
+  if (!payload.frame) {
+    return state
+  }
+
+  const logFileFrames = state.logFileFrames.concat(payload.frame)
   return {
     ...state,
-    logFileProgress: state.logFileProgress + logFileFrames[0]?.size,
+    logFileProgress: state.logFileProgress + (payload.frame?.size ?? 0),
     logFileFrames
   }
 }

@@ -86,7 +86,7 @@ export const getLogFileProgress = (state: AppState) => {
 }
 
 export const getCombinedLogFileFrames = (state: AppState) => {
-  const sorted = state.beepBase.logFileFrames.sort((a: LogFileFrameModel, b: LogFileFrameModel) => a.frame - b.frame)   //sort in place
+  const sorted = [...state.beepBase.logFileFrames].sort((a: LogFileFrameModel, b: LogFileFrameModel) => a.frame - b.frame)
   const buffers = sorted.map((model: LogFileFrameModel) => model.data)    //extract data frames
   return Buffer.concat(buffers)
 }

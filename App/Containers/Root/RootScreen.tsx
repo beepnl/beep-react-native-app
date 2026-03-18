@@ -50,19 +50,24 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
   const bleError: string = useTypedSelector<any>(getBleError)
   const token: string = useTypedSelector<string>(getToken)
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const peripheralRef = useRef<PairedPeripheralModel | undefined>(peripheral)
   const { appState } = useAppState();
   const isDfuUpdating: boolean = useTypedSelector<any>(getDfuUpdating)
-  const isConnected = peripheral && peripheral.isConnected
   const params = Buffer.alloc(4)
+
+  useEffect(() => {
+    peripheralRef.current = peripheral
+  }, [peripheral])
 
   useEffect(() => {
     dispatch(StartupActions.startup())
 
     const BleManagerConnectPeripheralSubscription = BleManager.onConnectPeripheral((args: any) => {
       const peripheralId: string = args?.peripheral
-      if (peripheral && peripheral.id == peripheralId) {
+      const currentPeripheral = peripheralRef.current
+      if (currentPeripheral && currentPeripheral.id == peripheralId) {
         const updated = {
-          ...peripheral,
+          ...currentPeripheral,
           isConnected: true,
         }
         dispatch(BeepBaseActions.setPairedPeripheral(updated))
@@ -83,9 +88,10 @@ const RootScreenBase: FunctionComponent<RootScreenBaseProps> = ({ startup }) => 
 
     const BleManagerDisconnectPeripheralSubscription = BleManager.onDisconnectPeripheral((args: any) => {
       const peripheralId: string = args?.peripheral
-      if (peripheral && peripheral.id == peripheralId) {
+      const currentPeripheral = peripheralRef.current
+      if (currentPeripheral && currentPeripheral.id == peripheralId) {
         const updated = {
-          ...peripheral,
+          ...currentPeripheral,
           isConnected: false,
         }
         dispatch(BeepBaseActions.setPairedPeripheral(updated))

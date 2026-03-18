@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { Colors } from '@/App/Theme';
 import styles from './HomeScreenStyle';
 
-import { BLE_NAME_PREFIX } from '@/App/Helpers/BleHelpers';
+import BleHelpers from '@/App/Helpers/BleHelpers';
 import * as tidyJs from '@tidyjs/tidy';
 
 // BLE
@@ -117,28 +117,27 @@ const HomeScreen: FunctionComponent<Props> = ({
   // BLE Scanning functions
   const handleDiscoverPeripheral = useCallback((peripheral: Peripheral) => {
     BleLogger.log(`[BLE] Found peripheral in HomeScreen - ID: ${peripheral.id}, Name: ${peripheral.name}, RSSI: ${peripheral.rssi}, Connectable: ${peripheral.advertising?.isConnectable}`);
-    if (peripheral.advertising?.isConnectable) {
-      if (!peripheral.name) {
-        peripheral.name = peripheral.advertising?.localName;
-        if (!peripheral.name) {
-          peripheral.name = '(NO NAME)';
-        }
-      }
-      // Filter list based on name
-      if (peripheral.name.startsWith(BLE_NAME_PREFIX)) {
-        RNLogger.log(`[RN] HomeScreen: Adding scanned BEEPBASE peripheral: ${peripheral.name} (${peripheral.id})`);
-        scannedPeripherals.current.set(peripheral.id, { 
-          ...peripheral, 
-          origin: "scanned", 
-          isConnected: peripheral.id === pairedPeripheral?.id 
-        });
-        // Force re-render by updating a dummy state
-        setListItems(prev => [...prev]);
-      } else {
-        RNLogger.log(`[RN] HomeScreen: Ignoring non-BEEPBASE peripheral: ${peripheral.name}`);
-      }
-    } else {
+    if (!BleHelpers.isPeripheralConnectable(peripheral)) {
       BleLogger.log(`[BLE] Ignoring non-connectable peripheral: ${peripheral.name} (${peripheral.id})`);
+      return
+    }
+
+    if (!peripheral.name) {
+      peripheral.name = BleHelpers.getPeripheralName(peripheral) || '(NO NAME)';
+    }
+
+    // Filter list based on name
+    if (BleHelpers.isBeepBasePeripheral(peripheral)) {
+      RNLogger.log(`[RN] HomeScreen: Adding scanned BEEPBASE peripheral: ${peripheral.name} (${peripheral.id})`);
+      scannedPeripherals.current.set(peripheral.id, {
+        ...peripheral,
+        origin: "scanned",
+        isConnected: peripheral.id === pairedPeripheral?.id
+      });
+      // Force re-render by updating a dummy state
+      setListItems(prev => [...prev]);
+    } else {
+      RNLogger.log(`[RN] HomeScreen: Ignoring non-BEEPBASE peripheral: ${peripheral.name}`);
     }
   }, [pairedPeripheral]);
 
@@ -147,16 +146,19 @@ const HomeScreen: FunctionComponent<Props> = ({
     setIsScanning(false);
   }, []);
 
-  const scan = useCallback(() => {
+  const scan = useCallback(async () => {
     setScanError("");
-    if (!isScanning) {
-      BleManager.scan({ serviceUUIDs: [], seconds: 10/*, allowDuplicates: false*/ }).then((results) => {
-        RNLogger.log('[RN] Starting scan from HomeScreen...');
-        setIsScanning(true);
-      }).catch(err => {
-        RNLogger.log('[RN] ERROR: Scan failed in HomeScreen: ' + err);
-        setScanError(err.toString());
-      });
+    if (isScanning) {
+      return
+    }
+    try {
+      await BleHelpers.ensureBlePermissions()
+      await BleManager.scan({ serviceUUIDs: [], seconds: 10/*, allowDuplicates: false*/ })
+      RNLogger.log('[RN] Starting scan from HomeScreen...');
+      setIsScanning(true);
+    } catch (err: any) {
+      RNLogger.log('[RN] ERROR: Scan failed in HomeScreen: ' + err);
+      setScanError(err?.message || err?.toString() || 'Scan failed');
     }
   }, [isScanning]);
 
@@ -186,23 +188,30 @@ const HomeScreen: FunctionComponent<Props> = ({
 
     // Initialize scan result with all previously bonded peripherals
     RNLogger.log("[RN] HomeScreen: Getting bonded peripherals...");
-    BleManager.getBondedPeripherals().then((peripherals: Array<Peripheral>) => {
-      RNLogger.log(`[RN] HomeScreen: Found ${peripherals.length} bonded peripherals`);
-      const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) => 
-        peripheral.name?.startsWith(BLE_NAME_PREFIX)
-      );
-      RNLogger.log(`[RN] HomeScreen: Filtered to ${filtered.length} BEEPBASE peripherals`);
-      filtered.forEach(p => {
-        RNLogger.log(`[RN] HomeScreen: Adding bonded peripheral: ${p.name} (${p.id})`);
-        bondedPeripherals.current.set(p.id, { 
-          ...p, 
-          origin: "bonded", 
-          isConnected: p.id === pairedPeripheral?.id 
+    const loadBondedPeripherals = async () => {
+      try {
+        await BleHelpers.ensureBlePermissions()
+        const peripherals = await BleManager.getBondedPeripherals()
+        RNLogger.log(`[RN] HomeScreen: Found ${peripherals.length} bonded peripherals`);
+        const filtered: Array<Peripheral> = peripherals.filter((peripheral: Peripheral) =>
+          BleHelpers.isBeepBasePeripheral(peripheral)
+        );
+        RNLogger.log(`[RN] HomeScreen: Filtered to ${filtered.length} BEEPBASE peripherals`);
+        filtered.forEach(p => {
+          RNLogger.log(`[RN] HomeScreen: Adding bonded peripheral: ${p.name} (${p.id})`);
+          bondedPeripherals.current.set(p.id, { 
+            ...p, 
+            origin: "bonded", 
+            isConnected: p.id === pairedPeripheral?.id 
+          });
         });
-      });
-      // Force re-render to show bonded devices
-      setListItems(prev => [...prev]);
-    });
+        // Force re-render to show bonded devices
+        setListItems(prev => [...prev]);
+      } catch (error: any) {
+        RNLogger.log(`[RN] HomeScreen: Failed to get bonded peripherals: ${error?.message || error}`)
+      }
+    }
+    loadBondedPeripherals()
     
     // Cleanup on unmount
     return () => {
@@ -217,17 +226,17 @@ const HomeScreen: FunctionComponent<Props> = ({
     useCallback(() => {
       // On focus: start scanning
       RNLogger.log("[RN] HomeScreen: Screen focused, starting scan");
-      // startScan();
+      startScan();
       
       // On blur: stop scanning to avoid conflicts
       return () => {
         if (isScanning) {
           RNLogger.log("[RN] HomeScreen: Screen blurred, stopping scan");
-          BleManager.stopScan();
+          BleManager.stopScan().catch(() => undefined);
           setIsScanning(false);
         }
       };
-    }, [])
+    }, [isScanning, startScan])
   );
 
   // Update bonded/scanned peripherals connection status when pairedPeripheral changes
