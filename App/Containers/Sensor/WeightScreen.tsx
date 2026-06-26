@@ -12,7 +12,7 @@ import styles from './styles';
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import useInterval from '@/App/Helpers/useInterval';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import { NavigationProp } from '@react-navigation/native';
 
 // Data
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
@@ -25,7 +25,7 @@ import ScreenHeader from '@/App/Components/ScreenHeader';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const WeightScreen: FunctionComponent<Props> = ({

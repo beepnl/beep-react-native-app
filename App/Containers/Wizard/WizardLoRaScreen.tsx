@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { RouteProp } from '@react-navigation/native';
+import {RouteProp, NavigationProp} from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -12,7 +12,6 @@ import styles from './styles';
 
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { LoRaWanAppEUIModel } from '@/App/Models/LoRaWanAppEUIModel';
@@ -21,6 +20,7 @@ import { LoRaWanDeviceEUIModel } from '@/App/Models/LoRaWanDeviceEUIModel';
 import { LoRaWanStateModel } from '@/App/Models/LoRaWanStateModel';
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
 import ApiActions from '@/App/Stores/Api/Actions';
+import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
 import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
@@ -31,7 +31,7 @@ import Modal from 'react-native-modal';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
   route: RouteProp<any, any>,
 }
 
@@ -53,6 +53,8 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     //read state from device
     if (pairedPeripheral) {
+      dispatch(BeepBaseActions.setLoRaWanState(undefined))
+      dispatch(ApiActions.setLoRaConfigState("none"))
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_STATE)
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_DEVEUI)
       BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_APPEUI)

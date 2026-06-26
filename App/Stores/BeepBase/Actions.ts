@@ -12,7 +12,7 @@ import { LogFileSizeModel } from '../../Models/LogFileSizeModel';
 import { LoRaWanAppEUIModel } from '../../Models/LoRaWanAppEUIModel';
 import { LoRaWanAppKeyModel } from '../../Models/LoRaWanAppKeyModel';
 import { LoRaWanDeviceEUIModel } from '../../Models/LoRaWanDeviceEUIModel';
-import { LoRaWanStateModel } from '../../Models/LoraWanStateModel';
+import { LoRaWanStateModel } from '../../Models/LoRaWanStateModel';
 import { PairedPeripheralModel } from '../../Models/PairedPeripheralModel';
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel';
 import { TemperatureModel } from '../../Models/TemperatureModel';
@@ -42,6 +42,7 @@ export enum BeepBaseTypes {
   ADD_LOG_FILE_FRAME = 'ADD_LOG_FILE_FRAME',
   SET_ERASE_LOG_FILE_PROGRESS = 'SET_ERASE_LOG_FILE_PROGRESS',
   CLEAR_LOG_FILE_FRAMES = 'CLEAR_LOG_FILE_FRAMES',
+  SET_LOG_DOWNLOAD_ERROR = 'SET_LOG_DOWNLOAD_ERROR',
   SET_BATTERY = 'SET_BATTERY',
   SET_CLOCK = 'SET_CLOCK',
   SET_TILT = 'SET_TILT',
@@ -57,7 +58,7 @@ interface C {
   setHardwareVersion: (hardwareVersion: HardwareVersionModel) => { type: BeepBaseTypes.SET_HARDWARE_VERSION };
   setHardwareId: (atecc: AteccModel) => { type: BeepBaseTypes.SET_HARDWARE_ID };
   setApplicationConfig: (applicationConfig: ApplicationConfigModel) => { type: BeepBaseTypes.SET_APPLICATION_CONFIG };
-  setLoRaWanState: (loRaWanState: LoRaWanStateModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_STATE };
+  setLoRaWanState: (loRaWanState: LoRaWanStateModel | undefined) => { type: BeepBaseTypes.SET_LO_RA_WAN_STATE };
   setLoRaWanDeviceEUI: (loRaWanDeviceEUI: LoRaWanDeviceEUIModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_DEVICE_EUI };
   setLoRaWanAppEUI: (loRaWanAppEUI: LoRaWanAppEUIModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_APP_EUI };
   setLoRaWanAppKey: (loRaWanAppKey: LoRaWanAppKeyModel) => { type: BeepBaseTypes.SET_LO_RA_WAN_APP_KEY };
@@ -69,11 +70,12 @@ interface C {
   setBattery: (battery: BatteryModel) => { type: BeepBaseTypes.SET_BATTERY };
   setClock: (clock: ClockModel) => { type: BeepBaseTypes.SET_CLOCK };
   setTilt: (tilt: TiltModel) => { type: BeepBaseTypes.SET_TILT };
-  setLogFileSize: (size: LogFileSizeModel) => { type: BeepBaseTypes.SET_LOG_FILE_SIZE };
-  setLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_LOG_FILE_PROGRESS };
-  addLogFileFrame: (frame: LogFileFrameModel) => { type: BeepBaseTypes.ADD_LOG_FILE_FRAME };
-  setEraseLogFileProgress: (progress: number) => { type: BeepBaseTypes.SET_ERASE_LOG_FILE_PROGRESS };
-  clearLogFileFrame: () => { type: BeepBaseTypes.CLEAR_LOG_FILE_FRAMES };
+  setLogFileSize: (size: LogFileSizeModel | undefined, peripheralId?: string) => { type: BeepBaseTypes.SET_LOG_FILE_SIZE };
+  setLogFileProgress: (progress: number, peripheralId?: string) => { type: BeepBaseTypes.SET_LOG_FILE_PROGRESS };
+  addLogFileFrame: (frame: LogFileFrameModel, peripheralId?: string) => { type: BeepBaseTypes.ADD_LOG_FILE_FRAME };
+  setEraseLogFileProgress: (progress: number, peripheralId?: string) => { type: BeepBaseTypes.SET_ERASE_LOG_FILE_PROGRESS };
+  clearLogFileFrame: (peripheralId?: string) => { type: BeepBaseTypes.CLEAR_LOG_FILE_FRAMES };
+  setLogDownloadError: (error: string | undefined, peripheralId?: string) => { type: BeepBaseTypes.SET_LOG_DOWNLOAD_ERROR };
   setDfuUpdating: (isDfuUpdating: boolean) => { type: BeepBaseTypes.SET_DFU_UPDATING };
 }
 
@@ -98,11 +100,12 @@ const { Creators } = createActions( {
   setBattery: ['percentage'],
   setClock: ['clock'],
   setTilt: ['tilt'],
-  setLogFileSize: ['size'],
-  setLogFileProgress: ['progress'],
-  addLogFileFrame: ['frame'],
-  setEraseLogFileProgress: ['progress'],
-  clearLogFileFrames: null,
+  setLogFileSize: ['size', 'peripheralId'],
+  setLogFileProgress: ['progress', 'peripheralId'],
+  addLogFileFrame: ['frame', 'peripheralId'],
+  setEraseLogFileProgress: ['progress', 'peripheralId'],
+  clearLogFileFrames: ['peripheralId'],
+  setLogDownloadError: ['error', 'peripheralId'],
   setDfuUpdating: ['isDfuUpdating'],
 } );
 

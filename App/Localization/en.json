@@ -74,7 +74,7 @@
       },
       "name": "Name",
       "namePlaceholder": "Name your BEEP base",
-      "registerButton": "Register this BEEP base to your account",
+      "registerButton": "Register this BEEP base to your account"
     },
     "calibrate": {
       "screenTitle": "Calibrate",
@@ -104,7 +104,7 @@
         "confirmOkButton": "I'm sure",
         "page": {
           "tare": "In order to calibrate the weight sensor, we must first determine the tare weight, or zero value.\n\nMake sure nothing is on the scale and press the button below to set the tare weight.",
-          "calibrate": "Enter your exact weight in kg below, step on the scale and press the calibrate button below.",
+          "calibrate": "Enter your exact weight in kg below, step on the scale and press the calibrate button below."
         },
         "state": {
           "sampling": "Sampling weight sensor...",
@@ -148,7 +148,24 @@
         "ADR": "Adaptive data rate",
         "DCL": "Duty cycle limitation",
         "enabled": "Enabled",
-        "disabled": "Disabled"
+        "disabled": "Disabled",
+        "diagnostics": "Connection diagnostics",
+        "loraNetwork": "LoRa network",
+        "joined": "Joined",
+        "notJoined": "Not joined",
+        "credentials": "Credentials",
+        "valid": "Valid",
+        "notConfirmed": "Not confirmed",
+        "bluetoothRssi": "Bluetooth RSSI (phone to base)",
+        "reading": "Reading...",
+        "notConnected": "Not connected",
+        "bleUpdated": "BLE signal updated",
+        "loraRssiSnr": "LoRa gateway RSSI / SNR",
+        "firmwareNotReported": "Not reported by current firmware",
+        "excellent": "Excellent",
+        "good": "Good",
+        "fair": "Fair",
+        "weak": "Weak"
       },
       "subTitle": "Configuring your LoRa connection",
       "descriptionAutomatic": "The recommended method is using automatic configuration. This will register your BEEP base with The Things Network (TTN) and automatically register it with BEEP.",
@@ -243,6 +260,15 @@
     "test": "Test",
     "production": "Production",
     "apiBaseUrl": "API base URL: ",
+    "apiTokenLogin": "Sign in with API token",
+    "apiTokenInstructions": "Admin/debug use only. Paste a user's API token from the BEEP dashboard to switch this app session to that user.",
+    "apiTokenPlaceholder": "Paste API token",
+    "apiTokenApply": "Use API token",
+    "apiTokenApplying": "Checking token...",
+    "apiTokenRequired": "Enter an API token first.",
+    "apiTokenInvalid": "This API token was rejected by the API.",
+    "apiTokenFailed": "Could not validate API token.",
+    "apiTokenApplied": "Now signed in as {{email}}.",
     "logout": "Sign out",
     "app": "App",
     "versionJS": "App version: "
@@ -274,7 +300,7 @@
       "clock": "Clock",
       "tilt": "Tilt",
       "logFile": "Download data",
-      "firmware": "Firmware",
+      "firmware": "Firmware"
     }
   },
   "sensor": {

@@ -32,7 +32,7 @@ export function* login(action: any) {
 
 export function* handleLogin(action: any) {
   const { apiToken, user } = action
-  console.log("Handle login", apiToken, user)
+  console.log("Handle login", apiToken ? "<redacted>" : undefined, user)
   //set token for authentication
   yield call(api.setToken, apiToken)
   yield put(UserActions.setToken(apiToken))

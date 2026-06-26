@@ -9,12 +9,20 @@ import { LogFileSizeModel } from "../../Models/LogFileSizeModel"
 import { LoRaWanAppEUIModel } from "../../Models/LoRaWanAppEUIModel"
 import { LoRaWanAppKeyModel } from "../../Models/LoRaWanAppKeyModel"
 import { LoRaWanDeviceEUIModel } from "../../Models/LoRaWanDeviceEUIModel"
-import { LoRaWanStateModel } from "../../Models/LoraWanStateModel"
+import { LoRaWanStateModel } from "../../Models/LoRaWanStateModel"
 import { PairedPeripheralModel } from "../../Models/PairedPeripheralModel"
 import { SensorDefinitionModel } from "../../Models/SensorDefinitionModel"
 import { TemperatureModel } from "../../Models/TemperatureModel"
 import { TiltModel } from "../../Models/TiltModel"
 import { WeightModel } from "../../Models/WeightModel"
+
+export interface LogDownloadState {
+  logFileSize: LogFileSizeModel | undefined
+  logFileProgress: number
+  logFileFrames: Array<LogFileFrameModel>
+  eraseLogFileProgress: number
+  error: string | undefined
+}
 
 export interface BeepBaseState {
   error: any
@@ -38,6 +46,7 @@ export interface BeepBaseState {
   logFileProgress: number
   logFileFrames: Array<LogFileFrameModel>
   eraseLogFileProgress: number
+  logDownloadsByPeripheralId: Record<string, LogDownloadState>
   batteryPercentage: number | undefined
   clock: ClockModel | undefined
   tilt: TiltModel | undefined
@@ -66,6 +75,7 @@ export const INITIAL_STATE: BeepBaseState = {
   logFileProgress: 0,
   logFileFrames: [],
   eraseLogFileProgress: 0,
+  logDownloadsByPeripheralId: {},
   batteryPercentage: undefined,
   clock: undefined,
   tilt: undefined,

@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { RouteProp, StackActions } from '@react-navigation/native';
+import {RouteProp, StackActions, NavigationProp} from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -12,7 +12,6 @@ import styles from './styles';
 
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { DeviceModel } from '@/App/Models/DeviceModel';
@@ -25,11 +24,12 @@ import { getDevice, getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, get
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
+import LoRaConnectionDiagnostics from '@/App/Components/LoRaConnectionDiagnostics';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
   route: RouteProp<any, any>,
 }
 
@@ -93,12 +93,6 @@ const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
       <View style={styles.spacer} />
       <Text style={styles.label}>{t("wizard.lora.details.appKey")}</Text>
       <Text style={styles.text}>{loRaWanAppKey?.toString()}</Text>
-      <View style={styles.spacer} />
-      <Text style={styles.label}>{t("wizard.lora.details.ADR")}</Text>
-      <Text style={styles.text}>{t(`wizard.lora.details.${loRaWanState?.isAdaptiveDataRateEnabled ? "enabled" : "disabled"}`)}</Text>
-      <View style={styles.spacer} />
-      <Text style={styles.label}>{t("wizard.lora.details.DCL")}</Text>
-      <Text style={styles.text}>{t(`wizard.lora.details.${loRaWanState?.isDutyCycleLimitationEnabled ? "enabled" : "disabled"}`)}</Text>
     </View>
   )
 
@@ -139,6 +133,12 @@ const WizardLoRaOverviewScreen: FunctionComponent<Props> = ({
       <View style={styles.spacerDouble} />
 
       { loRaWanState?.hasJoined && <>
+        <LoRaConnectionDiagnostics
+          loRaWanState={loRaWanState}
+          peripheralId={pairedPeripheral?.id}
+          isBleConnected={pairedPeripheral?.isConnected}
+        />
+
         { renderDetails() }
 
         <View style={styles.spacerDouble} />

@@ -50,13 +50,18 @@ export const getSensorDefinitions = (state: AppState) => {
   return state.beepBase.sensorDefinitions
 }
 
-export const getTemperatureSensorDefinitions = (state: AppState, count?: number) => {
-  const sensorDefinitions = state.beepBase.temperatureSensorDefinitions
-  if (count != undefined) {
-    return sensorDefinitions.slice(0, count)
+const getTemperatureSensorDefinitionState = (state: AppState) => state.beepBase.temperatureSensorDefinitions
+const getTemperatureSensorDefinitionCount = (_state: AppState, count?: number) => count
+
+export const getTemperatureSensorDefinitions = createSelector(
+  [getTemperatureSensorDefinitionState, getTemperatureSensorDefinitionCount],
+  (sensorDefinitions, count) => {
+    if (count != undefined) {
+      return sensorDefinitions.slice(0, count)
+    }
+    return sensorDefinitions
   }
-  return sensorDefinitions
-}
+)
 
 export const getWeightSensorDefinitions = (state: AppState) => state.beepBase.weightSensorDefinitions
 
@@ -77,22 +82,32 @@ export const getAudio = (state: AppState) => {
   return state.beepBase.audio
 }
 
-export const getLogFileSize = (state: AppState) => {
-  return state.beepBase.logFileSize
+const getActiveLogDownloadState = (state: AppState, peripheralId?: string) => {
+  const id = peripheralId ?? state.beepBase.pairedPeripheral?.id
+  return id ? state.beepBase.logDownloadsByPeripheralId?.[id] : undefined
 }
 
-export const getLogFileProgress = (state: AppState) => {
-  return state.beepBase.logFileProgress
+export const getLogFileSize = (state: AppState, peripheralId?: string) => {
+  return getActiveLogDownloadState(state, peripheralId)?.logFileSize ?? state.beepBase.logFileSize
 }
 
-export const getCombinedLogFileFrames = (state: AppState) => {
-  const sorted = state.beepBase.logFileFrames.sort((a: LogFileFrameModel, b: LogFileFrameModel) => a.frame - b.frame)   //sort in place
+export const getLogFileProgress = (state: AppState, peripheralId?: string) => {
+  return getActiveLogDownloadState(state, peripheralId)?.logFileProgress ?? state.beepBase.logFileProgress
+}
+
+export const getCombinedLogFileFrames = (state: AppState, peripheralId?: string) => {
+  const frames = getActiveLogDownloadState(state, peripheralId)?.logFileFrames ?? state.beepBase.logFileFrames
+  const sorted = [...frames].sort((a: LogFileFrameModel, b: LogFileFrameModel) => a.frame - b.frame)
   const buffers = sorted.map((model: LogFileFrameModel) => model.data)    //extract data frames
   return Buffer.concat(buffers)
 }
 
-export const getEraseLogFileProgress = (state: AppState) => {
-  return state.beepBase.eraseLogFileProgress
+export const getEraseLogFileProgress = (state: AppState, peripheralId?: string) => {
+  return getActiveLogDownloadState(state, peripheralId)?.eraseLogFileProgress ?? state.beepBase.eraseLogFileProgress
+}
+
+export const getLogDownloadError = (state: AppState, peripheralId?: string) => {
+  return getActiveLogDownloadState(state, peripheralId)?.error
 }
 
 export const getBatteryPercentage = (state: AppState) => {

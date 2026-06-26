@@ -1,4 +1,4 @@
-import { AppState } from 'App/Stores'
+import { AppState } from '@/App/Stores'
 
 export const getToken = (state: AppState) => {
   return state.user.token

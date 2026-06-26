@@ -10,7 +10,7 @@ import styles from './styles';
 
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import { NavigationProp } from '@react-navigation/native';
 
 // Data
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
@@ -24,7 +24,7 @@ import { Text, View } from 'react-native';
 import ToggleSwitch from '@/App/Components/ToggleSwitch';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const TiltScreen: FunctionComponent<Props> = ({

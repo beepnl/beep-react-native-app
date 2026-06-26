@@ -12,7 +12,7 @@ import BeepBaseActions, { BeepBaseTypes } from '@/App/Stores/BeepBase/Actions'
 import UserActions from '@/App/Stores/User/Actions'
 import { getRefreshToken } from '@/App/Stores/User/Selectors'
 import { all, call, put, select, take } from 'redux-saga/effects'
-import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DISABLED, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
+import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
 import { getWeightSensorDefinitions, getDevice, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions } from '../Stores/BeepBase/Selectors'
 
 function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Parameters<Fn>) {
@@ -92,16 +92,15 @@ export function* checkDeviceRegistration(action: any) {
       if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
 
         // device found but may not have a devEUI
-        
-        if (deviceResponse.devEUI == null)
-        {
+        const device = new DeviceModel(deviceResponse.data[0])
+        if (!device.devEUI) {
           yield put(ApiActions.setRegisterState("failed"))
           yield put(ApiActions.setRegisterState("notYetRegistered"))
           console.log("Registration failed (device exists but devEUI is not defined)")
+          return
         }
 
         yield put(ApiActions.setRegisterState("alreadyRegistered"))
-        const device = new DeviceModel(deviceResponse.data[0])
         yield put(BeepBaseActions.setDevice(device))
 
         //update firmware with LoRa devEUI. This will also rename the BLE name
@@ -294,7 +293,7 @@ export function* disableLoRa(action: any) {
 
   const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
 
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_DISABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, 0 | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
 
     //read back from device into redux store
     yield call(readLoraState, action)

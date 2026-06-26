@@ -16,6 +16,13 @@ function isArray(val: any): val is any[] {
   return Array.isArray(val);
 }
 
+function getLogValue(key: string, value: any) {
+  if (key === TOKEN_KEY) {
+    return '<redacted>';
+  }
+  return value;
+}
+
 export async function persistData(key: string, value: StorableValue): Promise<void> {
   let toStore: string;
   if (isArray(value)) {
@@ -54,7 +61,7 @@ export async function persistData(key: string, value: StorableValue): Promise<vo
     throw new Error('persistData error: Unsupported value type');
   }
   await AsyncStorage.setItem(key, toStore);
-  console.log(`Persisted data for key "${key}"`, { value, type: typeof value });
+  console.log(`Persisted data for key "${key}"`, { value: getLogValue(key, value), type: typeof value });
 }
 
 export async function retrieveData<T extends StorableValue>(key: string): Promise<T | null> {
@@ -62,7 +69,7 @@ export async function retrieveData<T extends StorableValue>(key: string): Promis
   if (!item) return null;
   try {
     const parsed = JSON.parse(item);
-    console.log(`Retrieved persisted data for key "${key}"`, { value: parsed.value, type: parsed.type });
+    console.log(`Retrieved persisted data for key "${key}"`, { value: getLogValue(key, parsed.value), type: parsed.type });
     if (parsed.type === 'array') return parsed.value as T;
     if (parsed.type === 'object') return parsed.value as T;
     if (parsed.type === 'string') return parsed.value as T;

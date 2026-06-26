@@ -11,7 +11,6 @@ import styles from './PeripheralDetailScreenStyle';
 
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { BleLogger } from '@/App/Helpers/BleLogger';
 import { RNLogger } from '@/App/Helpers/RNLogger';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Peripheral } from 'react-native-ble-manager';
@@ -160,21 +159,21 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
       dispatch(ApiActions.getSensorDefinitions(device))
 
       //beep the buzzer
-      BleLogger.log(`[BLE] Sending buzzer beep command`)
+      // BleLogger.log(`[BLE] Sending buzzer beep command`)
       BleHelpers.write(peripheral.id, COMMANDS.WRITE_BUZZER_DEFAULT_TUNE, 2)
 
       //get latest sensor readings
-      BleLogger.log(`[BLE] Requesting firmware version`)
+      // BleLogger.log(`[BLE] Requesting firmware version`)
       BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
       
-      BleLogger.log(`[BLE] Starting temperature sensor conversion`)
+      // BleLogger.log(`[BLE] Starting temperature sensor conversion`)
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_DS18B20_CONVERSION, 0xFF])
       
       const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
-      BleLogger.log(`[BLE] Starting weight sensor conversion on channel: ${channel}`)
+      // BleLogger.log(`[BLE] Starting weight sensor conversion on channel: ${channel}`)
       BleHelpers.write(peripheral.id, [COMMANDS.WRITE_HX711_CONVERSION, channel, 10])
       
-      BleLogger.log(`[BLE] Reading audio ADC config`)
+      // BleLogger.log(`[BLE] Reading audio ADC config`)
       BleHelpers.write(peripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
     }
   }, [peripheral, isConnected])
@@ -285,7 +284,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
       { isConnected && <>
         <Text style={styles.label}>{t("peripheralDetail.details")}</Text>
-        { menuItems.map((item: MenuItem) => item.supported && <NavigationButton key={item.title} title={t(`${item.title}`)} Icon={item.icon} onPress={() => item.screen && navigation.navigate(item.screen, { device })} />) }
+        { menuItems.map((item: MenuItem) => item.supported && <NavigationButton key={item.title} title={t(`${item.title}`)} Icon={item.icon} onPress={() => item.screen && navigation.navigate(item.screen, { device, peripheralId: peripheral?.id, deviceId: device.id })} />) }
       </>}
 
       <View style={styles.spacer} />

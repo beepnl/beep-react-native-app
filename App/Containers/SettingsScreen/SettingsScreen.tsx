@@ -22,14 +22,13 @@ import { getToken, getUseProduction, getUser } from '@/App/Stores/User/Selectors
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import ToggleSwitch from '@/App/Components/ToggleSwitch';
 import { Colors } from '@/App/Theme';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { persistData, USE_PRODUCTION_KEY } from '@/App/Helpers/AsyncStorageHelpers';
+import { persistData, TOKEN_KEY, USE_PRODUCTION_KEY, USER_KEY } from '@/App/Helpers/AsyncStorageHelpers';
 
 
 interface Props {
 }
-
 const SettingsScreen: FunctionComponent<Props> = ({
 }) => {
   const { t } = useTranslation();
@@ -38,6 +37,12 @@ const SettingsScreen: FunctionComponent<Props> = ({
   const user: UserModel = useTypedSelector<UserModel>(getUser)
   const jsVersion = Application.nativeApplicationVersion
   const [useProduction, _setUseProduction] = useState(useTypedSelector<boolean>(getUseProduction))
+  const [apiToken, setApiToken] = useState("")
+  const [apiTokenError, setApiTokenError] = useState("")
+  const [apiTokenSuccess, setApiTokenSuccess] = useState("")
+  const [isApplyingApiToken, setApplyingApiToken] = useState(false)
+  const showApiTokenLogin = __DEV__
+  const apiTokenLoginAppliedRef = useRef(false)
   const setUseProduction = (value: boolean) => {
     _setUseProduction(value)
     useProductionRef.current = value
@@ -48,7 +53,7 @@ const SettingsScreen: FunctionComponent<Props> = ({
 
   useEffect(() => {
     return () => {
-      if (useProduction != useProductionRef.current) {
+      if (useProduction != useProductionRef.current && !apiTokenLoginAppliedRef.current) {
         dispatch(UserActions.setUseProduction(useProductionRef.current))
         ApiService.setBaseUrl(useProductionRef.current)
         dispatch(AuthActions.logout())
@@ -58,6 +63,41 @@ const SettingsScreen: FunctionComponent<Props> = ({
 
   const onLogOutPress = () => {
     dispatch(AuthActions.logout())
+  }
+
+  const onApiTokenLoginPress = async () => {
+    const cleanApiToken = apiToken.trim()
+    setApiTokenError("")
+    setApiTokenSuccess("")
+
+    if (!cleanApiToken) {
+      setApiTokenError(t("settings.apiTokenRequired"))
+      return
+    }
+
+    try {
+      setApplyingApiToken(true)
+      ApiService.setBaseUrl(useProductionRef.current)
+      const response = await ApiService.authenticate(cleanApiToken)
+
+      if (!response?.ok || !response.data) {
+        setApiTokenError(t("settings.apiTokenInvalid"))
+        return
+      }
+
+      const userFromToken = new UserModel(response.data)
+      await persistData(TOKEN_KEY, cleanApiToken)
+      await persistData(USER_KEY, userFromToken)
+      apiTokenLoginAppliedRef.current = true
+      dispatch(UserActions.setUseProduction(useProductionRef.current))
+      dispatch(AuthActions.handleLogin(cleanApiToken, userFromToken))
+      setApiToken("")
+      setApiTokenSuccess(t("settings.apiTokenApplied", { email: userFromToken.email || userFromToken.name }))
+    } catch (error) {
+      setApiTokenError(`${t("settings.apiTokenFailed")} ${String(error)}`)
+    } finally {
+      setApplyingApiToken(false)
+    }
   }
 
   return (<>
@@ -99,6 +139,45 @@ const SettingsScreen: FunctionComponent<Props> = ({
           thumbColor={Colors.yellow}
         />
       </View>
+
+      {showApiTokenLogin && <>
+        <View style={styles.spacerDouble} />
+
+        <View style={styles.itemContainer}>
+          <Text style={styles.label}>{t("settings.apiTokenLogin")}</Text>
+          <View style={styles.spacerHalf} />
+          <Text style={styles.instructions}>{t("settings.apiTokenInstructions")}</Text>
+          <View style={styles.spacer} />
+          <TextInput
+            style={styles.input}
+            placeholder={t("settings.apiTokenPlaceholder")}
+            placeholderTextColor={Colors.placeholder}
+            value={apiToken}
+            onChangeText={(value) => {
+              setApiToken(value)
+              setApiTokenError("")
+              setApiTokenSuccess("")
+            }}
+            autoCapitalize="none"
+            autoCorrect={false}
+            secureTextEntry={true}
+            editable={!isApplyingApiToken}
+          />
+          {!!apiTokenError && <>
+            <View style={styles.spacerHalf} />
+            <Text style={[styles.text, styles.error]}>{apiTokenError}</Text>
+          </>}
+          {!!apiTokenSuccess && <>
+            <View style={styles.spacerHalf} />
+            <Text style={styles.text}>{apiTokenSuccess}</Text>
+          </>}
+          <View style={styles.spacer} />
+          <TouchableOpacity style={styles.button} onPress={onApiTokenLoginPress} disabled={isApplyingApiToken}>
+            <Text style={styles.text}>{isApplyingApiToken ? t("settings.apiTokenApplying") : t("settings.apiTokenApply")}</Text>
+          </TouchableOpacity>
+        </View>
+      </>}
+
       <View style={styles.spacer} />
       <View style={styles.itemContainer}>
         <View style={styles.itemRow}>

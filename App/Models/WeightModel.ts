@@ -63,25 +63,25 @@ export class WeightParser {
   parse(): WeightModel | undefined {
     const data = []
     const len = this.data?.length
-    if (len >= 4) {
-      let i = 0
-      while (i < len) {
-        const channelByte = this.data.readUInt8(i++);
-        const channel = CHANNELS.find(ch => ch.bitmask == channelByte);
-        if (!channel) {
-          i += 3;
-          continue;
+    if (len >= 1) {
+      const channelMask = this.data.readUInt8(0)
+      let offset = 1
+      for (const channel of CHANNELS) {
+        if ((channelMask & channel.bitmask) !== 0) {
+          if (offset + 3 <= len) {
+            const byte1 = this.data.readUInt8(offset++)
+            const byte2 = this.data.readUInt8(offset++)
+            const byte3 = this.data.readUInt8(offset++)
+            
+            // Create a copy of the channel object to avoid modifying the global constant template values directly
+            const parsedChannel = {
+              name: channel.name,
+              bitmask: channel.bitmask,
+              value: this.convert24BitToSigned(byte1, byte2, byte3)
+            }
+            data.push(parsedChannel)
+          }
         }
-
-        // Read the three bytes for the 24-bit value
-        const byte1 = this.data.readUInt8(i++);
-        const byte2 = this.data.readUInt8(i++);
-        const byte3 = this.data.readUInt8(i++);
-
-        // Convert to signed value using the new method
-        channel.value = this.convert24BitToSigned(byte1, byte2, byte3);
-
-        data.push(channel);
       }
     }
 

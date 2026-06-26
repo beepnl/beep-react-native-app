@@ -1,3 +1,4 @@
+import { NavigationProp } from '@react-navigation/native';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
@@ -12,7 +13,6 @@ import styles from './styles';
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import useInterval from '@/App/Helpers/useInterval';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { AudioModel } from '@/App/Models/AudioModel';
@@ -30,11 +30,11 @@ import ScreenHeader from '@/App/Components/ScreenHeader';
 import { Image } from 'expo-image';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
-import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconFontAwesome from '@expo/vector-icons/FontAwesome';
+import IconMaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const WizardCalibrateScreen: FunctionComponent<Props> = ({
@@ -150,7 +150,7 @@ const WizardCalibrateScreen: FunctionComponent<Props> = ({
       />
 
       <NavigationButton 
-        title={!!audio ? "Audio channel " + audio.channel.name : t("wizard.calibrate.retrievingAudio")}
+        title={audio?.channel?.name ? "Audio channel " + audio.channel.name : t("wizard.calibrate.retrievingAudio")}
         Icon={!!audio ?
           <IconMaterialCommunityIcons name="microphone-variant" size={30} color={Colors.black} /> :
           <Progress.CircleSnail size={30} color={Colors.black} />

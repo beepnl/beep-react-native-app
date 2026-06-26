@@ -12,7 +12,7 @@ import styles from './styles';
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import useInterval from '@/App/Helpers/useInterval';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import { NavigationProp } from '@react-navigation/native';
 
 // Data
 import { LoRaWanAppEUIModel } from '@/App/Models/LoRaWanAppEUIModel';
@@ -24,11 +24,12 @@ import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanStat
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
+import LoRaConnectionDiagnostics from '@/App/Components/LoRaConnectionDiagnostics';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const LoRaScreen: FunctionComponent<Props> = ({
@@ -108,6 +109,16 @@ const LoRaScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacerDouble} />
 
+      { loRaWanState?.hasJoined &&
+        <LoRaConnectionDiagnostics
+          loRaWanState={loRaWanState}
+          peripheralId={pairedPeripheral?.id}
+          isBleConnected={pairedPeripheral?.isConnected}
+        />
+      }
+
+      <View style={styles.spacerDouble} />
+
       <Text style={styles.label}>{t("sensor.lora.settings")}</Text>
       <View style={styles.spacer} />
       <View style={styles.itemContainer}>
@@ -119,12 +130,6 @@ const LoRaScreen: FunctionComponent<Props> = ({
         <View style={styles.spacer} />
         <Text style={styles.label}>{t("wizard.lora.details.appKey")}</Text>
         <Text style={styles.text}>{loRaWanAppKey?.toString()}</Text>
-        <View style={styles.spacer} />
-        <Text style={styles.label}>{t("wizard.lora.details.ADR")}</Text>
-        <Text style={styles.text}>{t(`wizard.lora.details.${loRaWanState?.isAdaptiveDataRateEnabled ? "enabled" : "disabled"}`)}</Text>
-        <View style={styles.spacer} />
-        <Text style={styles.label}>{t("wizard.lora.details.DCL")}</Text>
-        <Text style={styles.text}>{t(`wizard.lora.details.${loRaWanState?.isDutyCycleLimitationEnabled ? "enabled" : "disabled"}`)}</Text>
       </View>
 
       <View style={styles.spacerDouble} />

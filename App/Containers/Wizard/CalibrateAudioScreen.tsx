@@ -1,3 +1,4 @@
+import { NavigationProp } from '@react-navigation/native';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
@@ -11,7 +12,6 @@ import styles from './styles';
 
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { AudioModel, Channel, CHANNELS } from '@/App/Models/AudioModel';
@@ -23,7 +23,7 @@ import ScreenHeader from '@/App/Components/ScreenHeader';
 import Slider from '@react-native-community/slider';
 import { Image } from 'expo-image';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconMaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 type PAGE = "plug" | "frequencies"
 
@@ -32,10 +32,10 @@ const FREQUENCY_STEP = 50
 const MIN_FREQUENCY = 0
 const MAX_FREQUENCY = 2000
 
-export const getFrequencyByBin = (bin: number) => Math.round((bin * 2 * BIN_RESOLUTION)/ FREQUENCY_STEP) * FREQUENCY_STEP
+export const getFrequencyByBin = (bin?: number) => bin !== undefined ? Math.round((bin * 2 * BIN_RESOLUTION)/ FREQUENCY_STEP) * FREQUENCY_STEP : 0
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const CalibrateAudioScreen: FunctionComponent<Props> = ({
@@ -46,10 +46,10 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const [page, setPage] = useState<PAGE>("plug")
   const audio: AudioModel = useTypedSelector<AudioModel>(getAudio)
-  const [channel, setChannel] = useState<Channel>(audio?.channel)
-  const [startFrequency, setStartFrequency] = useState(getFrequencyByBin(audio.startBin))
-  const [stopFrequency, setStopFrequency] = useState(getFrequencyByBin(audio.stopBin))
-  const [bins, setBins] = useState(audio.bins)
+  const [channel, setChannel] = useState<Channel | undefined>(audio?.channel)
+  const [startFrequency, setStartFrequency] = useState(getFrequencyByBin(audio?.startBin))
+  const [stopFrequency, setStopFrequency] = useState(getFrequencyByBin(audio?.stopBin))
+  const [bins, setBins] = useState(audio?.bins)
 
   useEffect(() => {
     if (startFrequency >= stopFrequency) {
@@ -64,15 +64,18 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
   }, [stopFrequency])
   
   const updateFirmware = () => {
+    if (!channel) return;
+    if (!audio) return;
     const startBin = Math.round(startFrequency / BIN_RESOLUTION / 2)
     const stopBin = Math.round(stopFrequency / BIN_RESOLUTION / 2)
 
     const params = Buffer.alloc(6)
     let i = 0
     params.writeUint8(channel.bitmask, i++)
-    params.writeUint8(audio.gain, i++)
+    const gainByte = (audio.gain & 0x7F) | (audio.min6dB ? 0x80 : 0x00)
+    params.writeUint8(gainByte, i++)
     params.writeInt8(audio.volume, i++)
-    params.writeUint8(bins, i++)
+    params.writeUint8(bins || 0, i++)
     params.writeUint8(startBin, i++)
     params.writeUint8(stopBin, i++)
     BleHelpers.write(pairedPeripheral.id, COMMANDS.WRITE_AUDIO_ADC_CONFIG, params)
@@ -97,14 +100,16 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
     BleHelpers.write(pairedPeripheral.id, [COMMANDS.READ_AUDIO_ADC_CONFIG])
   }
 
-  const getImageSource = (channel: Channel) => {
-    switch (channel.name) {
+  const getImageSource = (channel: Channel | undefined) => {
+    switch (channel?.name) {
       case "IN3LM":
         return { uri: "connector_in3l" }
       case "IN2RP":
         return { uri: "connector_in2r" }
       case "IN2LP":
         return { uri: "connector_in2l" }
+      default:
+        return undefined
     }
   }
 
@@ -182,7 +187,7 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
         <View style={styles.spacerDouble} />
 
         <View style={styles.itemContainer}>
-          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.bins")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${bins}`}</Text></Text>
+          <Text style={styles.text}>{t("wizard.calibrate.audio.frequencies.bins")}<Text style={[styles.text, { ...Fonts.style.bold }]}>{`${bins || 0}`}</Text></Text>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginHorizontal: Metrics.baseMargin }}>
           <Text style={styles.text}>1</Text>
@@ -193,7 +198,7 @@ const CalibrateAudioScreen: FunctionComponent<Props> = ({
             maximumValue={12}
             step={1}
             onValueChange={setBins}
-            value={bins}
+            value={bins || 0}
             tapToSeek={true}
             thumbTintColor={Colors.yellow}
           />

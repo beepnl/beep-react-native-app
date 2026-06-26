@@ -10,7 +10,7 @@ import styles from './styles';
 
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import { NavigationProp } from '@react-navigation/native';
 
 // Data
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
@@ -23,7 +23,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { getFrequencyByBin } from '../Wizard/CalibrateAudioScreen';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const AudioScreen: FunctionComponent<Props> = ({
@@ -55,7 +55,7 @@ const AudioScreen: FunctionComponent<Props> = ({
       <View style={styles.itemContainer}>
         <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.audio.channel")}</Text>
-          <Text style={styles.text}>{audioSensor ? audioSensor.channel.name : "-"}</Text>
+          <Text style={styles.text}>{audioSensor?.channel?.name || "-"}</Text>
         </View>
         <View style={styles.itemRow}>
           <Text style={styles.text}>{t("sensor.audio.startFrequency")}</Text>

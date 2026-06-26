@@ -26,7 +26,7 @@ import NavigationButton from '@/App/Components/NavigationButton';
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import { Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconMaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface Props {
 }

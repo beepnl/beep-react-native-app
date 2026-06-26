@@ -1,7 +1,7 @@
 import { createReducer } from 'reduxsauce'
 import { SensorDefinitionModel } from '../../Models/SensorDefinitionModel'
 import { BeepBaseTypes } from './Actions'
-import { BeepBaseState, INITIAL_STATE } from './InitialState'
+import { BeepBaseState, INITIAL_STATE, LogDownloadState } from './InitialState'
 
 export const clear = (state: BeepBaseState, payload: any) => INITIAL_STATE
 
@@ -155,7 +155,45 @@ export const setAudio = (state: BeepBaseState, payload: any) => {
   }
 }
 
+const emptyLogDownloadState = (): LogDownloadState => ({
+  logFileSize: undefined,
+  logFileProgress: 0,
+  logFileFrames: [],
+  eraseLogFileProgress: 0,
+  error: undefined,
+})
+
+const shouldUpdateLegacyLogState = (state: BeepBaseState, peripheralId?: string) => {
+  return !peripheralId || state.pairedPeripheral?.id === peripheralId
+}
+
 export const setLogFileSize = (state: BeepBaseState, payload: any) => {
+  const peripheralId = payload.peripheralId
+  if (peripheralId) {
+    const sessionsByPeripheralId = state.logDownloadsByPeripheralId ?? {}
+    const session = sessionsByPeripheralId[peripheralId] ?? emptyLogDownloadState()
+    const nextState = {
+      ...state,
+      logDownloadsByPeripheralId: {
+        ...sessionsByPeripheralId,
+        [peripheralId]: {
+          ...session,
+          logFileSize: payload.size,
+          error: undefined,
+        },
+      },
+    }
+
+    if (!shouldUpdateLegacyLogState(state, peripheralId)) {
+      return nextState
+    }
+
+    return {
+      ...nextState,
+      logFileSize: payload.size,
+    }
+  }
+
   return {
     ...state,
     logFileSize: payload.size
@@ -163,6 +201,31 @@ export const setLogFileSize = (state: BeepBaseState, payload: any) => {
 }
 
 export const setLogFileProgress = (state: BeepBaseState, payload: any) => {
+  const peripheralId = payload.peripheralId
+  if (peripheralId) {
+    const sessionsByPeripheralId = state.logDownloadsByPeripheralId ?? {}
+    const session = sessionsByPeripheralId[peripheralId] ?? emptyLogDownloadState()
+    const nextState = {
+      ...state,
+      logDownloadsByPeripheralId: {
+        ...sessionsByPeripheralId,
+        [peripheralId]: {
+          ...session,
+          logFileProgress: payload.progress,
+        },
+      },
+    }
+
+    if (!shouldUpdateLegacyLogState(state, peripheralId)) {
+      return nextState
+    }
+
+    return {
+      ...nextState,
+      logFileProgress: payload.progress,
+    }
+  }
+
   return {
     ...state,
     logFileProgress: payload.progress
@@ -171,6 +234,35 @@ export const setLogFileProgress = (state: BeepBaseState, payload: any) => {
 
 export const addLogFileFrame = (state: BeepBaseState, payload: any) => {
   const logFileFrames = [payload.frame] //only keep last frame
+  const peripheralId = payload.peripheralId
+
+  if (peripheralId) {
+    const sessionsByPeripheralId = state.logDownloadsByPeripheralId ?? {}
+    const session = sessionsByPeripheralId[peripheralId] ?? emptyLogDownloadState()
+    const nextProgress = session.logFileProgress + (logFileFrames[0]?.size ?? 0)
+    const nextState = {
+      ...state,
+      logDownloadsByPeripheralId: {
+        ...sessionsByPeripheralId,
+        [peripheralId]: {
+          ...session,
+          logFileProgress: nextProgress,
+          logFileFrames,
+        },
+      },
+    }
+
+    if (!shouldUpdateLegacyLogState(state, peripheralId)) {
+      return nextState
+    }
+
+    return {
+      ...nextState,
+      logFileProgress: nextProgress,
+      logFileFrames,
+    }
+  }
+
   return {
     ...state,
     logFileProgress: state.logFileProgress + logFileFrames[0]?.size,
@@ -179,6 +271,31 @@ export const addLogFileFrame = (state: BeepBaseState, payload: any) => {
 }
 
 export const setEraseLogFileProgress = (state: BeepBaseState, payload: any) => {
+  const peripheralId = payload.peripheralId
+  if (peripheralId) {
+    const sessionsByPeripheralId = state.logDownloadsByPeripheralId ?? {}
+    const session = sessionsByPeripheralId[peripheralId] ?? emptyLogDownloadState()
+    const nextState = {
+      ...state,
+      logDownloadsByPeripheralId: {
+        ...sessionsByPeripheralId,
+        [peripheralId]: {
+          ...session,
+          eraseLogFileProgress: payload.progress,
+        },
+      },
+    }
+
+    if (!shouldUpdateLegacyLogState(state, peripheralId)) {
+      return nextState
+    }
+
+    return {
+      ...nextState,
+      eraseLogFileProgress: payload.progress,
+    }
+  }
+
   return {
     ...state,
     eraseLogFileProgress: payload.progress
@@ -186,11 +303,59 @@ export const setEraseLogFileProgress = (state: BeepBaseState, payload: any) => {
 }
 
 export const clearLogFileFrames = (state: BeepBaseState, payload: any) => {
+  const peripheralId = payload.peripheralId
+  if (peripheralId) {
+    const sessionsByPeripheralId = state.logDownloadsByPeripheralId ?? {}
+    const session = sessionsByPeripheralId[peripheralId] ?? emptyLogDownloadState()
+    const nextState = {
+      ...state,
+      logDownloadsByPeripheralId: {
+        ...sessionsByPeripheralId,
+        [peripheralId]: {
+          ...session,
+          logFileProgress: 0,
+          logFileFrames: [],
+          error: undefined,
+        },
+      },
+    }
+
+    if (!shouldUpdateLegacyLogState(state, peripheralId)) {
+      return nextState
+    }
+
+    return {
+      ...nextState,
+      logFileProgress: 0,
+      logFileFrames: [],
+    }
+  }
+
   return {
     ...state,
     logFileProgress: 0,
     logFileFrames: []
   }
+}
+
+export const setLogDownloadError = (state: BeepBaseState, payload: any) => {
+  const peripheralId = payload.peripheralId
+  if (peripheralId) {
+    const sessionsByPeripheralId = state.logDownloadsByPeripheralId ?? {}
+    const session = sessionsByPeripheralId[peripheralId] ?? emptyLogDownloadState()
+    return {
+      ...state,
+      logDownloadsByPeripheralId: {
+        ...sessionsByPeripheralId,
+        [peripheralId]: {
+          ...session,
+          error: payload.error,
+        },
+      },
+    }
+  }
+
+  return state
 }
 
 export const setBattery = (state: BeepBaseState, payload: any) => {
@@ -244,6 +409,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [BeepBaseTypes.ADD_LOG_FILE_FRAME]: addLogFileFrame,
   [BeepBaseTypes.SET_ERASE_LOG_FILE_PROGRESS]: setEraseLogFileProgress,
   [BeepBaseTypes.CLEAR_LOG_FILE_FRAMES]: clearLogFileFrames,
+  [BeepBaseTypes.SET_LOG_DOWNLOAD_ERROR]: setLogDownloadError,
   [BeepBaseTypes.SET_BATTERY]: setBattery,
   [BeepBaseTypes.SET_CLOCK]: setClock,
   [BeepBaseTypes.SET_TILT]: setTilt,

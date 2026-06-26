@@ -30,8 +30,49 @@ export default StyleSheet.create({
   noticeText: {
     flex: 1,
     color: Colors.grey,
-    fontSize: 13,
-    lineHeight: 18,
-  }
+    fontSize: 17,
+    fontWeight: '700',
+    lineHeight: 22,
+  },
+
+  availableBadge: {
+    paddingHorizontal: Metrics.baseMargin,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: Colors.green,
+  },
+
+  availableBadgeText: {
+    color: Colors.background,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+
+  bleOnlyPanel: {
+    width: '100%',
+    padding: Metrics.doubleBaseMargin,
+    backgroundColor: Colors.silver,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.lightGrey,
+  },
+
+  bleOnlyText: {
+    ...ApplicationStyles.text,
+    color: Colors.darkGrey,
+    marginBottom: Metrics.baseMargin,
+  },
+
+  bleOnlyButton: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: Metrics.doubleBaseMargin,
+    paddingVertical: Metrics.baseMargin,
+    borderRadius: 8,
+    backgroundColor: Colors.yellow,
+  },
+
+  bleOnlyButtonText: {
+    ...ApplicationStyles.text,
+    fontWeight: '700',
+  },
 
 })

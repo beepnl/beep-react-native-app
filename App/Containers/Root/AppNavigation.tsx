@@ -12,6 +12,7 @@ import TemperatureScreen from '@/App/Containers/Sensor/TemperatureScreen';
 import TiltScreen from '@/App/Containers/Sensor/TiltScreen';
 import WeightScreen from '@/App/Containers/Sensor/WeightScreen';
 import SettingsScreen from '@/App/Containers/SettingsScreen/SettingsScreen';
+import MaintenanceScreen from '@/App/Containers/MaintenanceScreen/MaintenanceScreen';
 import CalibrateAudioScreen from '@/App/Containers/Wizard/CalibrateAudioScreen';
 import CalibrateTemperatureScreen from '@/App/Containers/Wizard/CalibrateTemperatureScreen';
 import CalibrateWeightScreen from '@/App/Containers/Wizard/CalibrateWeightScreen';
@@ -85,6 +86,7 @@ export const AppStack = () => {
       <Stack.Screen name="LogFileScreen" component={LogFileScreen} />
       <Stack.Screen name="FirmwareScreen" component={FirmwareScreen} />
       <Stack.Screen name="FirmwareDetailScreen" component={FirmwareDetailScreen} />
+      <Stack.Screen name="MaintenanceScreen" component={MaintenanceScreen} />
       <Stack.Screen name="Wizard" component={WizardStack} />
     </Stack.Navigator>
   );

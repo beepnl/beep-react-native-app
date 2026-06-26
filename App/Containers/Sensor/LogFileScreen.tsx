@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { useNavigation, usePreventRemove } from '@react-navigation/native';
+import { useNavigation, usePreventRemove, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -12,7 +12,6 @@ import styles from './styles';
 
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { BleLogger } from '@/App/Helpers/BleLogger';
 import useInterval from '@/App/Helpers/useInterval';
 import useTimeout from '@/App/Helpers/useTimeout';
 import { fetch } from 'expo/fetch';
@@ -22,7 +21,7 @@ import { LogFileSizeModel } from '@/App/Models/LogFileSizeModel';
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
 import { ERASE_TYPE, UploadResponseModel } from '@/App/Models/UploadResponseModel';
 import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
-import { getEraseLogFileProgress, getLogFileProgress, getLogFileSize, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
+import { getEraseLogFileProgress, getError as getBleError, getLogDownloadError, getLogFileProgress, getLogFileSize, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 import { getUseProduction } from '@/App/Stores/User/Selectors';
 
 // Components
@@ -49,12 +48,19 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const route = useRoute<any>();
   const [isModalVisible, setModalVisible] = useState(false)
   const [isBackModalVisible, setBackModalVisible] = useState(false);
-  const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
-  const logFileSize: LogFileSizeModel = useTypedSelector<LogFileSizeModel>(getLogFileSize)
-  const logFileProgress: number = useTypedSelector<number>(getLogFileProgress)
-  const eraseLogFileProgress: number = useTypedSelector<number>(getEraseLogFileProgress)
+  const peripheral: PairedPeripheralModel | undefined = useTypedSelector<PairedPeripheralModel | undefined>(getPairedPeripheral)
+  const routePeripheralId = route.params?.peripheralId as string | undefined
+  const routeDeviceId = route.params?.deviceId?.toString?.() ?? route.params?.device?.id?.toString?.()
+  const activePeripheralId = routePeripheralId ?? peripheral?.id
+  const activeDeviceId = routeDeviceId ?? peripheral?.deviceId
+  const logFileSize: LogFileSizeModel | undefined = useTypedSelector<LogFileSizeModel | undefined>((state) => getLogFileSize(state, activePeripheralId))
+  const logFileProgress: number = useTypedSelector<number>((state) => getLogFileProgress(state, activePeripheralId))
+  const eraseLogFileProgress: number = useTypedSelector<number>((state) => getEraseLogFileProgress(state, activePeripheralId))
+  const logDownloadError: string | undefined = useTypedSelector<string | undefined>((state) => getLogDownloadError(state, activePeripheralId))
+  const bleError: string | undefined = useTypedSelector<string | undefined>(getBleError)
   const [eraseType, setEraseType] = useState<ERASE_TYPE>("none")
   const [fullEraseStart, setFullEraseStart] = useState<Date>()
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -62,16 +68,17 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const [error, setError] = useState("")
   const useProduction = useTypedSelector<boolean>(getUseProduction)
   const [pendingBackAction, setPendingBackAction] = useState<any>(null);
-        
+  const autoStart = route.params?.autoStart;
+
   const TIMEOUT = 10000
 
   useEffect(() => {
-    dispatch(BeepBaseActions.setLogFileSize(undefined))
-    dispatch(BeepBaseActions.clearLogFileFrames())
-    if (peripheral) {
-      BleHelpers.write(peripheral.id, COMMANDS.SIZE_MX_FLASH)
+    dispatch(BeepBaseActions.setLogFileSize(undefined, activePeripheralId))
+    dispatch(BeepBaseActions.clearLogFileFrames(activePeripheralId))
+    if (activePeripheralId) {
+      BleHelpers.write(activePeripheralId, COMMANDS.SIZE_MX_FLASH)
     }  
-  }, []);
+  }, [activePeripheralId]);
 
   usePreventRemove(
     state === "downloading" || state === "uploading" || state === "erasing",
@@ -99,41 +106,70 @@ const LogFileScreen: FunctionComponent<Props> = ({
     setState("failed")
     setError(t("logFile.timeout"))
     // Disable download mode on timeout
-    BleLogger.setDownloadMode(false)
+    // BleLogger.setDownloadMode(false)
   }, state == "downloading" && logFileProgress == 0 ? TIMEOUT : null)
 
   useInterval(() => {
-    const diff = new Date().valueOf() - fullEraseStart?.valueOf()
-    dispatch(BeepBaseActions.setEraseLogFileProgress(diff / 1000 / 250))
+    const diff = new Date().valueOf() - (fullEraseStart?.valueOf() || 0)
+    // Cap simulated progress at 0.99; it reaches 1.0 only on firmware confirmation
+    dispatch(BeepBaseActions.setEraseLogFileProgress(Math.min(0.99, diff / 1000 / 250), activePeripheralId))
   }, (state == "erasing" && eraseType == "full") ? (__DEV__ ? 5000 : 1000) : null)
 
   const uploadLogFile = async () => {
     try {
       setUploadProgress(0);
 
+      if (!activePeripheralId || !activeDeviceId) {
+        setState('failed');
+        setError('Upload failed: no registered BEEP device is connected.');
+        return;
+      }
+
+      const logFile = BleHelpers.getLogFile(activePeripheralId);
+      if (!logFile?.exists || !logFile?.size) {
+        setState('failed');
+        setError('Upload failed: downloaded log file is empty or missing.');
+        return;
+      }
+
+      const logSizeBytes = logFileSize?.value();
+      if (!logSizeBytes) {
+        setState('failed');
+        setError('Upload failed: device log size is unknown.');
+        return;
+      }
+
+      const token = ApiService.getToken();
+      if (!token) {
+        setState('failed');
+        setError('Upload failed: you are not logged in.');
+        return;
+      }
+
       const uploadUrl = ApiService.getLogFileUploadUrl(
         useProduction,
-        logFileSize?.value()
+        logSizeBytes
       );
 
-      if (BleHelpers.LOG_FILE) {
+      if (logFile) {
+        const logFileName = BleHelpers.getLogFileName(activePeripheralId);
         const formData = new FormData();
-        formData.append('id', peripheral.deviceId);
-        formData.append('file', BleHelpers.LOG_FILE, BleHelpers.LOG_FILE_NAME)
+        formData.append('id', activeDeviceId);
+        formData.append('file', logFile, logFileName);
+
+        console.log(
+          `[RN] Uploading log file ${logFileName} for device ${activeDeviceId}: ` +
+          `${logFile.size} encoded bytes, ${logSizeBytes} source bytes`
+        );
+
         setUploadProgress(0.5);
         const response = await fetch(uploadUrl, {
           method: 'POST',
           headers: {
             Accept: 'application/json',
-            Authorization: `Bearer ${ApiService.getToken()}`,
+            Authorization: `Bearer ${token}`,
           },
           body: formData,
-          // not supported in expo fetch
-          // onUploadProgress({ loaded, total }) {
-          //   if (total) {
-          //     setUploadProgress(loaded / total);
-          //   }
-          // },
         });
   
         console.log('Upload response:', response);
@@ -148,7 +184,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
 
             const eraseCode = uploadResponse.getEraseCode();
             BleHelpers.write(
-              peripheral.id,
+              activePeripheralId,
               COMMANDS.ERASE_MX_FLASH,
               eraseCode
             );
@@ -166,45 +202,56 @@ const LogFileScreen: FunctionComponent<Props> = ({
           console.log('SERVER ERROR', response);
           setUploadProgress(0);
           setState('failed');
-          setError(
-            `Upload failed: log file saved locally as ${BleHelpers.LOG_FILE.uri}`
-          );
-          BleLogger.setDownloadMode(false);
+          const responseText = await response.text().catch(() => '');
+          setError(`Upload failed: server returned ${response.status}${responseText ? ` - ${responseText}` : ''}`);
         }
-      } else {
-        BleLogger.log('No log file to upload');
       }
     } catch (err: any) {
       setUploadProgress(0);
+      setState('failed');
       setError(err?.message ?? 'Upload failed');
       console.log(err);
-      BleLogger.setDownloadMode(false);
     }
   };
 
   useEffect(() => {
-    if (logFileProgress > 0 && logFileProgress === logFileSize?.value()) {
+    if (state === "downloading" && logFileProgress > 0 && logFileSize && logFileProgress >= logFileSize.value()) {
       //download finished, copy to SD card
       BleHelpers.exportLogFile()   //when uncommenting, also uncomment permission request in onDownloadLogFilePress()
 
       //download finished, disable download mode and upload to api
-      BleLogger.setDownloadMode(false)
+      // BleLogger.setDownloadMode(false)
       setState("uploading")
 
       uploadLogFile()
     }    
-  }, [logFileProgress]);
+  }, [logFileProgress, state, logFileSize, activePeripheralId, activeDeviceId]);
 
   useEffect(() => {
-    if (eraseLogFileProgress == 1) {
+    if (autoStart && state === 'idle' && logFileSize && logFileSize.value() > 0 && uploadProgress === 0 && logFileProgress === 0) {
+      onDownloadLogFilePress();
+    }
+  }, [autoStart, state, logFileSize, logFileProgress, uploadProgress]);
+
+  useEffect(() => {
+    if (state === "erasing" && eraseLogFileProgress >= 1) {
       setState("completed")
       setModalVisible(true)
     }
-  }, [eraseLogFileProgress]);
+  }, [eraseLogFileProgress, state]);
+
+  useEffect(() => {
+    const activeError = logDownloadError ?? (!activePeripheralId ? bleError : undefined)
+    if (activeError && (state === "downloading" || state === "erasing")) {
+      setUploadProgress(0)
+      setState("failed")
+      setError(activeError)
+    }
+  }, [logDownloadError, bleError, activePeripheralId, state]);
 
   const onGetLogFileSizePress = () => {
-    if (peripheral) {
-      BleHelpers.write(peripheral.id, COMMANDS.SIZE_MX_FLASH)
+    if (activePeripheralId) {
+      BleHelpers.write(activePeripheralId, COMMANDS.SIZE_MX_FLASH)
     }
   }
 
@@ -214,35 +261,35 @@ const LogFileScreen: FunctionComponent<Props> = ({
       setUploadProgress(0)
       setState("downloading")
       setError("")
-      dispatch(BeepBaseActions.clearLogFileFrames())
-      dispatch(BeepBaseActions.setEraseLogFileProgress(0))
+      dispatch(BeepBaseActions.clearLogFileFrames(activePeripheralId))
+      dispatch(BeepBaseActions.setEraseLogFileProgress(0, activePeripheralId))
       
       // Enable download mode to optimize performance
-      BleLogger.setDownloadMode(true)
+      // BleLogger.setDownloadMode(true)
       
-      if (peripheral) {
+      if (activePeripheralId) {
         //create new log file
-        BleHelpers.initLogFile()
-        BleHelpers.write(peripheral.id, [COMMANDS.READ_MX_FLASH, 0x00, 0x00, 0x00, 0x00])
+        BleHelpers.initLogFile(activePeripheralId, activeDeviceId)
+        BleHelpers.write(activePeripheralId, [COMMANDS.READ_MX_FLASH, 0x00, 0x00, 0x00, 0x00])
       }
     }
   }
 
-  let downloadProgress = logFileProgress / logFileSize?.value()
+  let downloadProgress = logFileSize ? logFileProgress / logFileSize.value() : 0
   if (isNaN(downloadProgress)) {
     downloadProgress = 0
   }
 
   const hideModal = () => {
     setModalVisible(false)
-    dispatch(BeepBaseActions.clearLogFileFrames())
+    dispatch(BeepBaseActions.clearLogFileFrames(activePeripheralId))
     setUploadProgress(0)
-    dispatch(BeepBaseActions.setEraseLogFileProgress(0))
+    dispatch(BeepBaseActions.setEraseLogFileProgress(0, activePeripheralId))
     setState("idle")
     setError("")
     
     // Ensure download mode is disabled when resetting
-    BleLogger.setDownloadMode(false)
+    // BleLogger.setDownloadMode(false)
     
     onGetLogFileSizePress()
   }

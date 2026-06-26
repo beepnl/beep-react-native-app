@@ -15,7 +15,7 @@ export class LogFileFrameModel {
     const buffer = Buffer.isBuffer(rawData) ? rawData : Buffer.from(rawData || [])
     let data, frame
     if (buffer?.length > 1) {
-      frame = buffer.readInt16BE()
+      frame = buffer.readUInt16BE()
       if (buffer.length > 2) {
         data = buffer.subarray(2)
         return new LogFileFrameModel({ frame, data })

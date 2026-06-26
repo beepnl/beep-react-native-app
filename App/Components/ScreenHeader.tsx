@@ -20,7 +20,7 @@ import {
   MenuOptions,
   MenuTrigger
 } from 'react-native-popup-menu';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface ScreenHeaderProps {
   title: string,

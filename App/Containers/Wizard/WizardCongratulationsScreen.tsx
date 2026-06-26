@@ -9,8 +9,7 @@ import styles from './styles';
 
 // Utils
 import OpenExternalHelpers from '@/App/Helpers/OpenExternalHelpers';
-import { CommonActions } from '@react-navigation/native';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import {CommonActions, NavigationProp} from '@react-navigation/native';
 
 // Data
 
@@ -19,7 +18,7 @@ import ScreenHeader from '@/App/Components/ScreenHeader';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const WizardCongratulationsScreen: FunctionComponent<Props> = ({

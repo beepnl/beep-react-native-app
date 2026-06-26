@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { CommonActions } from '@react-navigation/native';
+import {CommonActions, NavigationProp} from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -13,7 +13,6 @@ import styles from './styles';
 // Utils
 import BleHelpers, { BLE_NAME_PREFIX, COMMANDS } from '@/App/Helpers/BleHelpers';
 import { generateKey } from '@/App/Helpers/random';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { AteccModel } from '@/App/Models/AteccModel';
@@ -32,7 +31,7 @@ import ScreenHeader from '@/App/Components/ScreenHeader';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const WizardRegisterScreen: FunctionComponent<Props> = ({

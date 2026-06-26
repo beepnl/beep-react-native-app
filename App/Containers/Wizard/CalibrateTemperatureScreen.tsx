@@ -1,8 +1,8 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, NavigationProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -13,7 +13,6 @@ import styles from './styles';
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import useInterval from '@/App/Helpers/useInterval';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
@@ -25,11 +24,11 @@ import { getPairedPeripheral, getTemperatureSensorDefinitions, getTemperatures }
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
+import IconFontAwesome from '@expo/vector-icons/FontAwesome';
 import ToggleSwitch from '@/App/Components/ToggleSwitch';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
@@ -41,18 +40,34 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const temperatureSensors: Array<TemperatureModel> = useTypedSelector<Array<TemperatureModel>>(getTemperatures)
   const temperatureSensorDefinitions: Array<SensorDefinitionModel> = useTypedSelector<Array<SensorDefinitionModel>>((state: any) => getTemperatureSensorDefinitions(state, temperatureSensors.length))
-  const names = temperatureSensors.map((temperatureModel: TemperatureModel, index: number) => {
-    const sensorAbbr = `t_${index}`
-    const sensorDefinition = temperatureSensorDefinitions.find(temperatureSensorDefinition => temperatureSensorDefinition.inputAbbreviation === sensorAbbr)
-    const [value, setValue] = useState(sensorDefinition?.name || `Temperature sensor ${index + 1}`)
-    return { value, setValue }
-  })
-  const sensorLocations = temperatureSensors.map((temperatureModel: TemperatureModel, index: number) => {
-    const sensorAbbr = `t_${index}`
-    const sensorDefinition = temperatureSensorDefinitions.find(temperatureSensorDefinition => temperatureSensorDefinition.inputAbbreviation === sensorAbbr)
-    const [value, setValue] = useState(sensorDefinition?.isInside ?? true)
-    return { value, setValue }
-  })
+  const [namesState, setNamesState] = useState<string[]>([])
+  const [locationsState, setLocationsState] = useState<boolean[]>([])
+  const formInitializedRef = useRef(false)
+
+  useEffect(() => {
+    if (formInitializedRef.current || temperatureSensors.length === 0) {
+      return
+    }
+
+    //this screen is an edit screen for the temperature sensors so we
+    //need to overwrite sensor definition props with values from api
+    if (temperatureSensors.length === temperatureSensorDefinitions.length) {
+      const initialNames = temperatureSensorDefinitions.map(d => d.name)
+      const initialLocations = temperatureSensorDefinitions.map(d => !!d.isInside)
+      setNamesState(initialNames)
+      setLocationsState(initialLocations)
+      formInitializedRef.current = true
+    } else {
+      //illegal state, device sensor count differs from api sensor count
+      navigation.goBack()
+    }
+  }, [navigation, temperatureSensors.length, temperatureSensorDefinitions])
+
+  useEffect(() => {
+    if (isFocused && pairedPeripheral?.id) {
+      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_STATE)
+    }
+  }, [isFocused, pairedPeripheral?.id])
 
   const refresh = () => {
     if (pairedPeripheral) {
@@ -62,32 +77,14 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
     }
   }
 
-  useEffect(() => {
-    //this screen is an edit screen for the temperature sensors so we
-    //need to overwrite sensor definition props with values from api
-    if (temperatureSensors.length === temperatureSensorDefinitions.length) {
-      temperatureSensorDefinitions.forEach((sensorDefinition: SensorDefinitionModel, index: number) => {
-        names[index].setValue(sensorDefinition.name)
-        sensorLocations[index].setValue(!!sensorDefinition.isInside)
-      })
-    } else {
-      //illegal state, device sensor count differs from api sensor count
-      navigation.goBack()
-    }
-
-    if (pairedPeripheral) {
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_DS18B20_STATE)
-    }
-  }, [])
-
   useInterval(() => {
     refresh()
   }, isFocused ? (__DEV__ ? 20000 : 5000) : null)
 
   const onFinishPress = () => {
     temperatureSensors.forEach((temperatureModel: TemperatureModel, index: number) => {
-      const name = names[index].value
-      const isInside = sensorLocations[index].value
+      const name = namesState[index] || `Temperature sensor ${index + 1}`
+      const isInside = locationsState[index] ?? true
       const temperatureSensorDefinition = temperatureSensorDefinitions[index]
       const param = {
         ...temperatureSensorDefinition,
@@ -125,8 +122,12 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
         <View style={styles.spacer} />
         <TextInput
           style={styles.input}
-          onChangeText={names[index].setValue}
-          value={names[index].value}
+          onChangeText={(text) => {
+            const newNames = [...namesState]
+            newNames[index] = text
+            setNamesState(newNames)
+          }}
+          value={namesState[index] || ""}
           maxLength={100}
           returnKeyType="next"
           // blurOnSubmit={false}
@@ -135,8 +136,12 @@ const CalibrateTemperatureScreen: FunctionComponent<Props> = ({
         <View style={styles.spacer} />
         <Text style={styles.label}>{t("wizard.calibrate.temperature.location")}</Text>
         <ToggleSwitch
-          value={sensorLocations[index].value}
-          onValueChange={sensorLocations[index].setValue}
+          value={locationsState[index] ?? true}
+          onValueChange={(val) => {
+            const newLocations = [...locationsState]
+            newLocations[index] = val
+            setLocationsState(newLocations)
+          }}
           offLabel={t("wizard.calibrate.temperature.outside")}
           onLabel={t("wizard.calibrate.temperature.inside")}
           trackColor={{ false: Colors.lightGrey, true: Colors.lightGrey }}

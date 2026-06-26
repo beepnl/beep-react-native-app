@@ -11,7 +11,6 @@ import { Colors, Fonts } from '@/App/Theme';
 import styles from './FirmwareScreenStyle';
 
 // Utils
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import ExpoNordicDfu from '@getquip/expo-nordic-dfu';
 import { File, Paths } from 'expo-file-system';
 
@@ -30,7 +29,10 @@ import * as Progress from 'react-native-progress';
 import { FirmwareVersionModel } from '@/App/Models/FirmwareVersionModel';
 
 export type FirmwareDetailScreenNavigationParams = {
-  firmware: FirmwareModel,
+  FirmwareDetailScreen: {
+    firmware: FirmwareModel,
+    returnToLogDownload?: boolean,
+  },
 }
 
 const getIsUpdating = (state: string) => {
@@ -44,7 +46,7 @@ const getIsUpdating = (state: string) => {
          state === "FIRMWARE_VALIDATING"
 }
 
-type Props = NativeStackScreenProps<FirmwareDetailScreenNavigationParams>
+type Props = any
 
 const FirmwareDetailScreen: FunctionComponent<Props> = ({
   route,
@@ -54,7 +56,7 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const peripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
   const firmware: FirmwareModel = route.params?.firmware
-  const firmwareVersion: FirmwareVersionModel = useTypedSelector<FirmwareVersionModel>(getFirmwareVersion)
+  const firmwareVersion: FirmwareVersionModel | undefined = useTypedSelector<FirmwareVersionModel | undefined>(getFirmwareVersion)
   const [dfuProgress, setDfuProgress] = useState(0)
   const [dfuState, setDfuState] = useState("")
   const [error, setError] = useState("")
@@ -63,8 +65,8 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    ExpoNordicDfu.module.addListener("DFUProgress", (params) => {
-        const { percent, currentPart, avgSpeed, speed } = params
+    const progressSubscription = ExpoNordicDfu.module.addListener("DFUProgress", (params: any) => {
+        const { percent, currentPart } = params
         const partsTotal = params.totalParts ?? params.partsTotal   //this can be removed once the naming is consistent across platforms
         if (percent != undefined && currentPart != undefined) {
           const maxPercent = 100 / (partsTotal ?? 1)
@@ -76,7 +78,7 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
       }
     );
     
-    ExpoNordicDfu.module.addListener("DFUStateChanged", ({ state }) => {
+    const stateSubscription = ExpoNordicDfu.module.addListener("DFUStateChanged", ({ state }) => {
       console.log("DFU State:", state);
       if (state != undefined) {
         //track internal state for UI updates
@@ -91,7 +93,13 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
         dispatch(BeepBaseActions.setDfuUpdating(isUpdating))
       }
     });
-  }, []);
+
+    return () => {
+      progressSubscription?.remove()
+      stateSubscription?.remove()
+      dispatch(BeepBaseActions.setDfuUpdating(false))
+    }
+  }, [dispatch]);
 
   //prevent navigating away from screen while updating firmware
   usePreventRemove(getIsUpdating(dfuState), () => { });
@@ -107,72 +115,82 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
     setDfuReconnectRetry(0)
     const destination = new File(Paths.cache, 'firmware.zip');
     console.log("destination", destination)
+    let dfuStarted = false
 
     try {
+      if (!firmware?.url) {
+        throw new Error("No firmware download URL available.")
+      }
+      if (!peripheral?.id) {
+        throw new Error("No BEEP base is connected.")
+      }
+
       console.log("starting download", firmware.url)
       const result = await File.downloadFileAsync(firmware.url, destination, { idempotent: true });
       // console.log(result.exists);
       const peripheralId = peripheral.id
       console.log("download successful")
-      BleHelpers.disconnectPeripheral(peripheral.id)?.then(() => {
-        console.log("disconnect successful")
-        return delay(500).then(() => {
-          console.log("starting DFU upload")
-          return ExpoNordicDfu.startDfu({
-            deviceAddress: peripheral.id,
-            fileUri: result.uri,
-            android: {
-              deviceName: peripheral.name,
-              keepBond: true,
-              numberOfRetries: 3,
-            },
-            ios: {
-              connectionTimeout: 15000,
-              disableResume: false,
-            },
-            // options: {
-            //   retries: 3,
-            //   mtu: 247
-            // }
-          })
-          .then(async (res: any) => {
-            //upload successful
-            console.log("DFU upload successful")
-            setDfuTransferResult(res.deviceAddress)
-            const RETRY_COUNT = 10
-            let retry = 1
-            while (retry < RETRY_COUNT) {
-              console.log(`Reconnecting to device attempt ${retry}`)
-              try {
-                setDfuReconnectRetry(retry)
-                const isConnected = await BleHelpers.isConnected(peripheralId)
-                if (isConnected) {
-                  //reconnect successful
-                  retry = RETRY_COUNT //exit loop
-                  BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION)
-                  dispatch(BeepBaseActions.setDfuUpdating(false))
-                } else {
-                  await BleHelpers.connectPeripheral(peripheral.id)
-                }
-                retry += 1
-                await delay(1000)
-              } catch (error) {
-                console.log("reconnect retry error", error)
-              }
-            }
-          })
-          .catch((error) => {
-            console.log("error in startDFU", error)
-            dispatch(BeepBaseActions.setDfuUpdating(false))
-            setDfuTransferResult(error)
-            ExpoNordicDfu.abortDfu()
-            setError(error.message ?? error.Message)
-          })
-        })
+
+      await BleHelpers.disconnectPeripheral(peripheralId).catch((disconnectError) => {
+        console.log("disconnect before DFU failed; continuing", disconnectError)
       })
+
+      console.log("disconnect successful")
+      await delay(500)
+      console.log("starting DFU upload")
+      dfuStarted = true
+      const res: any = await ExpoNordicDfu.startDfu({
+        deviceAddress: peripheralId,
+        fileUri: result.uri,
+        android: {
+          deviceName: peripheral.name,
+          keepBond: true,
+          numberOfRetries: 3,
+        },
+        ios: {
+          connectionTimeout: 15000,
+          disableResume: false,
+        },
+      })
+
+      console.log("DFU upload successful")
+      setDfuTransferResult(res.deviceAddress)
+
+      const RETRY_COUNT = 10
+      let reconnected = false
+      for (let retry = 1; retry <= RETRY_COUNT; retry += 1) {
+        console.log(`Reconnecting to device attempt ${retry}`)
+        setDfuReconnectRetry(retry)
+        try {
+          const isConnected = await BleHelpers.isConnected(peripheralId)
+          if (!isConnected) {
+            await BleHelpers.connectPeripheral(peripheralId)
+          } else {
+            await BleHelpers.retrieveServices(peripheralId)
+          }
+          await BleHelpers.write(peripheralId, COMMANDS.READ_FIRMWARE_VERSION)
+          reconnected = true
+          break
+        } catch (reconnectError) {
+          console.log("reconnect retry error", reconnectError)
+          await delay(3000)
+        }
+      }
+
+      if (!reconnected) {
+        throw new Error("Firmware updated, but reconnecting to the BEEP base failed.")
+      }
+
+      dispatch(BeepBaseActions.setDfuUpdating(false))
+      if (route.params?.returnToLogDownload) {
+        navigation.navigate("LogFileScreen", { autoStart: true, peripheralId: route.params?.peripheralId ?? peripheral?.id, deviceId: route.params?.deviceId ?? peripheral?.deviceId })
+      }
     } catch (error: any) {
       console.error("Error error in onInstallFirmwarePress", error);
-      ExpoNordicDfu.abortDfu()
+      if (dfuStarted) {
+        ExpoNordicDfu.abortDfu()
+      }
+      dispatch(BeepBaseActions.setDfuUpdating(false))
       setError(error.message ?? error.Message)
     } finally {
       setBusy(false)

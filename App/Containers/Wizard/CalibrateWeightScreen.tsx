@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused, NavigationProp} from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -14,20 +14,19 @@ import styles from './styles';
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import useInterval from '@/App/Helpers/useInterval';
 import useTimeout from '@/App/Helpers/useTimeout';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
+import { DeviceModel } from '@/App/Models/DeviceModel';
 import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
 import { CHANNELS, WeightModel } from '@/App/Models/WeightModel';
 import ApiActions from '@/App/Stores/Api/Actions';
-import { getPairedPeripheral, getWeight, getFirstWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
+import { getDevice, getPairedPeripheral, getWeight, getFirstWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
-import { MaskedTextInput } from "react-native-advanced-input-mask";
 
 type PAGE = "tare" | "calibrate"
 
@@ -42,7 +41,7 @@ type STATE =
   "timeout"
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const CalibrateWeightScreen: FunctionComponent<Props> = ({
@@ -56,6 +55,13 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
   const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
   const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getFirstWeightSensorDefinition)
+  const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
+
+  useEffect(() => {
+    if (device && weight && !weightSensorDefinition) {
+      dispatch(ApiActions.initializeWeightSensor(device, weight))
+    }
+  }, [device, weight, weightSensorDefinition])
 
   const [page, setPage] = useState<PAGE>("tare")
   const [state, setState] = useState<STATE>("tareIdle")
@@ -199,7 +205,8 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   }, state == "sampling" || resetTimer ? TIMEOUT : null)
 
   const onCalibrateWeightChangeText = (value: string) => {
-    setCalibrateWeight(value || "")
+    const normalizedValue = value.replace(',', '.');
+    setCalibrateWeight(normalizedValue || "")
     setCalibrateWeightFormatted(value)
   }
 
@@ -274,12 +281,11 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
       </>}
 
       { state == "calibrateIdle" && <>
-        <MaskedTextInput
+        <TextInput
           style={styles.input}
           onBlur={onCalibrateWeightValidate}
           onChangeText={onCalibrateWeightChangeText}
           value={calibrateWeightFormatted}
-          mask={"[0999]{.}[999]"}
           placeholder={t("wizard.calibrate.weight.calibrateWeightPlaceholder")}
           placeholderTextColor={Colors.placeholder}
           keyboardType={"numeric"}

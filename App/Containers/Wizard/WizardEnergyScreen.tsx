@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { RouteProp } from '@react-navigation/native';
+import {RouteProp, NavigationProp} from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -13,7 +13,6 @@ import styles from './styles';
 // Utils
 import BatteryHelper from '@/App/Helpers/BatteryHelper';
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { ApplicationConfigModel } from '@/App/Models/ApplicationConfigModel';
@@ -28,7 +27,7 @@ import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 const BATTERY_CAPACITY_MILLI_AMPS = 750
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
   route: RouteProp<any, any>,
 }
 

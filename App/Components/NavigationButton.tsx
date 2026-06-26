@@ -11,7 +11,7 @@ import { Metrics, Colors, Fonts, ApplicationStyles } from '../Theme';
 
 // Components
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconMaterialCommunity from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface ScreenHeaderProps {
   title: string,

@@ -1,7 +1,6 @@
 import { ceil } from "lodash"
 import { Buffer } from 'buffer'
 
-export const BITMASK_DISABLED = 0
 export const BITMASK_ENABLED = 1 
 export const BITMASK_JOINED = 2
 export const BITMASK_DUTY_CYCLE_LIMITATION = 4
@@ -38,8 +37,8 @@ export class LoRaWanStateParser {
     const len = this.data?.length
     if (len >= 1) {
       const state = this.data.readUInt8(0)
-      const isDisabled = state & BITMASK_DISABLED
       const isEnabled = state & BITMASK_ENABLED
+      const isDisabled = !isEnabled
       const hasJoined = state & BITMASK_JOINED
       const isDutyCycleLimitationEnabled = state & BITMASK_DUTY_CYCLE_LIMITATION
       const isAdaptiveDataRateEnabled = state & BITMASK_ADAPTIVE_DATA_RATE

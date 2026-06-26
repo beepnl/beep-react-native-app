@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react'
 import { StyleSheet } from 'react-native';
 import { Metrics, Colors, Fonts } from '../Theme';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '@expo/vector-icons/MaterialIcons';
 
 interface CheckboxProps {
   title: string,

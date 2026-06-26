@@ -1,3 +1,4 @@
+import { NavigationProp } from '@react-navigation/native';
 import React, { FunctionComponent } from 'react';
 
 // Hooks
@@ -9,7 +10,6 @@ import { Metrics } from '@/App/Theme';
 import styles from './styles';
 
 // Utils
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 
@@ -19,7 +19,7 @@ import { Image } from 'expo-image';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const WizardAssembleScreen: FunctionComponent<Props> = ({

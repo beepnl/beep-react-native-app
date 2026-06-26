@@ -12,7 +12,7 @@ import styles from './styles';
 // Utils
 import BatteryHelper from '@/App/Helpers/BatteryHelper';
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import { NavigationProp } from '@react-navigation/native';
 
 // Data
 import { BatteryModel } from '@/App/Models/BatteryModel';
@@ -26,7 +26,7 @@ import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
 }
 
 const EnergyScreen: FunctionComponent<Props> = ({

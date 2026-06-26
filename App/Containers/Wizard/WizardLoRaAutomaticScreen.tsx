@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { RouteProp } from '@react-navigation/native';
+import {RouteProp, NavigationProp} from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -12,7 +12,6 @@ import styles from './styles';
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import { generateKey } from '@/App/Helpers/random';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { LoRaWanStateModel } from '@/App/Models/LoRaWanStateModel';
@@ -20,17 +19,19 @@ import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
 import ApiActions from '@/App/Stores/Api/Actions';
 import { LoRaConfigState } from '@/App/Stores/Api/InitialState';
 import { getLoRaConfigState } from '@/App/Stores/Api/Selectors';
+import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
 import { getLoRaWanState, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
+import LoRaConnectionDiagnostics from '@/App/Components/LoRaConnectionDiagnostics';
 import useInterval from '@/App/Helpers/useInterval';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const RETRY_COUNT = 8
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<any>,
   route: RouteProp<any, any>,
 }
 
@@ -53,6 +54,7 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
 
   useEffect(() => {
     dispatch(ApiActions.setLoRaConfigState("none"))
+    dispatch(BeepBaseActions.setLoRaWanState(undefined))
     BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_STATE)
   }, [])
 
@@ -65,10 +67,10 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   }, (state == "checkingConnectivity") && (retry.current > 0) ? 5000 : null)
 
   useEffect(() => {
-    if (loRaWanState?.hasJoined) {
+    if (startPressed && state === "checkingConnectivity" && loRaWanState?.hasJoined) {
       dispatch(ApiActions.setLoRaConfigState("connected"))
     }
-  }, [loRaWanState])
+  }, [dispatch, loRaWanState, startPressed, state])
 
   const onStartPress = () => {
     setStartPressed(true)
@@ -79,6 +81,8 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
   const onNextPress = () => {
     navigation.navigate("WizardLoRaOverviewScreen", { fromSensorScreen })
   }
+
+  const displayState: LoRaConfigState = startPressed ? state : "none"
 
   return (<>
     <ScreenHeader title={t("wizard.lora.automatic.screenTitle")} back />
@@ -91,7 +95,7 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacerDouble} />
 
-      { (state == "none" || state == "failedToRegister" || state == "failedToConnect" || !startPressed) &&
+      { (displayState == "none" || displayState == "failedToRegister" || displayState == "failedToConnect" || !startPressed) &&
         <TouchableOpacity style={styles.button} onPress={onStartPress}>
           <Text style={styles.text}>{t("wizard.lora.automatic.startButton")}</Text>
         </TouchableOpacity>
@@ -100,12 +104,20 @@ const WizardLoRaAutomaticScreen: FunctionComponent<Props> = ({
       <View style={styles.spacerDouble} />
 
       <View style={styles.itemContainer}>
-        <Text style={styles.itemText}>{t(`wizard.lora.automatic.state.${state}`)}</Text>
+        <Text style={styles.itemText}>{t(`wizard.lora.automatic.state.${displayState}`)}</Text>
       </View>
+
+      { startPressed && state == "connected" &&
+        <LoRaConnectionDiagnostics
+          loRaWanState={loRaWanState}
+          peripheralId={pairedPeripheral?.id}
+          isBleConnected={pairedPeripheral?.isConnected}
+        />
+      }
 
       <View style={[styles.spacer, { flex: 1 }]} />
 
-      { state == "connected" &&
+      { startPressed && state == "connected" &&
         <TouchableOpacity style={styles.button} onPress={onNextPress}>
           <Text style={styles.text}>{t("common.btnNext")}</Text>
         </TouchableOpacity>

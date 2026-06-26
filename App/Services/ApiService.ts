@@ -31,7 +31,7 @@ function getBaseUrl(useProduction: boolean) {
 }
 
 function getLogFileUploadUrl(useProduction: boolean, logFileSize: number) {
-  return getBaseUrl(useProduction) + LOG_FILE_UPLOAD_URL + "?log_size_bytes=" + logFileSize.toString()
+  return getBaseUrl(useProduction) + LOG_FILE_UPLOAD_URL + "?log_size_bytes=" + logFileSize.toString() + "&fill=1"
 }
 
 function getLoRaSensorsUrl(useProduction: boolean) {
@@ -59,6 +59,10 @@ function getToken() {
 
 function login(email: string, password: string) {
   return api.post("login", { email, password }, { headers: { Authorization: "" } })
+}
+
+function authenticate(apiToken: string) {
+  return api.post("authenticate", {}, { headers: { Authorization: `Bearer ${apiToken}` } })
 }
 
 function getDevices() {
@@ -103,6 +107,7 @@ export default {
   setToken,
   getToken,
   login,
+  authenticate,
 
   //api
   getDevices,
