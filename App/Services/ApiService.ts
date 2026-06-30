@@ -81,6 +81,18 @@ function createTtnDevice(hardwareId: string, params: any) {
   return api.post(`devices/ttn/${hardwareId}`, { ...params })
 }
 
+function getLoRaProviders() {
+  return api.get("devices/lorawan/providers")
+}
+
+function createLoRaCoverageCheck(deviceId: string, provider: string) {
+  return api.post(`devices/${deviceId}/lorawan/coverage-check`, { provider })
+}
+
+function createHeliumDevice(deviceId: string) {
+  return api.post(`devices/${deviceId}/lorawan/helium`, {})
+}
+
 function createSensorDefinition(params: any) {
   return api.post("sensordefinition", { ...params })
 }
@@ -110,6 +122,9 @@ export default {
   registerDevice,
   updateDevice,
   createTtnDevice,
+  getLoRaProviders,
+  createLoRaCoverageCheck,
+  createHeliumDevice,
   createSensorDefinition,
   getSensorDefinitions,
   updateSensorDefinition,

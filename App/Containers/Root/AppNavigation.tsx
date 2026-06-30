@@ -20,6 +20,8 @@ import WizardCalibrateScreen from '@/App/Containers/Wizard/WizardCalibrateScreen
 import WizardCongratulationsScreen from '@/App/Containers/Wizard/WizardCongratulationsScreen';
 import WizardEnergyScreen from '@/App/Containers/Wizard/WizardEnergyScreen';
 import WizardLoRaAutomaticScreen from '@/App/Containers/Wizard/WizardLoRaAutomaticScreen';
+import WizardLoRaCoverageCheckScreen from '@/App/Containers/Wizard/WizardLoRaCoverageCheckScreen';
+import WizardLoRaHeliumScreen from '@/App/Containers/Wizard/WizardLoRaHeliumScreen';
 import WizardLoRaManualScreen from '@/App/Containers/Wizard/WizardLoRaManualScreen';
 import WizardLoRaOverviewScreen from '@/App/Containers/Wizard/WizardLoRaOverviewScreen';
 import WizardLoRaScreen from '@/App/Containers/Wizard/WizardLoRaScreen';
@@ -49,6 +51,8 @@ const WizardStack = () => {
       <Stack.Screen name="WizardCalibrateScreen" component={WizardCalibrateScreen} />
       <Stack.Screen name="WizardLoRaScreen" component={WizardLoRaScreen} />
       <Stack.Screen name="WizardLoRaAutomaticScreen" component={WizardLoRaAutomaticScreen} />
+      <Stack.Screen name="WizardLoRaHeliumScreen" component={WizardLoRaHeliumScreen} />
+      <Stack.Screen name="WizardLoRaCoverageCheckScreen" component={WizardLoRaCoverageCheckScreen} />
       <Stack.Screen name="WizardLoRaManualScreen" component={WizardLoRaManualScreen} />
       <Stack.Screen name="WizardLoRaOverviewScreen" component={WizardLoRaOverviewScreen} />
       <Stack.Screen name="WizardEnergyScreen" component={WizardEnergyScreen} />
@@ -79,6 +83,8 @@ export const AppStack = () => {
       <Stack.Screen name="LoRaScreen" component={LoRaScreen} />
       <Stack.Screen name="WizardLoRaScreen" component={WizardLoRaScreen} />
       <Stack.Screen name="WizardLoRaAutomaticScreen" component={WizardLoRaAutomaticScreen} />
+      <Stack.Screen name="WizardLoRaHeliumScreen" component={WizardLoRaHeliumScreen} />
+      <Stack.Screen name="WizardLoRaCoverageCheckScreen" component={WizardLoRaCoverageCheckScreen} />
       <Stack.Screen name="WizardLoRaManualScreen" component={WizardLoRaManualScreen} />
       <Stack.Screen name="WizardLoRaOverviewScreen" component={WizardLoRaOverviewScreen} />
       <Stack.Screen name="CalibrateAudioScreen" component={CalibrateAudioScreen} />

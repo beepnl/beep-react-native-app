@@ -11,9 +11,40 @@ import ApiActions from '@/App/Stores/Api/Actions'
 import BeepBaseActions, { BeepBaseTypes } from '@/App/Stores/BeepBase/Actions'
 import UserActions from '@/App/Stores/User/Actions'
 import { getRefreshToken } from '@/App/Stores/User/Selectors'
-import { all, call, put, select, take } from 'redux-saga/effects'
+import { all, call, delay, put, race, select, take } from 'redux-saga/effects'
 import { BITMASK_ADAPTIVE_DATA_RATE, BITMASK_DISABLED, BITMASK_DUTY_CYCLE_LIMITATION, BITMASK_ENABLED, LoRaWanStateModel } from '../Models/LoRaWanStateModel'
+import { LoRaCoverageProvider } from '../Stores/Api/InitialState'
 import { getWeightSensorDefinitions, getDevice, getHardwareId, getLoRaWanState, getPairedPeripheral, getTemperatureSensorDefinitions } from '../Stores/BeepBase/Selectors'
+
+const BLE_RESPONSE_TIMEOUT = 8000
+
+function apiFailureFromError(error: any) {
+  return {
+    status: 0,
+    problem: 'BLE_ERROR',
+    data: {
+      message: error?.message ?? error?.toString?.() ?? 'Bluetooth command failed',
+    },
+  }
+}
+
+function* writeBle(peripheralId: string, command: any, params?: any) {
+  yield call(BleHelpers.write, peripheralId, command, params, { throwOnError: true })
+}
+
+function* readLoRaStateWithTimeout(peripheralId: string) {
+  yield call(writeBle, peripheralId, COMMANDS.READ_LORAWAN_STATE)
+  const { timeout } = yield race({
+    state: take(BeepBaseTypes.SET_LO_RA_WAN_STATE),
+    timeout: delay(BLE_RESPONSE_TIMEOUT),
+  })
+
+  if (timeout) {
+    throw new Error('Timed out waiting for LoRa state from BEEP base.')
+  }
+
+  return getLoRaWanState(yield select())
+}
 
 function* guardedRequest<Fn extends (...args: any[]) => any>(fn: Fn, ...args: Parameters<Fn>) {
   const response = yield fn(...args)
@@ -91,21 +122,23 @@ export function* checkDeviceRegistration(action: any) {
       //no info field means we have a search result
       if (Array.isArray(deviceResponse.data) && deviceResponse.data.length > 0) {
 
-        // device found but may not have a devEUI
-        
-        if (deviceResponse.devEUI == null)
-        {
-          yield put(ApiActions.setRegisterState("failed"))
+        const device = new DeviceModel(deviceResponse.data[0])
+        if (!device.devEUI) {
           yield put(ApiActions.setRegisterState("notYetRegistered"))
           console.log("Registration failed (device exists but devEUI is not defined)")
+          return
         }
 
         yield put(ApiActions.setRegisterState("alreadyRegistered"))
-        const device = new DeviceModel(deviceResponse.data[0])
         yield put(BeepBaseActions.setDevice(device))
 
         //update firmware with LoRa devEUI. This will also rename the BLE name
-        yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+        try {
+          yield call(writeBle, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+        } catch (error) {
+          yield put(ApiActions.setRegisterState("failed"))
+          yield put(ApiActions.apiFailure(apiFailureFromError(error)))
+        }
 
       } else {
         //device not found
@@ -124,50 +157,53 @@ export function* registerDevice(action: any) {
   const { peripheralId, requestParams } = action
   const registerResponse = yield guardedRequest(api.registerDevice, requestParams)
   if (registerResponse && registerResponse.ok) {
-    yield put(ApiActions.setRegisterState("registered"))
     const device = new DeviceModel(registerResponse.data)
     yield put(BeepBaseActions.setDevice(device))
 
-    //update firmware with LoRa devEUI. This will also rename the BLE name
-    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
+    try {
+      //update firmware with LoRa devEUI. This will also rename the BLE name
+      yield call(writeBle, peripheralId, COMMANDS.WRITE_LORAWAN_DEVEUI, device.devEUI)
 
-    //reset device to factory defaults (as specified here)
+      //reset device to factory defaults (as specified here)
 
-    //ENERGY
-    let params = Buffer.alloc(3)
-    let i = 0
-    params.writeUint8(1, i++)                   //message to send ratio
-    params.writeUInt16BE(15, i++)               //interval in minutes
-    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_APPLICATION_CONFIG, params)
+      //ENERGY
+      let params = Buffer.alloc(3)
+      let i = 0
+      params.writeUint8(1, i++)                   //message to send ratio
+      params.writeUInt16BE(15, i++)               //interval in minutes
+      yield call(writeBle, peripheralId, COMMANDS.WRITE_APPLICATION_CONFIG, params)
 
-    //LORA
-    yield call(BleHelpers.write, peripheralId, COMMANDS.READ_LORAWAN_STATE)
-    yield take(BeepBaseTypes.SET_LO_RA_WAN_STATE)
-    const loRaWanState: LoRaWanStateModel | undefined = getLoRaWanState(yield select())
-    let newState = BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION
-    if (loRaWanState?.hasJoined) {
-      newState |= BITMASK_ENABLED
+      //LORA
+      const loRaWanState: LoRaWanStateModel | undefined = yield call(readLoRaStateWithTimeout, peripheralId)
+      let newState = BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION
+      if (loRaWanState?.hasJoined) {
+        newState |= BITMASK_ENABLED
+      }
+      yield call(writeBle, peripheralId, COMMANDS.WRITE_LORAWAN_STATE, newState)
+
+      //AUDIO
+      params = Buffer.alloc(6)
+      i = 0
+      params.writeUint8(CHANNELS[0].bitmask, i++)   //IN3LM
+      params.writeUint8(20, i++)                    //gain
+      params.writeInt8(0, i++)                      //volume
+      params.writeUint8(10, i++)                    //number of bins
+      params.writeUint8(9, i++)                     //start bin
+      params.writeUint8(70, i++)                    //stop bin
+      yield call(writeBle, peripheralId, COMMANDS.WRITE_AUDIO_ADC_CONFIG, params)
+
+      //CLOCK TODO: check if feature is supported in firmware
+      params = Buffer.alloc(4)
+      params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
+      yield call(writeBle, peripheralId, COMMANDS.WRITE_CLOCK, params)
+
+      //refresh user device list
+      yield call(getDevices, null)
+      yield put(ApiActions.setRegisterState("registered"))
+    } catch (error) {
+      yield put(ApiActions.setRegisterState("failed"))
+      yield put(ApiActions.apiFailure(apiFailureFromError(error)))
     }
-    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_LORAWAN_STATE, newState)
-    
-    //AUDIO
-    params = Buffer.alloc(6)
-    i = 0
-    params.writeUint8(CHANNELS[0].bitmask, i++)   //IN3LM
-    params.writeUint8(20, i++)                    //gain
-    params.writeInt8(0, i++)                      //volume
-    params.writeUint8(10, i++)                    //number of bins
-    params.writeUint8(9, i++)                     //start bin
-    params.writeUint8(70, i++)                    //stop bin
-    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_AUDIO_ADC_CONFIG, params)
-
-    //CLOCK TODO: check if feature is supported in firmware
-    params = Buffer.alloc(4)
-    params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0)
-    yield call(BleHelpers.write, peripheralId, COMMANDS.WRITE_CLOCK, params)
-
-    //refresh user device list
-    yield call(getDevices, null)
   } else {
     yield put(ApiActions.setRegisterState("failed"))
     yield put(ApiActions.apiFailure(registerResponse))
@@ -176,10 +212,10 @@ export function* registerDevice(action: any) {
 
 export function* readLoraState(action: any) {
   const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
-  yield call(BleHelpers.write, peripheral.id, COMMANDS.READ_LORAWAN_STATE)
-  yield call(BleHelpers.write, peripheral.id, COMMANDS.READ_LORAWAN_DEVEUI)
-  yield call(BleHelpers.write, peripheral.id, COMMANDS.READ_LORAWAN_APPEUI)
-  yield call(BleHelpers.write, peripheral.id, COMMANDS.READ_LORAWAN_APPKEY)
+  yield call(writeBle, peripheral.id, COMMANDS.READ_LORAWAN_STATE)
+  yield call(writeBle, peripheral.id, COMMANDS.READ_LORAWAN_DEVEUI)
+  yield call(writeBle, peripheral.id, COMMANDS.READ_LORAWAN_APPEUI)
+  yield call(writeBle, peripheral.id, COMMANDS.READ_LORAWAN_APPKEY)
 }
 
 export function* configureLoRaAutomatic(action: any) {
@@ -209,29 +245,34 @@ export function* configureLoRaAutomatic(action: any) {
     }
     const updateDeviceResponse = yield guardedRequest(api.updateDevice, device.id, deviceUpdateParams)
     if (updateDeviceResponse && updateDeviceResponse.ok) {
-      yield put(ApiActions.setLoRaConfigState("writingCredentials"))
+      try {
+        yield put(ApiActions.setLoRaConfigState("writingCredentials"))
 
-      //write lora credentials to peripheral
-      yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, APP_EUI)
-      yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, ttn.devEUI)
-      yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, ttn.appKey)
-      yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
-  
-      //read back from device into redux store
-      yield call(readLoraState, action)
-  
-      //update device model in beep base store
-      const newDevice = {
-        ...device,
-        devEUI,
+        //write lora credentials to peripheral
+        yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, APP_EUI)
+        yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, ttn.devEUI)
+        yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, ttn.appKey)
+        yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+
+        //read back from device into redux store
+        yield call(readLoraState, action)
+
+        //update device model in beep base store
+        const newDevice = {
+          ...device,
+          devEUI,
+        }
+        yield put(BeepBaseActions.setDevice(newDevice))
+
+        //refresh user device list
+        yield call(getDevices, null)
+
+        //next wizard state
+        yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
+      } catch (error) {
+        yield put(ApiActions.setLoRaConfigState("failedToConnect"))
+        yield put(ApiActions.apiFailure(apiFailureFromError(error)))
       }
-      yield put(BeepBaseActions.setDevice(newDevice))
-  
-      //refresh user device list
-      yield call(getDevices, null)
-  
-      //next wizard state
-      yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
     } else {
       yield put(ApiActions.setLoRaConfigState("failedToRegister"))
       yield put(ApiActions.apiFailure(updateDeviceResponse))
@@ -261,32 +302,130 @@ export function* configureLoRaManual(action: any) {
   }
   const updateDeviceResponse = yield guardedRequest(api.updateDevice, device.id, deviceUpdateParams)
   if (updateDeviceResponse && updateDeviceResponse.ok) {
-    yield put(ApiActions.setLoRaConfigState("writingCredentials"))
-  
-    //write lora credentials to peripheral
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, appEui)
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, devEUI)
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+    try {
+      yield put(ApiActions.setLoRaConfigState("writingCredentials"))
 
-    //read back from device into redux store
-    yield call(readLoraState, action)
+      //write lora credentials to peripheral
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, appEui)
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, devEUI)
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
 
-    //update device model in beep base store
-    const newDevice = {
-      ...device,
-      devEUI,
+      //read back from device into redux store
+      yield call(readLoraState, action)
+
+      //update device model in beep base store
+      const newDevice = {
+        ...device,
+        devEUI,
+      }
+      yield put(BeepBaseActions.setDevice(newDevice))
+
+      //refresh user device list
+      yield call(getDevices, null)
+
+      //next wizard state
+      yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
+    } catch (error) {
+      yield put(ApiActions.setLoRaConfigState("failedToConnect"))
+      yield put(ApiActions.apiFailure(apiFailureFromError(error)))
     }
-    yield put(BeepBaseActions.setDevice(newDevice))
-
-    //refresh user device list
-    yield call(getDevices, null)
-    
-    //next wizard state
-    yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
   } else {
     yield put(ApiActions.setLoRaConfigState("failedToRegister"))
     yield put(ApiActions.apiFailure(updateDeviceResponse))
+  }
+}
+
+export function* configureLoRaHeliumAutomatic(action: any) {
+  yield put(ApiActions.setLoRaConfigState("registeringApi"))
+
+  const device: DeviceModel = getDevice(yield select())
+  const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
+
+  if (!device?.id || !peripheral?.id) {
+    yield put(ApiActions.setLoRaConfigState("failedToRegister"))
+    yield put(ApiActions.apiFailure({
+      status: 0,
+      problem: 'APP_ERROR',
+      data: { message: 'No registered BEEP base or Bluetooth connection available.' },
+    }))
+    return
+  }
+
+  const response = yield guardedRequest(api.createHeliumDevice, device.id)
+  if (response && response.ok && response.data?.dev_eui && response.data?.app_eui && response.data?.app_key) {
+    const devEUI = response.data.dev_eui
+    const appEui = response.data.app_eui
+    const appKey = response.data.app_key
+
+    try {
+      yield put(ApiActions.setLoRaConfigState("writingCredentials"))
+
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, appEui)
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, devEUI)
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+
+      yield call(readLoraState, action)
+
+      const newDevice = {
+        ...device,
+        devEUI,
+      }
+      yield put(BeepBaseActions.setDevice(newDevice))
+      yield call(getDevices, null)
+      yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
+    } catch (error) {
+      yield put(ApiActions.setLoRaConfigState("failedToConnect"))
+      yield put(ApiActions.apiFailure(apiFailureFromError(error)))
+    }
+  } else {
+    yield put(ApiActions.setLoRaConfigState("failedToRegister"))
+    yield put(ApiActions.apiFailure(response))
+  }
+}
+
+export function* configureLoRaCoverageCheck(action: any) {
+  yield put(ApiActions.setLoRaConfigState("registeringApi"))
+
+  const { provider }: { provider: LoRaCoverageProvider } = action
+  const device: DeviceModel = getDevice(yield select())
+  const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
+
+  if (!device?.id || !peripheral?.id) {
+    yield put(ApiActions.setLoRaConfigState("failedToRegister"))
+    yield put(ApiActions.apiFailure({
+      status: 0,
+      problem: 'APP_ERROR',
+      data: { message: 'No registered BEEP base or Bluetooth connection available.' },
+    }))
+    return
+  }
+
+  const response = yield guardedRequest(api.createLoRaCoverageCheck, device.id, provider)
+  if (response && response.ok && response.data?.dev_eui && response.data?.app_eui && response.data?.app_key) {
+    const devEUI = response.data.dev_eui
+    const appEui = response.data.app_eui
+    const appKey = response.data.app_key
+
+    try {
+      yield put(ApiActions.setLoRaConfigState("writingCredentials"))
+
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_APPEUI, appEui)
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_DEVEUI, devEUI)
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_APPKEY, appKey)
+      yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_ENABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+
+      yield call(readLoraState, action)
+
+      yield put(ApiActions.setLoRaConfigState("checkingConnectivity"))
+    } catch (error) {
+      yield put(ApiActions.setLoRaConfigState("failedToConnect"))
+      yield put(ApiActions.apiFailure(apiFailureFromError(error)))
+    }
+  } else {
+    yield put(ApiActions.setLoRaConfigState("failedToRegister"))
+    yield put(ApiActions.apiFailure(response))
   }
 }
 
@@ -294,13 +433,22 @@ export function* disableLoRa(action: any) {
 
   const peripheral: PairedPeripheralModel = getPairedPeripheral(yield select())
 
-    yield call(BleHelpers.write, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_DISABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
+  try {
+    if (!peripheral?.id) {
+      throw new Error('No connected BEEP base available.')
+    }
+
+    yield call(writeBle, peripheral.id, COMMANDS.WRITE_LORAWAN_STATE, BITMASK_DISABLED | BITMASK_ADAPTIVE_DATA_RATE | BITMASK_DUTY_CYCLE_LIMITATION)
 
     //read back from device into redux store
     yield call(readLoraState, action)
 
     //next wizard state
     yield put(ApiActions.setLoRaConfigState("isDisabled"))
+  } catch (error) {
+    yield put(ApiActions.setLoRaConfigState("failedToConnect"))
+    yield put(ApiActions.apiFailure(apiFailureFromError(error)))
+  }
 
 }
 

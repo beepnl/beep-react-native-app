@@ -19,8 +19,11 @@ export type LoRaConfigState =
   "writingCredentials" | 
   "checkingConnectivity" | 
   "connected" | 
+  "isDisabled" |
   "failedToRegister" |
   "failedToConnect"
+
+export type LoRaCoverageProvider = "ttn" | "helium"
 
 export interface ApiState {
   firmwares: Array<FirmwareModel>

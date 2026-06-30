@@ -1,6 +1,6 @@
 import { createActions } from 'reduxsauce';
 import { FirmwareModel } from '../../Models/FirmwareModel';
-import { RegisterState } from './InitialState';
+import { LoRaConfigState, LoRaCoverageProvider, RegisterState } from './InitialState';
 
 export enum ApiTypes {
   GET_DEVICES = 'GET_DEVICES',
@@ -11,6 +11,8 @@ export enum ApiTypes {
   SET_DISABLE_LORA = 'SET_DISABLE_LORA',
   CONFIGURE_LO_RA_AUTOMATIC = 'CONFIGURE_LO_RA_AUTOMATIC',
   CONFIGURE_LO_RA_MANUAL = 'CONFIGURE_LO_RA_MANUAL',
+  CONFIGURE_LO_RA_HELIUM_AUTOMATIC = 'CONFIGURE_LO_RA_HELIUM_AUTOMATIC',
+  CONFIGURE_LO_RA_COVERAGE_CHECK = 'CONFIGURE_LO_RA_COVERAGE_CHECK',
   SET_DEVICES = 'SET_DEVICES',
   INITIALIZE_TEMPERATURE_SENSORS = 'INITIALIZE_TEMPERATURE_SENSORS',
   INITIALIZE_WEIGHT_SENSOR = 'INITIALIZE_WEIGHT_SENSOR',
@@ -26,8 +28,10 @@ interface C extends ActionCreators {
   getFirmwares: () => { type: ApiTypes.GET_FIRMWARES };
   setFirmwares: (firmwares: Array<FirmwareModel>) => { type: ApiTypes.SET_FIRMWARES };
   setRegisterState: (registerState: RegisterState) => { type: ApiTypes.SET_REGISTER_STATE }
-  setLoRaConfigState: (loRaConfigState: RegisterState) => { type: ApiTypes.SET_LO_RA_CONFIG_STATE }
+  setLoRaConfigState: (loRaConfigState: LoRaConfigState) => { type: ApiTypes.SET_LO_RA_CONFIG_STATE }
   setDisableLoRa: (disableLoRa: RegisterState) => { type: ApiTypes.SET_DISABLE_LORA }
+  configureLoRaHeliumAutomatic: () => { type: ApiTypes.CONFIGURE_LO_RA_HELIUM_AUTOMATIC }
+  configureLoRaCoverageCheck: (provider: LoRaCoverageProvider) => { type: ApiTypes.CONFIGURE_LO_RA_COVERAGE_CHECK }
   apiFailure: (response: any) => { type: ApiTypes.API_FAILURE };
 }
 
@@ -37,6 +41,8 @@ const CreatedActions = createActions({
   registerDevice: ['peripheralId', 'requestParams'],
   configureLoRaAutomatic: ['appKey', 'devEUI'],
   configureLoRaManual: ['devEUI', 'appEui', 'appKey'],
+  configureLoRaHeliumAutomatic: null,
+  configureLoRaCoverageCheck: ['provider'],
   setRegisterState: ['registerState'],
   setDisableLoRa: ['disableLoRa'],
   setLoRaConfigState: ['loRaConfigState'],

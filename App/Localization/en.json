@@ -74,7 +74,7 @@
       },
       "name": "Name",
       "namePlaceholder": "Name your BEEP base",
-      "registerButton": "Register this BEEP base to your account",
+      "registerButton": "Register this BEEP base to your account"
     },
     "calibrate": {
       "screenTitle": "Calibrate",
@@ -104,7 +104,7 @@
         "confirmOkButton": "I'm sure",
         "page": {
           "tare": "In order to calibrate the weight sensor, we must first determine the tare weight, or zero value.\n\nMake sure nothing is on the scale and press the button below to set the tare weight.",
-          "calibrate": "Enter your exact weight in kg below, step on the scale and press the calibrate button below.",
+          "calibrate": "Enter your exact weight in kg below, step on the scale and press the calibrate button below."
         },
         "state": {
           "sampling": "Sampling weight sensor...",
@@ -153,6 +153,8 @@
       "subTitle": "Configuring your LoRa connection",
       "descriptionAutomatic": "The recommended method is using automatic configuration. This will register your BEEP base with The Things Network (TTN) and automatically register it with BEEP.",
       "automaticButton": "Automatic configuration",
+      "descriptionHeliumAutomatic": "Alternatively, use BEEP-managed Helium registration. BEEP will create and configure the device in the Helium account and write the credentials to your BEEP base.",
+      "heliumAutomaticButton": "Automatic Helium configuration",
       "descriptionManual": "Alternatively, configure your LoRa network connection manually.",
       "manualButton": "Manual configuration",
       "descriptionDisable": "Disable LoRa connectivity for lower energy consumption.",
@@ -176,6 +178,21 @@
           "failedToConnect": "Failed to connect"
         }
       },
+      "heliumAutomatic": {
+        "screenTitle": "LoRa Helium automatic",
+        "description": "Automatic Helium configuration will register your BEEP base in the BEEP Helium account.\n\nAfter registration it will connect to the Helium LoRaWAN network and start uploading its measurements to BEEP.",
+        "startButton": "Start Helium configuration",
+        "state": {
+          "none": "",
+          "registeringApi": "Registering device with Helium...",
+          "writingCredentials": "Writing Helium credentials to device...",
+          "checkingConnectivity": "Checking Helium connectivity...",
+          "connected": "Successfully connected",
+          "isDisabled": "Disabled",
+          "failedToRegister": "Failed to register with Helium",
+          "failedToConnect": "Failed to connect"
+        }
+      },
       "manual": {
         "screenTitle": "LoRa manual",
         "description": "1. Register your device with your LoRa network provider.\n\n2. Make sure your LoRa provider has the HTTP integration set to the following endpoint:",
@@ -189,6 +206,32 @@
         "appKeyPlaceholder": "32 hexadecimal characters",
         "appKeyError": "Invalid Application key",
         "setCredentialsButton": "Set credentials"
+      },
+      "coverage": {
+        "description": "Check whether a LoRaWAN network is available here by temporarily trying to join it.",
+        "heliumButton": "Check Helium coverage",
+        "ttnButton": "Check TTN coverage",
+        "startButton": "Start coverage check",
+        "success": "The BEEP base joined this network. This confirms coverage at this location.",
+        "restoring": "Restoring previous LoRa settings...",
+        "helium": {
+          "screenTitle": "Check Helium coverage",
+          "description": "The app will request temporary Helium credentials from BEEP, write them to the BEEP base, and ask the LoRa stack to join."
+        },
+        "ttn": {
+          "screenTitle": "Check TTN coverage",
+          "description": "The app will request temporary TTN credentials from BEEP, write them to the BEEP base, and ask the LoRa stack to join."
+        },
+        "state": {
+          "none": "",
+          "registeringApi": "Preparing temporary LoRaWAN credentials...",
+          "writingCredentials": "Writing temporary credentials to the BEEP base...",
+          "checkingConnectivity": "Trying to join the LoRaWAN network...",
+          "connected": "Coverage found",
+          "isDisabled": "Disabled",
+          "failedToRegister": "Could not prepare the coverage check",
+          "failedToConnect": "No join response received yet"
+        }
       },
       "descriptionJoined": "You have successfully configured your LoRa connection. The BEEP base is now able to upload its measurements.",
       "deviceName": "The name of the BEEP base is:",
@@ -274,7 +317,7 @@
       "clock": "Clock",
       "tilt": "Tilt",
       "logFile": "Download data",
-      "firmware": "Firmware",
+      "firmware": "Firmware"
     }
   },
   "sensor": {

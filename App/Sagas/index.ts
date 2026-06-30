@@ -14,6 +14,8 @@ import {
 import {
   checkDeviceRegistration,
   configureLoRaAutomatic,
+  configureLoRaCoverageCheck,
+  configureLoRaHeliumAutomatic,
   configureLoRaManual,
   createSensorDefinition,
   getDevices,
@@ -38,6 +40,8 @@ export default function* root() {
     takeLatest(ApiTypes.REGISTER_DEVICE, registerDevice),
     takeLatest(ApiTypes.CONFIGURE_LO_RA_AUTOMATIC, configureLoRaAutomatic),
     takeLatest(ApiTypes.CONFIGURE_LO_RA_MANUAL, configureLoRaManual),
+    takeLatest(ApiTypes.CONFIGURE_LO_RA_HELIUM_AUTOMATIC, configureLoRaHeliumAutomatic),
+    takeLatest(ApiTypes.CONFIGURE_LO_RA_COVERAGE_CHECK, configureLoRaCoverageCheck),
     takeLatest(ApiTypes.GET_SENSOR_DEFINITIONS, getSensorDefinitions),
     takeEvery(ApiTypes.INITIALIZE_TEMPERATURE_SENSORS, initializeTemperatureSensors),
     takeEvery(ApiTypes.INITIALIZE_WEIGHT_SENSOR, initializeWeightSensor),

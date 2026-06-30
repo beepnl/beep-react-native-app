@@ -12,7 +12,7 @@ import styles from './styles';
 
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
+import ApiService from '@/App/Services/ApiService';
 
 // Data
 import { LoRaWanAppEUIModel } from '@/App/Models/LoRaWanAppEUIModel';
@@ -21,6 +21,7 @@ import { LoRaWanDeviceEUIModel } from '@/App/Models/LoRaWanDeviceEUIModel';
 import { LoRaWanStateModel } from '@/App/Models/LoRaWanStateModel';
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
 import ApiActions from '@/App/Stores/Api/Actions';
+import { LoRaCoverageProvider } from '@/App/Stores/Api/InitialState';
 import { getLoRaWanAppEUI, getLoRaWanAppKey, getLoRaWanDeviceEUI, getLoRaWanState, getPairedPeripheral } from '@/App/Stores/BeepBase/Selectors';
 
 // Components
@@ -31,8 +32,18 @@ import Modal from 'react-native-modal';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: any,
   route: RouteProp<any, any>,
+}
+
+interface LoRaProviders {
+  ttn?: {
+    can_coverage_check?: boolean
+  }
+  helium?: {
+    can_provision?: boolean
+    can_coverage_check?: boolean
+  }
 }
 
 const WizardLoRaScreen: FunctionComponent<Props> = ({
@@ -43,20 +54,37 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
   const dispatch = useDispatch();
   const fromSensorScreen = route.params?.fromSensorScreen
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const pairedPeripheralId = pairedPeripheral?.id
   const loRaWanState: LoRaWanStateModel = useTypedSelector<LoRaWanStateModel>(getLoRaWanState)
   const loRaWanDeviceEUI: LoRaWanDeviceEUIModel = useTypedSelector<LoRaWanDeviceEUIModel>(getLoRaWanDeviceEUI)
   const loRaWanAppEUI: LoRaWanAppEUIModel = useTypedSelector<LoRaWanAppEUIModel>(getLoRaWanAppEUI)
   const loRaWanAppKey: LoRaWanAppKeyModel = useTypedSelector<LoRaWanAppKeyModel>(getLoRaWanAppKey)
-  const [isDetailsCollapsed, setDetailsCollapsed] = useState(true)
   const [isModalVisible, setModalVisible] = useState(false)
+  const [loRaProviders, setLoRaProviders] = useState<LoRaProviders>()
+  const heliumAutomaticAvailable = loRaProviders?.helium?.can_provision === true
+  const heliumCoverageAvailable = loRaProviders?.helium?.can_coverage_check === true
+  const ttnCoverageAvailable = loRaProviders?.ttn?.can_coverage_check !== false
 
   useEffect(() => {
     //read state from device
-    if (pairedPeripheral) {
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_STATE)
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_DEVEUI)
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_APPEUI)
-      BleHelpers.write(pairedPeripheral.id, COMMANDS.READ_LORAWAN_APPKEY)
+    if (pairedPeripheralId) {
+      BleHelpers.write(pairedPeripheralId, COMMANDS.READ_LORAWAN_STATE)
+      BleHelpers.write(pairedPeripheralId, COMMANDS.READ_LORAWAN_DEVEUI)
+      BleHelpers.write(pairedPeripheralId, COMMANDS.READ_LORAWAN_APPEUI)
+      BleHelpers.write(pairedPeripheralId, COMMANDS.READ_LORAWAN_APPKEY)
+    }
+  }, [pairedPeripheralId])
+
+  useEffect(() => {
+    let isMounted = true
+    ApiService.getLoRaProviders().then((response: any) => {
+      if (isMounted && response?.ok && response?.data) {
+        setLoRaProviders(response.data)
+      }
+    })
+
+    return () => {
+      isMounted = false
     }
   }, [])
 
@@ -64,8 +92,16 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
     navigation.navigate("WizardLoRaAutomaticScreen", { fromSensorScreen })
   }
 
+  const onHeliumAutomaticPress = () => {
+    navigation.navigate("WizardLoRaHeliumScreen", { fromSensorScreen })
+  }
+
   const onManualPress = () => {
     navigation.navigate("WizardLoRaManualScreen", { fromSensorScreen })
+  }
+
+  const onCoverageCheckPress = (provider: LoRaCoverageProvider) => {
+    navigation.navigate("WizardLoRaCoverageCheckScreen", { provider, fromSensorScreen })
   }
 
   const onDisablePress = () => {
@@ -169,6 +205,20 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
 
       <View style={styles.spacerDouble} />
 
+      { heliumAutomaticAvailable && <>
+        <View style={styles.itemContainer}>
+          <Text style={styles.text}>{t("wizard.lora.descriptionHeliumAutomatic")}</Text>
+        </View>
+
+        <View style={styles.spacer} />
+
+        <TouchableOpacity style={styles.button} onPress={onHeliumAutomaticPress}>
+          <Text style={styles.text}>{t("wizard.lora.heliumAutomaticButton")}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.spacerDouble} />
+      </>}
+
       <View style={styles.itemContainer}>
         <Text style={styles.text}>{t("wizard.lora.descriptionManual")}</Text>
       </View>
@@ -178,6 +228,28 @@ const WizardLoRaScreen: FunctionComponent<Props> = ({
       <TouchableOpacity style={styles.button} onPress={onManualPress}>
         <Text style={styles.text}>{t("wizard.lora.manualButton")}</Text>
       </TouchableOpacity>
+
+      <View style={styles.spacerDouble} />
+
+      <View style={styles.itemContainer}>
+        <Text style={styles.text}>{t("wizard.lora.coverage.description")}</Text>
+      </View>
+
+      <View style={styles.spacer} />
+
+      { heliumCoverageAvailable && <>
+        <TouchableOpacity style={styles.button} onPress={() => onCoverageCheckPress("helium")}>
+          <Text style={styles.text}>{t("wizard.lora.coverage.heliumButton")}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.spacer} />
+      </>}
+
+      { ttnCoverageAvailable &&
+        <TouchableOpacity style={styles.button} onPress={() => onCoverageCheckPress("ttn")}>
+          <Text style={styles.text}>{t("wizard.lora.coverage.ttnButton")}</Text>
+        </TouchableOpacity>
+      }
 
       <View style={styles.spacerDouble} />
 
