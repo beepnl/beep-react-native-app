@@ -2,7 +2,7 @@ import React, { FunctionComponent, useCallback, useEffect, useRef, useState } fr
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { useFocusEffect } from '@react-navigation/native';
+import { NavigationProp, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -17,7 +17,6 @@ import { RNLogger } from '@/App/Helpers/RNLogger';
 import * as tidyJs from '@tidyjs/tidy';
 import { Platform } from 'react-native';
 import BleManager, { Peripheral } from 'react-native-ble-manager';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { FirmwareVersionModel } from '@/App/Models/FirmwareVersionModel';
@@ -36,7 +35,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 type ListItem = Peripheral & { origin: "bonded" | "scanned", isConnected: boolean }
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<Record<string, object | undefined>>,
 }
 
 const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
@@ -72,7 +71,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         RNLogger.log(`[RN] Filtered to ${filtered.length} BEEPBASE peripherals`)
         filtered.forEach(p => {
           RNLogger.log(`[RN] Adding bonded peripheral: ${p.name} (${p.id})`)
-          bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded", isConnected: p.id == pairedPeripheral?.id })
+          bondedPeripherals.current?.set(p.id, { ...p, origin: "bonded", isConnected: !!pairedPeripheral?.isConnected && p.id == pairedPeripheral?.id })
         });
         refreshList()
       }).catch(err => {
@@ -165,7 +164,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
     //filter list based on name
     if (BleHelpers.isBeepBasePeripheral(peripheral)) {
       RNLogger.log(`[RN] Adding scanned BEEPBASE peripheral: ${peripheral.name} (${peripheral.id})`)
-      scannedPeripherals.current?.set(peripheral.id, { ...peripheral, origin: "scanned", isConnected: peripheral.id == pairedPeripheral?.id });
+      scannedPeripherals.current?.set(peripheral.id, { ...peripheral, origin: "scanned", isConnected: !!pairedPeripheral?.isConnected && peripheral.id == pairedPeripheral?.id });
       refreshList()
     } else {
       RNLogger.log(`[RN] Ignoring non-BEEPBASE peripheral: ${peripheral.name}`)
@@ -175,7 +174,10 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const refreshList = () => {
     const scanned: Array<ListItem> = Array.from(scannedPeripherals.current.values())
     const bonded = Array.from(bondedPeripherals.current.values()).filter(p => scanned.findIndex(i => i.id == p.id) == -1)
-    const merged = scanned.concat(bonded)
+    const merged = scanned.concat(bonded).map(p => ({
+      ...p,
+      isConnected: !!pairedPeripheral?.isConnected && p.id == pairedPeripheral?.id,
+    }))
     RNLogger.log(`[RN] Refreshing list - Scanned: ${scanned.length}, Bonded (unique): ${bonded.length}, Total: ${merged.length}`)
     
     // Log details of each peripheral
@@ -295,7 +297,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
   const getIcon = (peripheralItem: ListItem): React.ComponentType<any> | React.ReactElement<any> | null => {
     const isScanResult = peripheralItem.origin != "bonded"
     const isConnected = (peripheralItem == connectingPeripheral && firmwareVersion && hardwareVersion) ||
-                        (pairedPeripheral?.id == peripheralItem?.id)
+                        (!!pairedPeripheral?.isConnected && pairedPeripheral?.id == peripheralItem?.id)
 
     let iconName
     let color

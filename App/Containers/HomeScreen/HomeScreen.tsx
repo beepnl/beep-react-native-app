@@ -59,7 +59,7 @@ const HomeScreen: FunctionComponent<Props> = ({
     // Get API devices
     const apiDevices = devices.map((device: DeviceModel) => ({ 
       ...device, 
-      isConnected: pairedPeripheral?.deviceId === device.id,
+      isConnected: !!pairedPeripheral?.isConnected && pairedPeripheral?.deviceId === device.id,
       source: 'api' as const
     }));
     
@@ -80,7 +80,7 @@ const HomeScreen: FunctionComponent<Props> = ({
         id: '0', // Placeholder ID for BLE-only devices
         name: bleDevice.name || '(NO NAME)',
         hardwareId: bleDevice.id,
-        isConnected: bleDevice.id === pairedPeripheral?.id,
+        isConnected: !!pairedPeripheral?.isConnected && bleDevice.id === pairedPeripheral?.id,
         owner: true, // Assume owned for scanned devices
         source: 'ble' as const,
         blePeripheral: bleDevice // Keep reference to the peripheral
@@ -132,7 +132,7 @@ const HomeScreen: FunctionComponent<Props> = ({
       scannedPeripherals.current.set(peripheral.id, {
         ...peripheral,
         origin: "scanned",
-        isConnected: peripheral.id === pairedPeripheral?.id
+        isConnected: !!pairedPeripheral?.isConnected && peripheral.id === pairedPeripheral?.id
       });
       // Force re-render by updating a dummy state
       setListItems(prev => [...prev]);
@@ -202,7 +202,7 @@ const HomeScreen: FunctionComponent<Props> = ({
           bondedPeripherals.current.set(p.id, { 
             ...p, 
             origin: "bonded", 
-            isConnected: p.id === pairedPeripheral?.id 
+            isConnected: !!pairedPeripheral?.isConnected && p.id === pairedPeripheral?.id
           });
         });
         // Force re-render to show bonded devices
@@ -243,10 +243,10 @@ const HomeScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     // Update connection status for all peripherals
     scannedPeripherals.current.forEach((peripheral, id) => {
-      peripheral.isConnected = id === pairedPeripheral?.id;
+      peripheral.isConnected = !!pairedPeripheral?.isConnected && id === pairedPeripheral?.id;
     });
     bondedPeripherals.current.forEach((peripheral, id) => {
-      peripheral.isConnected = id === pairedPeripheral?.id;
+      peripheral.isConnected = !!pairedPeripheral?.isConnected && id === pairedPeripheral?.id;
     });
     // Force re-render
     setListItems(prev => [...prev]);

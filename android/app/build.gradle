@@ -55,8 +55,8 @@ android {
         applicationId = 'appinventor.ai_app_beep_nl.BEEP_commissioning_V06'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode = 300
-        versionName = '3.0.0'
+        versionCode = 301
+        versionName = '3.0.1'
 
         buildConfigField 'String', 'REACT_NATIVE_RELEASE_LEVEL', "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }

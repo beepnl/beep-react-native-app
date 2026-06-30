@@ -119,7 +119,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
   const [menuItems, setMenuItems] = useState<Array<MenuItem>>(getMenuItems())
   const [error, setError] = useState("")
   const [busy, setBusy] = useState(false)
-  const isConnected = peripheral && peripheral.isConnected
+  const isConnected = !!(peripheralEqualsDevice && peripheral?.isConnected)
 
   useEffect(() => {
     // if (connectOnLoad && !isConnected) {
@@ -184,7 +184,7 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
     setMenuItems(menuItems)
   }, [firmwareVersion])
 
-  const connect = () => {
+  const connect = async () => {
     // Fast path: if we're already connected to this device, just update the state
     if (peripheral && peripheral.isConnected && peripheral.deviceId === device.id) {
       RNLogger.log(`[RN] Already connected to device ${device.name}, skipping scan`)
@@ -211,30 +211,31 @@ const PeripheralDetailScreen: FunctionComponent<Props> = ({
 
     setBusy(true)
     setError("")
-    RNLogger.log(`[RN] Starting scan for device: ${device.name} (BLE name: ${DeviceModel.getBleName(device)})`)
-    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device)).then((scannedPeripheral: Peripheral) => {
-      BleHelpers.connectPeripheral(scannedPeripheral.id).then(() => {
-        dispatch(BeepBaseActions.setPairedPeripheral({ 
-          ...scannedPeripheral, 
-          isConnected: true,
-          deviceId: device.id
-        }))
-        setBusy(false)
-      }).catch((e) => {
-        RNLogger.log(`[RN] Connection failed: ${e}`)
-        setError(t("peripheralDetail.notFound"))
-        // Only disconnect the specific peripheral if we know which one failed
-        if (scannedPeripheral) {
-          BleHelpers.disconnectPeripheral(scannedPeripheral.id)
-        }
-        setBusy(false)
-      })
-    }).catch((error) => {
-      //peripheral not found
-      RNLogger.log(`[RN] Peripheral not found during scan: ${error}`)
+    let scannedPeripheral: Peripheral | undefined
+    try {
+      if (peripheral?.isConnected) {
+        RNLogger.log(`[RN] Disconnecting current peripheral before switching devices: ${peripheral.name} (${peripheral.id})`)
+        await BleHelpers.disconnectPeripheral(peripheral.id)
+        dispatch(BeepBaseActions.setPairedPeripheral(undefined))
+      }
+
+      RNLogger.log(`[RN] Starting scan for device: ${device.name} (BLE name: ${DeviceModel.getBleName(device)})`)
+      scannedPeripheral = await BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device))
+      await BleHelpers.connectPeripheral(scannedPeripheral.id)
+      dispatch(BeepBaseActions.setPairedPeripheral({
+        ...scannedPeripheral,
+        isConnected: true,
+        deviceId: device.id
+      }))
+    } catch (e) {
+      RNLogger.log(`[RN] Connection failed: ${e}`)
       setError(t("peripheralDetail.notFound"))
+      if (scannedPeripheral) {
+        BleHelpers.disconnectPeripheral(scannedPeripheral.id)?.catch(() => undefined)
+      }
+    } finally {
       setBusy(false)
-    })
+    }
   }
 
   const onToggleConnectionPress = () => {

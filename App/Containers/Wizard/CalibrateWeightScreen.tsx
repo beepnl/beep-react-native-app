@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
-import { useIsFocused } from '@react-navigation/native';
+import { NavigationProp, useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -14,14 +14,14 @@ import styles from './styles';
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import useInterval from '@/App/Helpers/useInterval';
 import useTimeout from '@/App/Helpers/useTimeout';
-import { StackNavigationProp } from 'react-navigation-stack/lib/typescript/src/vendor/types';
 
 // Data
 import { PairedPeripheralModel } from '@/App/Models/PairedPeripheralModel';
 import { SensorDefinitionModel } from '@/App/Models/SensorDefinitionModel';
 import { CHANNELS, WeightModel } from '@/App/Models/WeightModel';
 import ApiActions from '@/App/Stores/Api/Actions';
-import { getPairedPeripheral, getWeight, getFirstWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
+import { getDevice, getPairedPeripheral, getWeight, getFirstWeightSensorDefinition } from '@/App/Stores/BeepBase/Selectors';
+import { DeviceModel } from '@/App/Models/DeviceModel';
 
 // Components
 import ScreenHeader from '@/App/Components/ScreenHeader';
@@ -42,7 +42,7 @@ type STATE =
   "timeout"
 
 interface Props {
-  navigation: StackNavigationProp,
+  navigation: NavigationProp<Record<string, object | undefined>>,
 }
 
 const CalibrateWeightScreen: FunctionComponent<Props> = ({
@@ -53,6 +53,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const isFocused = useIsFocused();
   const [isModalVisible, setModalVisible] = useState(false)
   const pairedPeripheral: PairedPeripheralModel = useTypedSelector<PairedPeripheralModel>(getPairedPeripheral)
+  const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
   const weight: WeightModel = useTypedSelector<WeightModel>(getWeight)
   const channel = CHANNELS.find(ch => ch.name == "A_GAIN128")?.bitmask
   const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getFirstWeightSensorDefinition)
@@ -92,7 +93,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     if (state == "sampling" && weight) {
       const newReading = weight.channels[0]?.value
-      if (newReading) {
+      if (newReading != undefined) {
         //discard same readings. Each reading should be unique, within tolerance
         if (page == "calibrate" && readings.find(reading => reading == newReading) != undefined) {
           console.log("Discarding reading", newReading)
@@ -142,11 +143,17 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
               setOffset(Math.round(average))
             } else if (page == "calibrate") {
               if (!isNaN(parsedCalibrateWeight)) {
-                const multiplier = parsedCalibrateWeight / (average - offset)
-                setMultiplier(multiplier)
+                const calibrationDelta = average - offset
+                const nextMultiplier = parsedCalibrateWeight / calibrationDelta
+                if (calibrationDelta <= 0 || !Number.isFinite(nextMultiplier)) {
+                  setState("calibrateDeviationTooLarge")
+                  setResetTimer(false)
+                  return
+                }
+                setMultiplier(nextMultiplier)
                 console.log('Calibration completed with average = ', average)
                 console.log('Calibration completed with offset = ', offset)
-                console.log('Calibration completed with multiplier = ', multiplier)
+                console.log('Calibration completed with multiplier = ', nextMultiplier)
               }
             }
             setState(`${page}Completed`)
@@ -219,11 +226,21 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   }
 
   const onFinishPress = () => {
+    if (!Number.isFinite(multiplier) || multiplier <= 0) {
+      setCalibrateWeightError(t("wizard.calibrate.weight.calibrateWeightError"))
+      return
+    }
+
+    if (!device?.hardwareId) {
+      setCalibrateWeightError('Unable to save calibration for this device.')
+      return
+    }
+
+    console.log('offset =', offset)
+    console.log('multiplier =', multiplier)
+
     //update api sensor definition
     if (weightSensorDefinition) {
-      console.log('offset =', offset)
-      console.log('multiplier =', multiplier)
-
       const param = {
         ...weightSensorDefinition,
         offset,
@@ -231,6 +248,15 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
       }
       // TO DO: don't PATCH but PUT all defs
       dispatch(ApiActions.updateApiSensorDefinition(param))
+    } else {
+      dispatch(ApiActions.createSensorDefinition(device, {
+        device_hardware_id: device.hardwareId,
+        input_measurement_abbreviation: "w_v",
+        output_measurement_abbreviation: "weight_kg",
+        name: "Weight sensor",
+        offset,
+        multiplier,
+      }))
     }
 
     //close screen
