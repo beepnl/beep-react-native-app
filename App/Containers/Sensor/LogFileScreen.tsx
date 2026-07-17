@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 // Hooks
 import { useTypedSelector } from '@/App/Stores';
@@ -13,7 +13,6 @@ import styles from './styles';
 // Utils
 import BleHelpers, { COMMANDS } from '@/App/Helpers/BleHelpers';
 import useInterval from '@/App/Helpers/useInterval';
-import useTimeout from '@/App/Helpers/useTimeout';
 import { fetch } from 'expo/fetch';
 
 // Data
@@ -69,8 +68,24 @@ const LogFileScreen: FunctionComponent<Props> = ({
   const useProduction = useTypedSelector<boolean>(getUseProduction)
   const [pendingBackAction, setPendingBackAction] = useState<any>(null);
   const autoStart = route.params?.autoStart;
+  const autoStartConsumedRef = useRef(false)
+  const uploadAbortControllerRef = useRef<AbortController | undefined>(undefined)
+  const stateRef = useRef<STATE>(state)
 
   const TIMEOUT = 10000
+
+  useEffect(() => {
+    stateRef.current = state
+  }, [state])
+
+  useEffect(() => {
+    return () => {
+      uploadAbortControllerRef.current?.abort()
+      if (activePeripheralId && stateRef.current === "downloading") {
+        void BleHelpers.cancelLogDownload(activePeripheralId)
+      }
+    }
+  }, [activePeripheralId])
 
   useEffect(() => {
     dispatch(BeepBaseActions.setLogFileSize(undefined, activePeripheralId))
@@ -93,21 +108,36 @@ const LogFileScreen: FunctionComponent<Props> = ({
     setPendingBackAction(null);
   };
 
-  const doNavigateBack = () => {
+  const doNavigateBack = async () => {
     setBackModalVisible(false);
-    //TODO: stop transfer?
+    stateRef.current = "failed"
+    if (state === "downloading" && activePeripheralId) {
+      await BleHelpers.cancelLogDownload(activePeripheralId)
+    } else if (state === "uploading") {
+      uploadAbortControllerRef.current?.abort()
+    }
+
     if (pendingBackAction) {
       navigation.dispatch(pendingBackAction);
     }
     setPendingBackAction(null);
   };
 
-  useTimeout(() => {
-    setState("failed")
-    setError(t("logFile.timeout"))
-    // Disable download mode on timeout
-    // BleLogger.setDownloadMode(false)
-  }, state == "downloading" && logFileProgress == 0 ? TIMEOUT : null)
+  useEffect(() => {
+    if (state !== "downloading") {
+      return
+    }
+
+    const timeoutId = setTimeout(() => {
+      setState("failed")
+      setError(t("logFile.timeout"))
+      if (activePeripheralId) {
+        void BleHelpers.cancelLogDownload(activePeripheralId)
+      }
+    }, TIMEOUT)
+
+    return () => clearTimeout(timeoutId)
+  }, [activePeripheralId, logFileProgress, state, t])
 
   useInterval(() => {
     const diff = new Date().valueOf() - (fullEraseStart?.valueOf() || 0)
@@ -163,6 +193,8 @@ const LogFileScreen: FunctionComponent<Props> = ({
         );
 
         setUploadProgress(0.5);
+        const abortController = new AbortController();
+        uploadAbortControllerRef.current = abortController;
         const response = await fetch(uploadUrl, {
           method: 'POST',
           headers: {
@@ -170,6 +202,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
             Authorization: `Bearer ${token}`,
           },
           body: formData,
+          signal: abortController.signal,
         });
   
         console.log('Upload response:', response);
@@ -207,10 +240,15 @@ const LogFileScreen: FunctionComponent<Props> = ({
         }
       }
     } catch (err: any) {
+      if (err?.name === 'AbortError') {
+        return
+      }
       setUploadProgress(0);
       setState('failed');
       setError(err?.message ?? 'Upload failed');
       console.log(err);
+    } finally {
+      uploadAbortControllerRef.current = undefined
     }
   };
 
@@ -228,8 +266,9 @@ const LogFileScreen: FunctionComponent<Props> = ({
   }, [logFileProgress, state, logFileSize, activePeripheralId, activeDeviceId]);
 
   useEffect(() => {
-    if (autoStart && state === 'idle' && logFileSize && logFileSize.value() > 0 && uploadProgress === 0 && logFileProgress === 0) {
-      onDownloadLogFilePress();
+    if (autoStart && !autoStartConsumedRef.current && state === 'idle' && logFileSize && logFileSize.value() > 0 && uploadProgress === 0 && logFileProgress === 0) {
+      autoStartConsumedRef.current = true
+      void onDownloadLogFilePress();
     }
   }, [autoStart, state, logFileSize, logFileProgress, uploadProgress]);
 
@@ -256,8 +295,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
   }
 
   const onDownloadLogFilePress = async () => {
-    onGetLogFileSizePress()
-    if (logFileSize) {
+    if (logFileSize && activePeripheralId) {
       setUploadProgress(0)
       setState("downloading")
       setError("")
@@ -267,10 +305,13 @@ const LogFileScreen: FunctionComponent<Props> = ({
       // Enable download mode to optimize performance
       // BleLogger.setDownloadMode(true)
       
-      if (activePeripheralId) {
-        //create new log file
+      try {
+        await BleHelpers.prepareLogDownload(activePeripheralId)
         BleHelpers.initLogFile(activePeripheralId, activeDeviceId)
-        BleHelpers.write(activePeripheralId, [COMMANDS.READ_MX_FLASH, 0x00, 0x00, 0x00, 0x00])
+        await BleHelpers.write(activePeripheralId, [COMMANDS.READ_MX_FLASH, 0x00, 0x00, 0x00, 0x00])
+      } catch (downloadError: any) {
+        setState("failed")
+        setError(downloadError?.message ?? String(downloadError))
       }
     }
   }
@@ -285,7 +326,7 @@ const LogFileScreen: FunctionComponent<Props> = ({
     dispatch(BeepBaseActions.clearLogFileFrames(activePeripheralId))
     setUploadProgress(0)
     dispatch(BeepBaseActions.setEraseLogFileProgress(0, activePeripheralId))
-    setState("idle")
+    setState("completed")
     setError("")
     
     // Ensure download mode is disabled when resetting

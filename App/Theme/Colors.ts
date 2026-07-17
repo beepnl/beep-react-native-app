@@ -22,6 +22,7 @@ export default {
   grey: "#575556",
   lighterGrey: "#AAAAAA",
   white: "#F4F6F6",
+  snow: "#FFFFFF",
   shadow: "#363536",
   green: "#44CC44",
   red: "#DD1111"

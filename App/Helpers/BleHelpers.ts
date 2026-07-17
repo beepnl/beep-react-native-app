@@ -90,7 +90,7 @@ export const COMMANDS = {
 }
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const ANDROID_TRANSFER_MTU = 247;
+const ANDROID_TRANSFER_MTU = 512;
 export const BLUETOOTH_ENABLE_REQUIRED_MESSAGE = "Bluetooth is off. Turn Bluetooth on in Android Quick Settings, then try again."
 
 export type BluetoothState = 
@@ -123,6 +123,8 @@ export default class BleHelpers {
   static LOG_FILE = undefined as File | undefined
   static activeLogPeripheralId: string | undefined = undefined
   static logDownloadSessions: Map<string, LogDownloadSession> = new Map()
+  static cancelledLogPeripheralIds: Set<string> = new Set()
+  static stoppedLogNotificationPeripheralIds: Set<string> = new Set()
 
   static BleManagerDidUpdateValueForCharacteristicSubscription: EventSubscription | undefined
 
@@ -797,6 +799,10 @@ export default class BleHelpers {
   }
 
   static handleLogFileCharacteristic({ value, peripheralId }: { value: number[] | Uint8Array, peripheralId: string }) {
+    if (BleHelpers.cancelledLogPeripheralIds.has(peripheralId)) {
+      return
+    }
+
     try {
       // Convert value to Buffer - handle both array-like objects and arrays
       const valueArray = Array.isArray(value) ? value : Object.values(value)
@@ -856,6 +862,45 @@ export default class BleHelpers {
     }
   }
 
+  static async prepareLogDownload(peripheralId: string) {
+    if (!BleHelpers.stoppedLogNotificationPeripheralIds.has(peripheralId)) {
+      BleHelpers.cancelledLogPeripheralIds.delete(peripheralId)
+      return
+    }
+
+    await BleManager.startNotification(peripheralId, BEEP_SERVICE, LOG_FILE_CHARACTERISTIC)
+    BleHelpers.stoppedLogNotificationPeripheralIds.delete(peripheralId)
+    BleHelpers.cancelledLogPeripheralIds.delete(peripheralId)
+    OSLogger.log(`[BLE] Log notification restored for ${peripheralId}`)
+  }
+
+  static async cancelLogDownload(peripheralId: string) {
+    if (BleHelpers.cancelledLogPeripheralIds.has(peripheralId) && BleHelpers.stoppedLogNotificationPeripheralIds.has(peripheralId)) {
+      return
+    }
+
+    BleHelpers.cancelledLogPeripheralIds.add(peripheralId)
+    BleHelpers.logDownloadSessions.delete(peripheralId)
+
+    try {
+      await BleManager.stopNotification(peripheralId, BEEP_SERVICE, LOG_FILE_CHARACTERISTIC)
+      BleHelpers.stoppedLogNotificationPeripheralIds.add(peripheralId)
+      OSLogger.log(`[BLE] Log notification stopped for ${peripheralId}`)
+    } catch (error) {
+      OSLogger.log(`[BLE] Failed to stop log notification for ${peripheralId}; disconnecting to stop the firmware transfer: ${error}`)
+      await BleManager.disconnect(peripheralId, true).catch(disconnectError => {
+        OSLogger.log(`[BLE] Failed to disconnect ${peripheralId} while cancelling log transfer: ${disconnectError}`)
+      })
+      BleHelpers.stoppedLogNotificationPeripheralIds.add(peripheralId)
+    }
+
+    if (BleHelpers.activeLogPeripheralId === peripheralId) {
+      BleHelpers.activeLogPeripheralId = undefined
+      BleHelpers.LOG_FILE = undefined
+      BleHelpers.lastFrame = -1
+    }
+  }
+
   static async retrieveServices(peripheralId: string) {
     OSLogger.log(`[BLE] Retrieving services for peripheral: ${peripheralId}`);
     store.dispatch(BeepBaseActions.bleFailure(undefined))
@@ -883,6 +928,8 @@ export default class BleHelpers {
           OSLogger.log(`[BLE] Starting notification for LOG FILE characteristic on ${peripheralId}...`);
           return BleManager.startNotification(peripheralId, BEEP_SERVICE, LOG_FILE_CHARACTERISTIC).then(() => {
             OSLogger.log(`[BLE] Notification subscribed for LOG FILE characteristic on ${peripheralId}`);
+            BleHelpers.cancelledLogPeripheralIds.delete(peripheralId)
+            BleHelpers.stoppedLogNotificationPeripheralIds.delete(peripheralId)
             return peripheralInfo
           })
         })

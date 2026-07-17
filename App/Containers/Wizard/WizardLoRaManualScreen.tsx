@@ -121,11 +121,17 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
       // Try JSON format first
       try {
         const json = JSON.parse(text);
-        if (json.DevEUI || json.devEui || json.devEUI) onDevEuiChangeText(json.DevEUI || json.devEui || json.devEUI);
-        if (json.AppEUI || json.appEui || json.appEUI || json.JoinEUI || json.joinEUI) onAppEuiChangeText(json.AppEUI || json.appEui || json.appEUI || json.JoinEUI || json.joinEUI);
-        if (json.AppKey || json.appKey) onAppKeyChangeText(json.AppKey || json.appKey);
-        return;
-      } catch (e) {}
+        const jsonDevEui = cleanHex(String(json.DevEUI || json.devEui || json.devEUI || ''));
+        const jsonAppEui = cleanHex(String(json.AppEUI || json.appEui || json.appEUI || json.JoinEUI || json.joinEUI || ''));
+        const jsonAppKey = cleanHex(String(json.AppKey || json.appKey || ''));
+
+        if (jsonDevEui.length === 16 && jsonAppEui.length === 16 && jsonAppKey.length === 32) {
+          onDevEuiChangeText(jsonDevEui);
+          onAppEuiChangeText(jsonAppEui);
+          onAppKeyChangeText(jsonAppKey);
+          return;
+        }
+      } catch {}
 
       // Fallback: If it's a raw continuous string, try to split it into the three keys if it's exactly 16+16+32 = 64 chars
       if (cleaned.length === 64) {
@@ -161,12 +167,12 @@ const WizardLoRaManualScreen: FunctionComponent<Props> = ({
     }
   }, [configurationStarted, dispatch, loRaWanState, state])
 
-  const keysAreValid = 
-    devEui.length > 0 && 
-    devEuiError == "" && 
-    appEui.length > 0 && 
-    appEuiError == "" && 
-    appKey.length > 0 && 
+  const keysAreValid =
+    devEui.length === 16 &&
+    devEuiError == "" &&
+    appEui.length === 16 &&
+    appEuiError == "" &&
+    appKey.length === 32 &&
     appKeyError == ""
 
   const onSetCredentialsPress = () => {
