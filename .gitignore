@@ -38,6 +38,14 @@ yarn-error.*
 
 app-example
 
-# generated native folders
+# generated iOS folder
 /ios
-/android
+
+# Android local and generated files
+/android/.gradle/
+/android/build/
+/android/app/.cxx/
+/android/app/build/
+/android/local.properties
+/android/keystores/
+/android/app/debug.keystore
