@@ -93,6 +93,7 @@
         "outside": "Outside hive"
       },
       "weight": {
+        "saveError": "Could not save calibration. Please try again.",
         "screenTitle": "Calibrate weight",
         "tareButton": "Measure tare",
         "calibrateButton": "Calibrate",

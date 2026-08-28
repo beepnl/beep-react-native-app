@@ -41,7 +41,7 @@ const DeviceQuickActions: FunctionComponent<Props> = ({ device }) => {
 
   useEffect(() => {
     if (!isConnected && !connecting) {
-      connect();
+      void connect();
     }
   }, [device.id]);
 
@@ -61,36 +61,38 @@ const DeviceQuickActions: FunctionComponent<Props> = ({ device }) => {
     }
   }, [isConnected]);
 
-  const connect = () => {
+  const connect = async () => {
     setConnecting(true);
     setError('');
 
-    if (pairedPeripheral && pairedPeripheral.isConnected && pairedPeripheral.name === DeviceModel.getBleName(device)) {
+    try {
+      if (pairedPeripheral?.isConnected && pairedPeripheral.name === DeviceModel.getBleName(device)) {
+        dispatch(BeepBaseActions.setPairedPeripheral({
+          ...pairedPeripheral,
+          deviceId: device.id
+        }));
+        await BleHelpers.retrieveServices(pairedPeripheral.id);
+        return;
+      }
+
+      if (pairedPeripheral?.isConnected) {
+        await BleHelpers.disconnectPeripheral(pairedPeripheral.id);
+        dispatch(BeepBaseActions.clear());
+      }
+
+      const scannedPeripheral = await BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device));
+      await BleHelpers.connectPeripheral(scannedPeripheral.id);
       dispatch(BeepBaseActions.setPairedPeripheral({
-        ...pairedPeripheral,
+        ...scannedPeripheral,
+        isConnected: true,
         deviceId: device.id
       }));
-      BleHelpers.retrieveServices(pairedPeripheral.id);
+    } catch (e) {
+      RNLogger.log(`[RN] Connection failed: ${e}`);
+      setError(t("peripheralDetail.notFound"));
+    } finally {
       setConnecting(false);
-      return;
     }
-
-    BleHelpers.scanPeripheralByName(DeviceModel.getBleName(device))
-      .then((scannedPeripheral) => {
-        return BleHelpers.connectPeripheral(scannedPeripheral.id).then(() => {
-          dispatch(BeepBaseActions.setPairedPeripheral({
-            ...scannedPeripheral,
-            isConnected: true,
-            deviceId: device.id
-          }));
-          setConnecting(false);
-        });
-      })
-      .catch((e) => {
-        RNLogger.log(`[RN] Connection failed: ${e}`);
-        setError(t("peripheralDetail.notFound"));
-        setConnecting(false);
-      });
   };
 
   if (connecting) {

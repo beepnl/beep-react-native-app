@@ -168,7 +168,7 @@ const FirmwareDetailScreen: FunctionComponent<Props> = ({
           } else {
             await BleHelpers.retrieveServices(peripheralId)
           }
-          await BleHelpers.write(peripheralId, COMMANDS.READ_FIRMWARE_VERSION)
+          await BleHelpers.write(peripheralId, COMMANDS.READ_FIRMWARE_VERSION, undefined, { throwOnError: true })
           reconnected = true
           break
         } catch (reconnectError) {

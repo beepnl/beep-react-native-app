@@ -15,6 +15,7 @@ import { FirmwareModel } from '@/App/Models/FirmwareModel';
 import { getPairedPeripheral, getFirmwareVersion } from '@/App/Stores/BeepBase/Selectors';
 import { getFirmwaresStable } from '@/App/Stores/Api/Selectors';
 import ApiActions from '@/App/Stores/Api/Actions';
+import BeepBaseActions from '@/App/Stores/BeepBase/Actions';
 
 import ScreenHeader from '@/App/Components/ScreenHeader';
 import IconMaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -30,6 +31,16 @@ const MaintenanceScreen: FunctionComponent = () => {
   const [statusText, setStatusText] = useState('Initializing maintenance...');
   const [step, setStep] = useState(0);
   const firmwareVersionRef = useRef(firmwareVersion);
+
+  const waitForFirmwareVersion = async () => {
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      if (firmwareVersionRef.current) {
+        return firmwareVersionRef.current;
+      }
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+    throw new Error('Could not read the firmware version from the BEEP base.');
+  };
 
   useEffect(() => {
     firmwareVersionRef.current = firmwareVersion;
@@ -63,23 +74,26 @@ const MaintenanceScreen: FunctionComponent = () => {
       setStatusText('Syncing clock...');
       const params = Buffer.alloc(4);
       params.writeUint32BE((new Date().valueOf() + 1300) / 1000, 0);
-      await BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params);
+      await BleHelpers.write(peripheral.id, COMMANDS.WRITE_CLOCK, params, { throwOnError: true });
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       setStep(2);
       setStatusText('Checking LoRa stack...');
-      await BleHelpers.write(peripheral.id, COMMANDS.READ_LORAWAN_STATE);
+      await BleHelpers.write(peripheral.id, COMMANDS.READ_LORAWAN_STATE, undefined, { throwOnError: true });
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       setStep(3);
       setStatusText('Checking firmware version...');
-      const currentVersion = firmwareVersionRef.current?.toString();
+      firmwareVersionRef.current = undefined;
+      dispatch(BeepBaseActions.setFirmwareVersion(undefined));
+      await BleHelpers.write(peripheral.id, COMMANDS.READ_FIRMWARE_VERSION, undefined, { throwOnError: true });
+      const currentVersion = (await waitForFirmwareVersion()).toString();
       const latestFirmware = firmwaresStable.length > 0 ? firmwaresStable[0] : null;
 
       if (!latestFirmware) {
         setStatusText('Firmware list unavailable; continuing to log download.');
         setTimeout(navigateToLogDownload, 1000);
-      } else if (currentVersion && currentVersion !== latestFirmware.version) {
+      } else if (currentVersion !== latestFirmware.version) {
         Alert.alert(
           'Firmware Update Available',
           `New firmware version ${latestFirmware.version} is available. Do you want to install it now?`,

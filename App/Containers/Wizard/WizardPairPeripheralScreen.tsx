@@ -318,6 +318,7 @@ const WizardPairPeripheralScreen: FunctionComponent<Props> = ({
         const newPairedPeripheral = new PairedPeripheralModel({
           id: peripheral.id,
           name: peripheral.name,
+          isConnected: true,
         })
         dispatch(BeepBaseActions.setPairedPeripheral(newPairedPeripheral))
 

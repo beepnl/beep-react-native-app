@@ -57,12 +57,6 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const weightSensorDefinition = useTypedSelector<SensorDefinitionModel | null>(getFirstWeightSensorDefinition)
   const device: DeviceModel = useTypedSelector<DeviceModel>(getDevice)
 
-  useEffect(() => {
-    if (device && weight && !weightSensorDefinition) {
-      dispatch(ApiActions.initializeWeightSensor(device, weight))
-    }
-  }, [device, weight, weightSensorDefinition])
-
   const [page, setPage] = useState<PAGE>("tare")
   const [state, setState] = useState<STATE>("tareIdle")
   const [resetTimer, setResetTimer] = useState(false)
@@ -73,6 +67,8 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   const [calibrateWeightFormatted, setCalibrateWeightFormatted] = useState("")
   const parsedCalibrateWeight = parseFloat(calibrateWeight)
   const [calibrateWeightError, setCalibrateWeightError] = useState("")
+  const [saveError, setSaveError] = useState("")
+  const [saving, setSaving] = useState(false)
   
   const [consecutiveDeviationErrors, setConsecutiveDeviationErrors] = useState(0)
   const [multiplier, setMultiplier] = useState(0)
@@ -98,7 +94,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   useEffect(() => {
     if (state == "sampling" && weight) {
       const newReading = weight.channels[0]?.value
-      if (newReading) {
+      if (newReading !== undefined) {
         //discard same readings. Each reading should be unique, within tolerance
         if (page == "calibrate" && readings.find(reading => reading == newReading) != undefined) {
           console.log("Discarding reading", newReading)
@@ -148,11 +144,17 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
               setOffset(Math.round(average))
             } else if (page == "calibrate") {
               if (!isNaN(parsedCalibrateWeight)) {
-                const multiplier = parsedCalibrateWeight / (average - offset)
-                setMultiplier(multiplier)
+                const calibrationDelta = average - offset
+                const nextMultiplier = parsedCalibrateWeight / calibrationDelta
+                if (calibrationDelta <= 0 || !Number.isFinite(nextMultiplier)) {
+                  setState("calibrateDeviationTooLarge")
+                  setResetTimer(false)
+                  return
+                }
+                setMultiplier(nextMultiplier)
                 console.log('Calibration completed with average = ', average)
                 console.log('Calibration completed with offset = ', offset)
-                console.log('Calibration completed with multiplier = ', multiplier)
+                console.log('Calibration completed with multiplier = ', nextMultiplier)
               }
             }
             setState(`${page}Completed`)
@@ -226,7 +228,19 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
   }
 
   const onFinishPress = () => {
-    //update api sensor definition
+    if (!Number.isFinite(multiplier) || multiplier <= 0) {
+      setState("calibrateDeviationTooLarge")
+      return
+    }
+
+    setSaving(true)
+    setSaveError("")
+    const onSaveSuccess = () => navigation.goBack()
+    const onSaveFailure = () => {
+      setSaving(false)
+      setSaveError(t("wizard.calibrate.weight.saveError"))
+    }
+
     if (weightSensorDefinition) {
       console.log('offset =', offset)
       console.log('multiplier =', multiplier)
@@ -237,11 +251,21 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
         multiplier,
       }
       // TO DO: don't PATCH but PUT all defs
-      dispatch(ApiActions.updateApiSensorDefinition(param))
+      dispatch(ApiActions.updateApiSensorDefinition(param, onSaveSuccess, onSaveFailure))
+    } else if (device?.hardwareId) {
+      dispatch(ApiActions.createSensorDefinition(device, {
+        device_hardware_id: device.hardwareId,
+        input_measurement_abbreviation: "w_v",
+        output_measurement_abbreviation: "weight_kg",
+        name: "Weight sensor",
+        offset,
+        multiplier,
+      }, onSaveSuccess, onSaveFailure))
+    } else {
+      setSaving(false)
+      setState("timeout")
+      return
     }
-
-    //close screen
-    navigation.goBack()
  }
 
   return (<>
@@ -332,6 +356,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
     </ScrollView>
 
     <View style={styles.itemContainer}>
+      { !!saveError && <Text style={styles.error}>{saveError}</Text> }
       { state == "tareCompleted" &&
         <TouchableOpacity style={styles.button} onPress={onNextPress}>
           <Text style={styles.text}>{t("common.btnNext")}</Text>
@@ -339,7 +364,7 @@ const CalibrateWeightScreen: FunctionComponent<Props> = ({
       }
 
       { state == "calibrateCompleted" &&
-        <TouchableOpacity style={styles.button} onPress={onFinishPress}>
+        <TouchableOpacity style={styles.button} onPress={onFinishPress} disabled={saving}>
           <Text style={styles.text}>{t("common.btnFinish")}</Text>
         </TouchableOpacity>
       }

@@ -366,19 +366,21 @@ export function* getSensorDefinitions(action: any) {
 }
 
 export function* createSensorDefinition(action: any) {
-  const { device, requestParams } = action
+  const { device, requestParams, onSuccess, onFailure } = action
   console.log("[ApiSagas] createSensorDefinition", requestParams)
   const response = yield guardedRequest(api.createSensorDefinition, requestParams)
   console.log("[ApiSagas] createSensorDefinition response", response)
   if (response && response.ok) {
     yield call(getSensorDefinitions, { device })
+    if (onSuccess) yield call(onSuccess)
   } else {
     yield put(ApiActions.apiFailure(response))
+    if (onFailure) yield call(onFailure, response)
   }
 }
 
 export function* updateApiSensorDefinition(action: any) {
-  const { sensorDefinition } = action
+  const { sensorDefinition, onSuccess, onFailure } = action
 
   const requestParams: any = {
     device_id: sensorDefinition.deviceId,
@@ -393,8 +395,10 @@ export function* updateApiSensorDefinition(action: any) {
   if (response && response.ok) {
     const sensorDefinition = new SensorDefinitionModel(response.data)
     yield put(BeepBaseActions.updateSensorDefinition(sensorDefinition))
+    if (onSuccess) yield call(onSuccess)
   } else {
     yield put(ApiActions.apiFailure(response))
+    if (onFailure) yield call(onFailure, response)
   }
 }
 

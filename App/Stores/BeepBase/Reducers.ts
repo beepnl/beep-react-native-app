@@ -21,9 +21,11 @@ export const setPairedPeripheral = (state: BeepBaseState, payload: any) => {
     return { ...state, pairedPeripheral: undefined}
   }
 
-  // Merge with existing pairedPeripheral to preserve fields like deviceId/name
-  const prev = state.pairedPeripheral || {}
-  const next = { ...prev, ...payload.peripheral }
+  // Preserve details only when updating the same peripheral.
+  const prev = state.pairedPeripheral
+  const next = prev?.id && payload.peripheral.id && prev.id === payload.peripheral.id
+    ? { ...prev, ...payload.peripheral }
+    : payload.peripheral
   return {
     ...state,
     pairedPeripheral: next
